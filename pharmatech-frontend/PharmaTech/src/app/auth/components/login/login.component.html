@@ -1,0 +1,58 @@
+<h2 style="text-align: center; color: #2c3e50">Login</h2>
+
+<p-toast></p-toast>
+
+<p
+  *ngIf="msg"
+  [style.color]="msg.includes('Invalid') ? 'orange' : 'red'"
+  style="text-align: center"
+>
+  {{ msg }}
+</p>
+
+<form [formGroup]="loginForm" (ngSubmit)="login()" class="form-container">
+  <label>Username</label>
+  <input
+    pInputText
+    type="text"
+    formControlName="username"
+    placeholder="Enter your username or email"
+    autocomplete="off"
+    autocapitalize="off"
+  />
+
+  <label>Password</label>
+  <input
+    pInputText
+    type="password"
+    formControlName="password"
+    placeholder="Enter your password"
+    autocomplete="new-password"
+  />
+
+  <!-- Nút Login -->
+  <div class="btn-container" [ngClass]="position">
+    <button
+      pButton
+      type="submit"
+      label="Login"
+      class="p-button-primary"
+      (mouseenter)="onHover()"
+      [disabled]="false"
+    ></button>
+  </div>
+
+  <div style="text-align: center; margin-top: 10px">
+    <a routerLink="/register" style="color: #007ad9; text-decoration: none">
+      Create an account
+    </a>
+  </div>
+  <div style="text-align: center; margin-top: 10px">
+    <a
+      routerLink="/forgot-password"
+      style="color: #007ad9; text-decoration: none"
+    >
+      Forgot Password
+    </a>
+  </div>
+</form>

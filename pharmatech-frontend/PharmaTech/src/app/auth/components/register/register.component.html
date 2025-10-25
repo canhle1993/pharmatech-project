@@ -1,0 +1,184 @@
+<h2 style="text-align: center; color: #2c3e50">Create New Account</h2>
+
+<p *ngIf="msg" style="color: red; text-align: center">{{ msg }}</p>
+
+<form [formGroup]="registerForm" (ngSubmit)="save()" class="form-container">
+  <!-- Full Name -->
+  <label>Full Name</label>
+  <input
+    pInputText
+    type="text"
+    formControlName="name"
+    placeholder="Enter your full name"
+  />
+  <small
+    *ngIf="
+      registerForm.get('name')?.invalid && registerForm.get('name')?.touched
+    "
+    >Name must be at least 3 characters</small
+  >
+
+  <!-- ✅ Hiển thị gợi ý Username -->
+  <ul *ngIf="suggestions.length > 0" class="suggestions-list">
+    <li class="suggestion-title">Available usernames:</li>
+    <li
+      *ngFor="let s of suggestions"
+      (click)="selectSuggestion(s)"
+      class="suggestion-item"
+    >
+      {{ s }}
+    </li>
+  </ul>
+
+  <!-- Username -->
+  <label>Username</label>
+  <input
+    pInputText
+    type="text"
+    formControlName="username"
+    placeholder="Choose a username"
+    (focus)="suggestions = []"
+  />
+  <small
+    *ngIf="
+      registerForm.get('username')?.invalid &&
+      registerForm.get('username')?.touched
+    "
+    >Username must contain letters/numbers only (min 3 chars)</small
+  >
+
+  <!-- ✅ Thông báo trạng thái username -->
+  <small
+    *ngIf="usernameStatus"
+    [style.color]="usernameStatus.includes('available') ? 'green' : 'red'"
+  >
+    {{ usernameStatus }}
+  </small>
+
+  <!-- Email -->
+  <label>Email</label>
+  <input
+    pInputText
+    type="email"
+    formControlName="email"
+    placeholder="Enter your email"
+  />
+
+  <!-- Phone -->
+  <label>Phone</label>
+  <input
+    pInputText
+    type="text"
+    formControlName="phone"
+    placeholder="Enter your phone number"
+  />
+  <small
+    *ngIf="
+      registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched
+    "
+    >Phone must be 10–11 digits</small
+  >
+
+  <!-- Password -->
+  <label>Password</label>
+  <p-password
+    formControlName="password"
+    [feedback]="true"
+    [toggleMask]="true"
+    placeholder="Enter your password"
+    [style]="{ width: '100%' }"
+  >
+    <ng-template #header>
+      <div class="font-semibold text-sm mb-2">Password Guidelines</div>
+    </ng-template>
+
+    <ng-template #footer>
+      <p-divider></p-divider>
+      <ul class="pl-2 my-0 leading-normal text-xs">
+        <li>At least one lowercase letter</li>
+        <li>At least one uppercase letter</li>
+        <li>At least one numeric digit</li>
+        <li>At least one special character</li>
+        <li>Minimum 8 characters</li>
+      </ul>
+    </ng-template>
+  </p-password>
+
+  <small
+    *ngIf="
+      registerForm.get('password')?.invalid &&
+      registerForm.get('password')?.touched
+    "
+    style="color: red"
+  >
+    Password does not meet the required format
+  </small>
+
+  <!-- Confirm Password -->
+  <label>Confirm Password</label>
+  <input
+    pInputText
+    type="password"
+    formControlName="confirmPassword"
+    placeholder="Confirm your password"
+  />
+  <small
+    *ngIf="
+      registerForm.errors?.['mismatch'] &&
+      registerForm.get('confirmPassword')?.touched
+    "
+  >
+    Password confirmation does not match
+  </small>
+
+  <button
+    pButton
+    type="submit"
+    label="Register"
+    class="p-button-success"
+    [disabled]="registerForm.invalid"
+  ></button>
+
+  <button
+    *ngIf="showOtpButton"
+    pButton
+    label="Enter OTP again"
+    class="p-button-secondary"
+    style="margin-top: 8px"
+    (click)="visible = true"
+  ></button>
+
+  <a
+    [routerLink]="['/login']"
+    style="color: #007ad9; cursor: pointer; text-decoration: underline"
+  >
+    Back to Login
+  </a>
+</form>
+
+<!-- OTP Dialog -->
+<p-dialog
+  header="Enter OTP"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '25rem' }"
+>
+  <div style="text-align: center">
+    <p-inputotp [(ngModel)]="otp"></p-inputotp>
+  </div>
+  <div style="text-align: right; margin-top: 1rem">
+    <button
+      pButton
+      label="Confirm"
+      class="p-button-primary"
+      (click)="verify()"
+    ></button>
+    <button
+      pButton
+      label="Cancel"
+      class="p-button-secondary"
+      (click)="visible = false"
+      style="margin-left: 8px"
+    ></button>
+  </div>
+</p-dialog>
