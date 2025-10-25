@@ -1,0 +1,204 @@
+<div class="account-container">
+  <h2 class="page-title">Account List</h2>
+
+  <p-progressSpinner
+    *ngIf="loading"
+    styleClass="loading-spinner"
+  ></p-progressSpinner>
+
+  <div class="card" *ngIf="!loading">
+    <p-table
+      #dt
+      [value]="accounts"
+      dataKey="id"
+      [rows]="10"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      [paginator]="true"
+      [globalFilterFields]="['name', 'email', 'phone', 'gender']"
+      showGridlines
+      [loading]="loading"
+      [responsiveLayout]="'scroll'"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      class="account-table"
+    >
+      <ng-template pTemplate="caption">
+        <div class="flex flex-wrap justify-between items-center gap-3">
+          <!-- Left side: Filters -->
+          <div class="flex flex-wrap gap-3">
+            <!-- Role Filter -->
+            <p-floatLabel class="w-full md:w-56">
+              <p-select
+                [(ngModel)]="selectedRole"
+                inputId="roleFilter"
+                [options]="roleOptions"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Select Role"
+                (onChange)="applyFilters(dt)"
+                class="w-full"
+              />
+            </p-floatLabel>
+
+            <!-- Status Filter -->
+            <p-floatLabel class="w-full md:w-56">
+              <p-select
+                [(ngModel)]="selectedStatus"
+                inputId="statusFilter"
+                [options]="statusOptions"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Select Status"
+                (onChange)="applyFilters(dt)"
+                class="w-full"
+              />
+            </p-floatLabel>
+
+            <!-- Clear button -->
+            <p-button
+              label="Clear"
+              [outlined]="true"
+              icon="pi pi-filter-slash"
+              (click)="clear(dt)"
+            ></p-button>
+          </div>
+
+          <!-- Right side: Search + Actions -->
+          <div class="flex items-center gap-3">
+            <p-iconfield iconPosition="left" class="ml-auto">
+              <p-inputicon>
+                <i class="pi pi-search"></i>
+              </p-inputicon>
+              <input
+                pInputText
+                type="text"
+                (input)="onGlobalFilter(dt, $event)"
+                placeholder="Search by name, email or phone..."
+              />
+            </p-iconfield>
+
+            <div class="toolbar-actions">
+              <button
+                pButton
+                icon="pi pi-refresh"
+                label="Reload"
+                class="p-button-sm p-button-secondary"
+                (click)="reload()"
+              ></button>
+              <button
+                pButton
+                icon="pi pi-user-plus"
+                label="Add"
+                class="p-button-sm p-button-success"
+                [routerLink]="['/account-create']"
+              ></button>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+
+      <!-- Header -->
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Photo</th>
+          <th pSortableColumn="name">Name <p-sortIcon field="name" /></th>
+          <th pSortableColumn="email">Email <p-sortIcon field="email" /></th>
+          <th>Phone</th>
+          <th>Gender</th>
+          <th>Address</th>
+          <th>Roles</th>
+          <th pSortableColumn="last_login">
+            Last Login <p-sortIcon field="last_login" />
+          </th>
+
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </ng-template>
+
+      <!-- Body -->
+      <ng-template pTemplate="body" let-account>
+        <tr>
+          <td>
+            <img
+              [src]="
+                account?.photo ? account.photo : 'assets/images/no-image.jpg'
+              "
+              alt="photo"
+              class="avatar"
+            />
+          </td>
+
+          <td>{{ account.name }}</td>
+          <td>{{ account.email }}</td>
+          <td>{{ account.phone || "-" }}</td>
+          <td>{{ account.gender || "-" }}</td>
+          <td class="truncate">{{ account.address || "-" }}</td>
+
+          <td>
+            <span class="role-badge" *ngFor="let role of account.roles">{{
+              role
+            }}</span>
+          </td>
+
+          <td>{{ account.last_login | date : "dd/MM/yyyy HH:mm:ss" }}</td>
+
+          <td>
+            <span
+              class="status-badge"
+              [class.active]="account.is_active"
+              [class.inactive]="!account.is_active"
+            >
+              {{ account.is_active ? "Active" : "Inactive" }}
+            </span>
+          </td>
+
+          <td>
+            <button
+              pButton
+              icon="pi pi-search"
+              class="p-button-text p-button-info"
+              title="View"
+              [routerLink]="['/account-details', { id: account.id }]"
+            ></button>
+            <button
+              pButton
+              icon="pi pi-pencil"
+              class="p-button-text p-button-warning"
+              title="Edit"
+            ></button>
+            <button
+              pButton
+              class="p-button-sm lock-btn"
+              [class.p-button-danger]="account.is_active"
+              [class.p-button-success]="!account.is_active"
+              (click)="toggleLock(account)"
+              [disabled]="account.loading"
+            >
+              <i
+                *ngIf="account.loading"
+                class="pi pi-spin pi-spinner"
+                style="margin-right: 6px"
+              ></i>
+              <i
+                *ngIf="!account.loading"
+                [ngClass]="account.is_active ? 'pi pi-lock' : 'pi pi-lock-open'"
+                style="margin-right: 6px"
+              ></i>
+              {{ account.is_active ? "Lock" : "Unlock" }}
+            </button>
+          </td>
+        </tr>
+      </ng-template>
+
+      <!-- Empty message -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="10" class="text-center">No accounts found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <p-confirmDialog></p-confirmDialog>
+</div>
