@@ -1,0 +1,49 @@
+.form-container {
+  width: 320px;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+label {
+  font-weight: 500;
+  margin-top: 8px;
+  color: #333;
+}
+
+input[pinputtext] {
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+button {
+  margin-top: 10px;
+}
+
+small {
+  color: red;
+  font-size: 12px;
+}
+.btn-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 12px;
+  transition: all 0.3s ease;
+}
+
+/* Các vị trí di chuyển */
+.shift-left {
+  transform: translateX(-150px);
+}
+.shift-right {
+  transform: translateX(150px);
+}
+.shift-up {
+  transform: translateY(-60px);
+}
+.shift-down {
+  transform: translateY(60px);
+}

@@ -1,0 +1,134 @@
+.account-container {
+  padding: 1.5rem;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f7f8fa;
+  min-height: 100vh;
+}
+
+.page-title {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 1rem;
+  border-left: 4px solid #3b82f6;
+  padding-left: 10px;
+}
+
+.error-msg {
+  color: #e63946;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.account-table ::ng-deep .p-datatable-thead > tr > th {
+  background: #3b82f6;
+  color: #fff;
+  text-align: center;
+  font-weight: 600;
+  padding: 0.75rem;
+}
+
+.account-table ::ng-deep .p-datatable-tbody > tr > td {
+  text-align: center;
+  padding: 0.75rem;
+  vertical-align: middle;
+  color: #444;
+}
+
+.avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 2px solid #e5e7eb;
+  object-fit: cover;
+}
+
+.truncate {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.role-badge {
+  display: inline-block;
+  background-color: #bfdbfe;
+  color: #1e3a8a;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  margin: 2px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 12px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.status-badge.active {
+  background-color: #16a34a;
+}
+
+.status-badge.inactive {
+  background-color: #dc2626;
+}
+
+/* Hover hiệu ứng hàng */
+.account-table ::ng-deep .p-datatable-tbody > tr:hover {
+  background-color: #eef2ff;
+  transition: background 0.2s ease-in-out;
+}
+.account-table {
+  overflow-x: auto;
+}
+@media (max-width: 768px) {
+  .account-container {
+    padding: 1rem;
+  }
+  .page-title {
+    font-size: 1.4rem;
+  }
+}
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+.card ::ng-deep .p-datatable-caption {
+  margin-bottom: 1rem;
+}
+.lock-btn i {
+  vertical-align: middle;
+  font-size: 0.9rem;
+}
+p-floatlabel {
+  min-width: 350px;
+}
+.flex.gap-3 {
+  align-items: center;
+}
+::ng-deep .p-float-label > label {
+  background: #fff;
+  padding: 0 6px;
+  margin-left: 0.4rem;
+}
+
+::ng-deep .p-float-label .p-select:not(.p-focus):not(.p-filled) ~ label {
+  top: 1rem; /* chỉnh label thấp hơn chút khi chưa chọn */
+  color: #6b7280; /* màu nhạt hơn */
+}
