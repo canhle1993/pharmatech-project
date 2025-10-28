@@ -17,6 +17,8 @@ import { CommonModule } from '@angular/common';
 import { AccountService } from '../../../services/account.service';
 import { PasswordModule } from 'primeng/password';
 import { DividerModule } from 'primeng/divider';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-register',
@@ -34,7 +36,9 @@ import { DividerModule } from 'primeng/divider';
     RouterLink,
     PasswordModule,
     DividerModule,
+    ToastModule,
   ],
+  providers: [MessageService],
 })
 export class RegisterComponent {
   registerForm!: FormGroup;
@@ -48,7 +52,8 @@ export class RegisterComponent {
   constructor(
     private fb: FormBuilder,
     private accountService: AccountService,
-    private router: Router
+    private router: Router,
+    private messageService: MessageService
   ) {
     this.registerForm = this.fb.group(
       {
@@ -154,7 +159,11 @@ export class RegisterComponent {
   /** 🔹 Đăng ký tài khoản */
   async save() {
     if (this.registerForm.invalid) {
-      this.msg = 'Please fill all fields correctly';
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Invalid Form',
+        detail: 'Please fill all fields correctly.',
+      });
       return;
     }
 
@@ -162,11 +171,21 @@ export class RegisterComponent {
       const res: any = await this.accountService.create(
         this.registerForm.value
       );
-      this.msg = res.msg || 'Account created, please verify OTP';
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: res.msg || 'Account created, please verify OTP',
+      });
+
       this.visible = true;
-      this.showOtpButton = true; // ✅ hiển thị nút "Enter OTP again"
+      this.showOtpButton = true;
     } catch (err: any) {
-      this.msg = err.error?.msg || 'Registration failed';
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: err.error?.msg || 'Registration failed',
+      });
     }
   }
 
@@ -176,13 +195,21 @@ export class RegisterComponent {
       const email = this.registerForm.value.email;
       const res: any = await this.accountService.verify(email, this.otp);
 
-      this.msg = 'Verification successful, please log in';
-      this.visible = false;
-      this.showOtpButton = false; // ✅ Ẩn nút "Enter OTP again" sau khi verify thành công
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Verified',
+        detail: 'Verification successful, please log in',
+      });
 
+      this.visible = false;
+      this.showOtpButton = false;
       setTimeout(() => this.router.navigate(['/login']), 1500);
     } catch (err: any) {
-      this.msg = err.error?.msg || 'Invalid OTP';
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Invalid OTP',
+        detail: err.error?.msg || 'Invalid OTP, please try again',
+      });
     }
   }
 }
