@@ -7,6 +7,8 @@ import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { AccountModule } from './account/account.module';
 import { MailModule } from './mail/mail.module';
+import { CategoryModule } from './category/category.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -44,6 +46,8 @@ import { MailModule } from './mail/mail.module';
     }),
     AccountModule,
     MailModule,
+    CategoryModule,
+    ProductModule,
   ],
   controllers: [],
   providers: [],
