@@ -1,6 +1,6 @@
 <h2 style="text-align: center; color: #2c3e50">Create New Account</h2>
 
-<p *ngIf="msg" style="color: red; text-align: center">{{ msg }}</p>
+<p-toast></p-toast>
 
 <form [formGroup]="registerForm" (ngSubmit)="save()" class="form-container">
   <!-- Full Name -->
