@@ -4,3 +4,20 @@
 /* css cho quill */
 @import "quill/dist/quill.core.css";
 @import "quill/dist/quill.snow.css";
+/* ✅ Success toast màu xanh lá rõ hơn */
+::ng-deep .p-toast-message-success {
+  background-color: #81f4ab !important;
+  color: #000000 !important;
+}
+
+/* ✅ Error toast màu đỏ */
+::ng-deep .p-toast-message-error {
+  background-color: #f94b4b !important;
+  color: #070707 !important;
+}
+
+/* ✅ Warning toast màu vàng */
+::ng-deep .p-toast-message-warn {
+  background-color: #fee068 !important;
+  color: #000 !important;
+}

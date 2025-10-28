@@ -1,0 +1,77 @@
+<div class="product-container">
+  <h2 class="page-title">Product List</h2>
+
+  <!-- ✅ Toast thông báo -->
+  <p-toast></p-toast>
+
+  <!-- Loading spinner -->
+  <p-progressSpinner
+    *ngIf="loading"
+    styleClass="loading-spinner"
+  ></p-progressSpinner>
+
+  <div class="card" *ngIf="!loading">
+    <p-table
+      [value]="products"
+      dataKey="id"
+      [rows]="10"
+      [paginator]="true"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      showGridlines
+      [responsiveLayout]="'scroll'"
+      class="product-table"
+    >
+      <!-- Header -->
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Photo</th>
+          <th>Product Name</th>
+          <th>Model</th>
+          <th>Category</th>
+          <th>Manufacturer</th>
+          <th>Updated By</th>
+          <th>Updated At</th>
+          <th>Action</th>
+        </tr>
+      </ng-template>
+
+      <!-- Body -->
+      <ng-template pTemplate="body" let-product>
+        <tr>
+          <td>
+            <img
+              [src]="
+                product?.photo ? product.photo : 'assets/images/no-image.jpg'
+              "
+              alt="Product Photo"
+            />
+          </td>
+          <td>{{ product.name }}</td>
+          <td>{{ product.model }}</td>
+          <td>{{ getCategoryName(product.categoryId) }}</td>
+          <td>{{ product.manufacturer || "-" }}</td>
+          <td>{{ product.updated_by || "-" }}</td>
+          <td>{{ product.updated_at || "-" }}</td>
+          <td>
+            <button
+              pButton
+              icon="pi pi-trash"
+              class="p-button-text p-button-danger"
+              title="Delete"
+              (click)="onDelete(product)"
+            ></button>
+          </td>
+        </tr>
+      </ng-template>
+
+      <!-- Empty message -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="text-center">No products found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <p-confirmDialog></p-confirmDialog>
+</div>
