@@ -8,6 +8,8 @@ import { ForgotPasswordComponent } from './auth/components/forgotPassword/forgot
 import { AdminComponent } from './admin/admin.component';
 import { UserComponent } from './user/user.component';
 import { AccountListComponent } from './admin/account/accountlist/accountlist.component';
+import { CategoryListComponent } from './admin/category/categorylist/categorylist.component';
+import { ProductListComponent } from './admin/product/productlist/productlist.component';
 
 export const routes: Routes = [
   {
@@ -49,5 +51,13 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminComponent,
+  },
+  {
+    path: 'admin/products-list',
+    component: ProductListComponent,
+  },
+  {
+    path: 'admin/categories-list',
+    component: CategoryListComponent,
   },
 ];
