@@ -53,6 +53,13 @@ export class UserComponent implements OnInit {
       link.href = href;
       this.renderer.appendChild(document.head, link);
     });
+
+    const fontLink = this.renderer.createElement('link');
+    fontLink.rel = 'stylesheet';
+    fontLink.href =
+      'https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap';
+    this.renderer.appendChild(document.head, fontLink);
+
     // --- JS ---
     const jsFiles = [
       'assets/js/vendor/modernizr-3.11.7.min.js',
