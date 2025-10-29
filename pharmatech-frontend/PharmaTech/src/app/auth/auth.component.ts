@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
-  standalone: true,
   templateUrl: './auth.component.html',
   imports: [CommonModule, RouterOutlet],
 })
