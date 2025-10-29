@@ -6,11 +6,19 @@ import { ButtonModule } from 'primeng/button';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  imports: [RouterLink, ButtonModule],
+  imports: [ButtonModule],
 })
 export class HeaderComponent implements OnInit {
+  user: any = null;
+
   constructor(private accountService: AccountService, private router: Router) {}
-  ngOnInit() {}
+  ngOnInit() {
+    const storedUser = localStorage.getItem('currentUser');
+    if (storedUser) {
+      this.user = JSON.parse(storedUser);
+    }
+  }
+
   logout() {
     this.accountService.logout();
     this.router.navigate(['/auth/login']);
