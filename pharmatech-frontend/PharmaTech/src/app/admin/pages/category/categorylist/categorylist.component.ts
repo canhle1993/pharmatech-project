@@ -6,8 +6,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { Category } from '../../../entities/category.entity';
-import { CategoryService } from '../../../services/category.service';
+import { Category } from '../../../../entities/category.entity';
+import { CategoryService } from '../../../../services/category.service';
 
 @Component({
   templateUrl: './categorylist.component.html',
