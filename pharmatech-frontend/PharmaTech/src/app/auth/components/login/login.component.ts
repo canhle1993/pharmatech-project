@@ -75,6 +75,11 @@ export class LoginComponent {
       const res: any = await this.accountService.login(username, password);
 
       if (res?.account) {
+        // ✅ Lưu token (hoặc id/email tuỳ API trả về)
+        localStorage.setItem(
+          'token',
+          res.token || res.account.email || username
+        );
         // Lấy phần tử đầu tiên trong mảng roles (vì là mảng chuỗi)
         const role = res.account.roles?.[0]?.toLowerCase() || 'user';
 
@@ -88,7 +93,7 @@ export class LoginComponent {
           if (role === 'admin' || role === 'superadmin') {
             this.router.navigate(['/admin']);
           } else {
-            this.router.navigate(['/user']);
+            this.router.navigate(['/home']);
           }
         }, 1000);
       } else {
