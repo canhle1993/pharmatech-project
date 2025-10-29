@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Table } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { AccountService } from '../../../services/account.service';
-import { Account } from '../../../entities/account.entity';
 import { DatePipe, CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -15,6 +13,8 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { Select } from 'primeng/select';
 import { FloatLabel } from 'primeng/floatlabel';
+import { Account } from '../../../../entities/account.entity';
+import { AccountService } from '../../../../services/account.service';
 
 @Component({
   templateUrl: './accountlist.component.html',
