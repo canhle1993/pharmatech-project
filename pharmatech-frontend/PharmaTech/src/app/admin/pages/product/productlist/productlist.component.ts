@@ -6,10 +6,10 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { Product } from '../../../entities/product.entity';
-import { ProductService } from '../../../services/product.service';
-import { CategoryService } from '../../../services/category.service';
-import { Category } from '../../../entities/category.entity';
+import { Product } from '../../../../entities/product.entity';
+import { Category } from '../../../../entities/category.entity';
+import { ProductService } from '../../../../services/product.service';
+import { CategoryService } from '../../../../services/category.service';
 
 @Component({
   templateUrl: './productlist.component.html',
