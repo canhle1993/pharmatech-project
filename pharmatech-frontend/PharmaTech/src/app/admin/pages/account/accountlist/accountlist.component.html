@@ -104,8 +104,7 @@
           <th pSortableColumn="name">Name <p-sortIcon field="name" /></th>
           <th pSortableColumn="email">Email <p-sortIcon field="email" /></th>
           <th>Phone</th>
-          <th>Gender</th>
-          <th>Address</th>
+          
           <th>Roles</th>
           <th pSortableColumn="last_login">
             Last Login <p-sortIcon field="last_login" />
@@ -132,8 +131,6 @@
           <td>{{ account.name }}</td>
           <td>{{ account.email }}</td>
           <td>{{ account.phone || "-" }}</td>
-          <td>{{ account.gender || "-" }}</td>
-          <td class="truncate">{{ account.address || "-" }}</td>
 
           <td>
             <span class="role-badge" *ngFor="let role of account.roles">{{
