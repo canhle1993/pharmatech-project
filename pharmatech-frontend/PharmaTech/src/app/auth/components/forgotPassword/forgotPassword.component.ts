@@ -170,7 +170,7 @@ export class ForgotPasswordComponent {
         detail: res.msg || 'You can now login with your new password',
       });
       this.visibleReset = false;
-      setTimeout(() => this.router.navigate(['/login']), 1500);
+      setTimeout(() => this.router.navigate(['/auth/login']), 1500);
     } catch (err: any) {
       this.messageService.add({
         severity: 'error',
