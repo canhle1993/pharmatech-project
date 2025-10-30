@@ -1,60 +1,398 @@
-.form-container {
-  width: 360px;
-  margin: 20px auto;
+/* 🎨 Neumorphism Register Form Style */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #e0e5ec;
+  padding: 20px;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  min-height: calc(100vh - 40px);
 }
 
-label {
+.login-card {
+  background: #e0e5ec;
+  border-radius: 30px;
+  padding: 45px 40px;
+  width: 100%;
+  box-shadow: 20px 20px 60px #bec3cf, -20px -20px 60px #ffffff;
+  position: relative;
+  transition: all 0.3s ease;
+}
+.login-card:hover {
+  transform: translateY(-5px);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+.neu-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  background: #e0e5ec;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 8px 8px 20px #bec3cf, -8px -8px 20px #ffffff, inset 0 0 0 #bec3cf,
+    inset 0 0 0 #ffffff;
+  transition: all 0.3s ease;
+}
+.neu-icon:hover {
+  box-shadow: 4px 4px 10px #bec3cf, -4px -4px 10px #ffffff,
+    inset 4px 4px 10px #bec3cf, inset -4px -4px 10px #ffffff;
+}
+.icon-inner {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c7293;
+}
+.icon-inner svg {
+  width: 100%;
+  height: 100%;
+}
+.login-header h2 {
+  color: #3d4468;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.login-header p {
+  color: #9499b7;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+/* Input fields */
+.form-group {
+  margin-bottom: 14px;
+  position: relative;
+}
+.neu-input {
+  position: relative;
+  background: #e0e5ec;
+  border-radius: 15px;
+  box-shadow: inset 8px 8px 16px #bec3cf, inset -8px -8px 16px #ffffff;
+  transition: all 0.3s ease;
+}
+.neu-input:focus-within {
+  box-shadow: inset 4px 4px 8px #bec3cf, inset -4px -4px 8px #ffffff;
+}
+.input-group input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 20px 24px;
+  padding-left: 55px;
+  color: #3d4468;
+  font-size: 16px;
   font-weight: 500;
-  margin-top: 8px;
-  color: #333;
+  outline: none;
+  transition: all 0.3s ease;
 }
-
-input[pinputtext] {
-  padding: 6px 10px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+.input-group input::placeholder {
+  color: transparent;
 }
-
-small {
-  color: red;
+.input-group label {
+  position: absolute;
+  left: 55px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9499b7;
+  font-size: 16px;
+  font-weight: 400;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label {
+  top: 8px;
   font-size: 12px;
+  color: #6c7293;
+  transform: translateY(0);
 }
-:host ::ng-deep .p-password {
+.input-icon {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  color: #9499b7;
+  transition: all 0.3s ease;
+}
+.input-icon svg {
   width: 100%;
+  height: 100%;
 }
-:host ::ng-deep .p-password-input {
-  width: 100%;
+.neu-input:focus-within .input-icon {
+  color: #6c7293;
 }
+
+/* Toggle password */
+.password-group {
+  padding-right: 50px;
+}
+.password-toggle.neu-toggle {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #e0e5ec;
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9499b7;
+  box-shadow: 4px 4px 10px #bec3cf, -4px -4px 10px #ffffff;
+  transition: all 0.3s ease;
+}
+.password-toggle.neu-toggle:hover {
+  color: #6c7293;
+}
+.password-toggle.neu-toggle:active {
+  box-shadow: inset 2px 2px 5px #bec3cf, inset -2px -2px 5px #ffffff;
+}
+.password-toggle.neu-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+.eye-closed {
+  display: none;
+}
+.password-toggle.neu-toggle.show-password .eye-open {
+  display: none;
+}
+.password-toggle.neu-toggle.show-password .eye-closed {
+  display: block;
+}
+
+/* Suggestion username */
 .suggestions-list {
-  margin-top: 4px;
+  margin: 10px 0 20px 0;
   padding-left: 0;
   list-style: none;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 3px 3px 8px #bec3cf, -3px -3px 8px #ffffff;
 }
-
 .suggestion-title {
   font-weight: 600;
-  color: #2c3e50;
-  padding: 6px 10px;
-  background: #f9f9f9;
-  border-bottom: 1px solid #eee;
+  color: #3d4468;
+  padding: 6px 12px;
+  background: #f3f4f7;
+  border-bottom: 1px solid #e2e2e2;
+  border-radius: 12px 12px 0 0;
 }
-
 .suggestion-item {
-  padding: 6px 10px;
+  padding: 8px 12px;
   cursor: pointer;
-  color: #007ad9; /* ✅ màu xanh PrimeNG */
+  color: #007ad9;
   font-weight: 500;
   transition: background 0.2s, color 0.2s;
 }
-
 .suggestion-item:hover {
   background: #e8f4ff;
-  color: #005fa3; /* màu xanh đậm khi hover */
+  color: #005fa3;
+}
+
+/* Button */
+.neu-button {
+  width: 100%;
+  background: #e0e5ec;
+  border: none;
+  border-radius: 15px;
+  padding: 18px 32px;
+  color: #3d4468;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  margin-top: 10px;
+  box-shadow: 8px 8px 20px #bec3cf, -8px -8px 20px #ffffff;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+.neu-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+.neu-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 12px 12px 30px #bec3cf, -12px -12px 30px #ffffff;
+}
+.neu-button:hover::before {
+  left: 100%;
+}
+.neu-button:active {
+  transform: translateY(0);
+  box-shadow: inset 4px 4px 10px #bec3cf, inset -4px -4px 10px #ffffff;
+}
+.btn-text {
+  position: relative;
+  z-index: 1;
+}
+.btn-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.neu-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #bec3cf;
+  border-top: 3px solid #6c7293;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+.neu-button.loading .btn-text {
+  opacity: 0;
+}
+.neu-button.loading .btn-loader {
+  opacity: 1;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Signup link */
+.signup-link {
+  text-align: center;
+  margin-top: 20px;
+}
+.signup-link p {
+  color: #9499b7;
+  font-size: 14px;
+}
+.signup-link a {
+  color: #6c7293;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+.signup-link a:hover {
+  color: #3d4468;
+}
+
+/* Error messages */
+.error-message {
+  color: #ff3b5c;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 8px;
+  margin-left: 20px;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+.error-message.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+.form-group.error .neu-input {
+  box-shadow: inset 8px 8px 16px #ffb8c4, inset -8px -8px 16px #ffffff,
+    0 0 0 2px #ff3b5c;
+}
+
+/* Dialog override */
+:host ::ng-deep .p-dialog {
+  border-radius: 20px;
+}
+:host ::ng-deep .p-dialog-header {
+  background: #e0e5ec;
+  color: #3d4468;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  :host {
+    padding: 16px;
+  }
+  .login-card {
+    padding: 35px 25px;
+    border-radius: 20px;
+  }
+  .login-header h2 {
+    font-size: 1.75rem;
+  }
+  .input-group input {
+    padding: 18px 20px;
+    padding-left: 50px;
+  }
+  .input-group label {
+    left: 50px;
+  }
+}
+/* Đảm bảo p-dialog nổi lên trên mọi phần tử khác */
+:host ::ng-deep .p-dialog {
+  z-index: 9999 !important;
+}
+
+/* Tăng luôn z-index cho phần mask mờ */
+:host ::ng-deep .p-dialog-mask {
+  z-index: 9998 !important;
+}
+
+/* Làm header OTP nổi bật hơn */
+:host ::ng-deep .p-dialog-header {
+  background: #ffffff !important;
+  color: #3d4468 !important;
+  font-weight: 700;
+  font-size: 1.2rem;
+  border-radius: 20px 20px 0 0;
+  box-shadow: inset 4px 4px 8px #ffffff, inset -4px -4px 8px #ffffff;
+}
+:host ::ng-deep .p-password input {
+  background: #e0e5ec !important;
+  border: none !important;
+  box-shadow: inset 6px 6px 12px #bec3cf, inset -6px -6px 12px #ffffff !important;
+  border-radius: 15px !important;
+  padding: 14px 18px !important;
+  color: #3d4468 !important;
+  font-size: 15px !important;
+}
+
+:host ::ng-deep .p-password input:focus {
+  box-shadow: inset 4px 4px 8px #bec3cf, inset -4px -4px 8px #ffffff !important;
 }

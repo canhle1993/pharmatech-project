@@ -48,6 +48,7 @@ export class RegisterComponent {
   suggestions: string[] = [];
   usernameStatus: string = '';
   showOtpButton = false;
+  showPassword = false;
 
   constructor(
     private fb: FormBuilder,
@@ -122,6 +123,20 @@ export class RegisterComponent {
         this.usernameStatus = '';
       }
     });
+  }
+
+  onInputFocus(e: FocusEvent) {
+    const group = (e.target as HTMLElement).closest(
+      '.neu-input'
+    ) as HTMLElement;
+    if (group) group.style.transform = 'scale(0.98)';
+  }
+
+  onInputBlur(e: FocusEvent) {
+    const group = (e.target as HTMLElement).closest(
+      '.neu-input'
+    ) as HTMLElement;
+    if (group) group.style.transform = 'scale(1)';
   }
 
   generateUsernameSuggestions(name: string) {
@@ -203,7 +218,7 @@ export class RegisterComponent {
 
       this.visible = false;
       this.showOtpButton = false;
-      setTimeout(() => this.router.navigate(['/login']), 1500);
+      setTimeout(() => this.router.navigate(['/auth/login']), 1500);
     } catch (err: any) {
       this.messageService.add({
         severity: 'warn',
