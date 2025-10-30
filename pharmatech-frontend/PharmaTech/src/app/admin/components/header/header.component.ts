@@ -6,7 +6,7 @@ import { ButtonModule } from 'primeng/button';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  imports: [ButtonModule],
+  imports: [ButtonModule, RouterLink],
 })
 export class HeaderComponent implements OnInit {
   user: any = null;
