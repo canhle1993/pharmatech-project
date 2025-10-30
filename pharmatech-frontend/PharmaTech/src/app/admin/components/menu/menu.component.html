@@ -30,280 +30,279 @@
     >
       <a [routerLink]="['/admin/dashboard']" class="menu-link">
         <i class="menu-icon tf-icons bx bx-home-circle"></i>
-        <div data-i18n="Analytics">Dashboard</div>
+        <div data-i18n="Dashboard">Dashboard</div>
       </a>
     </li>
 
     <!-- Account -->
-    <li class="menu-item" routerLinkActive="active">
-      <a class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-layout"></i>
-        <div data-i18n="Layouts">Account</div>
+    <li
+      class="menu-item"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <a [routerLink]="['/admin/account-list']" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-user"></i>
+        <div data-i18n="Account">Accounts</div>
       </a>
-
-      <ul class="menu-sub">
-        <li
-          class="menu-item"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          <a [routerLink]="['/admin/account-list']" class="menu-link">
-            <div data-i18n="Without menu">Account List</div>
-          </a>
-        </li>
-      </ul>
     </li>
 
     <!-- Products -->
-    <li class="menu-item" routerLinkActive="active">
-      <a class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-layout"></i>
-        <div data-i18n="Layouts">Products</div>
+    <li
+      class="menu-item"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <a [routerLink]="['/admin/product-list']" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-package"></i>
+        <div data-i18n="Product">Products</div>
       </a>
-
-      <ul class="menu-sub">
-        <li
-          class="menu-item"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          <a [routerLink]="['/admin/product-list']" class="menu-link">
-            <div data-i18n="Without menu">Product List</div>
-          </a>
-        </li>
-
-        <li class="menu-item">
-          <a href="layouts-without-navbar.html" class="menu-link">
-            <div data-i18n="Without navbar">Without navbar</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="layouts-container.html" class="menu-link">
-            <div data-i18n="Container">Container</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="layouts-fluid.html" class="menu-link">
-            <div data-i18n="Fluid">Fluid</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="layouts-blank.html" class="menu-link">
-            <div data-i18n="Blank">Blank</div>
-          </a>
-        </li>
-      </ul>
     </li>
+
     <!-- Category -->
-    <li class="menu-item" routerLinkActive="active">
-      <a class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-layout"></i>
-        <div data-i18n="Layouts">Category</div>
+    <li
+      class="menu-item"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <a [routerLink]="['/admin/category-list']" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-category"></i>
+        <div data-i18n="Categories">Categories</div>
       </a>
-
-      <ul class="menu-sub">
-        <li
-          class="menu-item"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          <a [routerLink]="['/admin/category-list']" class="menu-link">
-            <div data-i18n="Without menu">Category List</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="layouts-without-navbar.html" class="menu-link">
-            <div data-i18n="Without navbar">Without navbar</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="layouts-container.html" class="menu-link">
-            <div data-i18n="Container">Container</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="layouts-fluid.html" class="menu-link">
-            <div data-i18n="Fluid">Fluid</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="layouts-blank.html" class="menu-link">
-            <div data-i18n="Blank">Blank</div>
-          </a>
-        </li>
-      </ul>
     </li>
+
+    <!-- Pages -->
 
     <li class="menu-header small text-uppercase">
       <span class="menu-header-text">Pages</span>
     </li>
-    <li class="menu-item">
-      <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-dock-top"></i>
-        <div data-i18n="Account Settings">Account Settings</div>
+    <li class="menu-item" routerLinkActive="active">
+      <a class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-file"></i>
+        <div data-i18n="Pages">Pages</div>
       </a>
+
       <ul class="menu-sub">
-        <li class="menu-item">
-          <a href="pages-account-settings-account.html" class="menu-link">
-            <div data-i18n="Account">Account</div>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a [routerLink]="['/admin/about']" class="menu-link">
+            <div data-i18n="About us">About</div>
           </a>
         </li>
-        <li class="menu-item">
-          <a href="pages-account-settings-notifications.html" class="menu-link">
-            <div data-i18n="Notifications">Notifications</div>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a [routerLink]="['/admin/contact']" class="menu-link">
+            <div data-i18n="Contact us">Contact</div>
           </a>
         </li>
-        <li class="menu-item">
-          <a href="pages-account-settings-connections.html" class="menu-link">
-            <div data-i18n="Connections">Connections</div>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a [routerLink]="['/admin/banner']" class="menu-link">
+            <div data-i18n="Banner us">Banner</div>
           </a>
         </li>
       </ul>
     </li>
-    <li class="menu-item">
-      <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
-        <div data-i18n="Authentications">Authentications</div>
+    <li class="menu-item" routerLinkActive="active">
+      <a class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-cog"></i>
+        <div data-i18n="Settings">Settings</div>
       </a>
+
       <ul class="menu-sub">
-        <li class="menu-item">
-          <a href="auth-login-basic.html" class="menu-link" target="_blank">
-            <div data-i18n="Basic">Login</div>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a [routerLink]="['/admin/settings/facebook']" class="menu-link">
+            <div data-i18n="Facebook">Facebook</div>
           </a>
         </li>
-        <li class="menu-item">
-          <a href="auth-register-basic.html" class="menu-link" target="_blank">
-            <div data-i18n="Basic">Register</div>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a [routerLink]="['/admin/settings/zalo']" class="menu-link">
+            <div data-i18n="Zalo">Zalo</div>
           </a>
         </li>
-        <li class="menu-item">
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a [routerLink]="['/admin/settings/phone']" class="menu-link">
+            <div data-i18n="Phone">Phone</div>
+          </a>
+        </li>
+      </ul>
+    </li>
+
+    <li class="menu-item" routerLinkActive="active">
+      <a class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-trash"></i>
+        <div data-i18n="Recycle Bin">Recycle Bin</div>
+      </a>
+
+      <ul class="menu-sub">
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a [routerLink]="['/admin/recycle/user']" class="menu-link">
+            <div data-i18n="User">User</div>
+          </a>
+        </li>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a [routerLink]="['/admin/recycle/category']" class="menu-link">
+            <div data-i18n="Category">Category</div>
+          </a>
+        </li>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a [routerLink]="['/admin/recycle/product']" class="menu-link">
+            <div data-i18n="Product">Product</div>
+          </a>
+        </li>
+      </ul>
+    </li>
+
+    <li
+      class="menu-item"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <a [routerLink]="['/admin/quote']" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-message-rounded-dots"></i>
+        <div data-i18n="Quote">Quote</div>
+      </a>
+    </li>
+
+    <!-- Career -->
+    <li class="menu-header small text-uppercase">
+      <span class="menu-header-text">Career</span>
+    </li>
+    <!-- Career -->
+    <li class="menu-item" routerLinkActive="active">
+      <a class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-briefcase"></i>
+        <div data-i18n="Career">Career</div>
+      </a>
+
+      <ul class="menu-sub">
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a [routerLink]="['/admin/career/job-posting']" class="menu-link">
+            <div data-i18n="Job posting">Job posting</div>
+          </a>
+        </li>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
           <a
-            href="auth-forgot-password-basic.html"
+            [routerLink]="['/admin/career/recruitment-details']"
             class="menu-link"
-            target="_blank"
           >
-            <div data-i18n="Basic">Forgot Password</div>
+            <div data-i18n="Recruitment details">Recruitment details</div>
           </a>
         </li>
-      </ul>
-    </li>
-    <li class="menu-item">
-      <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-cube-alt"></i>
-        <div data-i18n="Misc">Misc</div>
-      </a>
-      <ul class="menu-sub">
-        <li class="menu-item">
-          <a href="pages-misc-error.html" class="menu-link">
-            <div data-i18n="Error">Error</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="pages-misc-under-maintenance.html" class="menu-link">
-            <div data-i18n="Under Maintenance">Under Maintenance</div>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a
+            [routerLink]="['/admin/career/recruitment-history']"
+            class="menu-link"
+          >
+            <div data-i18n="Recruitment history">Recruitment history</div>
           </a>
         </li>
       </ul>
     </li>
 
-    <!-- Extended components -->
-    <li class="menu-item">
-      <a href="javascript:void(0)" class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-copy"></i>
-        <div data-i18n="Extended UI">Extended UI</div>
-      </a>
-      <ul class="menu-sub">
-        <li class="menu-item">
-          <a href="extended-ui-perfect-scrollbar.html" class="menu-link">
-            <div data-i18n="Perfect Scrollbar">Perfect scrollbar</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="extended-ui-text-divider.html" class="menu-link">
-            <div data-i18n="Text Divider">Text Divider</div>
-          </a>
-        </li>
-      </ul>
-    </li>
-
-    <li class="menu-item">
-      <a href="icons-boxicons.html" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-crown"></i>
-        <div data-i18n="Boxicons">Boxicons</div>
-      </a>
-    </li>
-
-    <!-- Forms & Tables -->
+    <!-- Order -->
     <li class="menu-header small text-uppercase">
-      <span class="menu-header-text">Forms &amp; Tables</span>
+      <span class="menu-header-text">Order</span>
     </li>
-    <!-- Forms -->
-    <li class="menu-item">
-      <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-detail"></i>
-        <div data-i18n="Form Elements">Form Elements</div>
+
+    <li class="menu-item" routerLinkActive="active">
+      <a class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-cart"></i>
+        <div data-i18n="Order">Order</div>
       </a>
+
       <ul class="menu-sub">
-        <li class="menu-item">
-          <a href="forms-basic-inputs.html" class="menu-link">
-            <div data-i18n="Basic Inputs">Basic Inputs</div>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a [routerLink]="['/admin/order/order-list']" class="menu-link">
+            <div data-i18n="Order list">Order list</div>
           </a>
         </li>
-        <li class="menu-item">
-          <a href="forms-input-groups.html" class="menu-link">
-            <div data-i18n="Input groups">Input groups</div>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a [routerLink]="['/admin/order/order-details']" class="menu-link">
+            <div data-i18n="Order details">Order details</div>
           </a>
         </li>
       </ul>
     </li>
-    <li class="menu-item">
-      <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-detail"></i>
-        <div data-i18n="Form Layouts">Form Layouts</div>
-      </a>
-      <ul class="menu-sub">
-        <li class="menu-item">
-          <a href="form-layouts-vertical.html" class="menu-link">
-            <div data-i18n="Vertical Form">Vertical Form</div>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="form-layouts-horizontal.html" class="menu-link">
-            <div data-i18n="Horizontal Form">Horizontal Form</div>
-          </a>
-        </li>
-      </ul>
-    </li>
-    <!-- Tables -->
-    <li class="menu-item">
-      <a href="tables-basic.html" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-table"></i>
-        <div data-i18n="Tables">Tables</div>
-      </a>
-    </li>
-    <!-- Misc -->
-    <li class="menu-header small text-uppercase">
-      <span class="menu-header-text">Misc</span>
-    </li>
-    <li class="menu-item">
-      <a
-        href="https://github.com/themeselection/sneat-html-admin-template-free/issues"
-        target="_blank"
-        class="menu-link"
-      >
+
+    <li class="menu-item" routerLinkActive="active">
+      <a class="menu-link menu-toggle">
         <i class="menu-icon tf-icons bx bx-support"></i>
         <div data-i18n="Support">Support</div>
       </a>
-    </li>
-    <li class="menu-item">
-      <a
-        href="https://themeselection.com/demo/sneat-bootstrap-html-admin-template/documentation/"
-        target="_blank"
-        class="menu-link"
-      >
-        <i class="menu-icon tf-icons bx bx-file"></i>
-        <div data-i18n="Documentation">Documentation</div>
-      </a>
+
+      <ul class="menu-sub">
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a [routerLink]="['/admin/support/chat']" class="menu-link">
+            <div data-i18n="Chat">Chat</div>
+          </a>
+        </li>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a [routerLink]="['/admin/support/chat-history']" class="menu-link">
+            <div data-i18n="Chat history">Chat history</div>
+          </a>
+        </li>
+      </ul>
     </li>
   </ul>
 </aside>

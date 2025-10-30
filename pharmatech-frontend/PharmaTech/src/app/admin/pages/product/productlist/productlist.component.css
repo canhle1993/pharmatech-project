@@ -1,16 +1,17 @@
 /* ===== Container layout ===== */
 .product-container {
-  padding: 20px;
-  background-color: #f9fafb;
+  padding: 1.5rem;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f7f8fa;
   min-height: 100vh;
 }
 
 .page-title {
-  text-align: center;
-  color: #1a237e;
-  font-weight: 700;
-  font-size: 1.6rem;
-  margin-bottom: 20px;
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 1rem;
+  border-left: 4px solid #3b82f6;
+  padding-left: 10px;
 }
 
 /* ===== Table styles ===== */
