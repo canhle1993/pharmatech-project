@@ -20,6 +20,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import { AccountDTO } from './account.dto';
 
 @Controller('api/account')
 export class AccountController {
@@ -307,4 +308,16 @@ export class AccountController {
     }
     return { msg: 'Deleted successfully' };
   }
+
+  @Post('admin/create')
+  async createAdmin(@Body() dto: any) { // 👈 dùng any
+    try {
+      dto.password = bcrypt.hashSync(dto.password, bcrypt.genSaltSync());
+      dto.roles = ['admin'];
+      return await this.accountService.create(dto);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
 }
