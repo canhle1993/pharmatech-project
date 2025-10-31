@@ -17,11 +17,11 @@ export class AccountService {
   }
 
   /** 🔹 Tạo tài khoản admin */
-async createAdmin(account: any): Promise<any> {
-  return await lastValueFrom(
-    this.httpClient.post(env.baseUrl + 'account/admin/create', account)
-  );
-}
+  async createAdmin(account: any): Promise<any> {
+    return await lastValueFrom(
+      this.httpClient.post(env.baseUrl + 'account/admin/create', account)
+    );
+  }
 
   
 
@@ -98,6 +98,12 @@ async createAdmin(account: any): Promise<any> {
       this.httpClient.patch(env.baseUrl + 'account/update/' + id, {
         is_active: isActive,
       })
+    );
+  }
+
+  async findById(id: string): Promise<any> {
+    return await lastValueFrom(
+      this.httpClient.get(env.baseUrl + 'account/find-by-id/' + id)
     );
   }
 }

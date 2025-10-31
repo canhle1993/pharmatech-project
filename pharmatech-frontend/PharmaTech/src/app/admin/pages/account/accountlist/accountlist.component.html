@@ -2,7 +2,6 @@
 <div class="account-container">
   <h2 class="page-title">Account</h2>
   <p-toast></p-toast>
-
   <p-progressSpinner
     *ngIf="loading"
     styleClass="loading-spinner"
@@ -140,7 +139,7 @@
               icon="pi pi-search"
               class="p-button-text p-button-info"
               title="View"
-              [routerLink]="['/account-details', account.id]">
+              [routerLink]="['/admin/account-details', account.id]">
             </button>
             <button
               pButton
