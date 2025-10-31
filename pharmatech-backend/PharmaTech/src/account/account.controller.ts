@@ -21,6 +21,7 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { AccountDTO } from './account.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('api/account')
 export class AccountController {
@@ -194,8 +195,11 @@ export class AccountController {
     if (!account) {
       throw new HttpException('Account not found', HttpStatus.NOT_FOUND);
     }
-    return account;
+
+    // ✅ Dùng class-transformer để convert sang DTO (đảm bảo photo có URL đầy đủ)
+    return plainToInstance(AccountDTO, account, { excludeExtraneousValues: true });
   }
+
 
   @Post('upload')
   @UseInterceptors(
