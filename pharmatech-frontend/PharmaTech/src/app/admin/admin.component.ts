@@ -1,4 +1,4 @@
-import { Component, OnInit, Renderer2 } from '@angular/core';
+import { Component, OnInit, Renderer2,AfterViewInit } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AccountService } from '../services/account.service';
 import { ButtonModule } from 'primeng/button';
@@ -15,13 +15,16 @@ import { MenuComponent } from './components/menu/menu.component';
     MenuComponent,
   ],
 })
-export class AdminComponent implements OnInit {
+export class AdminComponent implements OnInit, AfterViewInit {
   constructor(
     private accountService: AccountService,
     private router: Router,
     private renderer: Renderer2
   ) {}
   ngOnInit() {
+    
+  }
+  ngAfterViewInit():void {
     // --- CSS ---
     const cssFiles = [
       'assets/admin/vendor/fonts/boxicons.css',

@@ -1,3 +1,6 @@
+/* ===============================
+   🧾 Layout tổng thể Account List
+================================= */
 .account-container {
   padding: 1.5rem;
   font-family: "Segoe UI", sans-serif;
@@ -19,6 +22,9 @@
   margin-bottom: 1rem;
 }
 
+/* ===============================
+   📊 Bảng dữ liệu PrimeNG
+================================= */
 .account-table ::ng-deep .p-datatable-thead > tr > th {
   background: #3b82f6;
   color: #fff;
@@ -34,6 +40,7 @@
   color: #444;
 }
 
+/* Avatar cột user */
 .avatar {
   width: 45px;
   height: 45px;
@@ -42,6 +49,7 @@
   object-fit: cover;
 }
 
+/* Giới hạn text dài */
 .truncate {
   max-width: 200px;
   white-space: nowrap;
@@ -49,6 +57,7 @@
   text-overflow: ellipsis;
 }
 
+/* Vai trò (badge) */
 .role-badge {
   display: inline-block;
   background-color: #bfdbfe;
@@ -59,6 +68,7 @@
   margin: 2px;
 }
 
+/* Trạng thái hoạt động */
 .status-badge {
   display: inline-block;
   padding: 0.3rem 0.8rem;
@@ -66,11 +76,9 @@
   font-weight: 600;
   color: #fff;
 }
-
 .status-badge.active {
   background-color: #16a34a;
 }
-
 .status-badge.inactive {
   background-color: #dc2626;
 }
@@ -80,9 +88,12 @@
   background-color: #eef2ff;
   transition: background 0.2s ease-in-out;
 }
+
 .account-table {
   overflow-x: auto;
 }
+
+/* Responsive bảng */
 @media (max-width: 768px) {
   .account-container {
     padding: 1rem;
@@ -91,13 +102,16 @@
     font-size: 1.4rem;
   }
 }
+
+/* ===============================
+   🔧 Toolbar (Add / Filter / Search)
+================================= */
 .toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
 }
-
 .toolbar-actions {
   display: flex;
   gap: 0.5rem;
@@ -109,6 +123,7 @@
   align-items: center;
   height: 200px;
 }
+
 .card ::ng-deep .p-datatable-caption {
   margin-bottom: 1rem;
 }
@@ -116,6 +131,8 @@
   vertical-align: middle;
   font-size: 0.9rem;
 }
+
+/* Dropdown label (PrimeNG float label) */
 p-floatlabel {
   min-width: 350px;
 }
@@ -127,9 +144,136 @@ p-floatlabel {
   padding: 0 6px;
   margin-left: 0.4rem;
 }
-
 ::ng-deep .p-float-label .p-select:not(.p-focus):not(.p-filled) ~ label {
-  top: 1rem; /* chỉnh label thấp hơn chút khi chưa chọn */
-  color: #6b7280; /* màu nhạt hơn */
+  top: 1rem;
+  color: #6b7280;
 }
-/* Thêm vào categorylist.component.css hoặc global styles.css */
+
+/* 🎯 Add + Role + Status + Search layout */
+:host ::ng-deep .p-datatable-caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Bên phải (Role / Status / Search) */
+:host ::ng-deep .filter-group {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+  flex-wrap: nowrap;
+}
+
+/* Dropdown sát nhau */
+:host ::ng-deep .filter-group .p-dropdown {
+  margin-right: 6px !important;
+}
+:host ::ng-deep .filter-group .p-float-label:last-of-type .p-dropdown {
+  margin-right: 0 !important;
+}
+
+/* Kích cỡ dropdown & search */
+:host ::ng-deep .filter-group .p-dropdown {
+  min-width: 150px !important;
+  height: 38px;
+}
+:host ::ng-deep .search-field {
+  flex: 1 1 350px;
+  max-width: 420px;
+}
+:host ::ng-deep .search-field input.p-inputtext {
+  width: 100% !important;
+  height: 38px;
+}
+
+/* Nút Add */
+:host ::ng-deep .toolbar-actions button {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+/* Responsive toolbar */
+@media (max-width: 768px) {
+  :host ::ng-deep .p-datatable-caption {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  :host ::ng-deep .filter-group {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  :host ::ng-deep .search-field {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+}
+
+/* ===============================
+   💬 Dialog Form Tạo Admin
+================================= */
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-bottom: 1.8rem;
+}
+
+.form-field label {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
+}
+
+.form-field input {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+/* Hiệu ứng focus */
+.form-field input:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 1px #16a34a40;
+}
+
+/* ✅ Giữ label và lỗi không bị đè */
+.p-error {
+  color: #dc2626;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  display: block;
+  position: static; /* không absolute nữa */
+  line-height: 1.2;
+}
+
+/* Viền đỏ / xanh khi valid hoặc invalid */
+.form-field input.ng-invalid.ng-touched {
+  border-color: #ef4444;
+}
+
+.form-field input.ng-valid.ng-touched {
+  border-color: #22c55e;
+}
+.p-dialog{
+  max-height: 94%!important;
+}

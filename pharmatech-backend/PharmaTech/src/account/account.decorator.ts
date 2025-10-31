@@ -10,7 +10,7 @@ export class Account extends Document {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ unique: true })
+  @Prop({ unique: true, sparse: true })
   phone?: string;
 
   @Prop()
@@ -51,6 +51,40 @@ export class Account extends Document {
 
   @Prop()
   last_login?: Date;
+
+  // 🧑‍🎓 Học vấn
+  @Prop({
+    type: {
+      degree: { type: String },
+      university: { type: String },
+      graduation_year: { type: Number },
+    },
+    _id: false, // không tạo ObjectId con
+  })
+  education?: {
+    degree?: string;
+    university?: string;
+    graduation_year?: number;
+  };
+
+  // 💼 Kinh nghiệm
+  @Prop({
+    type: {
+      company: { type: String },
+      position: { type: String },
+      years: { type: Number },
+    },
+    _id: false,
+  })
+  experience?: {
+    company?: string;
+    position?: string;
+    years?: number;
+  };
+
+  // 📄 File Resume
+  @Prop()
+  resume?: string;
 
   @Prop()
   created_at?: Date;
