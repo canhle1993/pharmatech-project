@@ -8,13 +8,6 @@
   min-height: 100vh;
 }
 
-.page-title {
-  font-size: 1.8rem;
-  color: #333;
-  margin-bottom: 1rem;
-  border-left: 4px solid #3b82f6;
-  padding-left: 10px;
-}
 
 .error-msg {
   color: #e63946;
@@ -134,7 +127,7 @@
 
 /* Dropdown label (PrimeNG float label) */
 p-floatlabel {
-  min-width: 350px;
+  min-width: 200px;
 }
 .flex.gap-3 {
   align-items: center;
