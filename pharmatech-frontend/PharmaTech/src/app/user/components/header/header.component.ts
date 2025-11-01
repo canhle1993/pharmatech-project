@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
   imports: [RouterLink, ButtonModule, CommonModule],
 })
 export class HeaderComponent implements OnInit {
+  user: any = null;
   isLoggedIn = false;
 
   constructor(private accountService: AccountService, private router: Router) {}
@@ -18,6 +19,10 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
     // 🔹 Giả sử token được lưu khi login
     this.isLoggedIn = !!localStorage.getItem('token');
+    const storedUser = localStorage.getItem('currentUser');
+    if (storedUser) {
+      this.user = JSON.parse(storedUser);
+    }
   }
   logout() {
     this.accountService.logout();

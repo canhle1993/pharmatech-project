@@ -7,6 +7,7 @@ import { CareerComponent } from './pages/career/career.component';
 import { ShopComponent } from './pages/shop/shop.component';
 import { CareerDetailsComponent } from './pages/careerDetails/careerDetails.component';
 import { ProductDetailsComponent } from './pages/productDetails/productDetails.component';
+import { ProfileComponent } from './pages/profile/profile.component';
 
 export const userRoutes: Routes = [
   {
@@ -21,6 +22,7 @@ export const userRoutes: Routes = [
       { path: 'career', component: CareerComponent },
       { path: 'careerDetails', component: CareerDetailsComponent },
       { path: 'productDetails', component: ProductDetailsComponent },
+      { path: 'profile/:id', component: ProfileComponent },
     ],
   },
 ];
