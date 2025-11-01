@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -27,7 +27,7 @@ import { AccountService } from '../../../services/account.service';
   ],
   providers: [MessageService],
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   loading = false;
   showPassword = false;
@@ -35,7 +35,7 @@ export class LoginComponent {
 
   usernameError = '';
   passwordError = '';
-
+  
   constructor(
     private fb: FormBuilder,
     private accountService: AccountService,
@@ -47,6 +47,26 @@ export class LoginComponent {
       password: ['', [Validators.required, Validators.minLength(6)]],
       remember: [false],
     });
+  }
+  ngOnInit(): void {
+    this.autoReloadOnce();
+
+    this.loginForm = this.fb.group({
+      username: ['', Validators.required],
+      password: ['', Validators.required],
+      remember: [false]
+    });
+  }
+
+  private autoReloadOnce(): void {
+    const reloaded = sessionStorage.getItem('login-page-reloaded');
+    if (!reloaded) {
+      sessionStorage.setItem('login-page-reloaded', 'true');
+      console.log('🔄 Reloading login page once...');
+      window.location.reload();
+    } else {
+      sessionStorage.removeItem('login-page-reloaded');
+    }
   }
 
   // ===== UI helpers =====

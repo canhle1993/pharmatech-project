@@ -63,6 +63,29 @@ export class AccountDTO {
   @Expose({ name: 'updated_at' })
   updated_at?: string | null;
 
+  // 🧑‍🎓 Học vấn
+  @Expose()
+  education?: {
+    degree?: string;
+    university?: string;
+    graduation_year?: number;
+  };
+
+  // 💼 Kinh nghiệm
+  @Expose()
+  experience?: {
+    company?: string;
+    position?: string;
+    years?: number;
+  };
+
+  // 📄 File Resume (trả URL đầy đủ nếu có)
+  @Transform(({ obj }) =>
+    obj?.resume ? `${getImageUrl()}${obj.resume}` : null,
+  )
+  @Expose()
+  resume?: string | null;
+
   constructor(partial: Partial<AccountDTO>) {
     Object.assign(this, partial);
   }

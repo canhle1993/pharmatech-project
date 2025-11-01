@@ -1,6 +1,7 @@
+
 <div class="account-container">
   <h2 class="page-title">Account</h2>
-
+  <p-toast></p-toast>
   <p-progressSpinner
     *ngIf="loading"
     styleClass="loading-spinner"
@@ -22,81 +23,63 @@
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
       class="account-table"
     >
-      <ng-template pTemplate="caption">
-        <div class="flex flex-wrap justify-between items-center gap-3">
-          <!-- Left side: Filters -->
-          <div class="flex flex-wrap gap-3">
-            <!-- Role Filter -->
-            <p-floatLabel class="w-full md:w-56">
-              <p-select
-                [(ngModel)]="selectedRole"
-                inputId="roleFilter"
-                [options]="roleOptions"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="Select Role"
-                (onChange)="applyFilters(dt)"
-                class="w-full"
-              />
-            </p-floatLabel>
-
-            <!-- Status Filter -->
-            <p-floatLabel class="w-full md:w-56">
-              <p-select
-                [(ngModel)]="selectedStatus"
-                inputId="statusFilter"
-                [options]="statusOptions"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="Select Status"
-                (onChange)="applyFilters(dt)"
-                class="w-full"
-              />
-            </p-floatLabel>
-
-            <!-- Clear button -->
-            <p-button
-              label="Clear"
-              [outlined]="true"
-              icon="pi pi-filter-slash"
-              (click)="clear(dt)"
-            ></p-button>
-          </div>
-
-          <!-- Right side: Search + Actions -->
-          <div class="flex items-center gap-3">
-            <p-iconfield iconPosition="left" class="ml-auto">
-              <p-inputicon>
-                <i class="pi pi-search"></i>
-              </p-inputicon>
-              <input
-                pInputText
-                type="text"
-                (input)="onGlobalFilter(dt, $event)"
-                placeholder="Search by name, email or phone..."
-              />
-            </p-iconfield>
-
-            <div class="toolbar-actions">
-              <button
-                pButton
-                icon="pi pi-refresh"
-                label="Reload"
-                class="p-button-sm p-button-secondary"
-                (click)="reload()"
-              ></button>
-              <button
-                pButton
-                icon="pi pi-user-plus"
-                label="Add"
-                class="p-button-sm p-button-success"
-                [routerLink]="['/account-create']"
-              ></button>
-            </div>
-          </div>
+    <ng-template pTemplate="caption">
+      <div class="p-datatable-caption">
+        <!-- Bên trái: Add -->
+        <div class="toolbar-actions">
+          <button
+            pButton
+            icon="pi pi-user-plus"
+            label="Add"
+            class="p-button-sm p-button-success"
+            (click)="openCreateDialog()"
+          ></button>
         </div>
-      </ng-template>
-
+    
+        <!-- Bên phải: Role, Status, Search -->
+        <div class="filter-group">
+          <!-- Role Filter -->
+          <p-floatLabel class="w-full md:w-56">
+            <p-select
+              [(ngModel)]="selectedRole"
+              inputId="roleFilter"
+              [options]="roleOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Select Role"
+              (onChange)="applyFilters(dt)"
+              class="w-full"
+            />
+          </p-floatLabel>
+    
+          <!-- Status Filter -->
+          <p-floatLabel class="w-full md:w-56">
+            <p-select
+              [(ngModel)]="selectedStatus"
+              inputId="statusFilter"
+              [options]="statusOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Select Status"
+              (onChange)="applyFilters(dt)"
+              class="w-full"
+            />
+          </p-floatLabel>
+    
+          <!-- Search -->
+          <p-iconfield iconPosition="left" class="search-field">
+            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+            <input
+              pInputText
+              type="text"
+              (input)="onGlobalFilter(dt, $event)"
+              placeholder="Search by name, email or phone..."
+            />
+          </p-iconfield>
+        </div>
+      </div>
+    </ng-template>
+    
       <!-- Header -->
       <ng-template pTemplate="header">
         <tr>
@@ -156,8 +139,8 @@
               icon="pi pi-search"
               class="p-button-text p-button-info"
               title="View"
-              [routerLink]="['/account-details', { id: account.id }]"
-            ></button>
+              [routerLink]="['/admin/account-details', account.id]">
+            </button>
             <button
               pButton
               icon="pi pi-pencil"
@@ -199,3 +182,123 @@
 
   <p-confirmDialog></p-confirmDialog>
 </div>
+<!-- ✅ Dialog tạo tài khoản admin -->
+<p-dialog
+  header="Create Admin Account"
+  [(visible)]="createDialogVisible"
+  [modal]="true"
+  [style]="{ width: '32rem', 'max-height': '95vh'}"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <!-- ✅ FORM -->
+  <form
+    [formGroup]="registerForm"
+    class="p-fluid dialog-form"
+    (ngSubmit)="createAdminAccount()"
+  >
+    <!-- Name -->
+    <div class="form-field">
+      <label for="name">Name</label>
+      <input
+        pInputText
+        id="name"
+        formControlName="name"
+        placeholder="Enter full name"
+      />
+      <small
+        *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"
+        class="p-error"
+      >
+        Name must be 3–50 letters (no numbers).
+      </small>
+    </div>
+
+    <!-- Username -->
+    <div class="form-field">
+      <label for="username">Username</label>
+      <input
+        pInputText
+        id="username"
+        formControlName="username"
+        placeholder="Enter username"
+      />
+    </div>
+
+    <!-- Email -->
+    <div class="form-field">
+      <label for="email">Email</label>
+      <input
+        pInputText
+        id="email"
+        formControlName="email"
+        placeholder="Enter email"
+      />
+    </div>
+
+    <!-- Phone -->
+    <div class="form-field">
+      <label for="phone">Phone</label>
+      <input
+        pInputText
+        id="phone"
+        formControlName="phone"
+        placeholder="Enter phone number"
+      />
+    </div>
+
+    <!-- Password -->
+    <div class="form-field">
+      <label for="password">Password</label>
+      <input
+        pInputText
+        id="password"
+        type="password"
+        formControlName="password"
+        placeholder="Enter password"
+      />
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="form-field">
+      <label for="confirmPassword">Confirm Password</label>
+      <input
+        pInputText
+        id="confirmPassword"
+        type="password"
+        formControlName="confirmPassword"
+        placeholder="Confirm password"
+      />
+      <small
+        *ngIf="
+          registerForm.hasError('passwordMismatch') &&
+          registerForm.get('confirmPassword')?.touched
+        "
+        class="p-error"
+      >
+        Passwords do not match.
+      </small>
+    </div>
+  </form>
+
+  <!-- ✅ Footer phải nằm ngoài form -->
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      label="Cancel"
+      icon="pi pi-times"
+      class="p-button-text"
+      type="button"
+      (click)="createDialogVisible = false"
+    ></button>
+    <button
+      pButton
+      label="Save"
+      icon="pi pi-check"
+      class="p-button-success"
+      type="button"
+      [disabled]="registerForm.invalid"
+      (click)="createAdminAccount()"
+    ></button>
+  </ng-template>
+</p-dialog>
