@@ -5,8 +5,9 @@ import { getImageUrl } from './config.util';
 export class AccountDTO {
   // _id (ObjectId) -> id (string)
   @Transform(({ obj }) => obj?._id?.toString())
-  @Expose({ name: 'id' })
-  id: string;
+@Expose()
+id: string;
+
 
   @Expose()
   name: string;
@@ -21,9 +22,15 @@ export class AccountDTO {
   gender?: string;
 
   // Ghép URL ảnh đầy đủ, nếu không có thì trả null
-  @Transform(({ obj }) => (obj?.photo ? `${getImageUrl()}${obj.photo}` : null))
+  @Transform(({ obj }) => {
+    if (!obj?.photo) return null;
+    return obj.photo.startsWith('http')
+      ? obj.photo
+      : `${getImageUrl()}${obj.photo}`;
+  })
   @Expose()
   photo?: string | null;
+  
 
   @Expose()
   username: string;
@@ -52,16 +59,21 @@ export class AccountDTO {
   last_login?: Date | null;
 
   @Transform(({ obj }) =>
-    obj?.created_at ? moment(obj.created_at).format('DD/MM/YYYY HH:mm') : null,
+    obj?.created_at
+      ? moment(obj.created_at, 'DD/MM/YYYY HH:mm').format('DD/MM/YYYY HH:mm')
+      : null,
   )
   @Expose({ name: 'created_at' })
   created_at?: string | null;
-
+  
   @Transform(({ obj }) =>
-    obj?.updated_at ? moment(obj.updated_at).format('DD/MM/YYYY HH:mm') : null,
+    obj?.updated_at
+      ? moment(obj.updated_at, 'DD/MM/YYYY HH:mm').format('DD/MM/YYYY HH:mm')
+      : null,
   )
   @Expose({ name: 'updated_at' })
   updated_at?: string | null;
+  
 
   // 🧑‍🎓 Học vấn
   @Expose()
@@ -80,11 +92,15 @@ export class AccountDTO {
   };
 
   // 📄 File Resume (trả URL đầy đủ nếu có)
-  @Transform(({ obj }) =>
-    obj?.resume ? `${getImageUrl()}${obj.resume}` : null,
-  )
-  @Expose()
-  resume?: string | null;
+  @Transform(({ obj }) => {
+  if (!obj?.resume) return null;
+  return obj.resume.startsWith('http')
+    ? obj.resume
+    : `${getImageUrl()}${obj.resume}`;
+})
+@Expose()
+resume?: string | null;
+
 
   constructor(partial: Partial<AccountDTO>) {
     Object.assign(this, partial);
