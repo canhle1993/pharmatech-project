@@ -9,6 +9,7 @@ import { AccountModule } from './account/account.module';
 import { MailModule } from './mail/mail.module';
 import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
+import { CareerModule } from './career/career.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { ProductModule } from './product/product.module';
     MailModule,
     CategoryModule,
     ProductModule,
+    CareerModule,
   ],
   controllers: [],
   providers: [],
