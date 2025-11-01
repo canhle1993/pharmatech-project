@@ -19,10 +19,13 @@ import { CareerModule } from './career/career.module';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get('connection_string'),
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const uri = configService.get('connection_string');
+        console.log('🔗 Connected Mongo URI:', uri); // 👉 In ra đường dẫn thật
+        return { uri };
+      },
     }),
+    
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

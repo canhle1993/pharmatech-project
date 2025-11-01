@@ -1,241 +1,286 @@
 <div class="container-xxl flex-grow-1 container-p-y" *ngIf="account">
-    <h4 class="fw-bold py-3 mb-4">
-      <span class="text-muted fw-light">Account /</span> Account Details
-    </h4>
-  
-    <div class="row">
-      <div class="col-md-12">
-        <div class="card mb-4">
-          <h5 class="card-header">Profile</h5>
-  
-          <!-- Avatar -->
-          <div class="card-body">
-            <div class="d-flex align-items-start align-items-sm-center gap-4">
-              <img
-                [src]="account?.photo ? account.photo : 'assets/images/no-image.jpg'"
-                alt="user-avatar"
-                class="d-block rounded"
-                height="100"
-                width="100"
-                id="uploadedAvatar"
-              />
-              <div>
-                <h5 class="mb-0">{{ account.name }}</h5>
-                <p class="text-muted mb-0">{{ account.email }}</p>
-                <p class="text-muted mb-0">
-                  <strong>Status:</strong>
-                  <span
-                    [class.text-success]="account.is_active"
-                    [class.text-danger]="!account.is_active"
-                  >
-                    {{ account.is_active ? 'Active' : 'Inactive' }}
-                  </span>
-                </p>
-              </div>
-              <div class="button-wrapper">
-                <label for="upload" style="background-color: #0d6efd; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; margin-right: 0.5rem; margin-bottom: 1rem; display: inline-block; cursor: pointer;" tabindex="0">
-                  <span class="d-none d-sm-block">Upload new photo</span>
-                  <i class="bx bx-upload d-block d-sm-none"></i>
-                  <input
+  <h4 class="fw-bold py-3 mb-4">
+    <span class="text-muted fw-light">Account /</span> Account Details
+  </h4>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card mb-4">
+        <h5 class="card-header">Profile</h5>
+
+        <!-- Avatar -->
+        <div class="card-body">
+          
+          <div class="d-flex align-items-start align-items-sm-center gap-4" >
+            <img
+              [src]="account?.photo ? account.photo : 'assets/images/no-image.jpg'"
+              alt="user-avatar"
+              class="d-block rounded"
+              height="100"
+              width="100"
+              id="uploadedAvatar"
+            />          
+            <div>
+              <h5 class="mb-0">{{ account.name }}</h5>
+              <p class="text-muted mb-0">{{ account.email }}</p>
+              <p class="text-muted mb-0">
+                <strong>Status:</strong>
+                <span
+                  [class.text-success]="account.is_active"
+                  [class.text-danger]="!account.is_active"
+                >
+                  {{ account.is_active ? 'Active' : 'Inactive' }}
+                </span>
+              </p>
+            </div>
+
+            <div class="button-wrapper">
+              <!-- 🟢 Nút Edit -->
+              <button
+                type="button"
+                class="btn btn-outline-primary me-2"
+                (click)="toggleEdit()"
+              >
+                <i class="bx bx-edit"></i>
+                {{ isEditing ? 'Cancel' : 'Edit' }}
+              </button>
+
+              <!-- 🟢 Upload chỉ hiện khi đang Edit -->
+              <label
+                *ngIf="isEditing"
+                for="upload-photo"
+                style="
+                  background-color: #0d6efd;
+                  color: white;
+                  padding: 0.5rem 1rem;
+                  border-radius: 0.25rem;
+                  margin-right: 0.5rem;
+                  margin-bottom: 1rem;
+                  display: inline-block;
+                  cursor: pointer;
+                "
+                tabindex="0"
+              >
+                <span class="d-none d-sm-block">Upload new photo</span>
+                <i class="bx bx-upload d-block d-sm-none"></i>
+                <input
                   type="file"
-                  id="upload"
-                  class="account-file-input"
+                  id="upload-photo"
                   hidden
                   accept="image/png, image/jpeg"
-                  />
-                </label>
+                  (change)="onPhotoSelected($event)"
+                />
+              </label>
 
-                <p class="text-muted mb-0">Allowed JPG, GIF or PNG. Max size of 800K</p>
-              </div>
             </div>
           </div>
-  
-          <hr class="my-0" />
-  
-          <!-- Account Info -->
-          <div class="card-body">
-            <form id="formAccountSettings">
-              <div class="row">
-                <!-- Basic Info -->
-                <div class="mb-3 col-md-6">
-                  <label class="form-label">Full Name</label>
-                  <input class="form-control" type="text" [value]="account.name" readonly />
-                </div>
-  
-                <div class="mb-3 col-md-6">
-                  <label class="form-label">Username</label>
-                  <input class="form-control" type="text" [value]="account.username" readonly />
-                </div>
-  
-                <div class="mb-3 col-md-6">
-                  <label class="form-label">Email</label>
-                  <input class="form-control" type="text" [value]="account.email" readonly />
-                </div>
-  
-                <div class="mb-3 col-md-6">
-                  <label class="form-label">Phone</label>
-                  <input class="form-control" type="text" [value]="account.phone || '-'" readonly />
-                </div>
-  
-                <div class="mb-3 col-md-6">
-                  <label class="form-label">Address</label>
-                  <input class="form-control" type="text" [value]="account.address || '-'" readonly />
-                </div>
-  
-                <div class="mb-3 col-md-6">
-                  <label class="form-label">Gender</label>
-                  <input class="form-control" type="text" [value]="account.gender || '-'" readonly />
-                </div>
-  
-                <div class="mb-3 col-md-6">
-                  <label class="form-label">Roles</label>
-                  <input
-                    class="form-control"
-                    type="text"
-                    [value]="account.roles?.join(', ') || '-'"
-                    readonly
-                  />
-                </div>
-  
-                <div class="mb-3 col-md-6">
-                  <label class="form-label">Last Login</label>
-                  <input
-                    class="form-control"
-                    type="text"
-                    [value]="account.last_login | date:'dd/MM/yyyy HH:mm:ss'"
-                    readonly
-                  />
-                </div>
-  
-                <div class="mb-3 col-md-6">
-                  <label class="form-label">Created At</label>
-                  <input
-                    class="form-control"
-                    type="text"
-                    [value]="account.created_at | date:'dd/MM/yyyy HH:mm:ss'"
-                    readonly
-                  />
-                </div>
-  
-                <div class="mb-3 col-md-6">
-                  <label class="form-label">Updated At</label>
-                  <input
-                    class="form-control"
-                    type="text"
-                    [value]="account.updated_at | date:'dd/MM/yyyy HH:mm:ss'"
-                    readonly
-                  />
-                </div>
-  
-                <!-- Education -->
-                <div class="col-12 mt-4">
-                  <h6 class="text-primary">🎓 Education</h6>
-                  <hr class="mt-1 mb-3" />
-                </div>
-  
-                <div class="mb-3 col-md-4">
-                  <label class="form-label">Degree</label>
-                  <input
-                    class="form-control"
-                    type="text"
-                    [value]="account.education?.degree || '-'"
-                    readonly
-                  />
-                </div>
-  
-                <div class="mb-3 col-md-4">
-                  <label class="form-label">University</label>
-                  <input
-                    class="form-control"
-                    type="text"
-                    [value]="account.education?.university || '-'"
-                    readonly
-                  />
-                </div>
-  
-                <div class="mb-3 col-md-4">
-                  <label class="form-label">Graduation Year</label>
-                  <input
-                    class="form-control"
-                    type="text"
-                    [value]="account.education?.graduation_year || '-'"
-                    readonly
-                  />
-                </div>
-  
-                <!-- Experience -->
-                <div class="col-12 mt-4">
-                  <h6 class="text-primary">💼 Experience</h6>
-                  <hr class="mt-1 mb-3" />
-                </div>
-  
-                <div class="mb-3 col-md-4">
-                  <label class="form-label">Company</label>
-                  <input
-                    class="form-control"
-                    type="text"
-                    [value]="account.experience?.company || '-'"
-                    readonly
-                  />
-                </div>
-  
-                <div class="mb-3 col-md-4">
-                  <label class="form-label">Position</label>
-                  <input
-                    class="form-control"
-                    type="text"
-                    [value]="account.experience?.position || '-'"
-                    readonly
-                  />
-                </div>
-  
-                <div class="mb-3 col-md-4">
-                  <label class="form-label">Years</label>
-                  <input
-                    class="form-control"
-                    type="text"
-                    [value]="account.experience?.years || '-'"
-                    readonly
-                  />
-                </div>
-  
-                <!-- Resume -->
-                <div class="col-12 mt-4">
-                  <h6 class="text-primary">📄 Resume</h6>
-                  <hr class="mt-1 mb-3" />
-                </div>
-  
-                <div class="mb-3 col-md-12">
-                  <label class="form-label">Resume File</label>
-                  <div *ngIf="account.resume; else noResume">
-                    <a
-                      [href]="
-                        account.resume.startsWith('http')
-                          ? account.resume
-                          : 'http://localhost:3000/' + account.resume
-                      "
-                      target="_blank"
-                      class="btn btn-sm btn-outline-primary"
-                    >
-                      <i class="bx bx-download"></i> View / Download Resume
-                    </a>
-                  </div>
-                  <ng-template #noResume>
-                    <p class="text-muted mb-0">No resume uploaded.</p>
-                  </ng-template>
-                </div>
-              </div>
-              <div class="mt-2">
-                <button type="submit" style="background-color: #0d6efd; border-color: #0d6efd; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; margin-right: 0.5rem; margin-bottom: 1rem; display: inline-block; cursor: pointer;">Save changes</button>
-              </div>
-            </form>
-          </div>
-          <!-- /Account -->
         </div>
+
+        <hr class="my-0" />
+
+        <!-- Account Info -->
+        <div class="card-body">
+          <!-- ✅ Đặt ngSubmit đúng vị trí -->
+          <form
+            id="formAccountSettings"
+            (ngSubmit)="saveChanges()"
+            #formRef="ngForm"
+          >
+            <div class="row">
+              <!-- Basic Info -->
+              <div class="mb-3 col-md-6">
+                <label class="form-label">Full Name</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  [(ngModel)]="account.name"
+                  name="name"
+                  [readonly]="!isEditing"
+                />
+              </div>
+
+              <div class="mb-3 col-md-6">
+                <label class="form-label">Username</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  [value]="account.username"
+                  readonly
+                />
+              </div>
+
+              <div class="mb-3 col-md-6">
+                <label class="form-label">Email</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  [value]="account.email"
+                  readonly
+                />
+              </div>
+
+              <div class="mb-3 col-md-6">
+                <label class="form-label">Phone</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  [(ngModel)]="account.phone"
+                  name="phone"
+                  [readonly]="!isEditing"
+                />
+              </div>
+
+              <div class="mb-3 col-md-6">
+                <label class="form-label">Address</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  [(ngModel)]="account.address"
+                  name="address"
+                  [readonly]="!isEditing"
+                />
+              </div>
+
+              <div class="mb-3 col-md-6">
+                <label class="form-label">Gender</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  [(ngModel)]="account.gender"
+                  name="gender"
+                  [readonly]="!isEditing"
+                />
+              </div>
+
+              
+
+              <!-- Education -->
+            <div class="col-12 mt-4">
+              <h6 class="text-primary">🎓 Education</h6>
+              <hr class="mt-1 mb-3" />
+            </div>
+
+            <div class="mb-3 col-md-4">
+              <label class="form-label">Degree</label>
+              <input
+                class="form-control"
+                type="text"
+                [(ngModel)]="account.education.degree"
+                name="education_degree"  
+                [readonly]="!isEditing"
+              />
+            </div>
+
+            <div class="mb-3 col-md-4">
+              <label class="form-label">University</label>
+              <input
+                class="form-control"
+                type="text"
+                [(ngModel)]="account.education.university"
+                name="education_university" 
+                [readonly]="!isEditing"
+              />
+            </div>
+
+            <div class="mb-3 col-md-4">
+              <label class="form-label">Graduation Year</label>
+              <input
+                class="form-control"
+                type="number"
+                [(ngModel)]="account.education.graduation_year"
+                name="education_graduation_year" 
+                [readonly]="!isEditing"
+              />
+            </div>
+
+            <!-- Experience -->
+            <div class="col-12 mt-4">
+              <h6 class="text-primary">💼 Experience</h6>
+              <hr class="mt-1 mb-3" />
+            </div>
+
+            <div class="mb-3 col-md-4">
+              <label class="form-label">Company</label>
+              <input
+                class="form-control"
+                type="text"
+                [(ngModel)]="account.experience.company"
+                name="experience_company" 
+                [readonly]="!isEditing"
+              />
+            </div>
+
+            <div class="mb-3 col-md-4">
+              <label class="form-label">Position</label>
+              <input
+                class="form-control"
+                type="text"
+                [(ngModel)]="account.experience.position"
+                name="experience_position" 
+                [readonly]="!isEditing"
+              />
+            </div>
+
+            <div class="mb-3 col-md-4">
+              <label class="form-label">Years</label>
+              <input
+                class="form-control"
+                type="number"
+                [(ngModel)]="account.experience.years"
+                name="experience_years" 
+                [readonly]="!isEditing"
+              />
+            </div>
+
+
+              <!-- Resume -->
+              <div class="col-12 mt-4">
+                <h6 class="text-primary">📄 Resume</h6>
+                <hr class="mt-1 mb-3" />
+
+                <!-- Khi không edit -->
+                <div *ngIf="!isEditing">
+                  <a
+                    *ngIf="account.resume"
+                    [href]="account.resume"
+                    target="_blank"
+                    class="btn btn-sm btn-outline-primary"
+                  >
+                    <i class="bx bx-download"></i> View / Download Resume
+                  </a>
+                  <p *ngIf="!account.resume" class="text-muted mb-0">
+                    No resume uploaded.
+                  </p>
+                </div>
+
+                <!-- Khi đang edit -->
+                <div *ngIf="isEditing">
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.png"
+                    (change)="onResumeSelected($event)"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- ✅ Nút Save chỉ hiện khi đang Edit -->
+            <div class="mt-2 text-end" *ngIf="isEditing">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                style="padding: 0.5rem 1.5rem"
+              >
+                Save changes
+              </button>
+            </div>
+          </form>
+        </div>
+        <!-- /Account -->
       </div>
     </div>
   </div>
-  
-  <p-progressSpinner *ngIf="loading" styleClass="custom-spinner"></p-progressSpinner>
-  <p-toast></p-toast>
-  
+</div>
+
+<p-progressSpinner *ngIf="loading" styleClass="custom-spinner"></p-progressSpinner>
+<p-toast></p-toast>
