@@ -16,4 +16,21 @@ export class Account {
   created_at?: Date; // Ngày tạo tài khoản
   updated_at?: Date; // Ngày cập nhật gần nhất
   loading?: boolean;
+  // 🧑‍🎓 Học vấn
+  education?: {
+    degree?: string;
+    university?: string;
+    graduation_year?: number;
+  };
+
+  // 💼 Kinh nghiệm
+  experience?: {
+    company?: string;
+    position?: string;
+    years?: number;
+  };
+
+  // 📄 File Resume
+  resume?: string; // đường dẫn file resume
+  
 }
