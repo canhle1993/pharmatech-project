@@ -8,7 +8,6 @@ import { Account } from '../../../../entities/account.entity';
 import { AccountService } from '../../../../services/account.service';
 
 @Component({
-  selector: 'app-accountdetails',
   standalone: true,
     imports: [CommonModule, DatePipe, ProgressSpinnerModule, ToastModule],
   templateUrl: './accountdetails.component.html',
