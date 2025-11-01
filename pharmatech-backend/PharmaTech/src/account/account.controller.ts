@@ -20,6 +20,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import { AccountDTO } from './account.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('api/account')
 export class AccountController {
@@ -193,8 +195,11 @@ export class AccountController {
     if (!account) {
       throw new HttpException('Account not found', HttpStatus.NOT_FOUND);
     }
-    return account;
+
+    // ✅ Dùng class-transformer để convert sang DTO (đảm bảo photo có URL đầy đủ)
+    return plainToInstance(AccountDTO, account, { excludeExtraneousValues: true });
   }
+
 
   @Post('upload')
   @UseInterceptors(
@@ -307,4 +312,16 @@ export class AccountController {
     }
     return { msg: 'Deleted successfully' };
   }
+
+  @Post('admin/create')
+  async createAdmin(@Body() dto: any) { // 👈 dùng any
+    try {
+      dto.password = bcrypt.hashSync(dto.password, bcrypt.genSaltSync());
+      dto.roles = ['admin'];
+      return await this.accountService.create(dto);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
 }
