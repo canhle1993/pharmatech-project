@@ -20,6 +20,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import { AccountDTO } from './account.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('api/account')
 export class AccountController {
@@ -193,7 +195,16 @@ export class AccountController {
     if (!account) {
       throw new HttpException('Account not found', HttpStatus.NOT_FOUND);
     }
-    return account;
+
+    const dto = plainToInstance(AccountDTO, account, {
+      excludeExtraneousValues: true,
+    });
+
+    if (!dto.id && account._id) {
+      dto.id = account._id.toString();
+    }
+
+    return dto;
   }
 
   @Post('upload')
@@ -216,8 +227,31 @@ export class AccountController {
     };
   }
 
+  // 🟢 Upload resume (CV)
+  @Post('upload-resume')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './upload',
+        filename: (req, file, cb) => {
+          const uniqueName = uuidv4().replace(/-/g, '');
+          const extension = extname(file.originalname);
+          cb(null, uniqueName + extension);
+        },
+      }),
+    }),
+  )
+  uploadResume(@UploadedFile() file: Express.Multer.File) {
+    return {
+      filename: file.filename,
+      url: 'http://localhost:3000/upload/' + file.filename,
+    };
+  }
+
   @Patch('update/:id')
   async update(@Param('id') id: string, @Body() body: any) {
+    if (!id)
+      throw new HttpException('Missing account ID', HttpStatus.BAD_REQUEST);
     const updated = await this.accountService.update(id, body);
     return updated;
   }
@@ -306,5 +340,17 @@ export class AccountController {
       throw new HttpException('Delete failed', HttpStatus.BAD_REQUEST);
     }
     return { msg: 'Deleted successfully' };
+  }
+
+  @Post('admin/create')
+  async createAdmin(@Body() dto: any) {
+    // 👈 dùng any
+    try {
+      dto.password = bcrypt.hashSync(dto.password, bcrypt.genSaltSync());
+      dto.roles = ['admin'];
+      return await this.accountService.create(dto);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 }

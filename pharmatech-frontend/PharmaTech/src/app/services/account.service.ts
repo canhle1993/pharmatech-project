@@ -16,6 +16,15 @@ export class AccountService {
     );
   }
 
+  /** 🔹 Tạo tài khoản admin */
+  async createAdmin(account: any): Promise<any> {
+    return await lastValueFrom(
+      this.httpClient.post(env.baseUrl + 'account/admin/create', account)
+    );
+  }
+
+  
+
   /** 🔹 Xác thực tài khoản qua email + OTP */
   verify(email: string, otp: string) {
     return lastValueFrom(
@@ -91,4 +100,37 @@ export class AccountService {
       })
     );
   }
+
+  async findById(id: string): Promise<any> {
+    return await lastValueFrom(
+      this.httpClient.get(env.baseUrl + 'account/find-by-id/' + id)
+    );
+  }
+
+  // 🔹 Update account info
+  async update(id: string, account: any): Promise<any> {
+    return await lastValueFrom(
+      this.httpClient.patch(env.baseUrl + 'account/update/' + id, account)
+    );
+  }
+
+
+  // 🔹 Upload avatar (photo)
+  async uploadPhoto(file: File): Promise<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return await lastValueFrom(
+      this.httpClient.post(env.baseUrl + 'account/upload', formData)
+    );
+  }
+
+  // 🔹 Upload resume (CV)
+  async uploadResume(file: File): Promise<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return await lastValueFrom(
+      this.httpClient.post(env.baseUrl + 'account/upload-resume', formData)
+    );
+  }
+
 }

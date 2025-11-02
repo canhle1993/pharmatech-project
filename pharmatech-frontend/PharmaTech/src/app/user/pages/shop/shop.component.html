@@ -1,0 +1,1398 @@
+<!-- Breadcrumb Section Start -->
+<div class="breadcrumb" data-bg-image="assets/images/bg/breadcrumb-bg.jpg">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="breadcrumb_content">
+          <h1 class="breadcrumb_title">Shop</h1>
+          <ul class="breadcrumb_list">
+            <li><a href="index.html">Home</a></li>
+            <li>Shop Left Sidebar</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Breadcrumb Section End -->
+
+<!-- Product Section Start -->
+<div class="shop-product-section sidebar-left overflow-hidden">
+  <div class="container">
+    <div class="row flex-md-row-reverse">
+      <div class="col-md-8 section-padding-04">
+        <!-- Shop Top Bar Start -->
+        <div class="shop-topbar">
+          <div class="shop-topbar-item shop-topbar-left">
+            <p>Showing 1 - 12 of 25 result</p>
+          </div>
+
+          <div class="shop-topbar-right">
+            <div class="shop-topbar-item">
+              <select name="SortBy" id="SortBy">
+                <option value="manual">Sort by Rated</option>
+                <option value="best-selling">Sort by Latest</option>
+                <option value="price-ascending">Price ↑</option>
+                <option value="price-descending">Price ↓</option>
+              </select>
+            </div>
+
+            <div class="shop-topbar-item">
+              <select name="paginateBy" id="paginateBy">
+                <option value="3">Show 3</option>
+                <option value="4">Show 4</option>
+                <option value="5">Show 5</option>
+                <option value="6">Show 6</option>
+                <option value="7">Show 7</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <!-- Shop Top Bar End -->
+        <!-- Product Section Start -->
+        <div
+          class="row row-cols-xl-3 row-cols-lg-2 row-cols-sm-2 row-cols-1 mb-n50"
+        >
+          <div class="col mb-50">
+            <!-- Product Item Start -->
+            <div class="product-item text-center">
+              <div class="product-item__badge">Hot</div>
+              <div class="product-item__image border w-100">
+                <a [routerLink]="['/productDetails']"
+                  ><img
+                    width="350"
+                    height="350"
+                    src="assets/images/product/product-8-500x625.jpg"
+                    alt="Product"
+                /></a>
+                <ul class="product-item__meta">
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-quickview"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Quick View"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleProductModal"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-cart"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to Cart"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCart"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-wishlist"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to wishlist"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalWishlist"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-compare"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to compare"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCompare"
+                    ></a>
+                  </li>
+                </ul>
+              </div>
+              <div class="product-item__content pt-5">
+                <h5 class="product-item__title">
+                  <a [routerLink]="['/productDetails']">Brownie</a>
+                </h5>
+                <span class="product-item__price">$4.99</span>
+              </div>
+            </div>
+            <!-- Product Item End -->
+          </div>
+          <div class="col mb-50">
+            <!-- Product Item Start -->
+            <div class="product-item text-center">
+              <div class="product-item__badge d-none">@@badge</div>
+              <div class="product-item__image border w-100">
+                <a [routerLink]="['/productDetails']"
+                  ><img
+                    width="350"
+                    height="350"
+                    src="assets/images/product/product-7-500x625.jpg"
+                    alt="Product"
+                /></a>
+                <ul class="product-item__meta">
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-quickview"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Quick View"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleProductModal"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-cart"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to Cart"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCart"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-wishlist"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to wishlist"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalWishlist"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-compare"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to compare"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCompare"
+                    ></a>
+                  </li>
+                </ul>
+              </div>
+              <div class="product-item__content pt-5">
+                <h5 class="product-item__title">
+                  <a [routerLink]="['/productDetails']">Red Velvet</a>
+                </h5>
+                <span class="product-item__price">$5.00</span>
+              </div>
+            </div>
+            <!-- Product Item End -->
+          </div>
+          <div class="col mb-50">
+            <!-- Product Item Start -->
+            <div class="product-item text-center">
+              <div class="product-item__badge d-none">@@badge</div>
+              <div class="product-item__image border w-100">
+                <a [routerLink]="['/productDetails']"
+                  ><img
+                    width="350"
+                    height="350"
+                    src="assets/images/product/product-6-500x625.jpg"
+                    alt="Product"
+                /></a>
+                <ul class="product-item__meta">
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-quickview"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Quick View"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleProductModal"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-cart"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to Cart"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCart"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-wishlist"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to wishlist"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalWishlist"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-compare"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to compare"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCompare"
+                    ></a>
+                  </li>
+                </ul>
+              </div>
+              <div class="product-item__content pt-5">
+                <h5 class="product-item__title">
+                  <a [routerLink]="['/productDetails']">Cream Muffin</a>
+                </h5>
+                <span class="product-item__price">$7.55</span>
+              </div>
+            </div>
+            <!-- Product Item End -->
+          </div>
+          <div class="col mb-50">
+            <!-- Product Item Start -->
+            <div class="product-item text-center">
+              <div class="product-item__badge d-none">@@badge</div>
+              <div class="product-item__image border w-100">
+                <a [routerLink]="['/productDetails']"
+                  ><img
+                    width="350"
+                    height="350"
+                    src="assets/images/product/product-5-500x625.jpg"
+                    alt="Product"
+                /></a>
+                <ul class="product-item__meta">
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-quickview"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Quick View"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleProductModal"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-cart"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to Cart"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCart"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-wishlist"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to wishlist"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalWishlist"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-compare"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to compare"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCompare"
+                    ></a>
+                  </li>
+                </ul>
+              </div>
+              <div class="product-item__content pt-5">
+                <h5 class="product-item__title">
+                  <a [routerLink]="['/productDetails']">Macaron Cake</a>
+                </h5>
+                <span class="product-item__price">$9.44</span>
+              </div>
+            </div>
+            <!-- Product Item End -->
+          </div>
+          <div class="col mb-50">
+            <!-- Product Item Start -->
+            <div class="product-item text-center">
+              <div class="product-item__badge d-none">Hot</div>
+              <div class="product-item__image border w-100">
+                <a [routerLink]="['/productDetails']"
+                  ><img
+                    width="350"
+                    height="350"
+                    src="assets/images/product/product-4-500x625.jpg"
+                    alt="Product"
+                /></a>
+                <ul class="product-item__meta">
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-quickview"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Quick View"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleProductModal"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-cart"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to Cart"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCart"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-wishlist"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to wishlist"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalWishlist"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-compare"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to compare"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCompare"
+                    ></a>
+                  </li>
+                </ul>
+              </div>
+              <div class="product-item__content pt-5">
+                <h5 class="product-item__title">
+                  <a [routerLink]="['/productDetails']">No-bake chocolate</a>
+                </h5>
+                <span class="product-item__price">$4.99</span>
+              </div>
+            </div>
+            <!-- Product Item End -->
+          </div>
+          <div class="col mb-50">
+            <!-- Product Item Start -->
+            <div class="product-item text-center">
+              <div class="product-item__badge d-none">@@badge</div>
+              <div class="product-item__image border w-100">
+                <a [routerLink]="['/productDetails']"
+                  ><img
+                    width="350"
+                    height="350"
+                    src="assets/images/product/product-3-500x625.jpg"
+                    alt="Product"
+                /></a>
+                <ul class="product-item__meta">
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-quickview"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Quick View"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleProductModal"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-cart"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to Cart"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCart"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-wishlist"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to wishlist"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalWishlist"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-compare"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to compare"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCompare"
+                    ></a>
+                  </li>
+                </ul>
+              </div>
+              <div class="product-item__content pt-5">
+                <h5 class="product-item__title">
+                  <a [routerLink]="['/productDetails']">Chocolate Bake</a>
+                </h5>
+                <span class="product-item__price">$5.00</span>
+              </div>
+            </div>
+            <!-- Product Item End -->
+          </div>
+          <div class="col mb-50">
+            <!-- Product Item Start -->
+            <div class="product-item text-center">
+              <div class="product-item__badge">Hot</div>
+              <div class="product-item__image border w-100">
+                <a [routerLink]="['/productDetails']"
+                  ><img
+                    width="350"
+                    height="350"
+                    src="assets/images/product/product-2-500x625.jpg"
+                    alt="Product"
+                /></a>
+                <ul class="product-item__meta">
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-quickview"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Quick View"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleProductModal"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-cart"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to Cart"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCart"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-wishlist"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to wishlist"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalWishlist"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-compare"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to compare"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCompare"
+                    ></a>
+                  </li>
+                </ul>
+              </div>
+              <div class="product-item__content pt-5">
+                <h5 class="product-item__title">
+                  <a [routerLink]="['/productDetails']">Red Velvet</a>
+                </h5>
+                <span class="product-item__price">$7.55</span>
+              </div>
+            </div>
+            <!-- Product Item End -->
+          </div>
+          <div class="col mb-50">
+            <!-- Product Item Start -->
+            <div class="product-item text-center">
+              <div class="product-item__badge d-none">@@badge</div>
+              <div class="product-item__image border w-100">
+                <a [routerLink]="['/productDetails']"
+                  ><img
+                    width="350"
+                    height="350"
+                    src="assets/images/product/product-1-500x625.jpg"
+                    alt="Product"
+                /></a>
+                <ul class="product-item__meta">
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-quickview"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Quick View"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleProductModal"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-cart"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to Cart"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCart"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-wishlist"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to wishlist"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalWishlist"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-compare"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to compare"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCompare"
+                    ></a>
+                  </li>
+                </ul>
+              </div>
+              <div class="product-item__content pt-5">
+                <h5 class="product-item__title">
+                  <a [routerLink]="['/productDetails']">Italian Loaf</a>
+                </h5>
+                <span class="product-item__price">$9.44</span>
+              </div>
+            </div>
+            <!-- Product Item End -->
+          </div>
+          <div class="col mb-50">
+            <!-- Product Item Start -->
+            <div class="product-item text-center">
+              <div class="product-item__badge d-none">@@badge</div>
+              <div class="product-item__image border w-100">
+                <a [routerLink]="['/productDetails']"
+                  ><img
+                    width="350"
+                    height="350"
+                    src="assets/images/product/product-5-500x625.jpg"
+                    alt="Product"
+                /></a>
+                <ul class="product-item__meta">
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-quickview"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Quick View"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleProductModal"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-cart"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to Cart"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCart"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-wishlist"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to wishlist"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalWishlist"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-compare"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to compare"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCompare"
+                    ></a>
+                  </li>
+                </ul>
+              </div>
+              <div class="product-item__content pt-5">
+                <h5 class="product-item__title">
+                  <a [routerLink]="['/productDetails']">Macaron Cake</a>
+                </h5>
+                <span class="product-item__price">$9.44</span>
+              </div>
+            </div>
+            <!-- Product Item End -->
+          </div>
+          <div class="col mb-50">
+            <!-- Product Item Start -->
+            <div class="product-item text-center">
+              <div class="product-item__badge d-none">@@badge</div>
+              <div class="product-item__image border w-100">
+                <a [routerLink]="['/productDetails']"
+                  ><img
+                    width="350"
+                    height="350"
+                    src="assets/images/product/product-6-500x625.jpg"
+                    alt="Product"
+                /></a>
+                <ul class="product-item__meta">
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-quickview"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Quick View"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleProductModal"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-cart"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to Cart"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCart"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-wishlist"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to wishlist"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalWishlist"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-compare"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to compare"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCompare"
+                    ></a>
+                  </li>
+                </ul>
+              </div>
+              <div class="product-item__content pt-5">
+                <h5 class="product-item__title">
+                  <a [routerLink]="['/productDetails']">Cream Muffin</a>
+                </h5>
+                <span class="product-item__price">$7.55</span>
+              </div>
+            </div>
+            <!-- Product Item End -->
+          </div>
+          <div class="col mb-50">
+            <!-- Product Item Start -->
+            <div class="product-item text-center">
+              <div class="product-item__badge">Hot</div>
+              <div class="product-item__image border w-100">
+                <a [routerLink]="['/productDetails']"
+                  ><img
+                    width="350"
+                    height="350"
+                    src="assets/images/product/product-2-500x625.jpg"
+                    alt="Product"
+                /></a>
+                <ul class="product-item__meta">
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-quickview"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Quick View"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleProductModal"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-cart"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to Cart"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCart"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-wishlist"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to wishlist"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalWishlist"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-compare"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to compare"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCompare"
+                    ></a>
+                  </li>
+                </ul>
+              </div>
+              <div class="product-item__content pt-5">
+                <h5 class="product-item__title">
+                  <a [routerLink]="['/productDetails']">Red Velvet</a>
+                </h5>
+                <span class="product-item__price">$7.55</span>
+              </div>
+            </div>
+            <!-- Product Item End -->
+          </div>
+          <div class="col mb-50">
+            <!-- Product Item Start -->
+            <div class="product-item text-center">
+              <div class="product-item__badge d-none">@@badge</div>
+              <div class="product-item__image border w-100">
+                <a [routerLink]="['/productDetails']"
+                  ><img
+                    width="350"
+                    height="350"
+                    src="assets/images/product/product-7-500x625.jpg"
+                    alt="Product"
+                /></a>
+                <ul class="product-item__meta">
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-quickview"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Quick View"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleProductModal"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-cart"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to Cart"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCart"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-wishlist"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to wishlist"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalWishlist"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-compare"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to compare"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCompare"
+                    ></a>
+                  </li>
+                </ul>
+              </div>
+              <div class="product-item__content pt-5">
+                <h5 class="product-item__title">
+                  <a [routerLink]="['/productDetails']">Red Velvet</a>
+                </h5>
+                <span class="product-item__price">$5.00</span>
+              </div>
+            </div>
+            <!-- Product Item End -->
+          </div>
+        </div>
+        <!-- Product Section End -->
+        <!-- Shop bottom Bar Start -->
+        <div class="shop-bottombar">
+          <ul class="pagination">
+            <li class="disabled"><a href="#prev">←</a></li>
+            <li><a class="active" href="#page=1">1</a></li>
+            <li><a href="#page=2">2</a></li>
+            <li><a href="#page=3">3</a></li>
+            <li><a href="#page=4">4</a></li>
+            <li><a href="#page=5">5</a></li>
+            <li><a href="#next">→</a></li>
+          </ul>
+        </div>
+        <!-- Shop bottom Bar End -->
+      </div>
+      <div class="col-md-4">
+        <div class="sidebars">
+          <div class="sidebars_inner">
+            <!-- Search Widget Start -->
+            <form action="#" class="sidebars_search">
+              <input
+                type="text"
+                placeholder="Search Here"
+                class="sidebars_search__input"
+              />
+              <button class="sidebars_search__btn">
+                <i class="lastudioicon-zoom-1"></i>
+              </button>
+            </form>
+            <!-- Search Widget End -->
+
+            <!-- Category Widget Start -->
+            <div class="sidebars_widget">
+              <h3 class="sidebars_widget__title">Category</h3>
+              <ul class="sidebars_widget__category">
+                <li><a href="shop.html">Cake</a></li>
+                <li><a href="shop.html">Cupcake</a></li>
+                <li><a href="shop.html">Donut</a></li>
+                <li><a href="shop.html">Muffin</a></li>
+                <li><a href="shop.html">New</a></li>
+                <li><a href="shop.html">Uncategorized</a></li>
+                <li><a href="shop.html">Waffle</a></li>
+              </ul>
+            </div>
+            <!-- Category Widget End -->
+
+            <!-- Price Filter Widget Start -->
+            <div class="sidebars_widget">
+              <h3 class="sidebars_widget__title">Price Filter</h3>
+              <div class="range-slider">
+                <input type="text" class="js-range-slider" value="" />
+              </div>
+              <div class="extra-controls">
+                <button class="extra-controls_btn">Filter</button>
+                <div class="extra-controls_filter">
+                  <label>Price: </label>
+                  <input type="text" class="js-input-from" value="0" /> -
+                  <input type="text" class="js-input-to" value="0" />
+                </div>
+              </div>
+            </div>
+            <!-- Price Filter Widget End -->
+
+            <!-- Popular Product Widget Start -->
+            <div class="sidebars_widget">
+              <h3 class="sidebars_widget__title">Popular products</h3>
+              <ul class="sidebars_widget__product">
+                <!-- Single Product Start -->
+                <li class="single-product">
+                  <a
+                    [routerLink]="['/productDetails']"
+                    class="single-product_thumb"
+                  >
+                    <img
+                      src="assets/images/product/sidebar-1.png"
+                      alt="Sidebar-Image"
+                    />
+                  </a>
+                  <div class="single-product_content">
+                    <a
+                      [routerLink]="['/productDetails']"
+                      class="single-product_content__title"
+                      >Brownie</a
+                    >
+                    <span class="single-product_content__price">$4.99</span>
+                  </div>
+                </li>
+                <!-- Single Product End -->
+                <!-- Single Product Start -->
+                <li class="single-product">
+                  <a
+                    [routerLink]="['/productDetails']"
+                    class="single-product_thumb"
+                  >
+                    <img
+                      src="assets/images/product/sidebar-2.png"
+                      alt="Sidebar-Image"
+                    />
+                  </a>
+                  <div class="single-product_content">
+                    <a
+                      [routerLink]="['/productDetails']"
+                      class="single-product_content__title"
+                      >Red Velvet</a
+                    >
+                    <span class="single-product_content__price">$4.99</span>
+                  </div>
+                </li>
+                <!-- Single Product End -->
+                <!-- Single Product Start -->
+                <li class="single-product">
+                  <a
+                    [routerLink]="['/productDetails']"
+                    class="single-product_thumb"
+                  >
+                    <img
+                      src="assets/images/product/sidebar-3.png"
+                      alt="Sidebar-Image"
+                    />
+                  </a>
+                  <div class="single-product_content">
+                    <a
+                      [routerLink]="['/productDetails']"
+                      class="single-product_content__title"
+                      >Cream Muffin</a
+                    >
+                    <span class="single-product_content__price">$4.99</span>
+                  </div>
+                </li>
+                <!-- Single Product End -->
+              </ul>
+            </div>
+            <!-- Popular Product Widget End -->
+
+            <!-- Instagram Widget Start -->
+            <div class="sidebars_widget">
+              <h3 class="sidebars_widget__title">Instagram</h3>
+              <ul class="sidebars_widget__instagram">
+                <li>
+                  <a class="instagram-thumb" href="#">
+                    <img
+                      src="assets/images/instagram/widget-insta-1.jpg"
+                      alt="Image"
+                    />
+                    <i class="lastudioicon lastudioicon-b-instagram"></i>
+                  </a>
+                </li>
+                <li>
+                  <a class="instagram-thumb" href="#">
+                    <img
+                      src="assets/images/instagram/widget-insta-2.jpg"
+                      alt="Image"
+                    />
+                    <i class="lastudioicon lastudioicon-b-instagram"></i>
+                  </a>
+                </li>
+                <li>
+                  <a class="instagram-thumb" href="#">
+                    <img
+                      src="assets/images/instagram/widget-insta-3.jpg"
+                      alt="Image"
+                    />
+                    <i class="lastudioicon lastudioicon-b-instagram"></i>
+                  </a>
+                </li>
+                <li>
+                  <a class="instagram-thumb" href="#">
+                    <img
+                      src="assets/images/instagram/widget-insta-4.jpg"
+                      alt="Image"
+                    />
+                    <i class="lastudioicon lastudioicon-b-instagram"></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <!-- Instagram Widget End -->
+
+            <!-- Tags Widget Start -->
+            <div class="sidebars_widget">
+              <h3 class="sidebars_widget__title">Tags</h3>
+              <ul class="sidebars_widget__tags">
+                <li><a href="shop.html">Cake, </a></li>
+                <li><a href="shop.html">Cupcake, </a></li>
+                <li><a href="shop.html">Donut, </a></li>
+                <li><a href="shop.html">Muffin, </a></li>
+                <li><a href="shop.html">New, </a></li>
+                <li><a href="shop.html">Waffle</a></li>
+              </ul>
+            </div>
+            <!-- Tags Widget End -->
+
+            <!-- Banner Widget Start -->
+            <div class="sidebars_widget">
+              <a href="shop.html" class="sidebars_widget__banner">
+                <img
+                  src="assets/images/banner/sidebarbanner.jpg"
+                  alt="banner-Image"
+                />
+
+                <div class="banner-content">
+                  <span class="banner-content_title">Check it now</span>
+                </div>
+              </a>
+            </div>
+            <!-- Banner Widget End -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Product Section End -->
+
+<div class="quickview-product-modal modal fade" id="exampleProductModal">
+  <div class="modal-dialog modal-dialog-centered mw-100">
+    <div class="container">
+      <div class="modal-content">
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        >
+          <i class="lastudioicon lastudioicon-e-remove"></i>
+        </button>
+        <div class="modal-body">
+          <!-- Single Product Top Area Start -->
+          <div class="row">
+            <div class="col-lg-6 offset-lg-0 col-md-10 offset-md-1">
+              <!-- Product Details Image Start -->
+              <div class="product-details-img d-flex overflow-hidden flex-row">
+                <!-- Single Product Image Start -->
+                <div
+                  class="single-product-vertical-tab swiper-container order-2"
+                >
+                  <div class="swiper-wrapper">
+                    <a class="swiper-slide h-auto" href="#/">
+                      <img
+                        class="w-100"
+                        src="assets/images/product/product-7-1.png"
+                        alt="Product"
+                      />
+                    </a>
+                    <a class="swiper-slide h-auto" href="#/">
+                      <img
+                        class="w-100"
+                        src="assets/images/product/product-7-2.png"
+                        alt="Product"
+                      />
+                    </a>
+                    <a class="swiper-slide h-auto" href="#/">
+                      <img
+                        class="w-100"
+                        src="assets/images/product/product-7-3.png"
+                        alt="Product"
+                      />
+                    </a>
+                    <a class="swiper-slide h-auto" href="#/">
+                      <img
+                        class="w-100"
+                        src="assets/images/product/product-7-4.png"
+                        alt="Product"
+                      />
+                    </a>
+                    <a class="swiper-slide h-auto" href="#/">
+                      <img
+                        class="w-100"
+                        src="assets/images/product/product-7-5.png"
+                        alt="Product"
+                      />
+                    </a>
+                    <a class="swiper-slide h-auto" href="#/">
+                      <img
+                        class="w-100"
+                        src="assets/images/product/product-7-6.png"
+                        alt="Product"
+                      />
+                    </a>
+                  </div>
+
+                  <!-- Next Previous Button Start -->
+                  <div class="swiper-button-vertical-next swiper-button-next">
+                    <i class="lastudioicon-arrow-right"></i>
+                  </div>
+                  <div class="swiper-button-vertical-prev swiper-button-prev">
+                    <i class="lastudioicon-arrow-left"></i>
+                  </div>
+                  <!-- Next Previous Button End -->
+                </div>
+                <!-- Single Product Image End -->
+
+                <!-- Single Product Thumb Start -->
+                <div
+                  class="product-thumb-vertical overflow-hidden swiper-container order-1"
+                >
+                  <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                      <img
+                        src="assets/images/product/product-tab-1.png"
+                        alt="Product"
+                      />
+                    </div>
+                    <div class="swiper-slide">
+                      <img
+                        src="assets/images/product/product-tab-2.png"
+                        alt="Product"
+                      />
+                    </div>
+                    <div class="swiper-slide">
+                      <img
+                        src="assets/images/product/product-tab-3.png"
+                        alt="Product"
+                      />
+                    </div>
+                    <div class="swiper-slide">
+                      <img
+                        src="assets/images/product/product-tab-4.png"
+                        alt="Product"
+                      />
+                    </div>
+                    <div class="swiper-slide">
+                      <img
+                        src="assets/images/product/product-tab-5.png"
+                        alt="Product"
+                      />
+                    </div>
+                    <div class="swiper-slide">
+                      <img
+                        src="assets/images/product/product-tab-6.png"
+                        alt="Product"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <!-- Single Product Thumb End -->
+              </div>
+              <!-- Product Details Image End -->
+            </div>
+            <div class="col-lg-6">
+              <!-- Product Summery Start -->
+              <div class="product-summery position-relative">
+                <!-- Product Head Start -->
+                <div class="product-head mb-3">
+                  <!-- Price Start -->
+                  <span class="product-head-price">$4.99</span>
+                  <!-- Price End -->
+                </div>
+                <!-- Product Head End -->
+
+                <!-- Description Start -->
+                <p class="desc-content">
+                  Aliqua id fugiat nostrud irure ex duis ea quis id quis ad et.
+                  Sunt qui esse pariatur duis deserunt mollit dolore cillum
+                  minim tempor enim. Elit aute irure tempor cupidatat incididunt
+                  sint deserunt ut voluptate aute id deserunt nisi.
+                </p>
+                <!-- Description End -->
+
+                <!-- Product Coler Variation Start -->
+                <div class="product-color mb-2">
+                  <label for="colorBy">Color</label>
+                  <div class="select-wrapper">
+                    <select name="color" id="colorBy">
+                      <option value="manual">Chose an option</option>
+                      <option value="blue">Blue</option>
+                      <option value="red">Red</option>
+                      <option value="green">Green</option>
+                      <option value="black">Black</option>
+                      <option value="yellow">Yellow</option>
+                    </select>
+                  </div>
+                </div>
+                <!-- Product Coler Variation End -->
+
+                <!-- Product Size Start -->
+                <div class="product-size mb-5">
+                  <label for="sizeBy">Size</label>
+                  <div class="select-wrapper">
+                    <select name="size" id="sizeBy">
+                      <option value="manual">Chose an option</option>
+                      <option value="large">Large</option>
+                      <option value="medium">Medium</option>
+                      <option value="small">Small</option>
+                    </select>
+                  </div>
+                </div>
+                <!-- Product Size End -->
+
+                <!-- Product Quantity, Cart Button, Wishlist and Compare Start -->
+                <ul class="product-cta">
+                  <li>
+                    <!-- Quantity Start -->
+                    <div class="quantity">
+                      <div class="cart-plus-minus"></div>
+                    </div>
+                    <!-- Quantity End -->
+                  </li>
+                  <li>
+                    <!-- Cart Button Start -->
+                    <div class="cart-btn">
+                      <div class="add-to_cart">
+                        <a
+                          class="btn btn-dark btn-hover-primary"
+                          href="cart.html"
+                          >Add to cart</a
+                        >
+                      </div>
+                    </div>
+                    <!-- Cart Button End -->
+                  </li>
+                  <li>
+                    <!-- Action Button Start -->
+                    <div class="actions">
+                      <a
+                        href="compare.html"
+                        title="Compare"
+                        class="action compare"
+                        ><i class="lastudioicon-heart-2"></i
+                      ></a>
+                      <a
+                        href="wishlist.html"
+                        title="Wishlist"
+                        class="action wishlist"
+                        ><i class="lastudioicon-ic_compare_arrows_24px"></i
+                      ></a>
+                    </div>
+                    <!-- Action Button End -->
+                  </li>
+                </ul>
+                <!-- Product Quantity, Cart Button, Wishlist and Compare End -->
+
+                <!-- Product Meta Start -->
+                <ul class="product-meta">
+                  <li class="product-meta-wrapper">
+                    <span class="product-meta-name">SKU:</span>
+                    <span class="product-meta-detail">REF. LA-199</span>
+                  </li>
+                  <li class="product-meta-wrapper">
+                    <span class="product-meta-name">category:</span>
+                    <span class="product-meta-detail">
+                      <a href="#">Cake, </a>
+                      <a href="#">New</a>
+                    </span>
+                  </li>
+                  <li class="product-meta-wrapper">
+                    <span class="product-meta-name">Tags:</span>
+                    <span class="product-meta-detail">
+                      <a href="#">Cake 1</a>
+                    </span>
+                  </li>
+                </ul>
+                <!-- Product Meta End -->
+
+                <!-- Product Shear Start -->
+                <div class="product-share">
+                  <a href="#"><i class="lastudioicon-b-facebook"></i></a>
+                  <a href="#"><i class="lastudioicon-b-twitter"></i></a>
+                  <a href="#"><i class="lastudioicon-b-pinterest"></i></a>
+                  <a href="#"><i class="lastudioicon-b-instagram"></i></a>
+                </div>
+                <!-- Product Shear End -->
+              </div>
+              <!-- Product Summery End -->
+            </div>
+          </div>
+          <!-- Single Product Top Area End -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="quickview-product-modal modal fade" id="modalCart">
+  <div class="modal-dialog modal-dialog-centered mw-100">
+    <div class="custom-content">
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="modal"
+        aria-label="Close"
+      >
+        <i class="lastudioicon lastudioicon-e-remove"></i>
+      </button>
+      <div class="modal-body">
+        <i class="dlicon files_check"></i> Added To Cart Successfully!
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="quickview-product-modal modal fade" id="modalWishlist">
+  <div class="modal-dialog modal-dialog-centered mw-100">
+    <div class="custom-content">
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="modal"
+        aria-label="Close"
+      >
+        <i class="lastudioicon lastudioicon-e-remove"></i>
+      </button>
+      <div class="modal-body">
+        <i class="dlicon files_check"></i> Added To Wishlist Successfully!
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="quickview-product-modal modal fade" id="modalCompare">
+  <div class="modal-dialog modal-dialog-centered mw-100">
+    <div class="custom-content">
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="modal"
+        aria-label="Close"
+      >
+        <i class="lastudioicon lastudioicon-e-remove"></i>
+      </button>
+      <div class="modal-body">
+        <i class="dlicon files_check"></i> Added To Compare Successfully!
+      </div>
+    </div>
+  </div>
+</div>

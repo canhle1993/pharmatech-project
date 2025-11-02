@@ -1,0 +1,265 @@
+/* ==========================
+   HEADER SECTION
+========================== */
+
+.job-header {
+  margin-top: -340px;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.job-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1e3a8a;
+  background: linear-gradient(90deg, #007bff, #00c6ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.5px;
+}
+
+.job-subtitle {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+/* ==========================
+   TABLE STYLING
+========================== */
+:host ::ng-deep .p-datatable {
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #ffffff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+:host ::ng-deep .p-datatable-thead > tr > th {
+  background: linear-gradient(90deg, #007bff, #00c6ff);
+  color: #ffffff;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 14px;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr:hover {
+  background-color: #f0f9ff;
+}
+
+:host ::ng-deep .p-datatable-tbody td {
+  text-align: center;
+  padding: 12px;
+  font-size: 0.95rem;
+  color: #374151;
+  vertical-align: middle;
+}
+
+/* ==========================
+   BUTTONS
+========================== */
+.p-button-primary {
+  background: linear-gradient(90deg, #007bff, #00c6ff);
+  border: none;
+}
+.p-button-primary:hover {
+  background: linear-gradient(90deg, #0069d9, #00aaff);
+}
+.p-button-success:hover {
+  background: #16a34a !important;
+}
+.p-button-danger:hover {
+  background: #dc2626 !important;
+}
+
+/* ==========================
+   BANNER IMAGE
+========================== */
+.banner-img {
+  border-radius: 6px;
+  border: 2px solid #e0e0e0;
+  transition: transform 0.25s ease;
+}
+.banner-img:hover {
+  transform: scale(1.05);
+}
+
+/* ==========================
+   DIALOG
+========================== */
+:host ::ng-deep .p-dialog .p-dialog-header {
+  background: linear-gradient(90deg, #007bff, #00c6ff);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+:host ::ng-deep .p-dialog .p-dialog-content {
+  background-color: #f9fafb;
+}
+:host ::ng-deep .p-dialog .p-dialog-footer {
+  background-color: #f1f3f5;
+}
+
+/* ==========================
+   FIELD LABELS & INPUTS
+========================== */
+.field label {
+  font-weight: 600;
+  color: #374151;
+}
+.field input,
+.field textarea {
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  padding: 10px 12px;
+  transition: all 0.2s ease;
+}
+.field input:focus,
+.field textarea:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.25);
+}
+
+/* ==============================
+   Dialog Form Layout
+============================== */
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full {
+  flex: 0 0 100%;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 5px;
+  font-size: 0.95rem;
+}
+
+.required {
+  color: #ff3b3b;
+  margin-left: 2px;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.25);
+}
+
+/* Style file input */
+.form-group input[type="file"] {
+  font-size: 0.9rem;
+}
+
+/* Dialog header + footer */
+:host ::ng-deep .p-dialog .p-dialog-header {
+  background: linear-gradient(90deg, #007bff, #00c6ff);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 1rem 1.25rem;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-content {
+  background-color: #f9fafb;
+  padding: 1.5rem;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-footer {
+  background-color: #f1f3f5;
+  padding: 0.75rem 1rem;
+}
+
+/* Button primary */
+:host ::ng-deep .p-button-primary {
+  background: linear-gradient(90deg, #007bff, #00c6ff);
+  border: none;
+}
+:host ::ng-deep .p-button-primary:hover {
+  background: linear-gradient(90deg, #0069d9, #00aaff);
+}
+/* Modern confirm dialog style */
+.modern-confirm {
+  width: 500px;
+  max-width: 100%;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  font-family: var(--font-family, "Inter", sans-serif);
+}
+
+.confirm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f9fafb;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.confirm-header .icon {
+  font-size: 1.8rem;
+  color: var(--primary-color, #007ad9);
+  margin-right: 0.5rem;
+}
+
+.confirm-header span {
+  flex: 1;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #2a2a2a;
+}
+
+.confirm-header .close-btn {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.confirm-header .close-btn:hover {
+  color: #111;
+}
+
+.confirm-body {
+  padding: 1.5rem;
+  text-align: center;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.confirm-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  gap: 0.5rem;
+}
