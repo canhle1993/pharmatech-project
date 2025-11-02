@@ -135,20 +135,17 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     try {
       let uploadedFilename: string | null = null;
   
-      // 🟢 Upload ảnh nếu có chọn
       if (this.selectedPhoto) {
         const upload = await this.accountService.uploadPhoto(this.selectedPhoto);
         uploadedFilename = upload.filename; // DB sẽ lưu tên file
         this.account.photo = 'http://localhost:3000/upload/' + upload.filename; // UI hiển thị đầy đủ link
       }
   
-      // 🟢 Upload resume nếu có chọn
       if (this.selectedResume) {
         const upload = await this.accountService.uploadResume(this.selectedResume);
         this.account.resume = upload.url;
       }
   
-      // 🟢 Dựng lại dữ liệu education & experience đúng dạng object lồng
       const updatedData = {
         ...this.account,
         education: {
@@ -168,13 +165,11 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   
       console.log('📤 Payload gửi lên server:', updatedData);
   
-      // 🟢 Gọi API update
       const updated = await this.accountService.update(
         this.account.id || this.account._id!,
         updatedData
       );
   
-      // 🟢 Gán lại account để Angular cập nhật giao diện
       this.account = {
         ...this.account,
         ...updated,
