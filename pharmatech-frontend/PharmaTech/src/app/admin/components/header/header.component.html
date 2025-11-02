@@ -11,32 +11,79 @@
   </div>
 
   <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-    <!-- Search -->
     <div class="navbar-nav align-items-center">
       <div class="nav-item d-flex align-items-center">
-        <i class="bx bx-search fs-4 lh-0"></i>
-        <input
-          type="text"
-          class="form-control border-0 shadow-none"
-          placeholder="Search..."
-          aria-label="Search..."
-        />
+        <i class="bx bx-time fs-4 me-2"></i>
+        <span>{{ currentTime | date : "medium" }}</span>
       </div>
     </div>
-    <!-- /Search -->
 
     <ul class="navbar-nav flex-row align-items-center ms-auto">
       <!-- Place this tag where you want the button to render. -->
-      <li class="nav-item lh-1 me-3">
+      <!-- Notifications -->
+      <li class="nav-item dropdown me-3">
         <a
-          class="github-button"
-          href="https://github.com/themeselection/sneat-html-admin-template-free"
-          data-icon="octicon-star"
-          data-size="large"
-          data-show-count="true"
-          aria-label="Star themeselection/sneat-html-admin-template-free on GitHub"
-          >Star</a
+          class="nav-link dropdown-toggle hide-arrow"
+          data-bs-toggle="dropdown"
         >
+          <i class="bx bx-bell fs-4"></i>
+          <span class="badge bg-danger rounded-pill">3</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><h6 class="dropdown-header">Notifications</h6></li>
+          <li>
+            <a class="dropdown-item" href="#"
+              ><i class="bx bx-user-plus me-2"></i> New candidate applied</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" href="#"
+              ><i class="bx bx-package me-2"></i> New product added</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" href="#"
+              ><i class="bx bx-error-circle me-2"></i> Low stock alert</a
+            >
+          </li>
+        </ul>
+      </li>
+
+      <!-- Messages -->
+      <li class="nav-item dropdown me-3">
+        <a
+          class="nav-link dropdown-toggle hide-arrow"
+          data-bs-toggle="dropdown"
+        >
+          <i class="bx bx-envelope fs-4"></i>
+          <span class="badge bg-primary rounded-pill">5</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><h6 class="dropdown-header">Messages</h6></li>
+          <li>
+            <a class="dropdown-item" href="#">
+              <div class="d-flex align-items-center">
+                <div class="flex-shrink-0 me-3">
+                  <img
+                    src="assets/admin/img/avatars/1.png"
+                    class="rounded-circle"
+                    width="32"
+                    height="32"
+                  />
+                </div>
+                <div class="flex-grow-1">
+                  <h6 class="mb-0">Nguyen Van A</h6>
+                  <small class="text-muted">“Please check new order...”</small>
+                </div>
+              </div>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="#"
+              ><i class="bx bx-chat me-2"></i> View all messages</a
+            >
+          </li>
+        </ul>
       </li>
 
       <!-- User -->
@@ -85,7 +132,10 @@
             <div class="dropdown-divider"></div>
           </li>
           <li>
-            <a class="dropdown-item" [routerLink]="['/admin/account-details',  user?._id]">
+            <a
+              class="dropdown-item"
+              [routerLink]="['/admin/account-details', user?._id]"
+            >
               <i class="bx bx-user me-2"></i>
               <span class="align-middle">My Profile</span>
             </a>

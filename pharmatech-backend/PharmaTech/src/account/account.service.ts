@@ -15,7 +15,7 @@ export class AccountService {
 
   async findAll(): Promise<AccountDTO[]> {
     let accounts = await this.accountModel
-      .find()
+      .find({ is_delete: false })
       .sort({ created_at: -1 })
       .exec();
     return accounts.map((c) =>
@@ -45,11 +45,11 @@ export class AccountService {
 
   async update(id: string, account: Partial<Account>): Promise<AccountDTO> {
     console.log('📥 Payload nhận từ client:', JSON.stringify(account, null, 2));
-  
+
     // 🧩 Dùng findById trước để xem trạng thái ban đầu
     const before = await this.accountModel.findById(id).lean();
     console.log('🧩 Trước khi update:', before?.education, before?.experience);
-  
+
     // 🧩 Dùng updateOne để ép Mongo ghi thẳng
     const res = await this.accountModel.updateOne(
       { _id: id },
@@ -72,22 +72,19 @@ export class AccountService {
             years: account.experience?.years || null,
           },
         },
-      }
+      },
     );
-  
+
     console.log('🔧 Kết quả MongoDB trả về:', res);
-  
+
     // 🧩 Đọc lại dữ liệu sau khi update
     const after = await this.accountModel.findById(id).lean();
     console.log('✅ Sau khi update:', after?.education, after?.experience);
-  
+
     return plainToInstance(AccountDTO, after, {
       excludeExtraneousValues: true,
     });
   }
-  
-  
-  
 
   async login(username: string, password: string): Promise<Account | null> {
     const account = await this.accountModel.findOne({ username }).exec();
@@ -106,9 +103,6 @@ export class AccountService {
   async findById(id: string): Promise<any> {
     return await this.accountModel.findById(id).lean();
   }
-  
-  
-  
 
   async setSecurityCode(email: string, code: string) {
     const acc = await this.accountModel.findOne({ email }).exec();
@@ -119,14 +113,25 @@ export class AccountService {
   }
 
   // account.service.ts
+  // ✅ Xóa mềm (soft delete)
   async delete(id: string): Promise<boolean> {
     try {
-      const res = await this.accountModel.findByIdAndDelete(id);
-      return !!res;
+      const res = await this.accountModel.updateOne(
+        { _id: id },
+        { $set: { is_delete: true } },
+      );
+      return res.modifiedCount > 0;
     } catch (err) {
-      console.log(err);
+      console.log('❌ Lỗi khi xóa mềm tài khoản:', err);
       return false;
     }
   }
-  
+
+  async restore(id: string): Promise<boolean> {
+    const res = await this.accountModel.updateOne(
+      { _id: id },
+      { $set: { is_delete: false } },
+    );
+    return res.modifiedCount > 0;
+  }
 }
