@@ -254,7 +254,6 @@ async findById(@Param('id') id: string) {
 
   @Patch('update/:id')
   async update(@Param('id') id: string, @Body() body: any) {
-    console.log('🧩 Update account id =', id);
   if (!id) throw new HttpException('Missing account ID', HttpStatus.BAD_REQUEST);
     const updated = await this.accountService.update(id, body);
     return updated;
