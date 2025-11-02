@@ -37,7 +37,7 @@
             <div class="button-wrapper">
               <button
                 type="button"
-                class="btn btn-outline-primary me-2"
+                data-inline="true"
                 (click)="toggleEdit()"
               >
                 <i class="bx bx-edit"></i>
@@ -48,7 +48,7 @@
                 *ngIf="isEditing"
                 for="upload-photo"
                 style="
-                  background-color: #0d6efd;
+                  background-color: #fd8d0d;
                   color: white;
                   padding: 0.5rem 1rem;
                   border-radius: 0.25rem;
@@ -98,26 +98,6 @@
               </div>
 
               <div class="mb-3 col-md-6">
-                <label class="form-label">Username</label>
-                <input
-                  class="form-control"
-                  type="text"
-                  [value]="account.username"
-                  readonly
-                />
-              </div>
-
-              <div class="mb-3 col-md-6">
-                <label class="form-label">Email</label>
-                <input
-                  class="form-control"
-                  type="text"
-                  [value]="account.email"
-                  readonly
-                />
-              </div>
-
-              <div class="mb-3 col-md-6">
                 <label class="form-label">Phone</label>
                 <input
                   class="form-control"
@@ -141,16 +121,77 @@
 
               <div class="mb-3 col-md-6">
                 <label class="form-label">Gender</label>
+              
+                <!-- 🔹 Khi không edit: chỉ hiển thị text -->
+                <input
+                  *ngIf="!isEditing"
+                  class="form-control"
+                  type="text"
+                  [value]="account.gender || '-'"
+                  readonly
+                />
+              
+                <!-- 🔹 Khi đang edit: hiển thị radio chọn -->
+                <div *ngIf="isEditing" class="d-flex align-items-center flex-wrap gap-3 mt-1">
+                  <div class="form-check form-check-inline mb-0">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      id="male"
+                      name="gender"
+                      value="Male"
+                      [(ngModel)]="account.gender"
+                    />
+                    <label class="form-check-label" for="male">Male</label>
+                  </div>
+                
+                  <div class="form-check form-check-inline mb-0">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      id="female"
+                      name="gender"
+                      value="Female"
+                      [(ngModel)]="account.gender"
+                    />
+                    <label class="form-check-label" for="female">Female</label>
+                  </div>
+                
+                  <div class="form-check form-check-inline mb-0">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      id="other"
+                      name="gender"
+                      value="Other"
+                      [(ngModel)]="account.gender"
+                    />
+                    <label class="form-check-label" for="other">Other</label>
+                  </div>
+                </div>
+                
+              </div>
+              
+
+              <div class="mb-3 col-md-6" *ngIf="!isEditing">
+                <label class="form-label">Username</label>
                 <input
                   class="form-control"
                   type="text"
-                  [(ngModel)]="account.gender"
-                  name="gender"
-                  [readonly]="!isEditing"
+                  [value]="account.username"
+                  readonly
                 />
               </div>
 
-              
+              <div class="mb-3 col-md-6" *ngIf="!isEditing">
+                <label class="form-label">Email</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  [value]="account.email"
+                  readonly
+                />
+              </div>
 
               <!-- Education -->
             <div class="col-12 mt-4">
@@ -264,13 +305,10 @@
 
             <!-- ✅ Nút Save chỉ hiện khi đang Edit -->
             <div class="mt-2 text-end" *ngIf="isEditing">
-              <button
-                type="submit"
-                class="btn btn-primary"
-                style="padding: 0.5rem 1.5rem"
-              >
+              <button type="submit" data-inline="true">
                 Save changes
               </button>
+
             </div>
           </form>
         </div>
