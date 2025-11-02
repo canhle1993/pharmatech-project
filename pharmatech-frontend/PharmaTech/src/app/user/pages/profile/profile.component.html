@@ -35,7 +35,6 @@
             </div>
 
             <div class="button-wrapper">
-              <!-- 🟢 Nút Edit -->
               <button
                 type="button"
                 class="btn btn-outline-primary me-2"
@@ -45,7 +44,6 @@
                 {{ isEditing ? 'Cancel' : 'Edit' }}
               </button>
 
-              <!-- 🟢 Upload chỉ hiện khi đang Edit -->
               <label
                 *ngIf="isEditing"
                 for="upload-photo"
