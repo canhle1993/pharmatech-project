@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Table } from 'primeng/table';
-import { FormsModule, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { DatePipe, CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
@@ -40,7 +45,7 @@ import { ToastModule } from 'primeng/toast';
     Dialog,
     AvatarModule,
     ReactiveFormsModule,
-    ToastModule
+    ToastModule,
   ],
   providers: [ConfirmationService, MessageService],
 })
@@ -65,9 +70,7 @@ export class AccountListComponent implements OnInit {
     private accountService: AccountService,
     private confirmService: ConfirmationService,
     private messageService: MessageService
-  ) {
-    
-  }
+  ) {}
 
   ngOnInit() {
     this.buildForm();
@@ -129,20 +132,19 @@ export class AccountListComponent implements OnInit {
       return null;
     }
   }
-    /** ✅ Danh sách filter cho vai trò và trạng thái */
-    roleOptions = [
-      { label: 'All Roles', value: null },
-      { label: 'Admin', value: 'admin' },
-      { label: 'User', value: 'user' },
-      { label: 'Super Admin', value: 'superadmin' },
-    ];
-  
-    statusOptions = [
-      { label: 'All Status', value: null },
-      { label: 'Active', value: true }, // boolean
-      { label: 'Inactive', value: false }, // boolean
-    ];
-  
+  /** ✅ Danh sách filter cho vai trò và trạng thái */
+  roleOptions = [
+    { label: 'All Roles', value: null },
+    { label: 'Admin', value: 'admin' },
+    { label: 'User', value: 'user' },
+    { label: 'Super Admin', value: 'superadmin' },
+  ];
+
+  statusOptions = [
+    { label: 'All Status', value: null },
+    { label: 'Active', value: true }, // boolean
+    { label: 'Inactive', value: false }, // boolean
+  ];
 
   /** ✅ Load danh sách account */
   async loadAccounts() {
@@ -195,7 +197,8 @@ export class AccountListComponent implements OnInit {
       const res: any = await this.accountService.createAdmin(payload);
       console.log('📥 Server response:', res);
 
-      if (res && (res.id || res._id || res === true)) {   // ✅ thêm điều kiện này
+      if (res && (res.id || res._id || res === true)) {
+        // ✅ thêm điều kiện này
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
@@ -251,6 +254,38 @@ export class AccountListComponent implements OnInit {
     });
   }
 
+  /** 🗑️ Soft Delete Account */
+  async onSoftDelete(id: string, name: string) {
+    this.confirmService.confirm({
+      message: `Are you sure you want to delete the account "${name}"?`,
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      accept: async () => {
+        try {
+          this.loading = true;
+          const res: any = await this.accountService.softDelete(id);
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Deleted',
+            detail:
+              res.msg || `Account "${name}" has been deleted successfully.`,
+          });
+          await this.loadAccounts(); // Refresh table
+        } catch (err: any) {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail:
+              err?.error?.message ||
+              `Failed to delete account "${name}". Please try again.`,
+          });
+        } finally {
+          this.loading = false;
+        }
+      },
+    });
+  }
+
   /** ✅ Filter & Search */
   applyFilters(table: any) {
     let filtered = [...this.accounts];
@@ -271,5 +306,4 @@ export class AccountListComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     table.filterGlobal(input.value, 'contains');
   }
-
 }

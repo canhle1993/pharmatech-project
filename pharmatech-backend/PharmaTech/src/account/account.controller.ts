@@ -337,9 +337,18 @@ export class AccountController {
   async delete(@Param('id') id: string) {
     const result = await this.accountService.delete(id);
     if (!result) {
-      throw new HttpException('Delete failed', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Soft delete failed', HttpStatus.BAD_REQUEST);
     }
-    return { msg: 'Deleted successfully' };
+    return { msg: 'Account marked as deleted successfully' };
+  }
+
+  @Patch('restore/:id')
+  async restore(@Param('id') id: string) {
+    const res = await this.accountService.restore(id);
+    if (!res) {
+      throw new HttpException('Restore failed', HttpStatus.BAD_REQUEST);
+    }
+    return { msg: 'Account restored successfully' };
   }
 
   @Post('admin/create')

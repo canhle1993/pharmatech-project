@@ -1,4 +1,3 @@
-
 <div class="account-container">
   <h2 class="page-title">Account</h2>
   <p-toast></p-toast>
@@ -23,63 +22,63 @@
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
       class="account-table"
     >
-    <ng-template pTemplate="caption">
-      <div class="p-datatable-caption">
-        <!-- Bên trái: Add -->
-        <div class="toolbar-actions">
-          <button
-            pButton
-            icon="pi pi-user-plus"
-            label="Add"
-            class="p-button-sm p-button-success"
-            (click)="openCreateDialog()"
-          ></button>
+      <ng-template pTemplate="caption">
+        <div class="p-datatable-caption">
+          <!-- Bên trái: Add -->
+          <div class="toolbar-actions">
+            <button
+              pButton
+              icon="pi pi-user-plus"
+              label="Add"
+              class="p-button-sm p-button-success"
+              (click)="openCreateDialog()"
+            ></button>
+          </div>
+
+          <!-- Bên phải: Role, Status, Search -->
+          <div class="filter-group">
+            <!-- Role Filter -->
+            <p-floatLabel class="w-full md:w-56">
+              <p-select
+                [(ngModel)]="selectedRole"
+                inputId="roleFilter"
+                [options]="roleOptions"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Select Role"
+                (onChange)="applyFilters(dt)"
+                class="w-full"
+              />
+            </p-floatLabel>
+
+            <!-- Status Filter -->
+            <p-floatLabel class="w-full md:w-56">
+              <p-select
+                [(ngModel)]="selectedStatus"
+                inputId="statusFilter"
+                [options]="statusOptions"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Select Status"
+                (onChange)="applyFilters(dt)"
+                class="w-full"
+              />
+            </p-floatLabel>
+
+            <!-- Search -->
+            <p-iconfield iconPosition="left" class="search-field">
+              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+              <input
+                pInputText
+                type="text"
+                (input)="onGlobalFilter(dt, $event)"
+                placeholder="Search by name, email or phone..."
+              />
+            </p-iconfield>
+          </div>
         </div>
-    
-        <!-- Bên phải: Role, Status, Search -->
-        <div class="filter-group">
-          <!-- Role Filter -->
-          <p-floatLabel class="w-full md:w-56">
-            <p-select
-              [(ngModel)]="selectedRole"
-              inputId="roleFilter"
-              [options]="roleOptions"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Select Role"
-              (onChange)="applyFilters(dt)"
-              class="w-full"
-            />
-          </p-floatLabel>
-    
-          <!-- Status Filter -->
-          <p-floatLabel class="w-full md:w-56">
-            <p-select
-              [(ngModel)]="selectedStatus"
-              inputId="statusFilter"
-              [options]="statusOptions"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Select Status"
-              (onChange)="applyFilters(dt)"
-              class="w-full"
-            />
-          </p-floatLabel>
-    
-          <!-- Search -->
-          <p-iconfield iconPosition="left" class="search-field">
-            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
-            <input
-              pInputText
-              type="text"
-              (input)="onGlobalFilter(dt, $event)"
-              placeholder="Search by name, email or phone..."
-            />
-          </p-iconfield>
-        </div>
-      </div>
-    </ng-template>
-    
+      </ng-template>
+
       <!-- Header -->
       <ng-template pTemplate="header">
         <tr>
@@ -87,7 +86,7 @@
           <th pSortableColumn="name">Name <p-sortIcon field="name" /></th>
           <th pSortableColumn="email">Email <p-sortIcon field="email" /></th>
           <th>Phone</th>
-          
+
           <th>Roles</th>
           <th pSortableColumn="last_login">
             Last Login <p-sortIcon field="last_login" />
@@ -139,8 +138,8 @@
               icon="pi pi-search"
               class="p-button-text p-button-info"
               title="View"
-              [routerLink]="['/admin/account-details', account.id]">
-            </button>
+              [routerLink]="['/admin/account-details', account.id]"
+            ></button>
             <button
               pButton
               icon="pi pi-pencil"
@@ -148,6 +147,14 @@
               title="Edit"
               [routerLink]="['/admin/account-details', account.id]"
               [queryParams]="{ edit: true }"
+            ></button>
+
+            <button
+              pButton
+              icon="pi pi-trash"
+              class="p-button-text p-button-danger"
+              title="Delete"
+              (click)="onSoftDelete(account.id, account.name)"
             ></button>
 
             <button
@@ -190,7 +197,7 @@
   header="Create Admin Account"
   [(visible)]="createDialogVisible"
   [modal]="true"
-  [style]="{ width: '32rem', 'max-height': '95vh'}"
+  [style]="{ width: '32rem', 'max-height': '95vh' }"
   [draggable]="false"
   [resizable]="false"
 >
@@ -210,7 +217,9 @@
         placeholder="Enter full name"
       />
       <small
-        *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"
+        *ngIf="
+          registerForm.get('name')?.invalid && registerForm.get('name')?.touched
+        "
         class="p-error"
       >
         Name must be 3–50 letters (no numbers).

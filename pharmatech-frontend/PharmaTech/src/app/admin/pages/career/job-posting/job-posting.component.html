@@ -1,12 +1,19 @@
-  <p-toast></p-toast>
+<p-toast></p-toast>
 
 <p-confirmdialog #cd>
-  <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+  <ng-template
+    #headless
+    let-message
+    let-onAccept="onAccept"
+    let-onReject="onReject"
+  >
     <div class="modern-confirm">
       <div class="confirm-header">
         <i class="pi pi-exclamation-circle icon"></i>
-        <span>{{ message.header || 'Confirmation' }}</span>
-        <button class="close-btn" (click)="onReject()"><i class="pi pi-times"></i></button>
+        <span>{{ message.header || "Confirmation" }}</span>
+        <button class="close-btn" (click)="onReject()">
+          <i class="pi pi-times"></i>
+        </button>
       </div>
 
       <div class="confirm-body">
@@ -14,15 +21,22 @@
       </div>
 
       <div class="confirm-footer">
-        <button pButton label="Cancel" class="p-button-text p-button-sm" (click)="onReject()"></button>
-        <button pButton label="Save" class="p-button-primary p-button-sm" (click)="onAccept()"></button>
+        <button
+          pButton
+          label="Cancel"
+          class="p-button-text p-button-sm"
+          (click)="onReject()"
+        ></button>
+        <button
+          pButton
+          label="Save"
+          class="p-button-primary p-button-sm"
+          (click)="onAccept()"
+        ></button>
       </div>
     </div>
   </ng-template>
 </p-confirmdialog>
-
-
-
 
 <!-- Tiêu đề chính -->
 <div class="job-header text-center mb-4">
@@ -35,7 +49,13 @@
 <!-- Bảng -->
 <div class="card shadow-sm p-4">
   <div class="flex justify-content-end align-items-center mb-3">
-    <button pButton label="Add New" icon="pi pi-plus" class="p-button-sm p-button-primary" (click)="openAdd()"></button>
+    <button
+      pButton
+      label="Add New"
+      icon="pi pi-plus"
+      class="p-button-sm p-button-primary"
+      (click)="openAdd()"
+    ></button>
   </div>
 
   <p-table [value]="careers" [paginator]="true" [rows]="5" [loading]="loading">
@@ -55,19 +75,32 @@
     <ng-template pTemplate="body" let-job>
       <tr>
         <td>
-          <img [src]="job.banner" width="150" height="110" class="banner-img" />
+          <img
+            [src]="job.banner ? job.banner : 'assets/images/no-image.jpg'"
+            width="150"
+            height="110"
+            class="banner-img"
+          />
         </td>
         <td>{{ job.title }}</td>
         <td>{{ job.department }}</td>
         <td>{{ job.location }}</td>
         <td>{{ job.salary_range }}</td>
         <td>{{ job.posted_by }}</td>
-        <td>{{ job.created_at | date: 'short' }}</td>
+        <td>{{ job.created_at | date : "short" }}</td>
         <td class="text-center">
-          <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-success p-button-sm"
-            (click)="openEdit(job)"></button>
-          <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger p-button-sm"
-            (click)="deleteJob(job)"></button>
+          <button
+            pButton
+            icon="pi pi-pencil"
+            class="p-button-rounded p-button-text p-button-success p-button-sm"
+            (click)="openEdit(job)"
+          ></button>
+          <button
+            pButton
+            icon="pi pi-trash"
+            class="p-button-rounded p-button-text p-button-danger p-button-sm"
+            (click)="deleteJob(job)"
+          ></button>
         </td>
       </tr>
     </ng-template>
@@ -75,7 +108,12 @@
 </div>
 
 <!-- Dialog Add -->
-<p-dialog [(visible)]="displayAddDialog" [modal]="true" [style]="{ width: '650px' }" header="Add New Job">
+<p-dialog
+  [(visible)]="displayAddDialog"
+  [modal]="true"
+  [style]="{ width: '650px' }"
+  header="Add New Job"
+>
   <form [formGroup]="addForm" class="dialog-form">
     <div class="form-row">
       <div class="form-group">
@@ -101,12 +139,20 @@
 
     <div class="form-group full">
       <label>Description</label>
-      <textarea pInputTextarea formControlName="description" rows="2"></textarea>
+      <textarea
+        pInputTextarea
+        formControlName="description"
+        rows="2"
+      ></textarea>
     </div>
 
     <div class="form-group full">
       <label>Requirements</label>
-      <textarea pInputTextarea formControlName="requirements" rows="2"></textarea>
+      <textarea
+        pInputTextarea
+        formControlName="requirements"
+        rows="2"
+      ></textarea>
     </div>
 
     <div class="form-row">
@@ -122,13 +168,28 @@
   </form>
 
   <ng-template pTemplate="footer">
-    <button pButton label="Cancel" class="p-button-text" (click)="displayAddDialog=false"></button>
-    <button pButton label="Save" class="p-button-primary" (click)="createJob()"></button>
+    <button
+      pButton
+      label="Cancel"
+      class="p-button-text"
+      (click)="displayAddDialog = false"
+    ></button>
+    <button
+      pButton
+      label="Save"
+      class="p-button-primary"
+      (click)="createJob()"
+    ></button>
   </ng-template>
 </p-dialog>
 
 <!-- Dialog Edit -->
-<p-dialog [(visible)]="displayEditDialog" [modal]="true" [style]="{ width: '650px' }" header="Edit Job">
+<p-dialog
+  [(visible)]="displayEditDialog"
+  [modal]="true"
+  [style]="{ width: '650px' }"
+  header="Edit Job"
+>
   <form [formGroup]="editForm" class="dialog-form">
     <!-- Các trường tương tự Add -->
     <div class="form-row">
@@ -155,12 +216,20 @@
 
     <div class="form-group full">
       <label>Description</label>
-      <textarea pInputTextarea formControlName="description" rows="2"></textarea>
+      <textarea
+        pInputTextarea
+        formControlName="description"
+        rows="2"
+      ></textarea>
     </div>
 
     <div class="form-group full">
       <label>Requirements</label>
-      <textarea pInputTextarea formControlName="requirements" rows="2"></textarea>
+      <textarea
+        pInputTextarea
+        formControlName="requirements"
+        rows="2"
+      ></textarea>
     </div>
 
     <div class="form-row">
@@ -176,7 +245,17 @@
   </form>
 
   <ng-template pTemplate="footer">
-    <button pButton label="Cancel" class="p-button-text me-2 mb-4" (click)="displayEditDialog=false"></button>
-    <button pButton label="Update" class="btn btn-primary me-2 mb-4" (click)="updateJob()"></button>
+    <button
+      pButton
+      label="Cancel"
+      class="p-button-text me-2 mb-4"
+      (click)="displayEditDialog = false"
+    ></button>
+    <button
+      pButton
+      label="Update"
+      class="btn btn-primary me-2 mb-4"
+      (click)="updateJob()"
+    ></button>
   </ng-template>
 </p-dialog>
