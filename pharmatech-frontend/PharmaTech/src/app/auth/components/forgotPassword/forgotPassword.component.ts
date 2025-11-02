@@ -47,6 +47,7 @@ export class ForgotPasswordComponent {
   visibleOtp = false;
   visibleReset = false;
   msg = '';
+  otpSent = false;
 
   constructor(
     private fb: FormBuilder,
@@ -103,6 +104,7 @@ export class ForgotPasswordComponent {
         detail: res.msg || 'Please check your email for OTP',
       });
       this.visibleOtp = true;
+      this.otpSent = true; // ✅ Đánh dấu đã gửi OTP
     } catch (err: any) {
       this.messageService.add({
         severity: 'error',
@@ -140,6 +142,7 @@ export class ForgotPasswordComponent {
         detail: err.error?.msg || 'Invalid or expired OTP',
       });
     }
+    this.otpSent = false;
   }
 
   /** 🔹 Đặt lại mật khẩu */
@@ -167,7 +170,7 @@ export class ForgotPasswordComponent {
         detail: res.msg || 'You can now login with your new password',
       });
       this.visibleReset = false;
-      setTimeout(() => this.router.navigate(['/login']), 1500);
+      setTimeout(() => this.router.navigate(['/auth/login']), 1500);
     } catch (err: any) {
       this.messageService.add({
         severity: 'error',

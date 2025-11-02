@@ -1,0 +1,87 @@
+/* ===== Container layout ===== */
+.product-container {
+  padding: 1.5rem;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f7f8fa;
+  min-height: 100vh;
+}
+
+
+/* ===== Table styles ===== */
+.product-table {
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.product-table th {
+  background-color: #1976d2;
+  color: white;
+  text-align: center;
+  font-weight: 600;
+}
+
+.product-table td {
+  text-align: center;
+  vertical-align: middle;
+  padding: 10px;
+}
+
+.product-table tr:hover {
+  background-color: #f1f7ff;
+  transition: background-color 0.2s ease;
+}
+
+/* ===== Image column ===== */
+.product-table img {
+  border-radius: 6px;
+  object-fit: cover;
+  width: 60px;
+  height: 60px;
+  border: 1px solid #ddd;
+  transition: transform 0.2s ease;
+}
+
+.product-table img:hover {
+  transform: scale(1.1);
+}
+
+/* ===== Card container ===== */
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== Loading spinner ===== */
+.loading-spinner {
+  display: block;
+  margin: 100px auto;
+}
+
+/* ===== ConfirmDialog & Toast overrides ===== */
+.p-confirm-dialog {
+  border-radius: 10px;
+}
+
+.p-toast {
+  z-index: 9999;
+}
+
+.p-button-danger {
+  color: #e53935 !important;
+}
+
+.p-button-danger:hover {
+  background-color: #ffcdd2 !important;
+}
+
+/* ===== Empty table message ===== */
+.text-center {
+  text-align: center;
+  font-style: italic;
+  color: #999;
+  padding: 15px 0;
+}

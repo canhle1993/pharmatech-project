@@ -7,6 +7,9 @@ import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { AccountModule } from './account/account.module';
 import { MailModule } from './mail/mail.module';
+import { CategoryModule } from './category/category.module';
+import { ProductModule } from './product/product.module';
+import { CareerModule } from './career/career.module';
 
 @Module({
   imports: [
@@ -16,10 +19,13 @@ import { MailModule } from './mail/mail.module';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get('connection_string'),
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const uri = configService.get('connection_string');
+        console.log('🔗 Connected Mongo URI:', uri); // 👉 In ra đường dẫn thật
+        return { uri };
+      },
     }),
+    
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -44,6 +50,9 @@ import { MailModule } from './mail/mail.module';
     }),
     AccountModule,
     MailModule,
+    CategoryModule,
+    ProductModule,
+    CareerModule,
   ],
   controllers: [],
   providers: [],
