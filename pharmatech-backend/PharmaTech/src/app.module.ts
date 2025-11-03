@@ -9,6 +9,7 @@ import { AccountModule } from './account/account.module';
 import { MailModule } from './mail/mail.module';
 import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { ProductModule } from './product/product.module';
     MailModule,
     CategoryModule,
     ProductModule,
+    ChatModule
   ],
   controllers: [],
   providers: [],

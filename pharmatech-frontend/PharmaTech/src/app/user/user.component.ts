@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { CarouselComponent } from './components/carousel/carousel.component';
+import { ChatbotComponent } from './components/chatbot/chatbot.component';
 @Component({
   selector: 'app-user',
   standalone: true,
@@ -25,6 +26,7 @@ import { CarouselComponent } from './components/carousel/carousel.component';
     HeaderComponent,
     FooterComponent,
     CarouselComponent,
+    ChatbotComponent
   ],
 })
 export class UserComponent implements OnInit {
@@ -74,6 +76,7 @@ export class UserComponent implements OnInit {
       'assets/js/lightgallery.min.js',
       'assets/js/jquery.magnific-popup.min.js',
       'assets/js/main.js',
+      'assets/js/chatbot.js',
     ];
     jsFiles.forEach((src) => {
       const script = this.renderer.createElement('script');

@@ -1332,6 +1332,7 @@ textarea.form-field:focus {
 .scroll-top {
   position: fixed;
   right: 30px;
+  top: 777px !important;
   bottom: -60px;
   z-index: 999;
   width: 40px;
