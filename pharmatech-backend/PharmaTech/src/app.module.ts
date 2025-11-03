@@ -10,6 +10,7 @@ import { MailModule } from './mail/mail.module';
 import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
 import { CareerModule } from './career/career.module';
+import { ProductCategoryModule } from './product-category/product-category.module';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { CareerModule } from './career/career.module';
         return { uri };
       },
     }),
-    
+
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -53,6 +54,7 @@ import { CareerModule } from './career/career.module';
     CategoryModule,
     ProductModule,
     CareerModule,
+    ProductCategoryModule,
   ],
   controllers: [],
   providers: [],

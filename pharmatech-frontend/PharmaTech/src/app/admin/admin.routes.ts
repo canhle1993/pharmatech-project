@@ -22,6 +22,7 @@ import { OrderDetailsComponent } from './pages/order/order-details/order-details
 import { ChatComponent } from './pages/support/chat/chat.component';
 import { ChatHistoryComponent } from './pages/support/chat-history/chat-history.component';
 import { AccountDetailsComponent } from './pages/account/accountdetails/accountdetails.component';
+import { CategoryDetailsComponent } from './pages/category/categorydetails/categorydetails.component';
 
 export const adminRoutes: Routes = [
   {
@@ -34,6 +35,7 @@ export const adminRoutes: Routes = [
       { path: 'account-details/:id', component: AccountDetailsComponent },
       { path: 'product-list', component: ProductListComponent },
       { path: 'category-list', component: CategoryListComponent },
+      { path: 'category-details/:id', component: CategoryDetailsComponent },
 
       { path: 'about', component: AboutComponent },
       { path: 'contact', component: ContactComponent },

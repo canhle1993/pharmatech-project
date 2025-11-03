@@ -59,4 +59,11 @@ export class ProductService {
       this.httpClient.post(env.baseUrl + 'product/upload', formData)
     );
   }
+
+  /** 🔹 Lấy danh sách sản phẩm chưa bị xóa mềm */
+  findAllActive() {
+    return lastValueFrom(
+      this.httpClient.get(env.baseUrl + 'product/find-active')
+    );
+  }
 }

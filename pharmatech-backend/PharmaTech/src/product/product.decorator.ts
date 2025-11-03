@@ -1,7 +1,6 @@
 // src/product/product.decorator.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
-import { Category } from 'src/category/category.decorator';
 
 export type ProductDocument = HydratedDocument<Product>;
 
@@ -25,9 +24,6 @@ export class Product {
 
   @Prop({ type: [String], default: [] })
   gallery?: string[]; // Bộ sưu tập ảnh phụ
-
-  @Prop({ type: MongooseSchema.Types.ObjectId })
-  category_id: MongooseSchema.Types.ObjectId; // ✅ chỉ lưu ID
 
   @Prop()
   specification?: string; // Thông số kỹ thuật

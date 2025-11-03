@@ -24,12 +24,12 @@ export class CategoryService {
       excludeExtraneousValues: true,
     });
   }
+
   async findByKeyword(keyword: string): Promise<CategoryDTO[]> {
-    let categories = await this.categoryModel
-      .find({
-        name: { $regex: keyword, $options: 'i' }, // chỗ này options phải là string, không phải mảng
-      })
+    const categories = await this.categoryModel
+      .find({ name: { $regex: keyword, $options: 'i' } })
       .exec();
+
     return categories.map((c) =>
       plainToInstance(CategoryDTO, c.toObject(), {
         excludeExtraneousValues: true,
@@ -38,13 +38,11 @@ export class CategoryService {
   }
 
   async findAll(): Promise<CategoryDTO[]> {
-    // 🔹 Lọc chỉ lấy các category chưa bị xóa
     const categories = await this.categoryModel
-      .find({ is_delete: false }) // chỉ lấy dữ liệu chưa xóa mềm
-      .sort({ created_at: -1 }) // sắp xếp mới nhất lên đầu
+      .find({ is_delete: false })
+      .sort({ created_at: -1 })
       .exec();
 
-    // 🔹 Chuyển sang DTO
     return categories.map((c) =>
       plainToInstance(CategoryDTO, c.toObject(), {
         excludeExtraneousValues: true,
@@ -52,21 +50,48 @@ export class CategoryService {
     );
   }
 
-  create(categoryDTO: CategoryDTO): Promise<Category> {
-    let category = new this.categoryModel(categoryDTO);
-    return category.save();
+  async create(categoryDTO: CategoryDTO): Promise<Category> {
+    try {
+      const category = new this.categoryModel({
+        name: categoryDTO.name,
+        description: categoryDTO.description,
+        photo: categoryDTO.photo || null,
+        is_active: true,
+        is_delete: false,
+        updated_by: categoryDTO.updated_by || 'admin',
+        created_at: new Date(),
+        updated_at: new Date(),
+      });
+
+      return await category.save();
+    } catch (error) {
+      // ✅ Kiểm tra trùng tên
+      if (error.code === 11000) {
+        throw new HttpException(
+          `Category name "${categoryDTO.name}" already exists`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      console.error('❌ Create Category error:', error);
+      throw new HttpException(
+        {
+          message: 'Failed to create Category',
+          errorMessage: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async update(categoryDTO: CategoryDTO): Promise<Category> {
     const category = await this.categoryModel.findById(categoryDTO.id);
     if (!category) {
       throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-    } else {
-      Object.assign(category, categoryDTO, {
-        updated_at: new Date(),
-      });
-      return category.save();
     }
+
+    Object.assign(category, categoryDTO, { updated_at: new Date() });
+    return category.save();
   }
 
   async delete(id: string, updated_by: string): Promise<any> {
@@ -82,7 +107,7 @@ export class CategoryService {
     category.is_delete = true;
     category.is_active = false;
     category.updated_at = new Date();
-    category.updated_by = updated_by; // ✅ nhận từ controller
+    category.updated_by = updated_by;
 
     await category.save();
     return { msg: 'Deleted (soft)' };

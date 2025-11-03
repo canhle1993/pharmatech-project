@@ -30,7 +30,7 @@
               pButton
               icon="pi pi-user-plus"
               label="Add"
-              class="p-button-sm p-button-success"
+              class="p-button-sm p-button-info"
               (click)="openCreateDialog()"
             ></button>
           </div>
@@ -160,7 +160,7 @@
             <button
               pButton
               class="p-button-sm lock-btn"
-              [class.p-button-danger]="account.is_active"
+              [class.p-button-dangerr]="account.is_active"
               [class.p-button-success]="!account.is_active"
               (click)="toggleLock(account)"
               [disabled]="account.loading"
