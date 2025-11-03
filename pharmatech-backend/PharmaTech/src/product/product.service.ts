@@ -100,4 +100,10 @@ export class ProductService {
     await product.save();
     return { msg: 'Deleted (soft)' };
   }
+
+  async findActive(): Promise<Product[]> {
+    return this.productModel
+      .find({ is_delete: false })
+      .sort({ created_at: -1 });
+  }
 }

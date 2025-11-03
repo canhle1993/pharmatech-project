@@ -34,15 +34,12 @@ export class ProductDTO {
   @Expose()
   gallery?: string[];
 
-  @Transform(({ obj }) => obj.category_id?.toString()) // ✅ convert ObjectId to string
-  @Expose({ name: 'categoryId' })
-  categoryId: string;
-
   // ✅ Thông số kỹ thuật
   @Expose()
   specification?: string;
 
   // ✅ Giá (nếu có)
+  @Transform(({ obj }) => (obj?.price ? Number(obj.price) : 0))
   @Expose()
   price?: number;
 

@@ -83,4 +83,9 @@ export class ProductController {
       url: 'http://localhost:3000/upload/' + file.filename,
     };
   }
+
+  @Get('find-active')
+  async findActive() {
+    return this.productService.findActive();
+  }
 }

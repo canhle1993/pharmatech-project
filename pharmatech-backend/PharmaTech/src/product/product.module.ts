@@ -5,6 +5,7 @@ import { ProductService } from './product.service';
 import { ProductController } from './product.controller';
 import { CategoryModule } from 'src/category/category.module';
 import { Category, CategorySchema } from 'src/category/category.decorator';
+import { ProductCategoryModule } from 'src/product-category/product-category.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { Category, CategorySchema } from 'src/category/category.decorator';
       { name: Category.name, schema: CategorySchema },
     ]),
     CategoryModule,
+    ProductCategoryModule,
   ],
   controllers: [ProductController],
   providers: [ProductService],

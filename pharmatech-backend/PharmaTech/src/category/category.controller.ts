@@ -17,50 +17,39 @@ import { extname } from 'path';
 import { diskStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express/multer/interceptors/file.interceptor';
 import { v4 as uuidv4 } from 'uuid';
+import { ProductCategoryService } from 'src/product-category/product-category.service';
 
 @Controller('api/category')
 export class CategoryController {
-  constructor(private categoryService: CategoryService) {}
+  constructor(
+    private categoryService: CategoryService,
+    private productCategoryService: ProductCategoryService,
+  ) {}
 
+  // 🔹 Lấy theo ID
   @Get('find-by-id/:id')
   async findById(@Param('id') id: string) {
-    let categoryDTO = await this.categoryService.findById(id);
-    if (categoryDTO == null) {
+    const categoryDTO = await this.categoryService.findById(id);
+    if (!categoryDTO) {
       throw new HttpException('Id Not Found', HttpStatus.NOT_FOUND);
-    } else {
-      return categoryDTO;
     }
+    return categoryDTO;
   }
 
+  // 🔹 Tìm theo keyword
   @Get('find-by-keyword/:keyword')
   findByKeyword(@Param('keyword') keyword: string) {
     return this.categoryService.findByKeyword(keyword);
   }
 
+  // 🔹 Lấy toàn bộ
   @Get('find-all')
   findAll() {
     return this.categoryService.findAll();
   }
 
+  // ✅ Tạo Category + liên kết Product
   @Post('create')
-  async create(@Body() categoryDTO: CategoryDTO) {
-    return await this.categoryService.create(categoryDTO);
-  }
-
-  @Put('update')
-  async update(@Body() categoryDTO: CategoryDTO) {
-    return await this.categoryService.update(categoryDTO);
-  }
-
-  @Put('soft-delete/:id')
-  async softDelete(
-    @Param('id') id: string,
-    @Body('updated_by') updated_by: string,
-  ) {
-    return await this.categoryService.delete(id, updated_by);
-  }
-
-  @Post('upload')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -73,10 +62,66 @@ export class CategoryController {
       }),
     }),
   )
-  upload(@UploadedFile() file: Express.Multer.File) {
-    return {
-      filename: file.filename,
-      url: 'http://localhost:3000/upload/' + file.filename,
-    };
+  async create(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
+    try {
+      // 1️⃣ Chuẩn hóa dữ liệu
+      const categoryDTO: CategoryDTO = {
+        name: body.name,
+        description: body.description,
+        updated_by: body.updated_by,
+        photo: file ? file.filename : null,
+      } as CategoryDTO;
+
+      // ✅ Đúng
+      // ✅ ép kiểu any để có thể truy cập _id
+      const createdCategory: any =
+        await this.categoryService.create(categoryDTO);
+
+      if (body.product_ids) {
+        const productIds: string[] = Array.isArray(body.product_ids)
+          ? body.product_ids
+          : JSON.parse(body.product_ids);
+
+        await Promise.all(
+          productIds.map((pid) =>
+            this.productCategoryService.add(
+              pid,
+              createdCategory._id.toString(),
+              categoryDTO.updated_by || 'admin',
+            ),
+          ),
+        );
+      }
+
+      return {
+        message: 'Category created successfully',
+        data: createdCategory,
+      };
+    } catch (error) {
+      console.error('❌ Create category error:', error);
+      throw new HttpException(
+        {
+          message: 'Failed to create category',
+          errorMessage: error.message,
+          errorStack: error.stack,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // 🔹 Cập nhật
+  @Put('update')
+  async update(@Body() categoryDTO: CategoryDTO) {
+    return await this.categoryService.update(categoryDTO);
+  }
+
+  // 🔹 Xóa mềm
+  @Put('soft-delete/:id')
+  async softDelete(
+    @Param('id') id: string,
+    @Body('updated_by') updated_by: string,
+  ) {
+    return await this.categoryService.delete(id, updated_by);
   }
 }

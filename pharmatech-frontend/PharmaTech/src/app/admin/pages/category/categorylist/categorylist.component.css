@@ -5,14 +5,6 @@
   min-height: 100vh;
 }
 
-.page-title {
-  font-size: 1.8rem;
-  color: #333;
-  margin-bottom: 1rem;
-  border-left: 4px solid #3b82f6;
-  padding-left: 10px;
-}
-
 .category-table ::ng-deep .p-datatable-thead > tr > th {
   background: #3b82f6;
   color: #fff;
@@ -29,17 +21,23 @@
 }
 
 /* Ảnh danh mục */
-.category-photo {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 2px solid #e5e7eb;
-}
 
 .category-table ::ng-deep .p-datatable-tbody > tr:hover {
   background-color: #eef2ff;
   transition: background 0.2s ease-in-out;
+}
+
+.category-table img {
+  border-radius: 6px;
+  object-fit: cover;
+  width: 60px;
+  height: 60px;
+  border: 1px solid #ddd;
+  transition: transform 0.2s ease;
+}
+
+.category-table img:hover {
+  transform: scale(1.1);
 }
 
 .loading-spinner {
@@ -47,4 +45,175 @@
   justify-content: center;
   align-items: center;
   height: 200px;
+}
+
+/* 🎯 Add + Role + Status + Search layout */
+:host ::ng-deep .p-datatable-caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Bên phải (Role / Status / Search) */
+:host ::ng-deep .filter-group {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+  flex-wrap: nowrap;
+}
+
+/* Dropdown sát nhau */
+:host ::ng-deep .filter-group .p-dropdown {
+  margin-right: 6px !important;
+}
+:host ::ng-deep .filter-group .p-float-label:last-of-type .p-dropdown {
+  margin-right: 0 !important;
+}
+
+/* Kích cỡ dropdown & search */
+:host ::ng-deep .filter-group .p-dropdown {
+  min-width: 150px !important;
+  height: 38px;
+}
+:host ::ng-deep .search-field {
+  flex: 1 1 350px;
+  max-width: 420px;
+}
+:host ::ng-deep .search-field input.p-inputtext {
+  width: 100% !important;
+  height: 38px;
+}
+
+/* Nút Add */
+:host ::ng-deep .toolbar-actions button {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+/* Responsive toolbar */
+@media (max-width: 768px) {
+  :host ::ng-deep .p-datatable-caption {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  :host ::ng-deep .filter-group {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  :host ::ng-deep .search-field {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+}
+/* ===============================
+   ✨ DIALOG: Add New Category
+================================= */
+:host ::ng-deep .p-dialog .p-dialog-header {
+  background: #3b82f6;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 1rem 1.25rem;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-content {
+  background-color: #f9fafc;
+  padding: 1.5rem;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+/* Label + Input đẹp hơn */
+:host ::ng-deep .p-dialog .field label {
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+:host ::ng-deep .p-dialog .field input[type="file"] {
+  padding: 0.3rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #fff;
+  width: 100%;
+  font-size: 0.95rem;
+}
+
+/* Input & Textarea */
+:host ::ng-deep .p-dialog .p-inputtext,
+:host ::ng-deep .p-dialog textarea {
+  border-radius: 8px !important;
+  border: 1px solid #cbd5e1;
+  padding: 0.55rem 0.75rem;
+  width: 100%;
+  transition: border 0.2s ease;
+}
+
+:host ::ng-deep .p-dialog .p-inputtext:focus,
+:host ::ng-deep .p-dialog textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.25);
+}
+
+/* Multiselect */
+:host ::ng-deep .p-multiselect {
+  width: 100%;
+  border-radius: 8px;
+}
+
+:host ::ng-deep .p-multiselect-label {
+  padding: 0.5rem 0.75rem;
+  color: #475569;
+}
+
+/* Buttons */
+:host ::ng-deep .p-dialog .p-button {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+:host ::ng-deep .p-dialog .p-button.p-button-text {
+  color: #64748b;
+}
+
+:host ::ng-deep .p-dialog .p-button.p-button-text:hover {
+  background-color: #f1f5f9;
+}
+
+:host ::ng-deep .p-dialog .p-button:not(.p-button-text) {
+  background: #3b82f6;
+  border: none;
+}
+
+:host ::ng-deep .p-dialog .p-button:not(.p-button-text):hover {
+  background: #2563eb;
+}
+
+/* Form spacing */
+:host ::ng-deep .p-dialog .field {
+  margin-bottom: 1rem;
+}
+::ng-deep .p-multiselect-panel .p-multiselect-items {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+}
+::ng-deep .p-multiselect-panel .p-multiselect-items::-webkit-scrollbar {
+  width: 6px;
+}
+::ng-deep .p-multiselect-panel .p-multiselect-items::-webkit-scrollbar-thumb {
+  background-color: #94a3b8;
+  border-radius: 3px;
 }

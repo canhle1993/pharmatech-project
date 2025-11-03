@@ -8,7 +8,6 @@
   min-height: 100vh;
 }
 
-
 .error-msg {
   color: #e63946;
   font-weight: 500;
@@ -217,7 +216,6 @@ p-floatlabel {
 .dialog-form {
   display: flex;
   flex-direction: column;
-
 }
 
 .form-field {
@@ -267,6 +265,17 @@ p-floatlabel {
 .form-field input.ng-valid.ng-touched {
   border-color: #22c55e;
 }
-.p-dialog{
-  max-height: 94%!important;
+.p-dialog {
+  max-height: 94% !important;
+}
+::ng-deep .p-button-dangerr {
+  background-color: #6b7280 !important; /* màu xám trung tính */
+  border-color: #6b7280 !important;
+  color: white !important;
+}
+/* Giới hạn chiều cao dropdown MultiSelect */
+::ng-deep .p-multiselect-panel {
+  max-height: 180px !important; /* khoảng 3 items */
+  overflow-y: auto !important;
+  border-radius: 8px !important;
 }
