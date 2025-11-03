@@ -7,9 +7,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { AboutComponent } from './pages/about/about.component';
 import { ContactComponent } from './pages/contact/contact.component';
 import { BannerComponent } from './pages/banner/banner.component';
-import { FacebookComponent } from './pages/settings/facebook/facebook.component';
-import { ZaloComponent } from './pages/settings/zalo/zalo.component';
-import { PhoneComponent } from './pages/settings/phone/phone.component';
+import { HotlineInfoComponent } from './pages/settings/HotlineInfo/HotlineInfo.component';
 import { RecycleAccountComponent } from './pages/recycle/recycle-account/recycle-account.component';
 import { RecycleCategoryComponent } from './pages/recycle/recycle-category/recycle-category.component';
 import { RecycleProductComponent } from './pages/recycle/recycle-product/recycle-product.component';
@@ -36,9 +34,7 @@ export const adminRoutes: Routes = [
       { path: 'about', component: AboutComponent },
       { path: 'contact', component: ContactComponent },
       { path: 'banner', component: BannerComponent },
-      { path: 'settings/facebook', component: FacebookComponent },
-      { path: 'settings/zalo', component: ZaloComponent },
-      { path: 'settings/phone', component: PhoneComponent },
+      { path: 'settings/hotline', component: HotlineInfoComponent },
       { path: 'recycle/user', component: RecycleAccountComponent },
       { path: 'recycle/category', component: RecycleCategoryComponent },
       { path: 'recycle/product', component: RecycleProductComponent },

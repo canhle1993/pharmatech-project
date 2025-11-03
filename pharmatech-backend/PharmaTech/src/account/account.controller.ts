@@ -200,19 +200,24 @@ export class AccountController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './upload',
+        destination: (req, file, cb) => {
+          const folder = req.body.folder || 'about';
+          const path = `./upload/about`;
+          cb(null, path);
+        },
         filename: (req, file, cb) => {
-          const uniqueName = uuidv4().replace(/-/g, '');
+          const folder = req.body.folder || 'general';
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
           const extension = extname(file.originalname);
-          cb(null, uniqueName + extension);
+          cb(null, `${folder}-${uniqueSuffix}${extension}`);
         },
       }),
     }),
   )
-  upload(@UploadedFile() file: Express.Multer.File) {
+  upload(@UploadedFile() file: Express.Multer.File, @Body('folder') folder?: string) {
     return {
       filename: file.filename,
-      url: 'http://localhost:3000/upload/' + file.filename,
+      url: `/upload/about/${file.filename}`,
     };
   }
 

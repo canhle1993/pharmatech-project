@@ -9,6 +9,9 @@ import { AccountModule } from './account/account.module';
 import { MailModule } from './mail/mail.module';
 import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
+import { AboutModule } from './about/about.module';
+import { ContactModule } from './contact/contact.module';
+import { HotlineModule } from './hotline/hotline.module';
 
 @Module({
   imports: [
@@ -46,6 +49,9 @@ import { ProductModule } from './product/product.module';
     }),
     AccountModule,
     MailModule,
+    AboutModule,
+    ContactModule,
+    HotlineModule,
     CategoryModule,
     ProductModule,
   ],
