@@ -23,6 +23,8 @@ import { ChatComponent } from './pages/support/chat/chat.component';
 import { ChatHistoryComponent } from './pages/support/chat-history/chat-history.component';
 import { AccountDetailsComponent } from './pages/account/accountdetails/accountdetails.component';
 import { CategoryDetailsComponent } from './pages/category/categorydetails/categorydetails.component';
+import { ProductAddComponent } from './pages/product/productAdd/productAdd.component';
+import { ProductDetailsComponent } from './pages/product/productDetails/productDetails.component';
 
 export const adminRoutes: Routes = [
   {
@@ -33,7 +35,11 @@ export const adminRoutes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'account-list', component: AccountListComponent },
       { path: 'account-details/:id', component: AccountDetailsComponent },
+
       { path: 'product-list', component: ProductListComponent },
+      { path: 'product-add', component: ProductAddComponent },
+      { path: 'product-details/:id', component: ProductDetailsComponent },
+
       { path: 'category-list', component: CategoryListComponent },
       { path: 'category-details/:id', component: CategoryDetailsComponent },
 

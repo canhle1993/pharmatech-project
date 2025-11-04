@@ -11,6 +11,7 @@ import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
 import { CareerModule } from './career/career.module';
 import { ProductCategoryModule } from './product-category/product-category.module';
+import { ProductImageModule } from './product-image/product-image.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { ProductCategoryModule } from './product-category/product-category.modul
     ProductModule,
     CareerModule,
     ProductCategoryModule,
+    ProductImageModule,
   ],
   controllers: [],
   providers: [],

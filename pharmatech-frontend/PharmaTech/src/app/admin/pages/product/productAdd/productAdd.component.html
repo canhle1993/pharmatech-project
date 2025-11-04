@@ -1,0 +1,165 @@
+<div class="product-container">
+  <h4 class="fw-bold py-3 mb-4">
+    <span class="text-muted fw-light">Product /</span> Product Details
+  </h4>
+  <p-toast></p-toast>
+
+  <form [formGroup]="addForm" (ngSubmit)="onCreateProduct()">
+    <div class="grid-layout">
+      <!-- 🖼️ CARD 1: ẢNH -->
+      <div class="card image-card">
+        <h4 class="card-title">Product Images</h4>
+
+        <div class="row photo-row">
+          <!-- Ảnh chính -->
+          <div class="col">
+            <label>Main Photo</label>
+            <input
+              type="file"
+              accept="image/*"
+              (change)="onMainFileSelected($event)"
+            />
+            <div *ngIf="mainPreview" class="mt-2">
+              <img [src]="mainPreview" alt="Preview" class="preview-img" />
+            </div>
+          </div>
+
+          <!-- Gallery -->
+          <div class="col">
+            <label>Gallery Images</label>
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              (change)="onGallerySelected($event)"
+            />
+            <div
+              class="gallery-preview mt-2"
+              *ngIf="galleryPreviews.length > 0"
+            >
+              <img
+                *ngFor="let img of galleryPreviews"
+                [src]="img"
+                class="gallery-thumb"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🧾 CARD 2: THÔNG TIN SẢN PHẨM -->
+      <div class="card info-card">
+        <h4 class="card-title">Product Information</h4>
+
+        <!-- Hàng thông tin -->
+        <div class="row info-row">
+          <div class="col">
+            <label>Product Name</label>
+            <input
+              pInputText
+              formControlName="name"
+              placeholder="Enter product name"
+              required
+            />
+          </div>
+
+          <div class="col">
+            <label>Model</label>
+            <input
+              pInputText
+              formControlName="model"
+              placeholder="Enter model code"
+            />
+          </div>
+
+          <div class="col">
+            <label>Manufacturer</label>
+            <input
+              pInputText
+              formControlName="manufacturer"
+              placeholder="Enter manufacturer"
+            />
+          </div>
+
+          <div class="col">
+            <label>Price</label>
+            <input
+              type="number"
+              pInputText
+              formControlName="price"
+              placeholder="Enter price"
+            />
+          </div>
+
+          <div class="col">
+            <label>Select Category</label>
+            <p-multiSelect
+              [options]="categories"
+              formControlName="category_ids"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Choose categories"
+              [filter]="true"
+              [appendTo]="'body'"
+            >
+            </p-multiSelect>
+          </div>
+        </div>
+
+        <!-- Hàng mô tả -->
+        <div class="row text-row">
+          <div class="col">
+            <label>Specification</label>
+            <textarea
+              pInputTextarea
+              formControlName="specification"
+              placeholder="Enter technical specifications"
+              rows="3"
+              style="width: 500px"
+            >
+            </textarea>
+          </div>
+
+          <div class="col">
+            <label>Description</label>
+            <textarea
+              pInputTextarea
+              formControlName="description"
+              placeholder="Enter description"
+              rows="3"
+              style="width: 500px"
+            >
+            </textarea>
+          </div>
+        </div>
+
+        <!-- Nút -->
+        <div class="flex justify-content-end gap-2 mt-3">
+          <button
+            pButton
+            label="Cancel"
+            class="p-button-text"
+            type="button"
+            (click)="onCancel()"
+          ></button>
+          <button
+            pButton
+            label="Save"
+            type="submit"
+            [disabled]="addForm.invalid || loading"
+          ></button>
+        </div>
+      </div>
+    </div>
+  </form>
+  <!-- 🔙 Quay lại -->
+  <div class="button-group">
+    <button
+      pButton
+      icon="pi pi-arrow-left"
+      label="Back to list"
+      class="p-button-text"
+      routerLink="/admin/product-list"
+    ></button>
+  </div>
+</div>

@@ -1,5 +1,5 @@
 <div class="product-container">
-  <h2 class="page-title">Product List</h2>
+  <h2 class="page-title">Product</h2>
 
   <!-- ✅ Toast thông báo -->
   <p-toast></p-toast>
@@ -12,7 +12,9 @@
 
   <div class="card" *ngIf="!loading">
     <p-table
+      #dt
       [value]="products"
+      [globalFilterFields]="['name']"
       dataKey="id"
       [rows]="4"
       [paginator]="true"
@@ -21,6 +23,30 @@
       [responsiveLayout]="'scroll'"
       class="product-table"
     >
+      <ng-template pTemplate="caption">
+        <div class="p-datatable-caption">
+          <div class="toolbar-actions">
+            <button
+              pButton
+              icon="pi pi-plus"
+              label="Add"
+              class="p-button-sm p-button-info"
+              [routerLink]="['/admin/product-add']"
+            ></button>
+          </div>
+          <div class="filter-group">
+            <p-iconfield iconPosition="left" class="search-field">
+              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($event.target.value, 'contains')"
+                placeholder="Search by name"
+              />
+            </p-iconfield>
+          </div>
+        </div>
+      </ng-template>
       <!-- Header -->
       <ng-template pTemplate="header">
         <tr>
@@ -48,11 +74,25 @@
           </td>
           <td>{{ product.name }}</td>
           <td>{{ product.model }}</td>
-          <td>{{ getCategoryName(product.categoryId) }}</td>
+          <td>
+            <ng-container *ngIf="product.categories?.length > 0; else noCat">
+              <span *ngFor="let c of product.categories; let last = last">
+                {{ c.name }}<span *ngIf="!last">, </span>
+              </span>
+            </ng-container>
+            <ng-template #noCat>-</ng-template>
+          </td>
           <td>{{ product.manufacturer || "-" }}</td>
           <td>{{ product.updated_by || "-" }}</td>
           <td>{{ product.updated_at || "-" }}</td>
           <td>
+            <button
+              pButton
+              icon="pi pi-search"
+              class="p-button-text p-button-info"
+              title="View"
+              [routerLink]="['/admin/product-details', product.id]"
+            ></button>
             <button
               pButton
               icon="pi pi-trash"
