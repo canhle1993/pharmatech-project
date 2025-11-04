@@ -1,0 +1,159 @@
+/* Custom styles for About Us page */
+
+/* Điều chỉnh viền trang trí cho Main Image của Intro Section */
+.aboutus-image {
+  position: relative;
+  overflow: visible;
+}
+
+.aboutus-image::after {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 20px;
+  top: 20px;
+  border: 2px solid #BC8157;
+  content: "";
+  z-index: -1;
+  display: block;
+  pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+  .aboutus-image::after {
+    left: 15px;
+    top: 15px;
+    border-width: 2px;
+  }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+  .aboutus-image::after {
+    left: 12px;
+    top: 12px;
+    border-width: 1.5px;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .aboutus-image::after {
+    display: none;
+  }
+}
+
+/* Đảm bảo hình ảnh có tỷ lệ chuẩn */
+.aboutus-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  position: relative;
+  z-index: 1;
+}
+
+/* Điều chỉnh container để viền không bị cắt */
+.aboutus-image {
+  padding-right: 20px;
+  padding-bottom: 20px;
+}
+
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+  .aboutus-image {
+    padding-right: 15px;
+    padding-bottom: 15px;
+  }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+  .aboutus-image {
+    padding-right: 12px;
+    padding-bottom: 12px;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .aboutus-image {
+    padding-right: 0;
+    padding-bottom: 0;
+  }
+}
+
+/* Điều chỉnh viền trang trí cho Open Section Image (aboutus-image-two) */
+.aboutus-image-two {
+  position: relative;
+  overflow: visible;
+}
+
+.aboutus-image-two::after {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  right: 20px;
+  top: 20px;
+  border: 2px solid #BC8157;
+  content: "";
+  z-index: -1;
+  display: block;
+  pointer-events: none;
+}
+
+/* Responsive adjustments for aboutus-image-two */
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+  .aboutus-image-two::after {
+    right: 15px;
+    top: 15px;
+    border-width: 2px;
+  }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+  .aboutus-image-two::after {
+    right: 12px;
+    top: 12px;
+    border-width: 1.5px;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .aboutus-image-two::after {
+    display: none;
+  }
+}
+
+/* Đảm bảo hình ảnh Open Section có tỷ lệ chuẩn */
+.aboutus-image-two img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  position: relative;
+  z-index: 1;
+}
+
+/* Điều chỉnh container Open Section để viền không bị cắt */
+.aboutus-image-two {
+  padding-right: 20px;
+  padding-bottom: 20px;
+}
+
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+  .aboutus-image-two {
+    padding-right: 15px;
+    padding-bottom: 15px;
+  }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+  .aboutus-image-two {
+    padding-right: 12px;
+    padding-bottom: 12px;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .aboutus-image-two {
+    padding-right: 0;
+    padding-bottom: 0;
+  }
+}

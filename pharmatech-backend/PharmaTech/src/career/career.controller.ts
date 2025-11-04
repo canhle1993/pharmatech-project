@@ -20,7 +20,7 @@ import { CareerService } from './career.service';
 import { CreateCareerDto, UpdateCareerDto } from './career.dto';
 
 const UPLOAD_DIR = './upload/career-banners';
-
+const now = new Date();
 @Controller('api/career')
 export class CareerController {
   constructor(private readonly careerService: CareerService) {}
@@ -54,6 +54,18 @@ export class CareerController {
         : undefined,
       posted_by: body?.posted_by ? String(body.posted_by).trim() : undefined,
       banner: file?.filename || undefined,
+      quantity: body?.quantity ? Number(body.quantity) : undefined,
+      level: body?.level?.trim(),
+      experience: body?.experience?.trim(),
+      work_type: body?.work_type?.trim(),
+      area: body?.area?.trim(),
+      // 🆕 Nếu không có posted_date thì set = now
+      posted_date: body?.posted_date
+        ? String(body.posted_date)
+        : now.toISOString(),
+      expiration_date: body?.expiration_date
+        ? String(body.expiration_date)
+        : undefined,
     };
 
     console.log('BODY RAW >>>', body);
@@ -101,6 +113,15 @@ export class CareerController {
       requirements: body?.requirements?.toString().trim(),
       salary_range: body?.salary_range?.toString().trim(),
       banner: file?.filename, // nếu không upload thì sẽ là undefined
+      quantity: body?.quantity ? Number(body.quantity) : undefined,
+      level: body?.level?.trim(),
+      experience: body?.experience?.trim(),
+      work_type: body?.work_type?.trim(),
+      area: body?.area?.trim(),
+      posted_date: body?.posted_date ? String(body.posted_date) : undefined,
+      expiration_date: body?.expiration_date
+        ? String(body.expiration_date)
+        : undefined,
     };
 
     // loại field trống để phù hợp @IsOptional()

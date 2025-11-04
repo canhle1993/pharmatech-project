@@ -1,0 +1,128 @@
+/* ================================
+   🖼️ Thumbnail ảnh đồng đều + hover
+=================================== */
+.blog-post-two_thumb {
+  display: block;
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.blog-post-two_thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.blog-post-two_thumb:hover img {
+  transform: scale(1.06);
+}
+
+/* Icon vali */
+.blog-post-two_format {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #b87b4c;
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: 6px 0 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ================================
+   📋 Card Content
+=================================== */
+.blog-post-two__content {
+  margin-top: 15px;
+  padding: 0 2px;
+}
+
+.blog-post-two__meta {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 5px 0;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.blog-post-two__meta li {
+  display: inline-block;
+  margin-right: 5px;
+  color: #7a7a7a;
+}
+
+.blog-post-two__title {
+  font-size: 1.3rem;
+  margin: 5px 0 10px 0;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.blog-post-two__title a {
+  color: #111;
+  text-decoration: none;
+}
+
+.blog-post-two__title a:hover {
+  color: #b87b4c;
+}
+
+/* ================================
+   🧾 Thông tin phụ
+=================================== */
+.job-info {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 10px 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: #4b4b4b;
+}
+
+.job-info li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.job-info i {
+  font-size: 1rem;
+  color: #b87b4c;
+}
+
+/* ================================
+   💰 Mức lương + nút Read More
+=================================== */
+.salary {
+  color: #b87b4c;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+}
+
+.blog-post-two__btn {
+  font-size: 0.9rem;
+  color: #111;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.blog-post-two__btn:hover {
+  color: #b87b4c;
+  transform: translateX(3px);
+}

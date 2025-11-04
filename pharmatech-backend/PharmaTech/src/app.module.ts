@@ -12,6 +12,10 @@ import { ProductModule } from './product/product.module';
 import { CareerModule } from './career/career.module';
 import { ProductCategoryModule } from './product-category/product-category.module';
 import { ProductImageModule } from './product-image/product-image.module';
+import { AboutModule } from './about/about.module';
+import { ContactModule } from './contact/contact.module';
+import { HotlineModule } from './hotline/hotline.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -57,6 +61,10 @@ import { ProductImageModule } from './product-image/product-image.module';
     CareerModule,
     ProductCategoryModule,
     ProductImageModule,
+    AboutModule,
+    ContactModule,
+    HotlineModule,
+    ChatModule,
   ],
   controllers: [],
   providers: [],
