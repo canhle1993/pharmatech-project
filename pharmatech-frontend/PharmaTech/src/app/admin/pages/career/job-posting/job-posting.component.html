@@ -35,19 +35,74 @@
     <button pButton label="Add New" icon="pi pi-plus" class="p-button-sm p-button-primary" (click)="openAdd()"></button>
   </div>
 
-  <p-table [value]="careers" [paginator]="true" [rows]="5" [loading]="loading">
+  <p-table #dt [value]="careers" [paginator]="true" [rows]="5" [loading]="loading" sortMode="single"
+    [globalFilterFields]="['title', 'department', 'location', 'salary_range', 'posted_by']"
+    [tableStyle]="{ 'min-width': '75rem' }">
+    <!-- 🔍 Search toàn bảng -->
+    <ng-template pTemplate="caption">
+      <div class="flex justify-content-between align-items-center mb-3">
+
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon>
+            <i class="pi pi-search"></i>
+          </p-inputicon>
+          <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+            placeholder="Search jobs..." class="p-inputtext-sm w-18rem" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+
+
     <ng-template pTemplate="header">
       <tr>
         <th>Banner</th>
-        <th>Title</th>
-        <th>Department</th>
-        <th>Location</th>
-        <th>Salary</th>
-        <th>Posted By</th>
-        <th>Created</th>
+
+        <th pSortableColumn="title">
+          <div class="flex align-items-center gap-2">
+            Title
+            <p-sortIcon field="title"></p-sortIcon>
+          </div>
+        </th>
+
+        <th pSortableColumn="department">
+          <div class="flex align-items-center gap-2">
+            Department
+            <p-sortIcon field="department"></p-sortIcon>
+          </div>
+        </th>
+
+        <th pSortableColumn="location">
+          <div class="flex align-items-center gap-2">
+            Location
+            <p-sortIcon field="location"></p-sortIcon>
+          </div>
+        </th>
+
+        <th pSortableColumn="salary_range">
+          <div class="flex align-items-center gap-2">
+            Salary
+            <p-sortIcon field="salary_range"></p-sortIcon>
+          </div>
+        </th>
+
+        <th pSortableColumn="posted_by">
+          <div class="flex align-items-center gap-2">
+            Posted By
+            <p-sortIcon field="posted_by"></p-sortIcon>
+          </div>
+        </th>
+
+        <th pSortableColumn="created_at">
+          <div class="flex align-items-center gap-2">
+            Created
+            <p-sortIcon field="created_at"></p-sortIcon>
+          </div>
+        </th>
+
         <th>Action</th>
       </tr>
     </ng-template>
+
 
     <ng-template pTemplate="body" let-job>
       <tr>
@@ -132,13 +187,14 @@
 
     <div class="form-group full">
       <label>Description</label>
-      <textarea pInputTextarea formControlName="description" rows="2"></textarea>
+      <p-editor formControlName="description" [style]="{ height: '200px' }"></p-editor>
     </div>
 
     <div class="form-group full">
       <label>Requirements</label>
-      <textarea pInputTextarea formControlName="requirements" rows="2"></textarea>
+      <p-editor formControlName="requirements" [style]="{ height: '200px' }"></p-editor>
     </div>
+
 
     <!-- Row: Expiration + Posted By -->
     <div class="form-row">
@@ -230,13 +286,14 @@
 
     <div class="form-group full">
       <label>Description</label>
-      <textarea pInputTextarea formControlName="description" rows="2"></textarea>
+      <p-editor formControlName="description" [style]="{ height: '200px' }"></p-editor>
     </div>
 
     <div class="form-group full">
       <label>Requirements</label>
-      <textarea pInputTextarea formControlName="requirements" rows="2"></textarea>
+      <p-editor formControlName="requirements" [style]="{ height: '200px' }"></p-editor>
     </div>
+
 
     <!-- 🗓️ Posted & Expiration Dates (với ràng buộc min/max) -->
     <div class="form-row">
@@ -296,6 +353,7 @@
     <p><strong>Area:</strong> {{ selectedJobDetail.area || '-' }}</p>
     <p><strong>Quantity:</strong> {{ selectedJobDetail.quantity || '-' }}</p>
     <p><strong>Experience:</strong> {{ selectedJobDetail.experience || '-' }}</p>
+    <p><strong>Work Type:</strong> {{ selectedJobDetail.work_type || '-' }}</p>
     <p><strong>Salary:</strong> {{ selectedJobDetail.salary_range || '-' }}</p>
     <p><strong>Description:</strong> {{ selectedJobDetail.description }}</p>
     <p><strong>Requirements:</strong> {{ selectedJobDetail.requirements }}</p>

@@ -6,6 +6,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
 // PrimeNG
 import { TableModule } from 'primeng/table';
@@ -16,6 +17,9 @@ import { ToastModule } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { EditorModule } from 'primeng/editor';
 
 // Services & Entities
 import { CareerService } from '../../../../services/career.service';
@@ -28,12 +32,16 @@ import { Career } from '../../../../entities/career.entity';
     CommonModule,
     ReactiveFormsModule,
     TableModule,
+    FormsModule,
     ButtonModule,
     DialogModule,
     InputTextModule,
     ToastModule,
     ProgressSpinnerModule,
     ConfirmDialogModule,
+    IconFieldModule,
+    InputIconModule,
+    EditorModule,
   ],
   templateUrl: './job-posting.component.html',
   styleUrls: ['./job-posting.component.css'],

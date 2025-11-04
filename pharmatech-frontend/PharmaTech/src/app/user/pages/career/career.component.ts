@@ -1,15 +1,41 @@
 import { Component, OnInit, Renderer2, AfterViewInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { CareerService } from '../../../services/career.service';
+import { Career } from '../../../entities/career.entity'; // ✅ import entity
 
 @Component({
+  standalone: true,
+  selector: 'app-user-career',
   templateUrl: './career.component.html',
-  imports: [RouterLink],
+  styleUrls: ['./career.component.css'], // ✅ thêm styleUrls ở đây
+  imports: [CommonModule, RouterLink],
 })
 export class CareerComponent implements OnInit, AfterViewInit {
+  careers: Career[] = []; // ✅ dùng kiểu Career thay vì any
+  loading = true;
+
   constructor(
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private careerService: CareerService
   ) {}
-  ngOnInit() {}
+
+  ngOnInit() {
+    this.loadCareers();
+  }
+
+  /** 🔹 Gọi API lấy danh sách job */
+  async loadCareers() {
+    try {
+      const res = await this.careerService.findAll();
+      this.careers = res as Career[]; // ép kiểu rõ ràng
+    } catch (err) {
+      console.error('❌ Lỗi load career:', err);
+    } finally {
+      this.loading = false;
+    }
+  }
+
   ngAfterViewInit() {
     // --- CSS ---
     const cssFiles = [
@@ -57,7 +83,5 @@ export class CareerComponent implements OnInit, AfterViewInit {
       script.type = 'text/javascript';
       this.renderer.appendChild(document.body, script);
     });
-    
   }
 }
-
