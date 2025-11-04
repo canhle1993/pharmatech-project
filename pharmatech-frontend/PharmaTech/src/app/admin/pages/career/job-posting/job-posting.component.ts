@@ -6,6 +6,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
 // PrimeNG
 import { TableModule } from 'primeng/table';
@@ -16,6 +17,9 @@ import { ToastModule } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { EditorModule } from 'primeng/editor';
 
 // Services & Entities
 import { CareerService } from '../../../../services/career.service';
@@ -23,17 +27,21 @@ import { Career } from '../../../../entities/career.entity';
 
 @Component({
   standalone: true,
-  selector: 'app-job-posting',
+
   imports: [
     CommonModule,
     ReactiveFormsModule,
     TableModule,
+    FormsModule,
     ButtonModule,
     DialogModule,
     InputTextModule,
     ToastModule,
     ProgressSpinnerModule,
     ConfirmDialogModule,
+    IconFieldModule,
+    InputIconModule,
+    EditorModule,
   ],
   templateUrl: './job-posting.component.html',
   styleUrls: ['./job-posting.component.css'],
@@ -49,6 +57,14 @@ export class JobPostingComponent implements OnInit {
 
   addForm!: FormGroup;
   editForm!: FormGroup;
+  // 🆕 Dialog xem chi tiết
+  displayDetailDialog = false;
+  selectedJobDetail: Career | null = null;
+
+  openDetail(job: Career) {
+    this.selectedJobDetail = job;
+    this.displayDetailDialog = true;
+  }
 
   bannerFileAdd: File | null = null;
   bannerFileEdit: File | null = null;
@@ -63,6 +79,14 @@ export class JobPostingComponent implements OnInit {
   ngOnInit(): void {
     this.loadCareers();
     this.initForms();
+    // Theo dõi thay đổi ngày để kiểm tra hợp lệ
+    this.editForm?.get('posted_date')?.valueChanges.subscribe(() => {
+      this.validateDateRange();
+    });
+
+    this.editForm?.get('expiration_date')?.valueChanges.subscribe(() => {
+      this.validateDateRange();
+    });
   }
 
   /** Initialize reactive forms */
@@ -76,6 +100,13 @@ export class JobPostingComponent implements OnInit {
       salary_range: [''],
       posted_by: ['', Validators.required],
       banner: [''],
+      quantity: [null],
+      level: [''],
+      experience: [''],
+      work_type: [''],
+      area: [''],
+      posted_date: [new Date()],
+      expiration_date: [null],
     });
 
     this.editForm = this.fb.group({
@@ -88,6 +119,13 @@ export class JobPostingComponent implements OnInit {
       salary_range: [''],
       posted_by: ['', Validators.required],
       banner: [''],
+      quantity: [null],
+      level: [''],
+      experience: [''],
+      work_type: [''],
+      area: [''],
+      posted_date: [new Date()],
+      expiration_date: [null],
     });
   }
 
@@ -116,6 +154,31 @@ export class JobPostingComponent implements OnInit {
     this.displayAddDialog = true;
   }
 
+  /** Format ngày về yyyy-MM-dd để hiển thị đúng trong input type="date" */
+  private formatDateInput(date: any): string | null {
+    if (!date) return null;
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return null;
+    const month = ('0' + (d.getMonth() + 1)).slice(-2);
+    const day = ('0' + d.getDate()).slice(-2);
+    return `${d.getFullYear()}-${month}-${day}`;
+  }
+
+  /** Kiểm tra nếu posted_date > expiration_date thì cảnh báo */
+  private validateDateRange(): void {
+    const posted = this.editForm.get('posted_date')?.value;
+    const expire = this.editForm.get('expiration_date')?.value;
+    if (posted && expire && new Date(posted) > new Date(expire)) {
+      this.message.add({
+        severity: 'warn',
+        summary: 'Invalid Date',
+        detail: 'Posted date cannot be later than expiration date!',
+      });
+      // Reset lại expiration_date cho an toàn
+      this.editForm.patchValue({ expiration_date: null });
+    }
+  }
+
   /** Open Edit Dialog */
   openEdit(job: Career) {
     this.editForm.patchValue({
@@ -127,7 +190,19 @@ export class JobPostingComponent implements OnInit {
       requirements: job.requirements,
       salary_range: job.salary_range,
       posted_by: job.posted_by,
+      level: job.level,
+      experience: job.experience,
+      work_type: job.work_type,
+      quantity: job.quantity,
+      area: job.area,
+
+      // 🗓️ Hiển thị ngày chính xác
+      posted_date: this.formatDateInput(job.posted_date),
+      expiration_date: this.formatDateInput(job.expiration_date),
+
+      banner: job.banner,
     });
+
     this.bannerFileEdit = null;
     this.displayEditDialog = true;
   }
@@ -136,13 +211,17 @@ export class JobPostingComponent implements OnInit {
   onFileSelect(event: any, type: 'add' | 'edit') {
     const file = event.target.files[0];
     if (file) {
-      if (type === 'add') {
-        this.bannerFileAdd = file;
-        this.addForm.patchValue({ banner: file.name });
-      } else {
-        this.bannerFileEdit = file;
-        this.editForm.patchValue({ banner: file.name });
-      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (type === 'add') {
+          this.bannerFileAdd = file;
+          this.addForm.patchValue({ banner: reader.result });
+        } else {
+          this.bannerFileEdit = file;
+          this.editForm.patchValue({ banner: reader.result });
+        }
+      };
+      reader.readAsDataURL(file);
     }
   }
 

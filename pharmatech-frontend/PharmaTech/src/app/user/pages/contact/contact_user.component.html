@@ -1,5 +1,8 @@
 <!-- Breadcrumb Section Start -->
-<div class="breadcrumb" data-bg-image="assets/images/bg/breadcrumb-bg-4.jpg">
+<div
+  class="breadcrumb"
+  *ngIf="contact; else defaultBreadcrumb"
+  [ngStyle]="{ 'background-image': 'url(' + (contact?.bannerImage ? ('http://localhost:3000' + contact.bannerImage) : 'assets/images/bg/breadcrumb-bg-4.jpg') + ')' }">
   <div class="container">
     <div class="row">
       <div class="col-12">
@@ -14,6 +17,24 @@
     </div>
   </div>
 </div>
+
+<ng-template #defaultBreadcrumb>
+  <div class="breadcrumb" data-bg-image="assets/images/bg/breadcrumb-bg-4.jpg">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <div class="breadcrumb_content">
+            <h1 class="breadcrumb_title">Contact Us</h1>
+            <ul class="breadcrumb_list">
+              <li><a href="index.html">Home</a></li>
+              <li>Contact Us</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
 <!-- Breadcrumb Section End -->
 
 <!-- Contact form section Start -->
@@ -23,12 +44,21 @@
       <div class="col-md-6">
         <div class="contact-section2_content">
           <h2 class="contact-section2__title">Information</h2>
-          <p class="contact-section2__text">
-            Nulla Lorem mollit cupidatat irure. Laborum magna nulla duis ullamco
-            cillum dolor. Voluptate exercitation incididunt
+          <p class="contact-section2__text" [innerHTML]="contact?.content || 'Nulla Lorem mollit cupidatat irure. Laborum magna nulla duis ullamco cillum dolor. Voluptate exercitation incididunt'">
           </p>
           <ul class="contact-section2_list">
-            <li>
+            <!-- Addresses -->
+            <li *ngIf="contact?.addresses && contact.addresses.length > 0">
+              <span class="contact-section2_list__icon"
+                ><i class="lastudioicon lastudioicon-pin-3-2"></i
+              ></span>
+              <span class="contact-section2_list__text">
+                <span *ngFor="let addr of contact.addresses; let last = last">
+                  {{ addr }}<br *ngIf="!last" />
+                </span>
+              </span>
+            </li>
+            <li *ngIf="!contact?.addresses || contact.addresses.length === 0">
               <span class="contact-section2_list__icon"
                 ><i class="lastudioicon lastudioicon-pin-3-2"></i
               ></span>
@@ -37,7 +67,19 @@
                 2464 Royal Ln. Mesa, New Jersey 45463</span
               >
             </li>
-            <li>
+
+            <!-- Phone Numbers -->
+            <li *ngIf="contact?.phones && contact.phones.length > 0">
+              <span class="contact-section2_list__icon"
+                ><i class="lastudioicon lastudioicon-phone-2"></i
+              ></span>
+              <span class="contact-section2_list__text">
+                <span *ngFor="let phone of contact.phones; let last = last">
+                  {{ phone }}<br *ngIf="!last" />
+                </span>
+              </span>
+            </li>
+            <li *ngIf="!contact?.phones || contact.phones.length === 0">
               <span class="contact-section2_list__icon"
                 ><i class="lastudioicon lastudioicon-phone-2"></i
               ></span>
@@ -46,7 +88,19 @@
                 +880-123-456789</span
               >
             </li>
-            <li>
+
+            <!-- Email Addresses -->
+            <li *ngIf="contact?.emails && contact.emails.length > 0">
+              <span class="contact-section2_list__icon"
+                ><i class="lastudioicon lastudioicon-mail"></i
+              ></span>
+              <span class="contact-section2_list__text">
+                <span *ngFor="let email of contact.emails; let last = last">
+                  {{ email }}<br *ngIf="!last" />
+                </span>
+              </span>
+            </li>
+            <li *ngIf="!contact?.emails || contact.emails.length === 0">
               <span class="contact-section2_list__icon"
                 ><i class="lastudioicon lastudioicon-mail"></i
               ></span>
@@ -127,9 +181,10 @@
   >
     <iframe
       class="contact-map"
-      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2136.986005919501!2d-73.9685579655238!3d40.75862446708152!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c258e4a1c884e5%3A0x24fe1071086b36d5!2sThe%20Atrium!5e0!3m2!1sen!2sbd!4v1585132512970!5m2!1sen!2sbd"
+      [src]="safeMapUrl"
+      allowfullscreen
     ></iframe>
   </div>
-  <!-- Google Map Area Start -->
+  <!-- Google Map Area End -->
 </div>
 <!-- Contact Map End -->

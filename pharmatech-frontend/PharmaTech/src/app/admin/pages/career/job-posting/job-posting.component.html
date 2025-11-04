@@ -46,7 +46,7 @@
   <p class="job-subtitle">Manage and publish open positions</p>
 </div>
 
-<!-- Bảng -->
+<!-- Bảng danh sách -->
 <div class="card shadow-sm p-4">
   <div class="flex justify-content-end align-items-center mb-3">
     <button
@@ -58,16 +58,86 @@
     ></button>
   </div>
 
-  <p-table [value]="careers" [paginator]="true" [rows]="5" [loading]="loading">
+  <p-table
+    #dt
+    [value]="careers"
+    [paginator]="true"
+    [rows]="5"
+    [loading]="loading"
+    sortMode="single"
+    [globalFilterFields]="[
+      'title',
+      'department',
+      'location',
+      'salary_range',
+      'posted_by'
+    ]"
+    [tableStyle]="{ 'min-width': '75rem' }"
+  >
+    <!-- 🔍 Search toàn bảng -->
+    <ng-template pTemplate="caption">
+      <div class="flex justify-content-between align-items-center mb-3">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon>
+            <i class="pi pi-search"></i>
+          </p-inputicon>
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($event.target.value, 'contains')"
+            placeholder="Search jobs..."
+            class="p-inputtext-sm w-18rem"
+          />
+        </p-iconfield>
+      </div>
+    </ng-template>
+
     <ng-template pTemplate="header">
       <tr>
         <th>Banner</th>
-        <th>Title</th>
-        <th>Department</th>
-        <th>Location</th>
-        <th>Salary</th>
-        <th>Posted By</th>
-        <th>Created</th>
+
+        <th pSortableColumn="title">
+          <div class="flex align-items-center gap-2">
+            Title
+            <p-sortIcon field="title"></p-sortIcon>
+          </div>
+        </th>
+
+        <th pSortableColumn="department">
+          <div class="flex align-items-center gap-2">
+            Department
+            <p-sortIcon field="department"></p-sortIcon>
+          </div>
+        </th>
+
+        <th pSortableColumn="location">
+          <div class="flex align-items-center gap-2">
+            Location
+            <p-sortIcon field="location"></p-sortIcon>
+          </div>
+        </th>
+
+        <th pSortableColumn="salary_range">
+          <div class="flex align-items-center gap-2">
+            Salary
+            <p-sortIcon field="salary_range"></p-sortIcon>
+          </div>
+        </th>
+
+        <th pSortableColumn="posted_by">
+          <div class="flex align-items-center gap-2">
+            Posted By
+            <p-sortIcon field="posted_by"></p-sortIcon>
+          </div>
+        </th>
+
+        <th pSortableColumn="created_at">
+          <div class="flex align-items-center gap-2">
+            Created
+            <p-sortIcon field="created_at"></p-sortIcon>
+          </div>
+        </th>
+
         <th>Action</th>
       </tr>
     </ng-template>
@@ -76,12 +146,15 @@
       <tr>
         <td>
           <img
-            [src]="job.banner ? job.banner : 'assets/images/no-image.jpg'"
-            width="150"
+            [src]="job.banner"
+            width="200"
             height="110"
-            class="banner-img"
+            class="banner-img hover-pointer"
+            alt="Job Banner"
+            (click)="openDetail(job)"
           />
         </td>
+
         <td>{{ job.title }}</td>
         <td>{{ job.department }}</td>
         <td>{{ job.location }}</td>
@@ -89,6 +162,13 @@
         <td>{{ job.posted_by }}</td>
         <td>{{ job.created_at | date : "short" }}</td>
         <td class="text-center">
+          <button
+            pButton
+            icon="pi pi-eye"
+            class="p-button-rounded p-button-text p-button-info p-button-sm"
+            (click)="openDetail(job)"
+            title="Details"
+          ></button>
           <button
             pButton
             icon="pi pi-pencil"
@@ -137,32 +217,75 @@
       </div>
     </div>
 
-    <div class="form-group full">
-      <label>Description</label>
-      <textarea
-        pInputTextarea
-        formControlName="description"
-        rows="2"
-      ></textarea>
-    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Level</label>
+        <input pInputText formControlName="level" />
+      </div>
 
-    <div class="form-group full">
-      <label>Requirements</label>
-      <textarea
-        pInputTextarea
-        formControlName="requirements"
-        rows="2"
-      ></textarea>
+      <div class="form-group">
+        <label>Experience</label>
+        <input pInputText formControlName="experience" />
+      </div>
+
+      <div class="form-group">
+        <label>Work Type</label>
+        <input pInputText formControlName="work_type" />
+      </div>
     </div>
 
     <div class="form-row">
       <div class="form-group">
+        <label>Quantity</label>
+        <input pInputText type="number" formControlName="quantity" />
+      </div>
+      <div class="form-group">
+        <label>Area</label>
+        <input pInputText formControlName="area" />
+      </div>
+    </div>
+
+    <div class="form-group full">
+      <label>Description</label>
+      <p-editor
+        formControlName="description"
+        [style]="{ height: '200px' }"
+      ></p-editor>
+    </div>
+
+    <div class="form-group full">
+      <label>Requirements</label>
+      <p-editor
+        formControlName="requirements"
+        [style]="{ height: '200px' }"
+      ></p-editor>
+    </div>
+
+    <!-- Row: Expiration + Posted By -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Expiration Date</label>
+        <input type="date" pInputText formControlName="expiration_date" />
+      </div>
+
+      <div class="form-group">
         <label>Posted By *</label>
         <input pInputText formControlName="posted_by" />
       </div>
-      <div class="form-group">
-        <label>Banner</label>
+    </div>
+
+    <!-- Row: Banner (full width, preview chiếm hết hàng) -->
+    <div class="form-group full">
+      <label>Banner</label>
+      <div class="banner-preview-wrapper">
         <input type="file" (change)="onFileSelect($event, 'add')" />
+        <div *ngIf="addForm.value.banner" class="preview-container mt-2">
+          <img
+            [src]="addForm.value.banner"
+            alt="Banner Preview"
+            class="preview-img-large"
+          />
+        </div>
       </div>
     </div>
   </form>
@@ -191,7 +314,7 @@
   header="Edit Job"
 >
   <form [formGroup]="editForm" class="dialog-form">
-    <!-- Các trường tương tự Add -->
+    <!-- giống Add -->
     <div class="form-row">
       <div class="form-group">
         <label>Title *</label>
@@ -214,32 +337,94 @@
       </div>
     </div>
 
-    <div class="form-group full">
-      <label>Description</label>
-      <textarea
-        pInputTextarea
-        formControlName="description"
-        rows="2"
-      ></textarea>
-    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Level</label>
+        <input pInputText formControlName="level" />
+      </div>
 
-    <div class="form-group full">
-      <label>Requirements</label>
-      <textarea
-        pInputTextarea
-        formControlName="requirements"
-        rows="2"
-      ></textarea>
+      <div class="form-group">
+        <label>Experience</label>
+        <input pInputText formControlName="experience" />
+      </div>
+
+      <div class="form-group">
+        <label>Work Type</label>
+        <input pInputText formControlName="work_type" />
+      </div>
     </div>
 
     <div class="form-row">
       <div class="form-group">
-        <label>Posted By *</label>
-        <input pInputText formControlName="posted_by" />
+        <label>Quantity</label>
+        <input pInputText type="number" formControlName="quantity" />
       </div>
       <div class="form-group">
+        <label>Area</label>
+        <input pInputText formControlName="area" />
+      </div>
+    </div>
+
+    <div class="form-group full">
+      <label>Description</label>
+      <p-editor
+        formControlName="description"
+        [style]="{ height: '200px' }"
+      ></p-editor>
+    </div>
+
+    <div class="form-group full">
+      <label>Requirements</label>
+      <p-editor
+        formControlName="requirements"
+        [style]="{ height: '200px' }"
+      ></p-editor>
+    </div>
+
+    <!-- 🗓️ Posted & Expiration Dates (với ràng buộc min/max) -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Posted Date</label>
+        <input
+          type="date"
+          pInputText
+          formControlName="posted_date"
+          [max]="editForm.get('expiration_date')?.value"
+          title="Posted date cannot be later than expiration date"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Expiration Date</label>
+        <input
+          type="date"
+          pInputText
+          formControlName="expiration_date"
+          [min]="editForm.get('posted_date')?.value"
+          title="Expiration date must be after posted date"
+        />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
         <label>Banner</label>
-        <input type="file" (change)="onFileSelect($event, 'edit')" />
+        <div class="banner-preview-wrapper">
+          <input type="file" (change)="onFileSelect($event, 'edit')" />
+          <!-- 🖼 Hiển thị ảnh cũ nếu có -->
+          <div *ngIf="editForm.value.banner" class="preview-container mt-2">
+            <img
+              [src]="editForm.value.banner"
+              alt="Current Banner"
+              class="preview-img"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Posted By *</label>
+        <input pInputText formControlName="posted_by" />
       </div>
     </div>
   </form>
@@ -248,14 +433,61 @@
     <button
       pButton
       label="Cancel"
-      class="p-button-text me-2 mb-4"
+      class="p-button-text"
       (click)="displayEditDialog = false"
     ></button>
     <button
       pButton
       label="Update"
-      class="btn btn-primary me-2 mb-4"
+      class="p-button-primary"
       (click)="updateJob()"
     ></button>
   </ng-template>
+</p-dialog>
+
+<!-- Dialog Details -->
+<p-dialog
+  [(visible)]="displayDetailDialog"
+  [modal]="true"
+  [style]="{ width: '700px' }"
+  header="Job Details"
+>
+  <div *ngIf="selectedJobDetail" class="detail-container">
+    <div class="text-center mb-3">
+      <img
+        *ngIf="selectedJobDetail.banner"
+        [src]="selectedJobDetail.banner"
+        alt="Banner"
+        width="100%"
+        class="border-round shadow-sm"
+      />
+    </div>
+
+    <p><strong>Title:</strong> {{ selectedJobDetail.title }}</p>
+    <p><strong>Department:</strong> {{ selectedJobDetail.department }}</p>
+    <p><strong>Location:</strong> {{ selectedJobDetail.location }}</p>
+    <p><strong>Level:</strong> {{ selectedJobDetail.level || "-" }}</p>
+    <p><strong>Area:</strong> {{ selectedJobDetail.area || "-" }}</p>
+    <p><strong>Quantity:</strong> {{ selectedJobDetail.quantity || "-" }}</p>
+    <p>
+      <strong>Experience:</strong> {{ selectedJobDetail.experience || "-" }}
+    </p>
+    <p><strong>Work Type:</strong> {{ selectedJobDetail.work_type || "-" }}</p>
+    <p><strong>Salary:</strong> {{ selectedJobDetail.salary_range || "-" }}</p>
+    <p><strong>Description:</strong> {{ selectedJobDetail.description }}</p>
+    <p><strong>Requirements:</strong> {{ selectedJobDetail.requirements }}</p>
+    <p><strong>Posted By:</strong> {{ selectedJobDetail.posted_by }}</p>
+    <p>
+      <strong>Posted Date:</strong>
+      {{ selectedJobDetail.posted_date | date : "shortDate" }}
+    </p>
+    <p>
+      <strong>Created At:</strong>
+      {{ selectedJobDetail.created_at | date : "short" }}
+    </p>
+    <p>
+      <strong>Expiration:</strong>
+      {{ selectedJobDetail.expiration_date | date : "shortDate" }}
+    </p>
+  </div>
 </p-dialog>

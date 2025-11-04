@@ -1,0 +1,69 @@
+<div class="container mt-4">
+  <h1 class="mb-4">Hotline Information</h1>
+
+  <form [formGroup]="hotlineForm" (ngSubmit)="onSubmit()" class="bg-white p-4 rounded shadow-sm">
+    <!-- Success/Error Message -->
+    <div *ngIf="message"
+         class="alert alert-dismissible fade show mb-4"
+         [ngClass]="{'alert-success': messageType === 'success', 'alert-danger': messageType === 'error'}"
+         role="alert">
+      {{ message }}
+    </div>
+
+    <!-- Header Information Section -->
+    <div class="section mb-5">
+      <h3 class="mb-4">Header Contact Information</h3>
+      <p class="text-muted mb-4">Manage hotline number and store location displayed in the website header</p>
+
+      <div class="row">
+        <!-- Hotline Number -->
+        <div class="col-md-6 mb-4">
+          <label for="hotlineNumber" class="form-label">
+            Hotline Number <span class="text-danger">*</span>
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            id="hotlineNumber"
+            formControlName="hotlineNumber"
+            placeholder="(012) 345-6789"
+            [class.is-invalid]="hotlineForm.get('hotlineNumber')?.invalid && hotlineForm.get('hotlineNumber')?.touched"
+          />
+          <div class="invalid-feedback" *ngIf="hotlineForm.get('hotlineNumber')?.invalid && hotlineForm.get('hotlineNumber')?.touched">
+            Hotline number is required
+          </div>
+          <small class="text-muted">Enter the hotline number in format: (012) 345-6789</small>
+        </div>
+
+        <!-- Store Location -->
+        <div class="col-md-6 mb-4">
+          <label for="storeLocation" class="form-label">
+            Store Location <span class="text-danger">*</span>
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            id="storeLocation"
+            formControlName="storeLocation"
+            placeholder="6391 Elgin St. Celina, Delaware 10299"
+            [class.is-invalid]="hotlineForm.get('storeLocation')?.invalid && hotlineForm.get('storeLocation')?.touched"
+          />
+          <div class="invalid-feedback" *ngIf="hotlineForm.get('storeLocation')?.invalid && hotlineForm.get('storeLocation')?.touched">
+            Store location is required
+          </div>
+          <small class="text-muted">Enter the complete store address</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="d-flex justify-content-end">
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="hotlineForm.invalid">
+        {{ isEditMode ? 'Update Information' : 'Save Information' }}
+      </button>
+    </div>
+  </form>
+</div>

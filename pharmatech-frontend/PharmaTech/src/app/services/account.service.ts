@@ -143,4 +143,9 @@ export class AccountService {
       this.httpClient.patch(`${env.baseUrl}account/restore/${id}`, {})
     );
   }
+  async findByEmail(email: string) {
+    return lastValueFrom(
+      this.httpClient.get(env.baseUrl + 'account/find-by-email/' + email)
+    );
+  }
 }

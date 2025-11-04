@@ -9,7 +9,11 @@
               <i class="lastudioicon lastudioicon-support248"></i>
               <div class="hotline-content">
                 <span class="hotline-text">Hotline</span>
-                <a class="hotline-link" href="tel:0123456789">(012) 345-6789</a>
+                <a
+                  class="hotline-link"
+                  [href]="getPhoneHref(hotlineData.hotlineNumber)"
+                  >{{ hotlineData.hotlineNumber }}</a
+                >
               </div>
             </div>
           </li>
@@ -18,9 +22,9 @@
               <i class="lastudioicon lastudioicon-pin-check"></i>
               <div class="hotline-content">
                 <span class="hotline-text">Store Location</span>
-                <a class="hotline-link" [routerLink]="['/admin']"
-                  >6391 Elgin St. Celina, Delaware 10299</a
-                >
+                <a class="hotline-link" href="#/">{{
+                  hotlineData.storeLocation
+                }}</a>
               </div>
             </div>
           </li>
@@ -253,6 +257,11 @@
             <li>
               <a class="menu-item-link" [routerLink]="['/contact']"
                 ><span>Contact</span></a
+              >
+            </li>
+            <li>
+              <a class="menu-item-link" [routerLink]="['/admin']"
+                ><span>Dashboard</span></a
               >
             </li>
           </ul>
@@ -564,7 +573,11 @@
           <i class="lastudioicon lastudioicon-support248"></i>
           <div class="hotline-content">
             <span class="hotline-text">Hotline</span>
-            <a class="hotline-link" href="tel:0123456789">(012) 345-6789</a>
+            <a
+              class="hotline-link"
+              [href]="getPhoneHref(hotlineData.hotlineNumber)"
+              >{{ hotlineData.hotlineNumber }}</a
+            >
           </div>
         </div>
       </li>
@@ -573,9 +586,9 @@
           <i class="lastudioicon lastudioicon-pin-check"></i>
           <div class="hotline-content">
             <span class="hotline-text">Store Location</span>
-            <a class="hotline-link" href="#/"
-              >6391 Elgin St. Celina, Delaware 10299</a
-            >
+            <a class="hotline-link" href="#/">{{
+              hotlineData.storeLocation
+            }}</a>
           </div>
         </div>
       </li>

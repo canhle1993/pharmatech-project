@@ -1,4 +1,3 @@
-
 import { Component, OnInit, Renderer2, AfterViewInit } from '@angular/core';
 import {
   NavigationEnd,
@@ -14,6 +13,7 @@ import { CommonModule } from '@angular/common';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { CarouselComponent } from './components/carousel/carousel.component';
+import { ChatbotComponent } from './components/chatbot/chatbot.component';
 
 @Component({
   selector: 'app-user',
@@ -27,6 +27,7 @@ import { CarouselComponent } from './components/carousel/carousel.component';
     HeaderComponent,
     FooterComponent,
     CarouselComponent,
+    ChatbotComponent,
   ],
 })
 export class UserComponent implements OnInit {
@@ -37,7 +38,6 @@ export class UserComponent implements OnInit {
     private renderer: Renderer2
   ) {}
   ngOnInit() {
-   
     // ✅ Gán giá trị ban đầu khi component khởi tạo
     this.isHome = this.router.url === '/' || this.router.url === '/home';
 
@@ -48,6 +48,4 @@ export class UserComponent implements OnInit {
       }
     });
   }
-
-
 }

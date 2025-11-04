@@ -1,0 +1,32 @@
+<!-- Nút mở chat -->
+<button type="button" id="open-chat-btn" pButton (click)="toggleOpen()">💬 Mở Chat</button>
+
+<!-- Khung chatbot ẩn/hiện -->
+<div class="chat-wrapper" [class.hidden]="!open">
+  <div class="chat-container">
+    <header class="chat-header">🤖 Chatbot Trợ Lý</header>
+
+    <!-- Hộp chat -->
+    <div class="chat-box" #chatBoxRef>
+      <div *ngFor="let m of messages" [ngClass]="m.from === 'user' ? 'user-message' : 'bot-message'">
+        {{ m.text }}
+      </div>
+    </div>
+
+    <!-- Khu nhập liệu: dùng Angular form, không dùng JS thuần -->
+    <form class="chat-input-area" (ngSubmit)="send()">
+      <!-- Nếu muốn cho người dùng nhập tên, bật ô dưới; nếu không, giữ mặc định 'guest' -->
+      <!-- <input type="text" [(ngModel)]="user" name="user" placeholder="Tên người dùng..." /> -->
+
+      <input
+        type="text"
+        [(ngModel)]="msg"
+        name="message"
+        placeholder="Nhập tin nhắn..."
+        autocomplete="off"
+        required
+      />
+      <button type="submit" pButton>Gửi</button>
+    </form>
+  </div>
+</div>
