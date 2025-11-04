@@ -4,7 +4,12 @@
   background-color: #f7f8fa;
   min-height: 100vh;
 }
-
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
 .category-table ::ng-deep .p-datatable-thead > tr > th {
   background: #3b82f6;
   color: #fff;

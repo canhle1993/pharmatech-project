@@ -10,6 +10,10 @@ import { Product } from '../../../../entities/product.entity';
 import { Category } from '../../../../entities/category.entity';
 import { ProductService } from '../../../../services/product.service';
 import { CategoryService } from '../../../../services/category.service';
+import { RouterLink } from '@angular/router';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
   templateUrl: './productlist.component.html',
@@ -22,12 +26,19 @@ import { CategoryService } from '../../../../services/category.service';
     ConfirmDialogModule,
     ToastModule,
     ProgressSpinnerModule,
+    RouterLink,
+    IconFieldModule,
+    InputIconModule,
+    InputTextModule,
   ],
   providers: [ConfirmationService, MessageService],
 })
 export class ProductListComponent implements OnInit {
-  products: Product[];
-  categories: Category[];
+  /** Danh sách sản phẩm */
+  products: Product[] = [];
+  /** Danh sách category */
+  categories: Category[] = [];
+  /** Loading spinner */
   loading = true;
 
   constructor(
@@ -37,6 +48,7 @@ export class ProductListComponent implements OnInit {
     private categoryService: CategoryService
   ) {}
 
+  /** Khi load trang */
   async ngOnInit() {
     this.loading = true;
     try {
@@ -59,10 +71,7 @@ export class ProductListComponent implements OnInit {
     }
   }
 
-  getCategoryName(categoryId: string): string {
-    const cat = this.categories.find((c) => c.id === categoryId);
-    return cat ? cat.name : '-';
-  }
+  /** ❌ Xóa mềm sản phẩm */
   async onDelete(product: Product) {
     this.confirmService.confirm({
       message: `Are you sure you want to delete the product "${product.name}"?`,
@@ -83,10 +92,9 @@ export class ProductListComponent implements OnInit {
             detail: `Product "${product.name}" has been deleted.`,
           });
 
-          // Reload list
-          this.productService
-            .findAll()
-            .then((res) => (this.products = res as Product[]));
+          // Reload danh sách
+          const reload: any = await this.productService.findAll();
+          this.products = reload;
         } catch (error) {
           console.error('❌ Delete product error:', error);
           this.messageService.add({
