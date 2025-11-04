@@ -56,9 +56,18 @@ export class CategoryService {
   }
 
   /** 🔹 Cập nhật category */
-  update(category: any) {
+  update(category: any, file?: File) {
+    const formData = new FormData();
+    formData.append('id', category.id);
+    formData.append('name', category.name);
+    formData.append('description', category.description || '');
+    formData.append('updated_by', category.updated_by || 'admin');
+    formData.append('product_ids', JSON.stringify(category.product_ids || []));
+
+    if (file) formData.append('file', file);
+
     return lastValueFrom(
-      this.httpClient.put(env.baseUrl + 'category/update', category)
+      this.httpClient.put(env.baseUrl + 'category/update', formData)
     );
   }
 

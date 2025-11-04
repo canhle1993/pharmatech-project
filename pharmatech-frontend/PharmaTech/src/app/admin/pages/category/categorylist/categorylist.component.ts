@@ -57,9 +57,14 @@ export class CategoryListComponent implements OnInit {
   categories: Category[] = [];
   products: any[] = [];
   addForm!: FormGroup;
+  editForm!: FormGroup;
   loading = true;
   addDialog = false;
+  editDialog = false;
   selectedFile?: File;
+  editFile?: File;
+  editPreview?: string;
+  selectedCategory?: any;
 
   constructor(
     private categoryService: CategoryService,
@@ -77,6 +82,13 @@ export class CategoryListComponent implements OnInit {
       name: ['', Validators.required],
       description: [''],
       product_id: [[]], // ✅ mảng
+    });
+
+    this.editForm = this.fb.group({
+      id: [''],
+      name: ['', Validators.required],
+      description: [''],
+      product_id: [[]],
     });
   }
 
@@ -117,13 +129,44 @@ export class CategoryListComponent implements OnInit {
   showAddDialog() {
     this.addDialog = true;
 
-    setTimeout(() => {
-      const dialogEl = document.querySelector('.p-dialog') as HTMLElement;
-      if (dialogEl) {
-        dialogEl.style.maxHeight = '81vh'; // ép cao hơn
-        dialogEl.style.height = '81vh'; // giữ full
-      }
-    }, 100);
+    // setTimeout(() => {
+    //   const dialogEl = document.querySelector('.p-dialog') as HTMLElement;
+    //   if (dialogEl) {
+    //     dialogEl.style.maxHeight = '81vh'; // ép cao hơn
+    //     dialogEl.style.height = '81vh'; // giữ full
+    //   }
+    // }, 100);
+  }
+
+  showEditDialog(cat: any) {
+    this.selectedCategory = cat;
+    this.editDialog = true;
+
+    // ✅ Hiển thị trước ảnh
+    this.editPreview = cat.photo || 'assets/images/no-image.jpg';
+
+    // ✅ Nếu product_ids là mảng object thì map về id
+    const productIds =
+      Array.isArray(cat.product_ids) && typeof cat.product_ids[0] === 'object'
+        ? cat.product_ids.map((p: any) => p.id || p._id)
+        : cat.product_ids || [];
+
+    // ✅ Patch lại form
+    this.editForm.patchValue({
+      id: cat.id || cat._id,
+      name: cat.name,
+      description: cat.description,
+      product_id: productIds, // ⚡ đúng định dạng cho p-multiSelect
+    });
+
+    // ✅ Giữ form height cho dialog (nếu cần)
+    // setTimeout(() => {
+    //   const dialogEl = document.querySelector('.p-dialog') as HTMLElement;
+    //   if (dialogEl) {
+    //     dialogEl.style.maxHeight = '80vh';
+    //     dialogEl.style.height = '80vh';
+    //   }
+    // }, 100);
   }
 
   onFileSelected(event: any) {
@@ -158,6 +201,48 @@ export class CategoryListComponent implements OnInit {
         severity: 'error',
         summary: 'Error',
         detail: 'Failed to create category.',
+      });
+    }
+  }
+
+  /** 🟡 Chọn file khi chỉnh sửa */
+  onEditFileSelected(event: any) {
+    this.editFile = event.target.files[0];
+    if (this.editFile) {
+      const reader = new FileReader();
+      reader.onload = (e) => (this.editPreview = e.target?.result as string);
+      reader.readAsDataURL(this.editFile);
+    }
+  }
+
+  /** 🟡 Cập nhật Category */
+  async onUpdateCategory() {
+    if (this.editForm.invalid) return;
+
+    const formValue = this.editForm.value;
+    const categoryData = {
+      id: formValue.id,
+      name: formValue.name,
+      description: formValue.description,
+      updated_by: 'admin',
+      product_ids: formValue.product_id,
+    };
+
+    try {
+      await this.categoryService.update(categoryData, this.editFile);
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Category updated successfully.',
+      });
+      this.editDialog = false;
+      this.loadCategories();
+    } catch (error) {
+      console.error('❌ Update category error:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to update category.',
       });
     }
   }

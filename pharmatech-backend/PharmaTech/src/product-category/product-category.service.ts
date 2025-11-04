@@ -81,4 +81,20 @@ export class ProductCategoryService {
 
     return products;
   }
+  /** 🔹 Cập nhật danh sách product của 1 category */
+  async updateCategoryProducts(
+    categoryId: string,
+    productIds: string[],
+    updated_by: string,
+  ) {
+    // Xóa tất cả liên kết cũ
+    await this.pcModel.deleteMany({
+      category_id: new Types.ObjectId(categoryId),
+    });
+
+    // Tạo lại các liên kết mới
+    await Promise.all(
+      productIds.map((pid) => this.add(pid, categoryId, updated_by)),
+    );
+  }
 }
