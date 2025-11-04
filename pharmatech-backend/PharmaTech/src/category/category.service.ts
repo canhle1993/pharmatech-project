@@ -85,13 +85,45 @@ export class CategoryService {
   }
 
   async update(categoryDTO: CategoryDTO): Promise<Category> {
-    const category = await this.categoryModel.findById(categoryDTO.id);
-    if (!category) {
-      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-    }
+    try {
+      const updateData: any = {
+        name: categoryDTO.name,
+        description: categoryDTO.description,
+        updated_by: categoryDTO.updated_by,
+        updated_at: new Date(),
+      };
 
-    Object.assign(category, categoryDTO, { updated_at: new Date() });
-    return category.save();
+      // ✅ Nếu có ảnh mới thì ghi đè
+      if (categoryDTO.photo) {
+        updateData.photo = categoryDTO.photo;
+      }
+
+      // ✅ Cập nhật và trả về document mới nhất
+      const updatedCategory = await this.categoryModel.findByIdAndUpdate(
+        categoryDTO.id,
+        updateData,
+        { new: true }, // ⚡ trả về doc sau khi cập nhật
+      );
+
+      if (!updatedCategory) {
+        throw new HttpException('Category Not Found', HttpStatus.NOT_FOUND);
+      }
+
+      return updatedCategory;
+    } catch (error) {
+      // Nếu trùng tên thì báo lỗi 400
+      if (error.code === 11000) {
+        throw new HttpException(
+          `Category name "${categoryDTO.name}" already exists`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      throw new HttpException(
+        { message: 'Failed to update category', error: error.message },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async delete(id: string, updated_by: string): Promise<any> {

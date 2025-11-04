@@ -38,7 +38,13 @@
   height: 45px;
   border-radius: 50%;
   border: 2px solid #e5e7eb;
+  transition: transform 0.2s ease;
+
   object-fit: cover;
+}
+
+.avatar:hover {
+  transform: scale(1.1);
 }
 
 /* Giới hạn text dài */

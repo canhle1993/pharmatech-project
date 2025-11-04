@@ -110,10 +110,73 @@ export class CategoryController {
     }
   }
 
-  // 🔹 Cập nhật
+  // ✅ Cập nhật Category + cập nhật product liên kết
   @Put('update')
-  async update(@Body() categoryDTO: CategoryDTO) {
-    return await this.categoryService.update(categoryDTO);
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './upload',
+        filename: (req, file, cb) => {
+          const uniqueName = uuidv4().replace(/-/g, '');
+          const extension = extname(file.originalname);
+          cb(null, uniqueName + extension);
+        },
+      }),
+    }),
+  )
+  async update(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
+    try {
+      const categoryDTO: CategoryDTO = {
+        id: body.id,
+        name: body.name,
+        description: body.description,
+        updated_by: body.updated_by,
+        photo: file ? file.filename : null,
+      } as CategoryDTO;
+
+      // Cập nhật thông tin chính
+      const updatedCategory = await this.categoryService.update(categoryDTO);
+
+      // Chuẩn hóa productIds nếu có
+      if (body.product_ids) {
+        const productIds: string[] = Array.isArray(body.product_ids)
+          ? body.product_ids
+          : JSON.parse(body.product_ids);
+
+        // 🔑 Lấy categoryId an toàn (ưu tiên body.id)
+        const uc: any = updatedCategory as any;
+        const categoryId =
+          body.id || uc?.id || (uc?._id ? uc._id.toString() : undefined);
+
+        if (!categoryId) {
+          throw new HttpException(
+            'Cannot resolve category id after update',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        }
+
+        await this.productCategoryService.updateCategoryProducts(
+          categoryId,
+          productIds,
+          categoryDTO.updated_by || 'admin',
+        );
+      }
+
+      return {
+        message: 'Category updated successfully',
+        data: updatedCategory,
+      };
+    } catch (error) {
+      console.error('❌ Update category error:', error);
+      throw new HttpException(
+        {
+          message: 'Failed to update category',
+          errorMessage: error.message,
+          errorStack: error.stack,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   // 🔹 Xóa mềm
