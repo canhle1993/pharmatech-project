@@ -70,7 +70,7 @@ export class ProductEditComponent implements OnInit {
     this.editForm = this.fb.group({
       name: ['', Validators.required],
       model: [''],
-      manufacturer: [''],
+      introduce: [''],
       price: [0, [Validators.min(0)]],
       category_ids: [[]],
       specification: [''],
@@ -105,7 +105,7 @@ export class ProductEditComponent implements OnInit {
       this.editForm.patchValue({
         name: this.product.name,
         model: this.product.model,
-        manufacturer: this.product.manufacturer,
+        introduce: this.product.introduce,
         price: this.product.price,
         specification: this.product.specification,
         description: this.product.description,

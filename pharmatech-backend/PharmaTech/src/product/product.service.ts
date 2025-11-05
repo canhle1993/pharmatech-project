@@ -127,7 +127,7 @@ export class ProductService {
         description: productDTO.description,
         specification: productDTO.specification,
         price: productDTO.price,
-        manufacturer: productDTO.manufacturer,
+        introduce: productDTO.introduce,
         photo: productDTO.photo || null,
         category_ids: productDTO.category_ids || [], // ✅ thêm
         is_active: true,
@@ -171,7 +171,7 @@ export class ProductService {
       const updateData: any = {
         name: productDTO.name,
         model: productDTO.model,
-        manufacturer: productDTO.manufacturer,
+        introduce: productDTO.introduce,
         description: productDTO.description,
         specification: productDTO.specification,
         price: productDTO.price,

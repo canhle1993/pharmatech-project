@@ -61,7 +61,7 @@ export class ProductController {
       const dto: ProductDTO = {
         name: body.name,
         model: body.model,
-        manufacturer: body.manufacturer,
+        introduce: body.introduce,
         description: body.description,
         specification: body.specification,
         price: body.price ? Number(body.price) : 0,
@@ -107,7 +107,7 @@ export class ProductController {
         id: body.id,
         name: body.name,
         model: body.model,
-        manufacturer: body.manufacturer,
+        introduce: body.introduce,
         description: body.description,
         specification: body.specification,
         price: body.price ? Number(body.price) : 0,

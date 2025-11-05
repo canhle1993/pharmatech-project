@@ -16,7 +16,7 @@ export class Product {
   /** ⚙️ Thông tin kỹ thuật & giá */
   specification?: string; // Thông số kỹ thuật
   price?: number; // Giá sản phẩm
-  manufacturer?: string; // Nhà sản xuất
+  introduce?: string; // Nhà sản xuất
 
   /** 🔗 Liên kết category */
   category_ids?: string[]; // Danh sách ID category liên kết

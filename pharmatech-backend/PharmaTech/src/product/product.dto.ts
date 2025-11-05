@@ -24,7 +24,7 @@ export class ProductDTO {
   price?: number;
 
   @Expose()
-  manufacturer?: string;
+  introduce?: string;
 
   @Transform(({ obj }) => (obj?.photo ? `${getImageUrl()}${obj.photo}` : null))
   @Expose()

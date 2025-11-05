@@ -25,7 +25,7 @@ export class Product {
   price?: number; // Giá
 
   @Prop()
-  manufacturer?: string; // Nhà sản xuất
+  introduce?: string; // Nhà sản xuất
 
   @Prop()
   photo?: string; // Ảnh chính
