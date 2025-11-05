@@ -69,7 +69,6 @@
           <th field="model">Model</th>
           <th field="categories">Category</th>
           <!-- ✅ thêm field -->
-          <th field="manufacturer">Manufacturer</th>
           <th field="updated_by">Updated By</th>
           <th field="updated_at">Updated At</th>
           <th>Action</th>
@@ -97,7 +96,6 @@
             </ng-container>
             <ng-template #noCat>-</ng-template>
           </td>
-          <td>{{ product.manufacturer || "-" }}</td>
           <td>{{ product.updated_by || "-" }}</td>
           <td>{{ product.updated_at || "-" }}</td>
           <td>

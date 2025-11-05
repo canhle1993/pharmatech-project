@@ -160,6 +160,81 @@
                   </ul>
                 </li>
               </ul>
+              <ul class="sub-menu sub-menu-mega">
+                <li class="mega-menu-item">
+                  <ul>
+                    <li class="mega-menu-item-title">Production Equipment</li>
+                    <li *ngFor="let cat of categories">
+                      <a
+                        class="sub-item-link"
+                        (click)="goToCategory(cat._id || cat.id)"
+                      >
+                        <span>{{ cat.name }}</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <li class="mega-menu-item">
+                  <ul>
+                    <li class="mega-menu-item-title">Service</li>
+                    <li>
+                      <a class="sub-item-link">
+                        <span>Consulting</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="sub-item-link">
+                        <span>Technical Support</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="sub-item-link">
+                        <span>Equipment Upgrade</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="sub-item-link">
+                        <span>Maintenance</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <li class="mega-menu-item">
+                  <ul>
+                    <li class="mega-menu-item-title">Purchase</li>
+                    <li>
+                      <a class="sub-item-link">
+                        <span>Customer Information Intake</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="sub-item-link">
+                        <span>Technical Equipment Consulting</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="sub-item-link">
+                        <span>URS Development</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="sub-item-link">
+                        <span>Contract Signing</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+
+                <li class="mega-menu-item banner-menu-content-wrap">
+                  <ul>
+                    <li>
+                      <a href="shop.html">
+                        <img src="assets/images/product/top21.png" alt="Shop" />
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
             </li>
             <li>
               <a class="menu-item-link" [routerLink]="['/about-us']"

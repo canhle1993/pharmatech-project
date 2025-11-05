@@ -29,7 +29,7 @@ export class CategoryService {
       category_ids: { $in: [id] },
       is_delete: false,
     })
-      .select('_id name model manufacturer price photo')
+      .select('_id name model introduce price photo')
       .lean();
 
     // ✅ Convert sang DTO
@@ -42,7 +42,7 @@ export class CategoryService {
       id: p._id,
       name: p.name,
       model: p.model,
-      manufacturer: p.manufacturer,
+      introduce: p.introduce,
       price: p.price,
       photo: p.photo,
     }));

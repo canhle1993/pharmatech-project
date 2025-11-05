@@ -47,7 +47,7 @@ export class ProductService {
     formData.append('description', product.description || '');
     formData.append('specification', product.specification || '');
     formData.append('price', product.price ? product.price.toString() : '0');
-    formData.append('manufacturer', product.manufacturer || '');
+    formData.append('introduce', product.introduce || '');
     formData.append('updated_by', product.updated_by || 'admin');
 
     // 🔸 Thêm danh sách category_ids (mảng)
@@ -78,7 +78,7 @@ export class ProductService {
     formData.append('description', product.description || '');
     formData.append('specification', product.specification || '');
     formData.append('price', product.price ? product.price.toString() : '0');
-    formData.append('manufacturer', product.manufacturer || '');
+    formData.append('introduce', product.introduce || '');
     formData.append('updated_by', product.updated_by || 'admin');
 
     // 🏷️ Danh mục (category)
