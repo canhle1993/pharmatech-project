@@ -3,13 +3,33 @@ import { Component, OnInit, Renderer2, AfterViewInit } from '@angular/core';
 @Component({
   templateUrl: './productDetails.component.html',
 })
-export class ProductDetailsComponent implements OnInit, AfterViewInit {
-  constructor(
-    private renderer: Renderer2
-  ) {}
-  ngOnInit() {}
-  ngAfterViewInit() {
-    // --- CSS ---
+export class ProductDetailsComponent implements OnInit {
+  constructor(private renderer: Renderer2) {}
+  async ngOnInit() {
+    await this.loadAssets(); // ⬅️ await để chắc JS đã sẵn sàng
+  }
+
+  /** 🧩 Load CSS + JS (tuần tự) */
+  private async loadAssets() {
+    const addCss = (href: string) =>
+      new Promise<void>((resolve) => {
+        const link = this.renderer.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = href;
+        link.onload = () => resolve();
+        this.renderer.appendChild(document.head, link);
+      });
+
+    const addJs = (src: string) =>
+      new Promise<void>((resolve, reject) => {
+        const s = this.renderer.createElement('script');
+        s.src = src;
+        s.type = 'text/javascript';
+        s.onload = () => resolve();
+        s.onerror = (e: any) => reject(e);
+        this.renderer.appendChild(document.body, s);
+      });
+
     const cssFiles = [
       'assets/css/vendor/bootstrap.min.css',
       'assets/css/vendor/lastudioicons.css',
@@ -21,40 +41,19 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
       'assets/css/magnific-popup.css',
       'assets/css/style.css',
     ];
-    cssFiles.forEach((href) => {
-      const link = this.renderer.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = href;
-      this.renderer.appendChild(document.head, link);
-    });
+    for (const href of cssFiles) await addCss(href);
 
-    const fontLink = this.renderer.createElement('link');
-    fontLink.rel = 'stylesheet';
-    fontLink.href =
-      'https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap';
-    this.renderer.appendChild(document.head, fontLink);
-
-    // --- JS ---
-    const jsFiles = [
-      'assets/js/vendor/modernizr-3.11.7.min.js',
-      'assets/js/vendor/jquery-migrate-3.3.2.min.js',
-      'assets/js/countdown.min.js',
-      'assets/js/ajax.js',
-      'assets/js/jquery.validate.min.js',
-      'assets/js/vendor/jquery-3.6.0.min.js',
-      'assets/js/vendor/bootstrap.bundle.min.js',
-      'assets/js/swiper-bundle.min.js',
-      'assets/js/ion.rangeSlider.min.js',
-      'assets/js/lightgallery.min.js',
-      'assets/js/jquery.magnific-popup.min.js',
-      'assets/js/main.js',
-    ];
-    jsFiles.forEach((src) => {
-      const script = this.renderer.createElement('script');
-      script.src = src;
-      script.type = 'text/javascript';
-      this.renderer.appendChild(document.body, script);
-    });
-    
+    // ✅ BẮT BUỘC: jQuery trước, rồi mới các script khác
+    await addJs('assets/js/vendor/jquery-3.6.0.min.js');
+    await addJs('assets/js/vendor/jquery-migrate-3.3.2.min.js');
+    await addJs('assets/js/vendor/bootstrap.bundle.min.js');
+    await addJs('assets/js/countdown.min.js');
+    await addJs('assets/js/ajax.js');
+    await addJs('assets/js/jquery.validate.min.js');
+    await addJs('assets/js/swiper-bundle.min.js');
+    await addJs('assets/js/ion.rangeSlider.min.js');
+    await addJs('assets/js/lightgallery.min.js');
+    await addJs('assets/js/jquery.magnific-popup.min.js');
+    await addJs('assets/js/main.js');
   }
 }
