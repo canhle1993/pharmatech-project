@@ -85,7 +85,6 @@
 /* Kích cỡ dropdown & search */
 :host ::ng-deep .filter-group .p-dropdown {
   min-width: 150px !important;
-  height: 38px;
 }
 :host ::ng-deep .search-field {
   flex: 1 1 350px;
@@ -93,7 +92,6 @@
 }
 :host ::ng-deep .search-field input.p-inputtext {
   width: 100% !important;
-  height: 38px;
 }
 
 /* Nút Add */

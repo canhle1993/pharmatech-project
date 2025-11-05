@@ -24,41 +24,54 @@ export class ProductService {
     private readonly productCategoryService: ProductCategoryService,
   ) {}
 
-  /** 🔹 Lấy 1 sản phẩm (kèm ảnh phụ + categories) */
+  /** 🔹 Lấy 1 sản phẩm (kèm ảnh phụ + categories chuẩn ID thật) */
   async findById(id: string): Promise<ProductDTO | null> {
-    const product = await this._productModel.findById(id).exec();
+    // ✅ Lấy product gốc + populate category_ids (đúng bảng Category)
+    const product = await this._productModel
+      .findById(id)
+      .populate({
+        path: 'category_ids',
+        model: 'Category',
+        select: '_id name',
+      })
+      .exec();
+
     if (!product) return null;
 
-    // 🔸 Lấy ảnh phụ
+    // 🔸 Lấy ảnh phụ (nếu có bảng product-image)
     const images = await this._productImageModel
       .find({ product_id: id })
       .sort({ created_at: -1 })
       .exec();
-
-    // 🔸 Lấy categories từ bảng product_categories
-    const categories =
-      await this.productCategoryService.findCategoriesByProduct(id);
 
     // 🔸 Convert sang DTO
     const dto = plainToInstance(ProductDTO, product.toObject(), {
       excludeExtraneousValues: true,
     });
 
-    // 🔸 Thêm các trường mở rộng
+    // ✅ Gán gallery + categories
     (dto as any).gallery = images.map((img) => img.url);
-    (dto as any).categories = categories;
+    (dto as any).categories = (product as any).category_ids.map((c: any) => ({
+      id: c._id,
+      name: c.name,
+    }));
+
+    // ✅ Và quan trọng nhất: giữ lại category_ids là mảng ObjectId thật
+    (dto as any).category_ids = (product as any).category_ids.map((c: any) =>
+      c._id.toString(),
+    );
 
     return dto;
   }
 
   /** 🔹 Lấy tất cả (kèm category_ids) */
+  /** 🔹 Lấy tất cả (kèm category_ids + categories) */
   async findAll(): Promise<ProductDTO[]> {
     const products = await this._productModel
       .find({ is_delete: false })
       .sort({ created_at: -1 })
       .lean();
 
-    // ✅ Lấy liên kết từ bảng product-category
     const ProductCategoryModel = (this._productModel.db.models as any)[
       'ProductCategory'
     ];
@@ -68,20 +81,21 @@ export class ProductService {
       const links = await ProductCategoryModel.find({
         product_id: p._id,
       }).lean();
-      const categoryIds = links.map((l: any) => l.category_id);
+      const categoryIds = links.map((l: any) => l.category_id?.toString()); // ✅ convert sang string
+
       const categories = await CategoryModel.find({
         _id: { $in: categoryIds },
       }).lean();
+
+      (p as any).category_ids = categoryIds; // ✅ thêm dòng này để frontend lọc được
       (p as any).categories = categories.map((c: any) => ({
-        id: c._id,
+        id: c._id.toString(),
         name: c.name,
       }));
     }
 
     return products.map((p) =>
-      plainToInstance(ProductDTO, p, {
-        excludeExtraneousValues: true,
-      }),
+      plainToInstance(ProductDTO, p, { excludeExtraneousValues: true }),
     );
   }
 

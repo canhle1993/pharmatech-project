@@ -41,9 +41,7 @@
   gap: 1rem;
 }
 
-/* Giữ nguyên các phần khác như cũ... */
-
-/* --- Chỉnh layout hình ảnh --- */
+/* Layout for images */
 .image-section {
   display: grid;
   grid-template-columns: 1fr 2fr; /* Main chiếm 1 phần, Gallery chiếm 2 phần */

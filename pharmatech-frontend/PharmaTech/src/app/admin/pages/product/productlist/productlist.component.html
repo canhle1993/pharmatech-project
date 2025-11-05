@@ -13,7 +13,7 @@
   <div class="card" *ngIf="!loading">
     <p-table
       #dt
-      [value]="products"
+      [value]="filteredProducts"
       [globalFilterFields]="['name']"
       dataKey="id"
       [rows]="4"
@@ -34,13 +34,27 @@
               [routerLink]="['/admin/product-add']"
             ></button>
           </div>
+
+          <p-floatLabel class="w-full md:w-56" style="margin-left: 40%">
+            <p-select
+              class="w-full"
+              [options]="categories"
+              optionLabel="label"
+              optionValue="value"
+              [(ngModel)]="selectedCategory"
+              [showClear]="true"
+              placeholder="Select Category"
+              (ngModelChange)="applyFilters($event)"
+            ></p-select>
+          </p-floatLabel>
+
           <div class="filter-group">
             <p-iconfield iconPosition="left" class="search-field">
               <p-inputicon><i class="pi pi-search"></i></p-inputicon>
               <input
                 pInputText
                 type="text"
-                (input)="dt.filterGlobal($event.target.value, 'contains')"
+                (input)="onGlobalFilter($event, dt)"
                 placeholder="Search by name"
               />
             </p-iconfield>
@@ -50,13 +64,14 @@
       <!-- Header -->
       <ng-template pTemplate="header">
         <tr>
-          <th>Photo</th>
-          <th>Product Name</th>
-          <th>Model</th>
-          <th>Category</th>
-          <th>Manufacturer</th>
-          <th>Updated By</th>
-          <th>Updated At</th>
+          <th field="photo">Photo</th>
+          <th field="name">Product Name</th>
+          <th field="model">Model</th>
+          <th field="categories">Category</th>
+          <!-- ✅ thêm field -->
+          <th field="manufacturer">Manufacturer</th>
+          <th field="updated_by">Updated By</th>
+          <th field="updated_at">Updated At</th>
           <th>Action</th>
         </tr>
       </ng-template>
@@ -92,6 +107,13 @@
               class="p-button-text p-button-info"
               title="View"
               [routerLink]="['/admin/product-details', product.id]"
+            ></button>
+            <button
+              pButton
+              icon="pi pi-pencil"
+              class="p-button-text p-button-warning"
+              title="Edit"
+              [routerLink]="['/admin/product-edit', product.id]"
             ></button>
             <button
               pButton

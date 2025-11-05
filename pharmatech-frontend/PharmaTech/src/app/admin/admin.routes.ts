@@ -24,6 +24,7 @@ import { CategoryDetailsComponent } from './pages/category/categorydetails/categ
 import { ProductAddComponent } from './pages/product/productAdd/productAdd.component';
 import { ProductDetailsComponent } from './pages/product/productDetails/productDetails.component';
 import { HotlineInfoComponent } from './pages/settings/HotlineInfo/HotlineInfo.component';
+import { ProductEditComponent } from './pages/product/productEdit/productEdit.component';
 
 export const adminRoutes: Routes = [
   {
@@ -38,6 +39,7 @@ export const adminRoutes: Routes = [
       { path: 'product-list', component: ProductListComponent },
       { path: 'product-add', component: ProductAddComponent },
       { path: 'product-details/:id', component: ProductDetailsComponent },
+      { path: 'product-edit/:id', component: ProductEditComponent },
 
       { path: 'category-list', component: CategoryListComponent },
       { path: 'category-details/:id', component: CategoryDetailsComponent },
@@ -51,6 +53,7 @@ export const adminRoutes: Routes = [
       { path: 'recycle/category', component: RecycleCategoryComponent },
       { path: 'recycle/product', component: RecycleProductComponent },
       { path: 'quote', component: QuoteComponent },
+
       { path: 'career/job-posting', component: JobPostingComponent },
       {
         path: 'career/recruitment-details',
@@ -60,6 +63,7 @@ export const adminRoutes: Routes = [
         path: 'career/recruitment-history',
         component: RecruitmentHistoryComponent,
       },
+
       { path: 'order/order-list', component: OrderListComponent },
       { path: 'order/order-details', component: OrderDetailsComponent },
       { path: 'support/chat', component: ChatComponent },

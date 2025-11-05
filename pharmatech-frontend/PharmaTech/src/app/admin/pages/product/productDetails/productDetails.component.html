@@ -1,9 +1,20 @@
 <div class="product-details-container" *ngIf="!loading; else loadingTpl">
+  <h4 class="fw-bold py-3 mb-4">
+    <span class="text-muted fw-light">Product /</span> Product Details
+  </h4>
   <p-toast></p-toast>
 
   <!-- 🖼️ CARD 2: Hình ảnh -->
   <div class="card image-card">
     <h3 class="section-title">Product Images</h3>
+    <button
+      type="button"
+      [routerLink]="['/admin/product-edit', product.id]"
+      class="btn btn-primary me-2 mb-4"
+      style="width: 100px"
+    >
+      Edit
+    </button>
 
     <div class="image-section">
       <div class="main-photo">
@@ -41,6 +52,20 @@
 
     <div class="info-grid">
       <div>
+        <label>Category:</label>
+        <ng-container *ngIf="product.categories?.length > 0; else noCat">
+          <p>
+            <span *ngFor="let c of product.categories; let last = last">
+              {{ c.name }}<span *ngIf="!last">, </span>
+            </span>
+          </p>
+        </ng-container>
+        <ng-template #noCat>
+          <p class="text-muted">No category assigned.</p>
+        </ng-template>
+      </div>
+
+      <div>
         <label>Model:</label>
         <p>{{ product.model || "-" }}</p>
       </div>
@@ -68,18 +93,37 @@
   </div>
 
   <!-- 📜 CARD 3: Specification & Description -->
-  <div class="card desc-card">
+  <div
+    class="card desc-card"
+    *ngIf="product.specification || product.description"
+  >
     <h3 class="section-title">Specification & Description</h3>
     <div class="desc-grid">
-      <div>
+      <!-- SPECIFICATION -->
+      <div *ngIf="product.specification; else noSpec">
         <label>Specification:</label>
-        <p>{{ product.specification || "-" }}</p>
+        <div class="editor-content" [innerHTML]="product.specification"></div>
       </div>
 
-      <div>
+      <ng-template #noSpec>
+        <div>
+          <label>Specification:</label>
+          <p class="text-muted">No specification available.</p>
+        </div>
+      </ng-template>
+
+      <!-- DESCRIPTION -->
+      <div *ngIf="product.description; else noDesc">
         <label>Description:</label>
-        <p>{{ product.description || "-" }}</p>
+        <div class="editor-content" [innerHTML]="product.description"></div>
       </div>
+
+      <ng-template #noDesc>
+        <div>
+          <label>Description:</label>
+          <p class="text-muted">No description available.</p>
+        </div>
+      </ng-template>
     </div>
   </div>
 

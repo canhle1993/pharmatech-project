@@ -17,6 +17,8 @@ import { ButtonModule } from 'primeng/button';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { EditorModule } from 'primeng/editor';
 
 @Component({
   selector: 'app-product-add',
@@ -31,6 +33,8 @@ import { Router, RouterLink } from '@angular/router';
     MultiSelectModule,
     InputNumberModule,
     RouterLink,
+    FormsModule,
+    EditorModule,
   ],
   templateUrl: './productAdd.component.html',
   styleUrls: ['./productAdd.component.css'],
