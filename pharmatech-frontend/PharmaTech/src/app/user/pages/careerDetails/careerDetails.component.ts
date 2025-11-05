@@ -1,13 +1,44 @@
 import { Component, OnInit, Renderer2, AfterViewInit } from '@angular/core';
-
+import { ActivatedRoute } from '@angular/router';
+import { CareerService } from '../../../services/career.service';
+import { Career } from '../../../entities/career.entity';
+import { CommonModule, DatePipe } from '@angular/common';
 @Component({
   templateUrl: './careerDetails.component.html',
+  imports: [CommonModule],
+  providers: [DatePipe],
+  styleUrls: ['./careerDetails.component.css'],
 })
 export class CareerDetailsComponent implements OnInit, AfterViewInit {
+  career?: Career;
+  loading = true;
+
   constructor(
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private route: ActivatedRoute,
+    private careerService: CareerService
   ) {}
-  ngOnInit() {}
+
+  async ngOnInit() {
+    // 🔹 Lấy ID từ URL
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      await this.loadCareer(id);
+    }
+  }
+
+  /** 🔹 Hàm gọi API lấy chi tiết bài đăng */
+  async loadCareer(id: string) {
+    try {
+      const res = await this.careerService.findById(id);
+      this.career = res as Career;
+    } catch (err) {
+      console.error('❌ Error', err);
+    } finally {
+      this.loading = false;
+    }
+  }
+
   ngAfterViewInit() {
     // --- CSS ---
     const cssFiles = [
@@ -28,10 +59,11 @@ export class CareerDetailsComponent implements OnInit, AfterViewInit {
       this.renderer.appendChild(document.head, link);
     });
 
+    // --- Font ---
     const fontLink = this.renderer.createElement('link');
     fontLink.rel = 'stylesheet';
     fontLink.href =
-      'https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap';
+      'https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap';
     this.renderer.appendChild(document.head, fontLink);
 
     // --- JS ---
@@ -55,6 +87,5 @@ export class CareerDetailsComponent implements OnInit, AfterViewInit {
       script.type = 'text/javascript';
       this.renderer.appendChild(document.body, script);
     });
-    
   }
 }

@@ -19,7 +19,7 @@ export const userRoutes: Routes = [
       { path: 'contact', component: ContactComponent },
       { path: 'shop', component: ShopComponent },
       { path: 'career', component: CareerComponent },
-      { path: 'careerDetails', component: CareerDetailsComponent },
+      { path: 'careerDetails/:id', component: CareerDetailsComponent },
       { path: 'productDetails', component: ProductDetailsComponent },
     ],
   },

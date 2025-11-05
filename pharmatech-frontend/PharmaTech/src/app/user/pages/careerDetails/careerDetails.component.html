@@ -1,174 +1,223 @@
-<!-- Breadcrumb Section Start -->
+<!-- Breadcrumb -->
 <div class="breadcrumb" data-bg-image="assets/images/bg/breadcrumb-bg-5.jpg">
   <div class="container">
     <div class="row">
       <div class="col-12">
         <div class="breadcrumb_content">
-          <h1 class="breadcrumb_title">Career Details</h1>
+          <h1 class="breadcrumb_title">Job Details</h1>
           <ul class="breadcrumb_list">
-            <li><a href="index.html">Home</a></li>
-            <li>Career Details</li>
+            <li><a routerLink="/">Home</a></li>
+            <li>Job Details</li>
           </ul>
         </div>
       </div>
     </div>
   </div>
 </div>
-<!-- Breadcrumb Section End -->
 
-<!-- Product Section Start -->
-<div class="blog-sidebar blog-sidebar-right">
-  <div class="container custom-container">
-    <div class="row">
-      <div class="col-12 section-padding-04">
-        <div class="">
-          <div class="single-blog">
-            <div class="single-blog-image">
-              <img src="assets/images/blog/blog-03.jpg" alt="Single-Blog" />
+<!-- Job Detail Section -->
+<div class="career-detail container my-5" *ngIf="!loading && career">
+  <div class="row g-4">
+
+    <!-- ================= LEFT ================= -->
+    <div class="col-lg-8">
+
+      <!-- Header -->
+      <div class="card shadow-sm border-0 rounded-4 mb-4 p-4">
+        <h3 class="fw-bold mb-2 text-dark">{{ career.title }}</h3>
+        <p class="text-danger fs-5 mb-2">
+          💰 {{ career.salary_range || 'Negotiable' }}
+        </p>
+
+        <div class="d-flex flex-wrap align-items-center text-muted small mb-3">
+          <span class="me-3"><i class="las la-clock"></i>
+            Expiration: {{ career.expiration_date | date: 'MMM dd, yyyy' }}
+          </span>
+          <span><i class="las la-map-marker-alt"></i> {{ career.location }}</span>
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+          <button class="btn btn-primary rounded-pill px-4">Apply Now</button>
+          <button class="btn btn-outline-dark rounded-pill px-4">Save Job</button>
+        </div>
+      </div>
+
+      <!-- Job Description -->
+      <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body">
+          <h5 class="fw-bold mb-3 text-dark">Job Description</h5>
+          <p class="text-secondary" [innerHTML]="career.description"></p>
+
+          <h5 class="fw-bold mt-4 mb-2 text-dark">Requirements</h5>
+          <p class="text-secondary" [innerHTML]="career.requirements"></p>
+        </div>
+      </div>
+
+      <!-- Job Information -->
+      <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body">
+          <h5 class="fw-bold mb-3 text-dark">Job Information</h5>
+          <div class="row small text-secondary">
+            <div class="col-md-6">
+              <p><strong>Posted Date:</strong> {{ career.posted_date | date: 'MMM dd, yyyy' }}</p>
+              <p><strong>Department:</strong> {{ career.department }}</p>
+              <p><strong>Area:</strong> {{ career.area || 'N/A' }}</p>
+              <p><strong>Experience:</strong> {{ career.experience || 'No experience required' }}</p>
             </div>
-            <div class="single-blog-content">
-              <ul class="blog-post-two__meta">
-                <li><a href="blog-details.html">Bakery</a></li>
-                <li>-</li>
-                <li><span>August 14, 2022</span></li>
-              </ul>
-              <h2 class="single-blog-title">
-                Things you should know about cakes
-              </h2>
-              <p class="single-blog-description">
-                Donec sed erat ut magna suscipit mattis. Aliquam erat volutpat.
-                Morbi in orci risus. Donec pretium fringilla blandit. Etiam ut
-                accumsan leo. Aliquam id mi quam. Vivamus dictum ut erat nec
-                congue. Etiam facilisis lacus ut arcu vulputate, non
-                pellentesque sem convallis. Proin tempus sapien nisl, nec varius
-                risus tristique a. Etiam ligula lacus, ultricies at cursus id,
-                fringilla nec nulla. Fusce pretium laoreet diam a mollis. In
-                finibus purus sed tortor fringilla, eu luctus lorem sodales.Ut
-                dignissim ante ac augue vulputate tristique. Mauris venenatis
-                tincidunt nibh, sit amet fringilla augue malesuada a. Mauris a
-                nunc congue, viverra lectus sed, imperdiet quantam.
-              </p>
-              <p class="single-blog-description">
-                Aenean tempor sem sed lorem ultricies lacinia. Sed sit amet
-                tortor nibh. Donec condimentum posuere nunc, et hendrerit sapien
-                dictum ut. Aliquam congue non purus eu suscipit. Integer eu dui
-                tortor. Donec ut dolor vitae ipsum ultrices semper. Morbi
-                imperdiet dictum urna nec blandit. Curabitur interdum diam ut
-                porta vulputate.
-              </p>
-              <h3 class="single-blog-title mt-3">We Love Cake</h3>
-              <p class="single-blog-description">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-                in reprehendrit in voluptate velit esse cillum dolore eu fugiat
-                nulla pariatur.
-              </p>
-
-              <div class="single-blog-banner">
-                <img src="assets/images/blog/blog-07.jpg" alt="Single-Blog" />
-              </div>
-
-              <p class="single-blog-description">
-                Vestibulum eu quam nec neque pellentesque efficitur id eget
-                nisl. Proin porta est convallis lacus blandit pretium sed non
-                enim. Maecenas lacinia non orci at aliquam. Donec finibus, urna
-                bibendum ultricies laoreet, augue eros luctus sapien, ut euismod
-                leo tortor ac enim. In hac habitasse platea dictumst. Sed cursus
-                venenatis tellus, non lobortis diam volutpat sit amet. Sed
-                tellus augue, hendrerit eu rutrum in, porttitor at metus. Mauris
-                ac hendrerit metus. Phasellus mattis lectus commodo felis
-                egestas, id accumsan justo ultrices. Phasellus aliquet, sem a
-                placerat dapibus, enim purus dictum lacus, nec ultrices ante dui
-                ac ante. Phasellus placerat, urna.
-              </p>
-              <div class="single-blog-bottom">
-                <div class="col-auto">
-                  <div class="single-blog-tags">
-                    <span class="label">Tags:</span>
-                    <ul>
-                      <li><a href="blog-details.html">bakery,</a></li>
-                      <li><a href="blog-details.html">cake</a></li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="col-auto">
-                  <div class="single-blog-share">
-                    <span class="label">Share:</span>
-                    <div class="social">
-                      <a href="#"><i class="lastudioicon-b-facebook"></i></a>
-                      <a href="#"><i class="lastudioicon-b-twitter"></i></a>
-                      <a href="#"><i class="lastudioicon-b-pinterest"></i></a>
-                      <a href="#"><i class="lastudioicon-b-instagram"></i></a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="single-blog-comments">
-                <h4 class="single-blog-title">Leave a Reply</h4>
-                <form
-                  class="contact-section2_form"
-                  id="contact-form"
-                  action="#"
-                  method="post"
-                >
-                  <div class="row">
-                    <div class="col-sm-4 col-12 form-p">
-                      <div class="form-group">
-                        <input
-                          class="form-field"
-                          type="text"
-                          placeholder="First Name*"
-                        />
-                      </div>
-                    </div>
-                    <div class="col-sm-4 form-p">
-                      <div class="form-group">
-                        <input
-                          class="form-field"
-                          type="email"
-                          placeholder="Email*"
-                        />
-                      </div>
-                    </div>
-                    <div class="col-sm-4 col-12 form-p">
-                      <div class="form-group">
-                        <input
-                          class="form-field"
-                          type="text"
-                          placeholder="Website"
-                        />
-                      </div>
-                    </div>
-                    <div class="col-md-12 form-p">
-                      <div class="form-group">
-                        <textarea
-                          class="form-control text-area"
-                          name="con_message"
-                          placeholder="Message"
-                        ></textarea>
-                      </div>
-                    </div>
-                    <div class="col-md-12 form-p">
-                      <div class="form-group mb-0 d-flex justify-content-start">
-                        <button
-                          class="btn btn-secondary btn-hover-primary rounded-0"
-                          type="submit"
-                        >
-                          Post comments
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </form>
-              </div>
+            <div class="col-md-6">
+              <p><strong>Language:</strong> English / Vietnamese</p>
+              <p><strong>Gender:</strong> Any</p>
+              <p><strong>Working Hours:</strong> 08:00 - 17:00</p>
+              <p><strong>Type:</strong> {{ career.work_type || 'Full-time' }}</p>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Work Location -->
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body">
+          <h5 class="fw-bold mb-3 text-dark">Work Location</h5>
+          <p class="mb-2 text-secondary">
+            <i class="las la-map-marker-alt text-primary me-2"></i>{{ career.location }}
+          </p>
+          <span class="badge bg-light text-dark me-2">{{ career.department }}</span>
+          <span class="badge bg-light text-dark">{{ career.level }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= RIGHT ================= -->
+    <div class="col-lg-4">
+
+      <!-- Fraud Awareness Auto Slider -->
+      <!-- Fraud Awareness Auto Slider -->
+      <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body text-center p-4">
+          <h6 class="fw-bold mb-4 text-uppercase text-dark">
+            ⚠️ Recognize Common Job Scams
+          </h6>
+
+          <div id="fraudCarousel" class="carousel carousel-fade" data-bs-ride="carousel" data-bs-interval="2500">
+
+            <div class="carousel-inner">
+
+              <div class="carousel-item active">
+                <img src="assets/images/fraud/luadaothuphi.webp" alt="Fee-based Scam"
+                  class="img-fluid mb-3 rounded-3" />
+                <h6 class="fw-bold text-dark">Fee-based Scam</h6>
+                <p class="small text-muted mb-1">
+                  Offers unrealistically easy jobs with high pay but requires candidates to pay fees upfront.
+                </p>
+
+              </div>
+
+              <div class="carousel-item">
+                <img src="assets/images/fraud/danhcapthongitnnganhang.webp" alt="Bank Information Theft"
+                  class="img-fluid mb-3 rounded-3" />
+                <h6 class="fw-bold text-dark">Bank Information Theft</h6>
+                <p class="small text-muted mb-1">
+                  Requests for your bank account, password, payment card, or OTP information.
+                </p>
+
+              </div>
+
+              <div class="carousel-item">
+                <img src="assets/images/fraud/danhcapdanhtinh.webp" alt="Identity Theft"
+                  class="img-fluid mb-3 rounded-3" />
+                <h6 class="fw-bold text-dark">Identity Theft</h6>
+                <p class="small text-muted mb-1">
+                  Asks for scanned IDs or email passwords to impersonate candidates illegally.
+                </p>
+
+              </div>
+
+              <div class="carousel-item">
+                <img src="assets/images/fraud/buonbanlaodong.webp" alt="Labor Trafficking"
+                  class="img-fluid mb-3 rounded-3" />
+                <h6 class="fw-bold text-dark">Labor Trafficking</h6>
+                <p class="small text-muted mb-1">
+                  Promises high-paying, vague jobs, often located abroad.
+                </p>
+
+              </div>
+
+              <div class="carousel-item">
+                <img src="assets/images/fraud/giadangcongtylon.webp" alt="Fake Corporate Identity"
+                  class="img-fluid mb-3 rounded-3" />
+                <h6 class="fw-bold text-dark">Fake Corporate Identity</h6>
+                <p class="small text-muted mb-1">
+                  Posts jobs impersonating major companies and contacts job seekers via private messages.
+                </p>
+
+              </div>
+
+              <div class="carousel-item">
+                <img src="assets/images/fraud/thuchienthamgianhiemvu.webp" alt="Task/Survey Scam"
+                  class="img-fluid mb-3 rounded-3" />
+                <h6 class="fw-bold text-dark">Task/Survey Scam</h6>
+                <p class="small text-muted mb-1">
+                  Asks candidates to complete tasks or surveys through mobile apps or suspicious links.
+                </p>
+
+              </div>
+            </div>
+
+            <!-- Indicators -->
+            <div class="carousel-indicators position-relative mt-3">
+              <button type="button" data-bs-target="#fraudCarousel" data-bs-slide-to="0" class="active"
+                aria-current="true" aria-label="Slide 1"></button>
+              <button type="button" data-bs-target="#fraudCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+              <button type="button" data-bs-target="#fraudCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+              <button type="button" data-bs-target="#fraudCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+              <button type="button" data-bs-target="#fraudCarousel" data-bs-slide-to="4" aria-label="Slide 5"></button>
+              <button type="button" data-bs-target="#fraudCarousel" data-bs-slide-to="5" aria-label="Slide 6"></button>
+            </div>
+
+            <!-- Prev / Next Buttons -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#fraudCarousel" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#fraudCarousel" data-bs-slide="next">
+              <span class="carousel-control-next-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Similar Jobs -->
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body">
+          <h5 class="fw-bold mb-3 text-dark">Similar Jobs</h5>
+          <div class="d-flex align-items-start mb-3">
+            <img src="assets/images/jobs/job1.jpg" alt="Job 1" class="rounded me-3" width="60" />
+            <div>
+              <h6 class="fw-semibold mb-0 text-dark">Campus Nurse</h6>
+              <p class="text-muted small mb-0">British University Vietnam</p>
+              <p class="text-muted small">Hà Nội, Việt Nam</p>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-start">
+            <img src="assets/images/jobs/job2.jpg" alt="Job 2" class="rounded me-3" width="60" />
+            <div>
+              <h6 class="fw-semibold mb-0 text-dark">Medical Assistant</h6>
+              <p class="text-muted small mb-0">Healthcare Co. Ltd</p>
+              <p class="text-muted small">Hồ Chí Minh City</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
-<!-- Product Section End -->
+
+<!-- Loading -->
+<div *ngIf="loading" class="text-center py-5">
+  <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+  <p>Loading job details...</p>
+</div>

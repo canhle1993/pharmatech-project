@@ -22,6 +22,7 @@ import { OrderDetailsComponent } from './pages/order/order-details/order-details
 import { ChatComponent } from './pages/support/chat/chat.component';
 import { ChatHistoryComponent } from './pages/support/chat-history/chat-history.component';
 import { AccountDetailsComponent } from './pages/account/accountdetails/accountdetails.component';
+import { JobFormComponent } from './pages/career/job-posting/job-form/job-form.component';
 
 export const adminRoutes: Routes = [
   {
@@ -45,7 +46,11 @@ export const adminRoutes: Routes = [
       { path: 'recycle/category', component: RecycleCategoryComponent },
       { path: 'recycle/product', component: RecycleProductComponent },
       { path: 'quote', component: QuoteComponent },
+
       { path: 'career/job-posting', component: JobPostingComponent },
+      { path: 'career/job-add', component: JobFormComponent },
+      { path: 'career/job-edit/:id', component: JobFormComponent },
+
       {
         path: 'career/recruitment-details',
         component: RecruitmentDetailsComponent,

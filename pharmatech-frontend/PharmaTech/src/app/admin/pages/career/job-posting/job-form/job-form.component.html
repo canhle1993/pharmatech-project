@@ -1,0 +1,236 @@
+<p-toast></p-toast>
+
+<div class="job-form-wrapper" *ngIf="!loading; else loadingTpl">
+  <h2 class="form-title">
+    <i class="pi pi-briefcase"></i>
+    {{ isEditMode ? 'Edit Job Posting' : 'Add New Job' }}
+  </h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-container">
+    <!-- 🟩 BASIC INFORMATION -->
+    <div class="form-section">
+      <h4>Basic Information</h4>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Title *</label>
+          <input pInputText formControlName="title" placeholder="Enter job title" />
+        </div>
+
+        <div class="form-group">
+          <label>Department *</label>
+          <input pInputText formControlName="department" placeholder="e.g. IT, HR, Sales" />
+        </div>
+
+        <div class="form-group">
+          <label>Location *</label>
+          <input pInputText formControlName="location" placeholder="e.g. Ho Chi Minh" />
+        </div>
+
+        <div class="form-group">
+          <label>Salary Range</label>
+          <input pInputText formControlName="salary_range" placeholder="e.g. 10M - 20M VND" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 🟩 DESCRIPTION & REQUIREMENTS -->
+    <div class="form-section">
+      <h4>Description & Requirements</h4>
+      <p-editor formControlName="description" [style]="{ height: '200px' }"
+        placeholder="Write job description..."></p-editor>
+      <p-editor formControlName="requirements" [style]="{ height: '200px', marginTop: '1rem' }"
+        placeholder="Write job requirements..."></p-editor>
+    </div>
+
+    <!-- 🟩 RECRUITMENT DETAILS -->
+    <div class="form-section">
+      <h4>Recruitment Details</h4>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Level</label>
+          <p-autoComplete formControlName="level" [dropdown]="true" [suggestions]="filteredLevels"
+            (completeMethod)="filterRecruitment($event, 'level')" placeholder="Select level"></p-autoComplete>
+        </div>
+
+        <div class="form-group">
+          <label>Work Type</label>
+          <p-autoComplete formControlName="work_type" [dropdown]="true" [suggestions]="filteredWorkTypes"
+            (completeMethod)="filterRecruitment($event, 'work_type')" placeholder="Select work type"></p-autoComplete>
+        </div>
+
+        <div class="form-group">
+          <label>Education Level</label>
+          <p-autoComplete formControlName="education_level" [dropdown]="true" [suggestions]="filteredEducations"
+            (completeMethod)="filterRecruitment($event, 'education_level')"
+            placeholder="Select education level"></p-autoComplete>
+        </div>
+
+        <div class="form-group">
+          <label>Area</label>
+          <p-autoComplete formControlName="area" [dropdown]="true" [suggestions]="filteredAreas"
+            (completeMethod)="filterRecruitment($event, 'area')" placeholder="Select area"></p-autoComplete>
+        </div>
+
+        <div class="form-group">
+          <label>Gender</label>
+          <p-autoComplete formControlName="gender" [dropdown]="true" [suggestions]="filteredGenders"
+            (completeMethod)="filterRecruitment($event, 'gender')" placeholder="Select gender"></p-autoComplete>
+        </div>
+
+        <div class="form-group">
+          <label>Marital Status</label>
+          <p-autoComplete formControlName="marital_status" [dropdown]="true" [suggestions]="filteredMarital"
+            (completeMethod)="filterRecruitment($event, 'marital_status')"
+            placeholder="Select marital status"></p-autoComplete>
+        </div>
+
+        <div class="form-group">
+          <label>Nationality</label>
+          <p-autoComplete formControlName="nationality" [dropdown]="true" [suggestions]="filteredNationality"
+            (completeMethod)="filterRecruitment($event, 'nationality')"
+            placeholder="Select nationality"></p-autoComplete>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🟩 INDUSTRY / FIELD / LANGUAGE -->
+    <div class="form-section">
+      <h4>Industry, Field & Language</h4>
+      <div class="form-grid">
+        <!-- 🏭 Industry -->
+        <div class="form-group full">
+          <label>Industry</label>
+          <div class="autocomplete-with-add">
+            <p-autoComplete appendTo="body" [multiple]="true" [suggestions]="filteredIndustry"
+              (completeMethod)="filterIndustry($event)" [dropdown]="true" [showClear]="true" formControlName="industry"
+              optionLabel="name" display="chip" placeholder="Select or type industries"
+              (input)="onTyping($event, 'industry')"></p-autoComplete>
+
+            <button *ngIf="typedValue['industry']" type="button" class="add-btn" (click)="addManualChip('industry')"
+              pTooltip="Add custom industry" tooltipPosition="top">
+              <i class="pi pi-plus"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- 🧪 Field -->
+        <div class="form-group full">
+          <label>Field</label>
+          <div class="autocomplete-with-add">
+            <p-autoComplete appendTo="body" [multiple]="true" [suggestions]="filteredField"
+              (completeMethod)="filterField($event)" [dropdown]="true" [showClear]="true" formControlName="field"
+              optionLabel="name" display="chip" placeholder="Select or type fields"
+              (input)="onTyping($event, 'field')"></p-autoComplete>
+
+            <button *ngIf="typedValue['field']" type="button" class="add-btn" (click)="addManualChip('field')"
+              pTooltip="Add custom field" tooltipPosition="top">
+              <i class="pi pi-plus"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- 🈶 Language -->
+        <div class="form-group full">
+          <label>Language</label>
+          <div class="autocomplete-with-add">
+            <p-autoComplete appendTo="body" [multiple]="true" [suggestions]="filteredLanguage"
+              (completeMethod)="filterLanguage($event)" [dropdown]="true" [showClear]="true" formControlName="language"
+              optionLabel="name" display="chip" placeholder="Select or type languages"
+              (input)="onTyping($event, 'language')"></p-autoComplete>
+
+            <button *ngIf="typedValue['language']" type="button" class="add-btn" (click)="addManualChip('language')"
+              pTooltip="Add custom language" tooltipPosition="top">
+              <i class="pi pi-plus"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🟩 SKILLS & BENEFITS -->
+    <div class="form-section">
+      <h4>Skills & Benefits</h4>
+      <div class="form-grid">
+        <!-- 🧠 Skills -->
+        <div class="form-group full">
+          <label>Skills</label>
+          <div class="autocomplete-with-add">
+            <p-autoComplete appendTo="body" [multiple]="true" [suggestions]="filteredSkills"
+              (completeMethod)="filterSkills($event)" [dropdown]="true" [showClear]="true" formControlName="skills"
+              optionLabel="name" display="chip" placeholder="Add or select skills"
+              (input)="onTyping($event, 'skills')"></p-autoComplete>
+
+            <button *ngIf="typedValue['skills']" type="button" class="add-btn" (click)="addManualChip('skills')"
+              pTooltip="Add custom skill" tooltipPosition="top">
+              <i class="pi pi-plus"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- 💎 Benefits -->
+        <div class="form-group full">
+          <label>Benefits</label>
+          <div class="autocomplete-with-add">
+            <p-autoComplete appendTo="body" [multiple]="true" [suggestions]="filteredBenefits"
+              (completeMethod)="filterBenefits($event)" [dropdown]="true" [showClear]="true" formControlName="benefits"
+              optionLabel="name" display="chip" placeholder="Add or select benefits"
+              (input)="onTyping($event, 'benefits')"></p-autoComplete>
+
+            <button *ngIf="typedValue['benefits']" type="button" class="add-btn" (click)="addManualChip('benefits')"
+              pTooltip="Add custom benefit" tooltipPosition="top">
+              <i class="pi pi-plus"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 🟩 SCHEDULE & BANNER -->
+    <div class="form-section">
+      <h4>Schedule & Banner</h4>
+      <div class="form-grid">
+        <div class="form-group" *ngIf="isEditMode">
+          <label>Posted Date</label>
+          <input type="date" formControlName="posted_date" />
+          <small class="text-danger" *ngIf="form.get('posted_date')?.hasError('dateInvalid')">
+            ⚠️ Posted Date cannot be after Expiration Date
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label>Expiration Date</label>
+          <input type="date" formControlName="expiration_date" />
+          <small class="text-danger" *ngIf="form.get('expiration_date')?.hasError('dateInvalid')">
+            ⚠️ Expiration Date must be after Posted Date
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label>Posted By *</label>
+          <input pInputText formControlName="posted_by" placeholder="Admin or HR Name" />
+        </div>
+
+        <div class="form-group">
+          <label>Banner</label>
+          <input type="file" (change)="onFileSelect($event)" />
+          <div *ngIf="bannerPreview" class="preview-container">
+            <img [src]="bannerPreview" class="preview-img" alt="Banner Preview" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🟩 BUTTONS -->
+    <div class="form-footer">
+      <button pButton type="button" class="cancel-btn" (click)="cancel()">Cancel</button>
+      <button pButton type="submit" class="save-btn">{{ isEditMode ? 'Update' : 'Save' }}</button>
+    </div>
+  </form>
+</div>
+
+<!-- 🌀 LOADING TEMPLATE -->
+<ng-template #loadingTpl>
+  <div class="loading-container">
+    <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+    <p>Loading...</p>
+  </div>
+</ng-template>

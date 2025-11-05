@@ -1,0 +1,127 @@
+/* ===============================
+   🎨 GENERAL CARD STYLES
+================================= */
+.card {
+  transition: all 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-2px);
+}
+.salary {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+/* ===============================
+   🚨 FRAUD SLIDER (Bootstrap 5)
+   - Không override position để tránh treo slide
+   - Dùng fade chuẩn của Bootstrap, thêm min-height chống nhảy
+================================= */
+
+/* Phạm vi theo id để không ảnh hưởng carousel khác */
+#fraudCarousel {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Chiều cao ổn định + căn giữa nội dung */
+#fraudCarousel .carousel-item {
+  min-height: 280px; /* chỉnh nếu cần: 240–320px */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  /* Fade mượt – KHÔNG đụng position */
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+}
+
+/* Trạng thái hiển thị trong hiệu ứng fade */
+#fraudCarousel.carousel.carousel-fade .carousel-item.active,
+#fraudCarousel.carousel.carousel-fade .carousel-item-next.carousel-item-start,
+#fraudCarousel.carousel.carousel-fade .carousel-item-prev.carousel-item-end {
+  opacity: 1;
+}
+
+/* Item rời khỏi màn hình trong hiệu ứng fade */
+#fraudCarousel.carousel.carousel-fade .active.carousel-item-start,
+#fraudCarousel.carousel.carousel-fade .active.carousel-item-end {
+  opacity: 0;
+}
+
+/* Ảnh gọn gàng, không méo, có zoom nhẹ khi active */
+#fraudCarousel .carousel-item img {
+  max-height: 180px;
+  width: 100%;
+  object-fit: contain;
+  transition: transform 0.6s ease;
+}
+#fraudCarousel .carousel-item.active img {
+  transform: scale(1.015);
+}
+
+/* Text hiện ra mượt – không ảnh hưởng click */
+#fraudCarousel .carousel-item h6,
+#fraudCarousel .carousel-item p {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+#fraudCarousel .carousel-item.active h6,
+#fraudCarousel .carousel-item.active p {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Indicators (dấu chấm) */
+#fraudCarousel .carousel-indicators {
+  position: relative; /* để nằm dưới nội dung */
+  margin-top: 1rem;
+}
+#fraudCarousel .carousel-indicators [data-bs-target] {
+  background-color: #ff6b6b;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin: 0 4px;
+  opacity: 0.4;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+#fraudCarousel .carousel-indicators .active {
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+/* Nút prev/next – đảm bảo luôn click được */
+#fraudCarousel .carousel-control-prev,
+#fraudCarousel .carousel-control-next {
+  width: 8%;
+  z-index: 5;
+}
+#fraudCarousel .carousel-control-prev-icon,
+#fraudCarousel .carousel-control-next-icon {
+  filter: invert(1);
+  background-size: 60%;
+  border-radius: 50%;
+}
+
+/* ===============================
+   🔗 LINK & BUTTON STYLES (giữ nguyên)
+================================= */
+.card-body a.text-primary {
+  text-decoration: none;
+  font-weight: 500;
+}
+.card-body a.text-primary:hover {
+  text-decoration: underline;
+}
+.btn-outline-danger {
+  border-color: #ff3d3d;
+  color: #ff3d3d;
+}
+.btn-outline-danger:hover {
+  background-color: #ff3d3d;
+  color: #fff;
+}
