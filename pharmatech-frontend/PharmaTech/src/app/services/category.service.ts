@@ -30,17 +30,44 @@ export class CategoryService {
     );
   }
 
-  /** 🔹 Tạo mới category */
-  create(category: any) {
+  /** 🔹 Tạo mới category có upload ảnh và liên kết product */
+  create(category: any, file?: File) {
+    const formData = new FormData();
+
+    // Thêm các trường text
+    formData.append('name', category.name);
+    formData.append('description', category.description || '');
+    formData.append('updated_by', category.updated_by || 'admin');
+
+    // ✅ Nếu có danh sách product_ids (1 hoặc nhiều)
+    if (category.product_ids && category.product_ids.length > 0) {
+      // Nếu là mảng, convert sang JSON string để backend parse lại
+      formData.append('product_ids', JSON.stringify(category.product_ids));
+    }
+
+    // ✅ Thêm file nếu có
+    if (file) {
+      formData.append('file', file);
+    }
+
     return lastValueFrom(
-      this.httpClient.post(env.baseUrl + 'category/create', category)
+      this.httpClient.post(env.baseUrl + 'category/create', formData)
     );
   }
 
   /** 🔹 Cập nhật category */
-  update(category: any) {
+  update(category: any, file?: File) {
+    const formData = new FormData();
+    formData.append('id', category.id);
+    formData.append('name', category.name);
+    formData.append('description', category.description || '');
+    formData.append('updated_by', category.updated_by || 'admin');
+    formData.append('product_ids', JSON.stringify(category.product_ids || []));
+
+    if (file) formData.append('file', file);
+
     return lastValueFrom(
-      this.httpClient.put(env.baseUrl + 'category/update', category)
+      this.httpClient.put(env.baseUrl + 'category/update', formData)
     );
   }
 
@@ -50,6 +77,15 @@ export class CategoryService {
       this.httpClient.put(env.baseUrl + 'category/soft-delete/' + id, {
         updated_by,
       })
+    );
+  }
+
+  /** 🔹 Lấy danh sách product thuộc 1 category */
+  findProductsByCategory(categoryId: string) {
+    return lastValueFrom(
+      this.httpClient.get(
+        env.baseUrl + 'product-category/find-products-by-category/' + categoryId
+      )
     );
   }
 }

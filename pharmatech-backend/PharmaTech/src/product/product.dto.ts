@@ -3,11 +3,15 @@ import * as moment from 'moment';
 import { getImageUrl } from './config.util';
 
 export class ProductDTO {
+<<<<<<< HEAD
   // ✅ ID
+=======
+>>>>>>> origin/main
   @Transform(({ obj }) => obj?._id?.toString())
   @Expose({ name: 'id' })
   id: string;
 
+<<<<<<< HEAD
   // ✅ Tên sản phẩm
   @Expose()
   name: string;
@@ -21,10 +25,32 @@ export class ProductDTO {
   description?: string;
 
   // ✅ Ảnh chính (tự ghép URL)
+=======
+  @Expose()
+  name: string;
+
+  @Expose()
+  model?: string;
+
+  @Expose()
+  description?: string;
+
+  @Expose()
+  specification?: string;
+
+  @Transform(({ obj }) => (obj?.price ? Number(obj.price) : 0))
+  @Expose()
+  price?: number;
+
+  @Expose()
+  manufacturer?: string;
+
+>>>>>>> origin/main
   @Transform(({ obj }) => (obj?.photo ? `${getImageUrl()}${obj.photo}` : null))
   @Expose()
   photo?: string | null;
 
+<<<<<<< HEAD
   // ✅ Bộ sưu tập ảnh phụ
   @Transform(({ obj }) =>
     obj?.gallery && obj.gallery.length > 0
@@ -51,17 +77,33 @@ export class ProductDTO {
   manufacturer?: string;
 
   // ✅ Trạng thái
+=======
+  /** ✅ Danh sách category mà sản phẩm thuộc về */
+  @Expose({ name: 'category_ids' })
+  category_ids?: string[];
+
+  /** ✅ Nếu service populate categories ra luôn (dạng object) */
+  @Expose()
+  categories?: any[];
+
+>>>>>>> origin/main
   @Expose({ name: 'is_active' })
   is_active: boolean;
 
   @Expose({ name: 'is_delete' })
   is_delete: boolean;
 
+<<<<<<< HEAD
   // ✅ Người sửa cuối cùng
   @Expose({ name: 'updated_by' })
   updated_by?: string;
 
   // ✅ Ngày tạo & cập nhật
+=======
+  @Expose({ name: 'updated_by' })
+  updated_by?: string;
+
+>>>>>>> origin/main
   @Transform(({ obj }) =>
     obj?.created_at ? moment(obj.created_at).format('DD/MM/YYYY HH:mm') : null,
   )

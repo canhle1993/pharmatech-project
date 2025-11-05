@@ -1,10 +1,17 @@
 <div class="category-container">
+<<<<<<< HEAD
   <h2 class="page-title">Category List</h2>
 
   <!-- ✅ Toast for notifications -->
   <p-toast></p-toast>
 
   <!-- Loading spinner -->
+=======
+  <h2 class="page-title">Category</h2>
+
+  <p-toast></p-toast>
+
+>>>>>>> origin/main
   <p-progressSpinner
     *ngIf="loading"
     styleClass="loading-spinner"
@@ -12,6 +19,7 @@
 
   <div class="card" *ngIf="!loading">
     <p-table
+<<<<<<< HEAD
       [value]="categories"
       dataKey="id"
       [rows]="10"
@@ -22,6 +30,44 @@
       class="category-table"
     >
       <!-- Header -->
+=======
+      #dt
+      [value]="categories"
+      dataKey="id"
+      [rows]="4"
+      [paginator]="true"
+      [rowsPerPageOptions]="[4, 10, 20]"
+      showGridlines
+      [responsiveLayout]="'scroll'"
+      [globalFilterFields]="['name']"
+      class="category-table"
+    >
+      <ng-template pTemplate="caption">
+        <div class="p-datatable-caption">
+          <div class="toolbar-actions">
+            <button
+              pButton
+              icon="pi pi-plus"
+              label="Add"
+              class="p-button-sm p-button-info"
+              (click)="showAddDialog()"
+            ></button>
+          </div>
+          <div class="filter-group">
+            <p-iconfield iconPosition="left" class="search-field">
+              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($event.target.value, 'contains')"
+                placeholder="Search by name"
+              />
+            </p-iconfield>
+          </div>
+        </div>
+      </ng-template>
+
+>>>>>>> origin/main
       <ng-template pTemplate="header">
         <tr>
           <th>Photo</th>
@@ -33,10 +79,15 @@
         </tr>
       </ng-template>
 
+<<<<<<< HEAD
       <!-- Body -->
       <ng-template pTemplate="body" let-cat>
         <tr>
           <!-- Category photo -->
+=======
+      <ng-template pTemplate="body" let-cat>
+        <tr>
+>>>>>>> origin/main
           <td>
             <img
               [src]="cat?.photo ? cat.photo : 'assets/images/no-image.jpg'"
@@ -44,7 +95,10 @@
               class="category-photo"
             />
           </td>
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
           <td>{{ cat.name }}</td>
           <td>{{ cat.description || "-" }}</td>
           <td>{{ cat.updated_by || "-" }}</td>
@@ -52,14 +106,34 @@
           <td>
             <button
               pButton
+<<<<<<< HEAD
               icon="pi pi-trash"
               class="p-button-text p-button-danger"
               title="Delete"
+=======
+              icon="pi pi-search"
+              class="p-button-text p-button-info"
+              title="View"
+              [routerLink]="['/admin/category-details', cat.id]"
+            ></button>
+            <button
+              pButton
+              icon="pi pi-pencil"
+              class="p-button-text p-button-warning"
+              title="Edit"
+              (click)="showEditDialog(cat)"
+            ></button>
+            <button
+              pButton
+              icon="pi pi-trash"
+              class="p-button-text p-button-danger"
+>>>>>>> origin/main
               (click)="onDelete(cat)"
             ></button>
           </td>
         </tr>
       </ng-template>
+<<<<<<< HEAD
 
       <!-- Empty message -->
       <ng-template pTemplate="emptymessage">
@@ -70,5 +144,182 @@
     </p-table>
   </div>
 
+=======
+    </p-table>
+  </div>
+
+  <!-- ✅ Dialog thêm mới Category -->
+  <p-dialog
+    header="Add New Category"
+    [(visible)]="addDialog"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: '450px' }"
+  >
+    <form [formGroup]="addForm" (ngSubmit)="onCreateCategory()">
+      <div class="p-fluid">
+        <!-- Upload ảnh -->
+        <div class="field">
+          <label for="photo">Photo</label>
+          <input
+            type="file"
+            (change)="onFileSelected($event)"
+            accept="image/*"
+          />
+        </div>
+
+        <!-- Name -->
+        <div class="field">
+          <label for="name">Category Name</label>
+          <input
+            pInputText
+            id="name"
+            formControlName="name"
+            placeholder="Enter category name"
+            required
+          />
+        </div>
+
+        <!-- Description -->
+        <div class="field">
+          <label for="description">Description</label>
+          <textarea
+            pInputTextarea
+            formControlName="description"
+            placeholder="Enter description"
+            rows="3"
+            cols="30"
+            style="width: 100%"
+          ></textarea>
+        </div>
+
+        <!-- Select product -->
+        <div class="field">
+          <label for="product">Select Product</label>
+          <p-multiSelect
+            [options]="products"
+            optionLabel="name"
+            optionValue="id"
+            formControlName="product_id"
+            [filter]="true"
+            [appendTo]="'body'"
+            [scrollHeight]="'132px'"
+            placeholder="Choose one or more products"
+          ></p-multiSelect>
+        </div>
+      </div>
+
+      <div class="flex justify-content-end gap-2 mt-3">
+        <button
+          pButton
+          label="Cancel"
+          class="p-button-text"
+          type="button"
+          (click)="addDialog = false"
+        ></button>
+        <button
+          pButton
+          label="Save"
+          type="submit"
+          [disabled]="addForm.invalid"
+        ></button>
+      </div>
+    </form>
+  </p-dialog>
+
+  <!-- ✅ Dialog chỉnh sửa Category -->
+  <p-dialog
+    header="Edit Category"
+    [(visible)]="editDialog"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: '450px' }"
+  >
+    <form [formGroup]="editForm" (ngSubmit)="onUpdateCategory()">
+      <div class="p-fluid">
+        <!-- Upload ảnh -->
+        <div class="field">
+          <label for="photo">Photo</label>
+          <input
+            type="file"
+            (change)="onEditFileSelected($event)"
+            accept="image/*"
+          />
+          <div *ngIf="editPreview" class="mt-2">
+            <img
+              [src]="editPreview"
+              alt="Preview"
+              width="80"
+              height="80"
+              style="
+                border-radius: 6px;
+                border: 1px solid #ddd;
+                object-fit: cover;
+              "
+            />
+          </div>
+        </div>
+
+        <!-- Name -->
+        <div class="field">
+          <label for="editName">Category Name</label>
+          <input
+            pInputText
+            id="editName"
+            formControlName="name"
+            placeholder="Enter category name"
+            required
+          />
+        </div>
+
+        <!-- Description -->
+        <div class="field">
+          <label for="editDescription">Description</label>
+          <textarea
+            pInputTextarea
+            formControlName="description"
+            placeholder="Enter description"
+            rows="3"
+            cols="30"
+            style="width: 100%"
+          ></textarea>
+        </div>
+
+        <!-- Select product -->
+        <div class="field">
+          <label for="editProduct">Select Product</label>
+          <p-multiSelect
+            [options]="products"
+            optionLabel="name"
+            optionValue="id"
+            formControlName="product_id"
+            [filter]="true"
+            [appendTo]="'body'"
+            placeholder="Choose one or more products"
+          ></p-multiSelect>
+        </div>
+      </div>
+
+      <div class="flex justify-content-end gap-2 mt-3">
+        <button
+          pButton
+          label="Cancel"
+          class="p-button-text"
+          type="button"
+          (click)="editDialog = false"
+        ></button>
+        <button
+          pButton
+          label="Update"
+          type="submit"
+          [disabled]="editForm.invalid"
+        ></button>
+      </div>
+    </form>
+  </p-dialog>
+
+>>>>>>> origin/main
   <p-confirmDialog></p-confirmDialog>
 </div>

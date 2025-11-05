@@ -196,8 +196,20 @@ export class AccountController {
       throw new HttpException('Account not found', HttpStatus.NOT_FOUND);
     }
 
+<<<<<<< HEAD
     // ✅ Dùng class-transformer để convert sang DTO (đảm bảo photo có URL đầy đủ)
     return plainToInstance(AccountDTO, account, { excludeExtraneousValues: true });
+=======
+    const dto = plainToInstance(AccountDTO, account, {
+      excludeExtraneousValues: true,
+    });
+
+    if (!dto.id && account._id) {
+      dto.id = account._id.toString();
+    }
+
+    return dto;
+>>>>>>> origin/main
   }
 
 
@@ -221,8 +233,31 @@ export class AccountController {
     };
   }
 
+  // 🟢 Upload resume (CV)
+  @Post('upload-resume')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './upload',
+        filename: (req, file, cb) => {
+          const uniqueName = uuidv4().replace(/-/g, '');
+          const extension = extname(file.originalname);
+          cb(null, uniqueName + extension);
+        },
+      }),
+    }),
+  )
+  uploadResume(@UploadedFile() file: Express.Multer.File) {
+    return {
+      filename: file.filename,
+      url: 'http://localhost:3000/upload/' + file.filename,
+    };
+  }
+
   @Patch('update/:id')
   async update(@Param('id') id: string, @Body() body: any) {
+    if (!id)
+      throw new HttpException('Missing account ID', HttpStatus.BAD_REQUEST);
     const updated = await this.accountService.update(id, body);
     return updated;
   }
@@ -308,9 +343,30 @@ export class AccountController {
   async delete(@Param('id') id: string) {
     const result = await this.accountService.delete(id);
     if (!result) {
-      throw new HttpException('Delete failed', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Soft delete failed', HttpStatus.BAD_REQUEST);
     }
-    return { msg: 'Deleted successfully' };
+    return { msg: 'Account marked as deleted successfully' };
+  }
+
+  @Patch('restore/:id')
+  async restore(@Param('id') id: string) {
+    const res = await this.accountService.restore(id);
+    if (!res) {
+      throw new HttpException('Restore failed', HttpStatus.BAD_REQUEST);
+    }
+    return { msg: 'Account restored successfully' };
+  }
+
+  @Post('admin/create')
+  async createAdmin(@Body() dto: any) {
+    // 👈 dùng any
+    try {
+      dto.password = bcrypt.hashSync(dto.password, bcrypt.genSaltSync());
+      dto.roles = ['admin'];
+      return await this.accountService.create(dto);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Post('admin/create')

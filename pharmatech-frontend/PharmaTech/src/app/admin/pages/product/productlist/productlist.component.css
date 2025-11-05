@@ -6,7 +6,10 @@
   min-height: 100vh;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
 /* ===== Table styles ===== */
 .product-table {
   width: 100%;
@@ -78,6 +81,13 @@
   background-color: #ffcdd2 !important;
 }
 
+<<<<<<< HEAD
+=======
+.p-button-info:hover {
+  background-color: #5cb6f27d !important;
+}
+
+>>>>>>> origin/main
 /* ===== Empty table message ===== */
 .text-center {
   text-align: center;
@@ -85,3 +95,73 @@
   color: #999;
   padding: 15px 0;
 }
+<<<<<<< HEAD
+=======
+/* 🎯 Add + Role + Status + Search layout */
+:host ::ng-deep .p-datatable-caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Bên phải (Role / Status / Search) */
+:host ::ng-deep .filter-group {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+  flex-wrap: nowrap;
+}
+
+/* Dropdown sát nhau */
+:host ::ng-deep .filter-group .p-dropdown {
+  margin-right: 6px !important;
+}
+:host ::ng-deep .filter-group .p-float-label:last-of-type .p-dropdown {
+  margin-right: 0 !important;
+}
+
+/* Kích cỡ dropdown & search */
+:host ::ng-deep .filter-group .p-dropdown {
+  min-width: 150px !important;
+  height: 38px;
+}
+:host ::ng-deep .search-field {
+  flex: 1 1 350px;
+  max-width: 420px;
+}
+:host ::ng-deep .search-field input.p-inputtext {
+  width: 100% !important;
+}
+
+/* Nút Add */
+:host ::ng-deep .toolbar-actions button {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+/* Responsive toolbar */
+@media (max-width: 768px) {
+  :host ::ng-deep .p-datatable-caption {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  :host ::ng-deep .filter-group {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  :host ::ng-deep .search-field {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+}
+>>>>>>> origin/main

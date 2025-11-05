@@ -1,0 +1,146 @@
+<div class="product-details-container" *ngIf="!loading; else loadingTpl">
+  <h4 class="fw-bold py-3 mb-4">
+    <span class="text-muted fw-light">Product /</span> Product Details
+  </h4>
+  <p-toast></p-toast>
+
+  <!-- 🖼️ CARD 2: Hình ảnh -->
+  <div class="card image-card">
+    <h3 class="section-title">Product Images</h3>
+    <button
+      type="button"
+      [routerLink]="['/admin/product-edit', product.id]"
+      class="btn btn-primary me-2 mb-4"
+      style="width: 100px"
+    >
+      Edit
+    </button>
+
+    <div class="image-section">
+      <div class="main-photo">
+        <h4>Main Photo</h4>
+        <img
+          [src]="product.photo || 'assets/images/no-image.jpg'"
+          alt="Main Product"
+          class="main-image"
+        />
+      </div>
+
+      <div class="gallery" *ngIf="product.gallery?.length">
+        <h4>Gallery Images</h4>
+        <div class="gallery-images">
+          <img
+            *ngFor="let img of product.gallery"
+            [src]="img"
+            alt="Gallery"
+            class="gallery-thumb"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🧾 CARD 1: Thông tin cơ bản -->
+  <div class="card info-card">
+    <div class="header">
+      <h2>{{ product.name }}</h2>
+      <p-tag
+        [severity]="product.is_active ? 'success' : 'danger'"
+        [value]="product.is_active ? 'Active' : 'Inactive'"
+      ></p-tag>
+    </div>
+
+    <div class="info-grid">
+      <div>
+        <label>Category:</label>
+        <ng-container *ngIf="product.categories?.length > 0; else noCat">
+          <p>
+            <span *ngFor="let c of product.categories; let last = last">
+              {{ c.name }}<span *ngIf="!last">, </span>
+            </span>
+          </p>
+        </ng-container>
+        <ng-template #noCat>
+          <p class="text-muted">No category assigned.</p>
+        </ng-template>
+      </div>
+
+      <div>
+        <label>Model:</label>
+        <p>{{ product.model || "-" }}</p>
+      </div>
+      <div>
+        <label>Manufacturer:</label>
+        <p>{{ product.manufacturer || "-" }}</p>
+      </div>
+      <div>
+        <label>Price:</label>
+        <p>{{ product.price | currency : "USD" }}</p>
+      </div>
+      <div>
+        <label>Updated By:</label>
+        <p>{{ product.updated_by || "-" }}</p>
+      </div>
+      <div>
+        <label>Updated At:</label>
+        <p>{{ product.updated_at || "-" }}</p>
+      </div>
+      <div>
+        <label>Created At:</label>
+        <p>{{ product.created_at || "-" }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📜 CARD 3: Specification & Description -->
+  <div
+    class="card desc-card"
+    *ngIf="product.specification || product.description"
+  >
+    <h3 class="section-title">Specification & Description</h3>
+    <div class="desc-grid">
+      <!-- SPECIFICATION -->
+      <div *ngIf="product.specification; else noSpec">
+        <label>Specification:</label>
+        <div class="editor-content" [innerHTML]="product.specification"></div>
+      </div>
+
+      <ng-template #noSpec>
+        <div>
+          <label>Specification:</label>
+          <p class="text-muted">No specification available.</p>
+        </div>
+      </ng-template>
+
+      <!-- DESCRIPTION -->
+      <div *ngIf="product.description; else noDesc">
+        <label>Description:</label>
+        <div class="editor-content" [innerHTML]="product.description"></div>
+      </div>
+
+      <ng-template #noDesc>
+        <div>
+          <label>Description:</label>
+          <p class="text-muted">No description available.</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- 🔙 Quay lại -->
+  <div class="button-group">
+    <button
+      pButton
+      icon="pi pi-arrow-left"
+      label="Back to list"
+      class="p-button-text"
+      routerLink="/admin/product-list"
+    ></button>
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="loading-center">
+    <p-progressSpinner></p-progressSpinner>
+  </div>
+</ng-template>

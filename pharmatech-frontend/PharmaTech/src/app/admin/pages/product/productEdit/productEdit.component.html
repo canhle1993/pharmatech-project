@@ -1,0 +1,133 @@
+<div class="product-details-container" *ngIf="!loading; else loadingTpl">
+  <h4 class="fw-bold py-3 mb-4">
+    <span class="text-muted fw-light">Product /</span> Product Edit
+  </h4>
+  <p-toast></p-toast>
+
+  <!-- 🖼️ CARD: Hình ảnh -->
+  <div class="card image-card">
+    <h3 class="section-title">Product Images</h3>
+    <div class="image-section">
+      <div class="main-photo">
+        <h4>Main Photo</h4>
+        <input
+          type="file"
+          accept="image/*"
+          (change)="onMainFileSelected($event)"
+        />
+        <img
+          *ngIf="mainPreview"
+          [src]="mainPreview"
+          alt="Main Product"
+          class="main-image mt-2"
+        />
+      </div>
+
+      <div class="gallery">
+        <h4>Gallery Images</h4>
+        <input
+          type="file"
+          multiple
+          accept="image/*"
+          (change)="onGallerySelected($event)"
+        />
+        <div class="gallery-images mt-2" *ngIf="galleryPreviews.length > 0">
+          <img
+            *ngFor="let img of galleryPreviews"
+            [src]="img"
+            alt="Gallery"
+            class="gallery-thumb"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🧾 CARD: Thông tin -->
+  <div class="card info-card">
+    <div class="header">
+      <h2>Edit Product</h2>
+    </div>
+
+    <form [formGroup]="editForm" (ngSubmit)="onUpdateProduct()">
+      <div class="info-grid">
+        <div>
+          <label>Product Name:</label>
+          <input
+            pInputText
+            formControlName="name"
+            placeholder="Enter product name"
+          />
+        </div>
+        <div>
+          <label>Model:</label>
+          <input pInputText formControlName="model" placeholder="Enter model" />
+        </div>
+        <div>
+          <label>Manufacturer:</label>
+          <input
+            pInputText
+            formControlName="manufacturer"
+            placeholder="Enter manufacturer"
+          />
+        </div>
+        <div>
+          <label>Price:</label>
+          <input type="number" pInputText formControlName="price" />
+        </div>
+        <div>
+          <label>Select Category:</label>
+          <p-multiSelect
+            [options]="categories"
+            formControlName="category_ids"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Choose categories"
+            [filter]="true"
+            [appendTo]="'body'"
+          ></p-multiSelect>
+        </div>
+      </div>
+
+      <!-- 📜 Specification & Description -->
+      <div class="desc-grid mt-3">
+        <div>
+          <label>Specification:</label>
+          <p-editor
+            formControlName="specification"
+            [style]="{ height: '220px', width: '100%' }"
+          ></p-editor>
+        </div>
+        <div>
+          <label>Description:</label>
+          <p-editor
+            formControlName="description"
+            [style]="{ height: '220px', width: '100%' }"
+          ></p-editor>
+        </div>
+      </div>
+
+      <div class="button-group mt-4">
+        <button
+          pButton
+          label="Cancel"
+          class="p-button-text"
+          type="button"
+          (click)="goBack()"
+        ></button>
+        <button
+          pButton
+          label="Update"
+          type="submit"
+          [disabled]="loading"
+        ></button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="loading-center">
+    <p-progressSpinner></p-progressSpinner>
+  </div>
+</ng-template>

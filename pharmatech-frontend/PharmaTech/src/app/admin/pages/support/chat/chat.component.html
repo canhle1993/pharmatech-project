@@ -1,3 +1,53 @@
-<div class="container">
-  <h1>Chat</h1>
+<div class="admin-chat">
+  <!-- Sidebar: danh sách user -->
+  <aside class="sidebar">
+    <h3>Người dùng</h3>
+
+    <div class="search">
+      <input type="text" [(ngModel)]="q" placeholder="Tìm tên, username, email, id..." (input)="onSearch()" />
+    </div>
+
+    <ul class="user-list">
+      <li *ngFor="let u of filtered" (click)="openThread(u)" [class.active]="currentUserId === displayId(u)"
+        class="user-item">
+        <div class="line1">
+          <span class="name">{{ displayName(u) }}</span>
+          <span class="badge" [class.on]="u.is_active">●</span>
+        </div>
+        <div class="line2 id">{{ displayId(u) }}</div>
+      </li>
+      <li *ngIf="!filtered?.length" class="empty">Không có người dùng</li>
+    </ul>
+  </aside>
+
+  <!-- Khung chat -->
+  <section class="chat-panel">
+    <header class="chat-header">
+      <ng-container *ngIf="currentUser; else pickUser">
+        Đang chat với: <strong>{{ displayName(currentUser) }}</strong>
+        <span class="id">({{ currentUserId }})</span>
+      </ng-container>
+      <ng-template #pickUser>Chọn một user ở danh sách bên trái để bắt đầu</ng-template>
+    </header>
+
+    <div class="chat-box" #chatBoxRef>
+      <div *ngFor="let m of history" [ngClass]="m.from === 'admin' ? 'msg admin' : 'msg user'">
+        <div class="bubble">
+          <span class="from">{{ m.from === 'admin' ? 'Admin' : 'User' }}</span>
+          <span class="text">{{ m.text }}</span>
+          <span class="time" *ngIf="m.createdAt">{{ m.createdAt | date:'short' }}</span>
+        </div>
+      </div>
+
+      <div *ngIf="currentUserId && !history.length" class="empty">
+        Chưa có tin nhắn nào. Hãy gửi lời chào trước nhé.
+      </div>
+    </div>
+
+    <form class="chat-input" (ngSubmit)="send()">
+      <input type="text" [(ngModel)]="msg" name="message" placeholder="Nhập tin nhắn..." autocomplete="off"
+        [disabled]="!currentUserId" required />
+      <button type="submit" pButton [disabled]="!currentUserId || !msg.trim()">Gửi</button>
+    </form>
+  </section>
 </div>

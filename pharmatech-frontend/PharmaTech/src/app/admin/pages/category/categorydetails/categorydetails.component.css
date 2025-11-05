@@ -1,0 +1,93 @@
+.category-details-container {
+  padding: 1.5rem;
+  background-color: #f7f8fa;
+  font-family: "Segoe UI", sans-serif;
+  min-height: 100vh;
+}
+
+/* 🧾 Card thông tin */
+.category-info {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+}
+
+.info-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.category-photo {
+  width: 150px;
+  height: 150px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+}
+
+.info-text {
+  flex: 1;
+}
+
+.category-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e3a8a;
+  margin-bottom: 0.25rem;
+}
+
+.category-desc {
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.info-meta {
+  margin-top: 1rem;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+/* 📦 Table danh sách sản phẩm */
+.product-table-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.table-title {
+  margin-bottom: 1rem;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.product-photo {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+}
+
+/* Table header */
+::ng-deep .p-datatable-thead > tr > th {
+  background: #3b82f6;
+  color: #fff;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Table body */
+::ng-deep .p-datatable-tbody > tr > td {
+  text-align: center;
+  vertical-align: middle;
+  padding: 0.75rem;
+}
+
+::ng-deep .p-datatable-tbody > tr:hover {
+  background-color: #eef2ff;
+  transition: 0.2s;
+}

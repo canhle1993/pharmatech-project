@@ -8,7 +8,6 @@
   min-height: 100vh;
 }
 
-
 .error-msg {
   color: #e63946;
   font-weight: 500;
@@ -39,7 +38,13 @@
   height: 45px;
   border-radius: 50%;
   border: 2px solid #e5e7eb;
+  transition: transform 0.2s ease;
+
   object-fit: cover;
+}
+
+.avatar:hover {
+  transform: scale(1.1);
 }
 
 /* Giới hạn text dài */
@@ -109,7 +114,12 @@
   display: flex;
   gap: 0.5rem;
 }
-
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
 .loading-spinner {
   display: flex;
   justify-content: center;
@@ -183,7 +193,6 @@ p-floatlabel {
 }
 :host ::ng-deep .search-field input.p-inputtext {
   width: 100% !important;
-  height: 38px;
 }
 
 /* Nút Add */
@@ -217,7 +226,6 @@ p-floatlabel {
 .dialog-form {
   display: flex;
   flex-direction: column;
-
 }
 
 .form-field {
@@ -267,6 +275,17 @@ p-floatlabel {
 .form-field input.ng-valid.ng-touched {
   border-color: #22c55e;
 }
-.p-dialog{
-  max-height: 94%!important;
+.p-dialog {
+  max-height: 94% !important;
+}
+::ng-deep .p-button-dangerr {
+  background-color: #6b7280 !important; /* màu xám trung tính */
+  border-color: #6b7280 !important;
+  color: white !important;
+}
+/* Giới hạn chiều cao dropdown MultiSelect */
+::ng-deep .p-multiselect-panel {
+  max-height: 180px !important; /* khoảng 3 items */
+  overflow-y: auto !important;
+  border-radius: 8px !important;
 }

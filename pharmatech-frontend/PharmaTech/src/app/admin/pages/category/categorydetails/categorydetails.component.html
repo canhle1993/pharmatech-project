@@ -1,0 +1,66 @@
+<div class="category-details-container" *ngIf="!loading">
+  <h4 class="fw-bold py-3 mb-4">
+    <span class="text-muted fw-light">Category /</span> Category Details
+  </h4>
+
+  <div class="category-card">
+    <div class="category-info mt-3">
+      <div class="row">
+        <div class="col-md-3">
+          <img
+            [src]="getImage(category?.photo)"
+            alt="Category Photo"
+            class="category-photo"
+          />
+        </div>
+        <div class="col-md-4">
+          <h3>{{ category?.name }}</h3>
+          <p>
+            <strong>Description:</strong> {{ category?.description || "-" }}
+          </p>
+          <p><strong>Updated By:</strong> {{ category?.updated_by || "-" }}</p>
+          <p><strong>Updated At:</strong> {{ category?.updated_at || "-" }}</p>
+        </div>
+      </div>
+      <div class="col-md-5"></div>
+    </div>
+
+    <div class="card product-table">
+      <h4>Products in this Category</h4>
+      <p-table
+        [value]="products"
+        [rows]="5"
+        [paginator]="true"
+        [rowsPerPageOptions]="[5, 10, 20]"
+        [responsiveLayout]="'scroll'"
+        showGridlines
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Photo</th>
+            <th>Product Name</th>
+            <th>Model</th>
+            <th>Manufacturer</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-product>
+          <tr>
+            <td>
+              <img
+                [src]="getImage(product.photo)"
+                alt="Product Photo"
+                class="product-photo"
+              />
+            </td>
+            <td>{{ product.name }}</td>
+            <td>{{ product.model || "-" }}</td>
+            <td>{{ product.manufacturer || "-" }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <p-progressSpinner *ngIf="loading"></p-progressSpinner>
+</div>

@@ -25,4 +25,8 @@ export class AuthComponent implements OnInit, AfterViewInit {
     });
     
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/main

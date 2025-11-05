@@ -55,6 +55,7 @@ export class Account extends Document {
   // 🧑‍🎓 Học vấn
   @Prop({
     type: {
+<<<<<<< HEAD
       degree: { type: String },
       university: { type: String },
       graduation_year: { type: Number },
@@ -62,6 +63,16 @@ export class Account extends Document {
     _id: false, // không tạo ObjectId con
   })
   education?: {
+=======
+      degree: { type: String, default: '' },
+      university: { type: String, default: '' },
+      graduation_year: { type: Number, default: null },
+    },
+    default: {},  // 👈 thêm dòng này
+    _id: false,
+  })
+  education: {
+>>>>>>> origin/main
     degree?: string;
     university?: string;
     graduation_year?: number;
@@ -70,6 +81,7 @@ export class Account extends Document {
   // 💼 Kinh nghiệm
   @Prop({
     type: {
+<<<<<<< HEAD
       company: { type: String },
       position: { type: String },
       years: { type: Number },
@@ -77,6 +89,16 @@ export class Account extends Document {
     _id: false,
   })
   experience?: {
+=======
+      company: { type: String, default: '' },
+      position: { type: String, default: '' },
+      years: { type: Number, default: null },
+    },
+    default: {},  // 👈 thêm dòng này
+    _id: false,
+  })
+  experience: {
+>>>>>>> origin/main
     company?: string;
     position?: string;
     years?: number;

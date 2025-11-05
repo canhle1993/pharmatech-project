@@ -7,9 +7,6 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { AboutComponent } from './pages/about/about.component';
 import { ContactComponent } from './pages/contact/contact.component';
 import { BannerComponent } from './pages/banner/banner.component';
-import { FacebookComponent } from './pages/settings/facebook/facebook.component';
-import { ZaloComponent } from './pages/settings/zalo/zalo.component';
-import { PhoneComponent } from './pages/settings/phone/phone.component';
 import { RecycleAccountComponent } from './pages/recycle/recycle-account/recycle-account.component';
 import { RecycleCategoryComponent } from './pages/recycle/recycle-category/recycle-category.component';
 import { RecycleProductComponent } from './pages/recycle/recycle-product/recycle-product.component';
@@ -22,6 +19,11 @@ import { OrderDetailsComponent } from './pages/order/order-details/order-details
 import { ChatComponent } from './pages/support/chat/chat.component';
 import { ChatHistoryComponent } from './pages/support/chat-history/chat-history.component';
 import { AccountDetailsComponent } from './pages/account/accountdetails/accountdetails.component';
+import { CategoryDetailsComponent } from './pages/category/categorydetails/categorydetails.component';
+import { ProductAddComponent } from './pages/product/productAdd/productAdd.component';
+import { ProductDetailsComponent } from './pages/product/productDetails/productDetails.component';
+import { HotlineInfoComponent } from './pages/settings/HotlineInfo/HotlineInfo.component';
+import { ProductEditComponent } from './pages/product/productEdit/productEdit.component';
 import { JobFormComponent } from './pages/career/job-posting/job-form/job-form.component';
 
 export const adminRoutes: Routes = [
@@ -33,15 +35,20 @@ export const adminRoutes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'account-list', component: AccountListComponent },
       { path: 'account-details/:id', component: AccountDetailsComponent },
+
       { path: 'product-list', component: ProductListComponent },
+      { path: 'product-add', component: ProductAddComponent },
+      { path: 'product-details/:id', component: ProductDetailsComponent },
+      { path: 'product-edit/:id', component: ProductEditComponent },
+
       { path: 'category-list', component: CategoryListComponent },
+      { path: 'category-details/:id', component: CategoryDetailsComponent },
 
       { path: 'about', component: AboutComponent },
       { path: 'contact', component: ContactComponent },
       { path: 'banner', component: BannerComponent },
-      { path: 'settings/facebook', component: FacebookComponent },
-      { path: 'settings/zalo', component: ZaloComponent },
-      { path: 'settings/phone', component: PhoneComponent },
+      { path: 'settings/hotline', component: HotlineInfoComponent },
+
       { path: 'recycle/user', component: RecycleAccountComponent },
       { path: 'recycle/category', component: RecycleCategoryComponent },
       { path: 'recycle/product', component: RecycleProductComponent },

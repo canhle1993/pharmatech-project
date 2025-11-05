@@ -1,85 +1,46 @@
-
 <div class="account-container">
   <h2 class="page-title">Account</h2>
   <p-toast></p-toast>
-  <p-progressSpinner
-    *ngIf="loading"
-    styleClass="loading-spinner"
-  ></p-progressSpinner>
+  <p-progressSpinner *ngIf="loading" styleClass="loading-spinner"></p-progressSpinner>
 
   <div class="card" *ngIf="!loading">
-    <p-table
-      #dt
-      [value]="accounts"
-      dataKey="id"
-      [rows]="10"
-      [rowsPerPageOptions]="[5, 10, 20]"
-      [paginator]="true"
-      [globalFilterFields]="['name', 'email', 'phone', 'gender']"
-      showGridlines
-      [loading]="loading"
-      [responsiveLayout]="'scroll'"
-      [showCurrentPageReport]="true"
-      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-      class="account-table"
-    >
-    <ng-template pTemplate="caption">
-      <div class="p-datatable-caption">
-        <!-- Bên trái: Add -->
-        <div class="toolbar-actions">
-          <button
-            pButton
-            icon="pi pi-user-plus"
-            label="Add"
-            class="p-button-sm p-button-success"
-            (click)="openCreateDialog()"
-          ></button>
+    <p-table #dt [value]="accounts" dataKey="id" [rows]="4" [rowsPerPageOptions]="[4, 10, 20]" [paginator]="true"
+      [globalFilterFields]="['name', 'email', 'phone', 'gender']" showGridlines [loading]="loading"
+      [responsiveLayout]="'scroll'" [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" class="account-table">
+      <ng-template pTemplate="caption">
+        <div class="p-datatable-caption">
+          <!-- Bên trái: Add -->
+          <div class="toolbar-actions">
+            <button pButton icon="pi pi-user-plus" label="Add" class="p-button-sm p-button-info"
+              (click)="openCreateDialog()"></button>
+          </div>
+
+          <!-- Bên phải: Role, Status, Search -->
+          <div class="filter-group">
+            <!-- Role Filter -->
+            <p-floatLabel class="w-full md:w-56">
+              <p-select [(ngModel)]="selectedRole" inputId="roleFilter" [options]="roleOptions" optionLabel="label"
+                optionValue="value" placeholder="Select Role" (onChange)="applyFilters(dt)" class="w-full" />
+            </p-floatLabel>
+
+            <!-- Status Filter -->
+            <p-floatLabel class="w-full md:w-56">
+              <p-select [(ngModel)]="selectedStatus" inputId="statusFilter" [options]="statusOptions"
+                optionLabel="label" optionValue="value" placeholder="Select Status" (onChange)="applyFilters(dt)"
+                class="w-full" />
+            </p-floatLabel>
+
+            <!-- Search -->
+            <p-iconfield iconPosition="left" class="search-field">
+              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+              <input pInputText type="text" (input)="onGlobalFilter(dt, $event)"
+                placeholder="Search by name, email or phone..." />
+            </p-iconfield>
+          </div>
         </div>
-    
-        <!-- Bên phải: Role, Status, Search -->
-        <div class="filter-group">
-          <!-- Role Filter -->
-          <p-floatLabel class="w-full md:w-56">
-            <p-select
-              [(ngModel)]="selectedRole"
-              inputId="roleFilter"
-              [options]="roleOptions"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Select Role"
-              (onChange)="applyFilters(dt)"
-              class="w-full"
-            />
-          </p-floatLabel>
-    
-          <!-- Status Filter -->
-          <p-floatLabel class="w-full md:w-56">
-            <p-select
-              [(ngModel)]="selectedStatus"
-              inputId="statusFilter"
-              [options]="statusOptions"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Select Status"
-              (onChange)="applyFilters(dt)"
-              class="w-full"
-            />
-          </p-floatLabel>
-    
-          <!-- Search -->
-          <p-iconfield iconPosition="left" class="search-field">
-            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
-            <input
-              pInputText
-              type="text"
-              (input)="onGlobalFilter(dt, $event)"
-              placeholder="Search by name, email or phone..."
-            />
-          </p-iconfield>
-        </div>
-      </div>
-    </ng-template>
-    
+      </ng-template>
+
       <!-- Header -->
       <ng-template pTemplate="header">
         <tr>
@@ -87,7 +48,7 @@
           <th pSortableColumn="name">Name <p-sortIcon field="name" /></th>
           <th pSortableColumn="email">Email <p-sortIcon field="email" /></th>
           <th>Phone</th>
-          
+
           <th>Roles</th>
           <th pSortableColumn="last_login">
             Last Login <p-sortIcon field="last_login" />
@@ -102,13 +63,9 @@
       <ng-template pTemplate="body" let-account>
         <tr>
           <td>
-            <img
-              [src]="
+            <img [src]="
                 account?.photo ? account.photo : 'assets/images/no-image.jpg'
-              "
-              alt="photo"
-              class="avatar"
-            />
+              " alt="photo" class="avatar" />
           </td>
 
           <td>{{ account.name }}</td>
@@ -118,53 +75,31 @@
           <td>
             <span class="role-badge" *ngFor="let role of account.roles">{{
               role
-            }}</span>
+              }}</span>
           </td>
 
           <td>{{ account.last_login | date : "dd/MM/yyyy HH:mm:ss" }}</td>
 
           <td>
-            <span
-              class="status-badge"
-              [class.active]="account.is_active"
-              [class.inactive]="!account.is_active"
-            >
+            <span class="status-badge" [class.active]="account.is_active" [class.inactive]="!account.is_active">
               {{ account.is_active ? "Active" : "Inactive" }}
             </span>
           </td>
 
           <td>
-            <button
-              pButton
-              icon="pi pi-search"
-              class="p-button-text p-button-info"
-              title="View"
-              [routerLink]="['/admin/account-details', account.id]">
-            </button>
-            <button
-              pButton
-              icon="pi pi-pencil"
-              class="p-button-text p-button-warning"
-              title="Edit"
-            ></button>
-            <button
-              pButton
-              class="p-button-sm lock-btn"
-              [class.p-button-danger]="account.is_active"
-              [class.p-button-success]="!account.is_active"
-              (click)="toggleLock(account)"
-              [disabled]="account.loading"
-            >
-              <i
-                *ngIf="account.loading"
-                class="pi pi-spin pi-spinner"
-                style="margin-right: 6px"
-              ></i>
-              <i
-                *ngIf="!account.loading"
-                [ngClass]="account.is_active ? 'pi pi-lock' : 'pi pi-lock-open'"
-                style="margin-right: 6px"
-              ></i>
+            <button pButton icon="pi pi-search" class="p-button-text p-button-info" title="View"
+              [routerLink]="['/admin/account-details', account.id]"></button>
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-warning" title="Edit"
+              [routerLink]="['/admin/account-details', account.id]" [queryParams]="{ edit: true }"></button>
+
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-danger" title="Delete"
+              (click)="onSoftDelete(account.id, account.name)"></button>
+
+            <button pButton class="p-button-sm lock-btn" [class.p-button-dangerr]="account.is_active"
+              [class.p-button-success]="!account.is_active" (click)="toggleLock(account)" [disabled]="account.loading">
+              <i *ngIf="account.loading" class="pi pi-spin pi-spinner" style="margin-right: 6px"></i>
+              <i *ngIf="!account.loading" [ngClass]="account.is_active ? 'pi pi-lock' : 'pi pi-lock-open'"
+                style="margin-right: 6px"></i>
               {{ account.is_active ? "Lock" : "Unlock" }}
             </button>
           </td>
@@ -183,33 +118,17 @@
   <p-confirmDialog></p-confirmDialog>
 </div>
 <!-- ✅ Dialog tạo tài khoản admin -->
-<p-dialog
-  header="Create Admin Account"
-  [(visible)]="createDialogVisible"
-  [modal]="true"
-  [style]="{ width: '32rem', 'max-height': '95vh'}"
-  [draggable]="false"
-  [resizable]="false"
->
+<p-dialog header="Create Admin Account" [(visible)]="createDialogVisible" [modal]="true"
+  [style]="{ width: '32rem', 'max-height': '95vh' }" [draggable]="false" [resizable]="false">
   <!-- ✅ FORM -->
-  <form
-    [formGroup]="registerForm"
-    class="p-fluid dialog-form"
-    (ngSubmit)="createAdminAccount()"
-  >
+  <form [formGroup]="registerForm" class="p-fluid dialog-form" (ngSubmit)="createAdminAccount()">
     <!-- Name -->
     <div class="form-field">
       <label for="name">Name</label>
-      <input
-        pInputText
-        id="name"
-        formControlName="name"
-        placeholder="Enter full name"
-      />
-      <small
-        *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"
-        class="p-error"
-      >
+      <input pInputText id="name" formControlName="name" placeholder="Enter full name" />
+      <small *ngIf="
+          registerForm.get('name')?.invalid && registerForm.get('name')?.touched
+        " class="p-error">
         Name must be 3–50 letters (no numbers).
       </small>
     </div>
@@ -217,65 +136,36 @@
     <!-- Username -->
     <div class="form-field">
       <label for="username">Username</label>
-      <input
-        pInputText
-        id="username"
-        formControlName="username"
-        placeholder="Enter username"
-      />
+      <input pInputText id="username" formControlName="username" placeholder="Enter username" />
     </div>
 
     <!-- Email -->
     <div class="form-field">
       <label for="email">Email</label>
-      <input
-        pInputText
-        id="email"
-        formControlName="email"
-        placeholder="Enter email"
-      />
+      <input pInputText id="email" formControlName="email" placeholder="Enter email" />
     </div>
 
     <!-- Phone -->
     <div class="form-field">
       <label for="phone">Phone</label>
-      <input
-        pInputText
-        id="phone"
-        formControlName="phone"
-        placeholder="Enter phone number"
-      />
+      <input pInputText id="phone" formControlName="phone" placeholder="Enter phone number" />
     </div>
 
     <!-- Password -->
     <div class="form-field">
       <label for="password">Password</label>
-      <input
-        pInputText
-        id="password"
-        type="password"
-        formControlName="password"
-        placeholder="Enter password"
-      />
+      <input pInputText id="password" type="password" formControlName="password" placeholder="Enter password" />
     </div>
 
     <!-- Confirm Password -->
     <div class="form-field">
       <label for="confirmPassword">Confirm Password</label>
-      <input
-        pInputText
-        id="confirmPassword"
-        type="password"
-        formControlName="confirmPassword"
-        placeholder="Confirm password"
-      />
-      <small
-        *ngIf="
+      <input pInputText id="confirmPassword" type="password" formControlName="confirmPassword"
+        placeholder="Confirm password" />
+      <small *ngIf="
           registerForm.hasError('passwordMismatch') &&
           registerForm.get('confirmPassword')?.touched
-        "
-        class="p-error"
-      >
+        " class="p-error">
         Passwords do not match.
       </small>
     </div>
@@ -283,22 +173,9 @@
 
   <!-- ✅ Footer phải nằm ngoài form -->
   <ng-template pTemplate="footer">
-    <button
-      pButton
-      label="Cancel"
-      icon="pi pi-times"
-      class="p-button-text"
-      type="button"
-      (click)="createDialogVisible = false"
-    ></button>
-    <button
-      pButton
-      label="Save"
-      icon="pi pi-check"
-      class="p-button-success"
-      type="button"
-      [disabled]="registerForm.invalid"
-      (click)="createAdminAccount()"
-    ></button>
+    <button pButton label="Cancel" icon="pi pi-times" class="p-button-text" type="button"
+      (click)="createDialogVisible = false"></button>
+    <button pButton label="Save" icon="pi pi-check" class="p-button-success" type="button"
+      [disabled]="registerForm.invalid" (click)="createAdminAccount()"></button>
   </ng-template>
 </p-dialog>

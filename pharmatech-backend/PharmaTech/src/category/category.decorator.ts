@@ -1,12 +1,24 @@
+<<<<<<< HEAD
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+=======
+// src/category/category.decorator.ts
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
+
+export type CategoryDocument = HydratedDocument<Category>;
+>>>>>>> origin/main
 
 @Schema({
   collection: 'categorys',
   versionKey: false,
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
 })
+<<<<<<< HEAD
 export class Category extends Document {
+=======
+export class Category {
+>>>>>>> origin/main
   @Prop({ required: true, unique: true })
   name: string; // Tên danh mục (Capsule, Tablet, Liquid Filling...)
 

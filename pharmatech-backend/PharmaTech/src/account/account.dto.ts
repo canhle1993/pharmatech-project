@@ -5,8 +5,9 @@ import { getImageUrl } from './config.util';
 export class AccountDTO {
   // _id (ObjectId) -> id (string)
   @Transform(({ obj }) => obj?._id?.toString())
-  @Expose({ name: 'id' })
+  @Expose()
   id: string;
+
 
   @Expose()
   name: string;
@@ -21,9 +22,15 @@ export class AccountDTO {
   gender?: string;
 
   // Ghép URL ảnh đầy đủ, nếu không có thì trả null
-  @Transform(({ obj }) => (obj?.photo ? `${getImageUrl()}${obj.photo}` : null))
+  @Transform(({ obj }) => {
+    if (!obj?.photo) return null;
+    return obj.photo.startsWith('http')
+      ? obj.photo
+      : `${getImageUrl()}${obj.photo}`;
+  })
   @Expose()
   photo?: string | null;
+  
 
   @Expose()
   username: string;
@@ -51,17 +58,49 @@ export class AccountDTO {
   @Expose({ name: 'last_login' })
   last_login?: Date | null;
 
-  @Transform(({ obj }) =>
-    obj?.created_at ? moment(obj.created_at).format('DD/MM/YYYY HH:mm') : null,
-  )
+  @Transform(({ obj }) => {
+    if (!obj?.created_at) return null;
+    // moment tự parse ISO format nên không cần định dạng đầu vào
+    return moment(obj.created_at).format('DD/MM/YYYY HH:mm');
+  })
   @Expose({ name: 'created_at' })
   created_at?: string | null;
-
-  @Transform(({ obj }) =>
-    obj?.updated_at ? moment(obj.updated_at).format('DD/MM/YYYY HH:mm') : null,
-  )
+  
+  @Transform(({ obj }) => {
+    if (!obj?.updated_at) return null;
+    return moment(obj.updated_at).format('DD/MM/YYYY HH:mm');
+  })
   @Expose({ name: 'updated_at' })
   updated_at?: string | null;
+  
+  
+
+  // 🧑‍🎓 Học vấn
+  @Expose()
+  education?: {
+    degree?: string;
+    university?: string;
+    graduation_year?: number;
+  };
+
+  // 💼 Kinh nghiệm
+  @Expose()
+  experience?: {
+    company?: string;
+    position?: string;
+    years?: number;
+  };
+
+  // 📄 File Resume (trả URL đầy đủ nếu có)
+  @Transform(({ obj }) => {
+  if (!obj?.resume) return null;
+  return obj.resume.startsWith('http')
+    ? obj.resume
+    : `${getImageUrl()}${obj.resume}`;
+  })
+  @Expose()
+  resume?: string | null;
+
 
   // 🧑‍🎓 Học vấn
   @Expose()

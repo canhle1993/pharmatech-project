@@ -10,6 +10,15 @@ import { MailModule } from './mail/mail.module';
 import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
 import { CareerModule } from './career/career.module';
+<<<<<<< HEAD
+=======
+import { ProductCategoryModule } from './product-category/product-category.module';
+import { ProductImageModule } from './product-image/product-image.module';
+import { AboutModule } from './about/about.module';
+import { ContactModule } from './contact/contact.module';
+import { HotlineModule } from './hotline/hotline.module';
+import { ChatModule } from './chat/chat.module';
+>>>>>>> origin/main
 
 @Module({
   imports: [
@@ -19,10 +28,13 @@ import { CareerModule } from './career/career.module';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get('connection_string'),
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const uri = configService.get('connection_string');
+        console.log('🔗 Connected Mongo URI:', uri); // 👉 In ra đường dẫn thật
+        return { uri };
+      },
     }),
+
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -50,6 +62,15 @@ import { CareerModule } from './career/career.module';
     CategoryModule,
     ProductModule,
     CareerModule,
+<<<<<<< HEAD
+=======
+    ProductCategoryModule,
+    ProductImageModule,
+    AboutModule,
+    ContactModule,
+    HotlineModule,
+    ChatModule,
+>>>>>>> origin/main
   ],
   controllers: [],
   providers: [],

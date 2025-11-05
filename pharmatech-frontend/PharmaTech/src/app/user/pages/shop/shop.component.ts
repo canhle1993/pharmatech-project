@@ -1,62 +1,196 @@
-import { Component, OnInit, Renderer2, AfterViewInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, OnInit, Renderer2 } from '@angular/core';
+import { RouterLink, ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { CategoryService } from '../../../services/category.service';
+import { ProductService } from '../../../services/product.service';
+import { env } from '../../../enviroments/enviroment';
+import { FormsModule } from '@angular/forms';
 
 @Component({
+  standalone: true,
   templateUrl: './shop.component.html',
-  imports: [RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
+  providers: [CategoryService, ProductService],
 })
-export class ShopComponent implements OnInit, AfterViewInit {
+export class ShopComponent implements OnInit {
+  Math = Math;
+  categories: any[] = [];
+  products: any[] = [];
+  filteredProducts: any[] = [];
+  selectedCategoryId: string | null = null;
+  searchTerm: string = ''; // ✅ thêm biến này
+  imageBase = env.imageUrl;
+
+  // === 🧭 Phân trang ===
+  currentPage: number = 1;
+  itemsPerPage: number = 12; // mặc định
+  totalPages: number = 1;
+  pagedProducts: any[] = [];
+
   constructor(
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private categoryService: CategoryService,
+    private productService: ProductService,
+    private route: ActivatedRoute // ✅ thêm vào
   ) {}
-  ngOnInit() {}
-  ngAfterViewInit() {
-    // --- CSS ---
-    const cssFiles = [
-      'assets/css/vendor/bootstrap.min.css',
-      'assets/css/vendor/lastudioicons.css',
-      'assets/css/vendor/dliconoutline.css',
-      'assets/css/animate.min.css',
-      'assets/css/swiper-bundle.min.css',
-      'assets/css/ion.rangeSlider.min.css',
-      'assets/css/lightgallery-bundle.min.css',
-      'assets/css/magnific-popup.css',
-      'assets/css/style.css',
-    ];
-    cssFiles.forEach((href) => {
-      const link = this.renderer.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = href;
-      this.renderer.appendChild(document.head, link);
-    });
 
-    const fontLink = this.renderer.createElement('link');
-    fontLink.rel = 'stylesheet';
-    fontLink.href =
-      'https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap';
-    this.renderer.appendChild(document.head, fontLink);
+  async ngOnInit() {
+    await this.loadCategories();
+    await this.loadProducts();
 
-    // --- JS ---
-    const jsFiles = [
-      'assets/js/vendor/modernizr-3.11.7.min.js',
-      'assets/js/vendor/jquery-migrate-3.3.2.min.js',
-      'assets/js/countdown.min.js',
-      'assets/js/ajax.js',
-      'assets/js/jquery.validate.min.js',
-      'assets/js/vendor/jquery-3.6.0.min.js',
-      'assets/js/vendor/bootstrap.bundle.min.js',
-      'assets/js/swiper-bundle.min.js',
-      'assets/js/ion.rangeSlider.min.js',
-      'assets/js/lightgallery.min.js',
-      'assets/js/jquery.magnific-popup.min.js',
-      'assets/js/main.js',
-    ];
-    jsFiles.forEach((src) => {
-      const script = this.renderer.createElement('script');
-      script.src = src;
-      script.type = 'text/javascript';
-      this.renderer.appendChild(document.body, script);
+    // ✅ Nhận param từ header
+    this.route.queryParams.subscribe((params) => {
+      const categoryId = params['category'];
+      if (categoryId) {
+        this.onSelectCategory(categoryId);
+      }
     });
-    
+  }
+
+  /** 🔄 Sort products by newest or oldest */
+  onSortChange(event: any) {
+    const value = event.target.value;
+    let sorted = [...this.filteredProducts];
+
+    if (value === 'latest') {
+      // 🆕 Newest first (based on created_at or ObjectId timestamp)
+      sorted.sort((a: any, b: any) => {
+        const aDate = new Date(a.created_at || a._id);
+        const bDate = new Date(b.created_at || b._id);
+        return bDate.getTime() - aDate.getTime();
+      });
+    } else if (value === 'oldest') {
+      // 🕰️ Oldest first
+      sorted.sort((a: any, b: any) => {
+        const aDate = new Date(a.created_at || a._id);
+        const bDate = new Date(b.created_at || b._id);
+        return aDate.getTime() - bDate.getTime();
+      });
+    }
+
+    this.filteredProducts = sorted;
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
+  onSearch() {
+    const keyword = this.searchTerm.trim().toLowerCase();
+    this.currentPage = 1;
+
+    // Lọc theo category trước
+    let baseList = [...this.products];
+    if (this.selectedCategoryId) {
+      const pick = this.selectedCategoryId.toString();
+      baseList = baseList.filter((p: any) => {
+        if (
+          Array.isArray(p.category_ids) &&
+          p.category_ids.some((cid: any) => cid?.toString() === pick)
+        )
+          return true;
+        if (
+          Array.isArray(p.categories) &&
+          p.categories.some((c: any) => (c?.id ?? c?._id)?.toString() === pick)
+        )
+          return true;
+        return false;
+      });
+    }
+
+    // ✅ Lọc tiếp theo tên
+    if (keyword) {
+      this.filteredProducts = baseList.filter((p: any) =>
+        p.name?.toLowerCase().includes(keyword)
+      );
+    } else {
+      this.filteredProducts = [...baseList];
+    }
+
+    this.updatePagination();
+  }
+
+  /** 🧾 Load Category */
+  async loadCategories() {
+    try {
+      const res: any = await this.categoryService.findAll();
+      this.categories = Array.isArray(res) ? res : [];
+    } catch (err) {
+      console.error('❌ Load categories failed:', err);
+    }
+  }
+
+  /** 📦 Load Product */
+  async loadProducts() {
+    try {
+      const res: any = await this.productService.findAll();
+      this.products = Array.isArray(res) ? res : [];
+
+      // Ghép full URL ảnh (nếu cần)
+      this.products = this.products.map((p: any) => ({
+        ...p,
+        photo: p?.photo?.startsWith('http')
+          ? p.photo
+          : p?.photo
+          ? this.imageBase + p.photo
+          : null,
+      }));
+
+      this.filteredProducts = [...this.products];
+      this.updatePagination(); // ✅ cập nhật trang đầu tiên
+    } catch (err) {
+      console.error('❌ Load products failed:', err);
+    }
+  }
+
+  /** 🔄 Cập nhật danh sách trang hiện tại */
+  updatePagination() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    this.totalPages = Math.ceil(
+      this.filteredProducts.length / this.itemsPerPage
+    );
+    this.pagedProducts = this.filteredProducts.slice(start, end);
+  }
+
+  /** ⬅️ ➡️ Chuyển trang */
+  goToPage(page: number) {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.updatePagination();
+  }
+
+  /** 🔢 Khi đổi số sản phẩm mỗi trang */
+  onChangePageSize(event: any) {
+    this.itemsPerPage = Number(event.target.value) || 6;
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
+  /** 📦 Khi chọn Category thì reset về trang 1 */
+  onSelectCategory(id: string | null) {
+    this.selectedCategoryId = id;
+    this.currentPage = 1;
+
+    if (!id) {
+      this.filteredProducts = [...this.products];
+    } else {
+      const pick = id.toString();
+      this.filteredProducts = this.products.filter((p: any) => {
+        if (
+          Array.isArray(p.category_ids) &&
+          p.category_ids.some((cid: any) => cid?.toString() === pick)
+        )
+          return true;
+
+        if (
+          Array.isArray(p.categories) &&
+          p.categories.some((c: any) => (c?.id ?? c?._id)?.toString() === pick)
+        )
+          return true;
+
+        return false;
+      });
+    }
+
+    this.updatePagination(); // ✅ cập nhật lại danh sách hiển thị
   }
 }
