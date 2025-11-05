@@ -5,11 +5,8 @@ import { ProductService } from './product.service';
 import { ProductController } from './product.controller';
 import { CategoryModule } from 'src/category/category.module';
 import { Category, CategorySchema } from 'src/category/category.decorator';
-<<<<<<< HEAD
-=======
 import { ProductCategoryModule } from 'src/product-category/product-category.module';
 import { ProductImageModule } from 'src/product-image/product-image.module';
->>>>>>> origin/main
 
 @Module({
   imports: [
@@ -18,11 +15,8 @@ import { ProductImageModule } from 'src/product-image/product-image.module';
       { name: Category.name, schema: CategorySchema },
     ]),
     CategoryModule,
-<<<<<<< HEAD
-=======
     ProductCategoryModule,
     ProductImageModule,
->>>>>>> origin/main
   ],
   controllers: [ProductController],
   providers: [ProductService],

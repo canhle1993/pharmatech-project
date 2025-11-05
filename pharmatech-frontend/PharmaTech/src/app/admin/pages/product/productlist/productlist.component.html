@@ -1,86 +1,32 @@
 <div class="product-container">
-<<<<<<< HEAD
-  <h2 class="page-title">Product List</h2>
-=======
   <h2 class="page-title">Product</h2>
->>>>>>> origin/main
 
   <!-- ✅ Toast thông báo -->
   <p-toast></p-toast>
 
   <!-- Loading spinner -->
-  <p-progressSpinner
-    *ngIf="loading"
-    styleClass="loading-spinner"
-  ></p-progressSpinner>
+  <p-progressSpinner *ngIf="loading" styleClass="loading-spinner"></p-progressSpinner>
 
   <div class="card" *ngIf="!loading">
-    <p-table
-<<<<<<< HEAD
-      [value]="products"
-      dataKey="id"
-      [rows]="10"
-      [paginator]="true"
-      [rowsPerPageOptions]="[5, 10, 20]"
-=======
-      #dt
-      [value]="filteredProducts"
-      [globalFilterFields]="['name']"
-      dataKey="id"
-      [rows]="4"
-      [paginator]="true"
-      [rowsPerPageOptions]="[4, 10, 20]"
->>>>>>> origin/main
-      showGridlines
-      [responsiveLayout]="'scroll'"
-      class="product-table"
-    >
-<<<<<<< HEAD
-      <!-- Header -->
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Photo</th>
-          <th>Product Name</th>
-          <th>Model</th>
-          <th>Category</th>
-          <th>Manufacturer</th>
-          <th>Updated By</th>
-          <th>Updated At</th>
-=======
+    <p-table #dt [value]="filteredProducts" [globalFilterFields]="['name']" dataKey="id" [rows]="4" [paginator]="true"
+      [rowsPerPageOptions]="[4, 10, 20]" showGridlines [responsiveLayout]="'scroll'" class="product-table">
       <ng-template pTemplate="caption">
         <div class="p-datatable-caption">
           <div class="toolbar-actions">
-            <button
-              pButton
-              icon="pi pi-plus"
-              label="Add"
-              class="p-button-sm p-button-info"
-              [routerLink]="['/admin/product-add']"
-            ></button>
+            <button pButton icon="pi pi-plus" label="Add" class="p-button-sm p-button-info"
+              [routerLink]="['/admin/product-add']"></button>
           </div>
 
           <p-floatLabel class="w-full md:w-56" style="margin-left: 40%">
-            <p-select
-              class="w-full"
-              [options]="categories"
-              optionLabel="label"
-              optionValue="value"
-              [(ngModel)]="selectedCategory"
-              [showClear]="true"
-              placeholder="Select Category"
-              (ngModelChange)="applyFilters($event)"
-            ></p-select>
+            <p-select class="w-full" [options]="categories" optionLabel="label" optionValue="value"
+              [(ngModel)]="selectedCategory" [showClear]="true" placeholder="Select Category"
+              (ngModelChange)="applyFilters($event)"></p-select>
           </p-floatLabel>
 
           <div class="filter-group">
             <p-iconfield iconPosition="left" class="search-field">
               <p-inputicon><i class="pi pi-search"></i></p-inputicon>
-              <input
-                pInputText
-                type="text"
-                (input)="onGlobalFilter($event, dt)"
-                placeholder="Search by name"
-              />
+              <input pInputText type="text" (input)="onGlobalFilter($event, dt)" placeholder="Search by name" />
             </p-iconfield>
           </div>
         </div>
@@ -96,7 +42,6 @@
           <th field="manufacturer">Manufacturer</th>
           <th field="updated_by">Updated By</th>
           <th field="updated_at">Updated At</th>
->>>>>>> origin/main
           <th>Action</th>
         </tr>
       </ng-template>
@@ -105,18 +50,12 @@
       <ng-template pTemplate="body" let-product>
         <tr>
           <td>
-            <img
-              [src]="
+            <img [src]="
                 product?.photo ? product.photo : 'assets/images/no-image.jpg'
-              "
-              alt="Product Photo"
-            />
+              " alt="Product Photo" />
           </td>
           <td>{{ product.name }}</td>
           <td>{{ product.model }}</td>
-<<<<<<< HEAD
-          <td>{{ getCategoryName(product.categoryId) }}</td>
-=======
           <td>
             <ng-container *ngIf="product.categories?.length > 0; else noCat">
               <span *ngFor="let c of product.categories; let last = last">
@@ -125,35 +64,16 @@
             </ng-container>
             <ng-template #noCat>-</ng-template>
           </td>
->>>>>>> origin/main
           <td>{{ product.manufacturer || "-" }}</td>
           <td>{{ product.updated_by || "-" }}</td>
           <td>{{ product.updated_at || "-" }}</td>
           <td>
-            <button
-              pButton
-<<<<<<< HEAD
-=======
-              icon="pi pi-search"
-              class="p-button-text p-button-info"
-              title="View"
-              [routerLink]="['/admin/product-details', product.id]"
-            ></button>
-            <button
-              pButton
-              icon="pi pi-pencil"
-              class="p-button-text p-button-warning"
-              title="Edit"
-              [routerLink]="['/admin/product-edit', product.id]"
-            ></button>
-            <button
-              pButton
->>>>>>> origin/main
-              icon="pi pi-trash"
-              class="p-button-text p-button-danger"
-              title="Delete"
-              (click)="onDelete(product)"
-            ></button>
+            <button pButton icon="pi pi-search" class="p-button-text p-button-info" title="View"
+              [routerLink]="['/admin/product-details', product.id]"></button>
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-warning" title="Edit"
+              [routerLink]="['/admin/product-edit', product.id]"></button>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-danger" title="Delete"
+              (click)="onDelete(product)"></button>
           </td>
         </tr>
       </ng-template>

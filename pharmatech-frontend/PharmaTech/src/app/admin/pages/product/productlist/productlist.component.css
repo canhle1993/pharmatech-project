@@ -6,10 +6,6 @@
   min-height: 100vh;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/main
 /* ===== Table styles ===== */
 .product-table {
   width: 100%;
@@ -81,13 +77,10 @@
   background-color: #ffcdd2 !important;
 }
 
-<<<<<<< HEAD
-=======
 .p-button-info:hover {
   background-color: #5cb6f27d !important;
 }
 
->>>>>>> origin/main
 /* ===== Empty table message ===== */
 .text-center {
   text-align: center;
@@ -95,8 +88,6 @@
   color: #999;
   padding: 15px 0;
 }
-<<<<<<< HEAD
-=======
 /* 🎯 Add + Role + Status + Search layout */
 :host ::ng-deep .p-datatable-caption {
   display: flex;
@@ -164,4 +155,3 @@
     max-width: 100%;
   }
 }
->>>>>>> origin/main

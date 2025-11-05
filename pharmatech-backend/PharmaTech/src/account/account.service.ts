@@ -126,9 +126,6 @@ export class AccountService {
       return false;
     }
   }
-<<<<<<< HEAD
-  
-=======
 
   async restore(id: string): Promise<boolean> {
     const res = await this.accountModel.updateOne(
@@ -137,5 +134,4 @@ export class AccountService {
     );
     return res.modifiedCount > 0;
   }
->>>>>>> origin/main
 }

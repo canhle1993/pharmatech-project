@@ -35,10 +35,7 @@
     "primeng": "^20.3.0",
     "quill": "^2.0.3",
     "rxjs": "~7.8.0",
-<<<<<<< HEAD
-=======
     "socket.io-client": "^4.8.1",
->>>>>>> origin/main
     "swiper": "^12.0.3",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

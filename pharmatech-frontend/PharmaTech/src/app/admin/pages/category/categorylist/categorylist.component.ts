@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { Component, OnInit } from '@angular/core';
-=======
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
->>>>>>> origin/main
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -12,8 +8,6 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Category } from '../../../../entities/category.entity';
 import { CategoryService } from '../../../../services/category.service';
-<<<<<<< HEAD
-=======
 import { RouterLink } from '@angular/router';
 
 import { InputTextModule } from 'primeng/inputtext';
@@ -35,7 +29,6 @@ import { ProductService } from '../../../../services/product.service';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { DialogModule } from 'primeng/dialog';
 import { TextareaModule } from 'primeng/textarea';
->>>>>>> origin/main
 
 @Component({
   templateUrl: './categorylist.component.html',
@@ -43,17 +36,12 @@ import { TextareaModule } from 'primeng/textarea';
   standalone: true,
   imports: [
     CommonModule,
-<<<<<<< HEAD
-=======
     ReactiveFormsModule,
->>>>>>> origin/main
     TableModule,
     ButtonModule,
     ConfirmDialogModule,
     ToastModule,
     ProgressSpinnerModule,
-<<<<<<< HEAD
-=======
     InputTextModule,
     IconFieldModule,
     InputIconModule,
@@ -62,20 +50,11 @@ import { TextareaModule } from 'primeng/textarea';
     TextareaModule,
     AvatarModule,
     RouterLink,
->>>>>>> origin/main
   ],
   providers: [ConfirmationService, MessageService],
 })
 export class CategoryListComponent implements OnInit {
   categories: Category[] = [];
-<<<<<<< HEAD
-  loading = true;
-
-  constructor(
-    private categoryService: CategoryService,
-    private confirmService: ConfirmationService,
-    private messageService: MessageService
-=======
   products: any[] = [];
   addForm!: FormGroup;
   editForm!: FormGroup;
@@ -93,13 +72,10 @@ export class CategoryListComponent implements OnInit {
     private confirmService: ConfirmationService,
     private messageService: MessageService,
     private fb: FormBuilder
->>>>>>> origin/main
   ) {}
 
   ngOnInit() {
     this.loadCategories();
-<<<<<<< HEAD
-=======
     this.loadProducts();
 
     this.addForm = this.fb.group({
@@ -114,7 +90,6 @@ export class CategoryListComponent implements OnInit {
       description: [''],
       product_id: [[]],
     });
->>>>>>> origin/main
   }
 
   /** 🔹 Load all categories */
@@ -135,8 +110,6 @@ export class CategoryListComponent implements OnInit {
     }
   }
 
-<<<<<<< HEAD
-=======
   async loadProducts() {
     try {
       const res: any = await this.productService.findAllActive();
@@ -264,7 +237,6 @@ export class CategoryListComponent implements OnInit {
     }
   }
 
->>>>>>> origin/main
   /** 🔹 Soft delete a category */
   async onDelete(category: Category) {
     this.confirmService.confirm({

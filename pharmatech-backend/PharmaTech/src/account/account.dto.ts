@@ -8,7 +8,6 @@ export class AccountDTO {
   @Expose()
   id: string;
 
-
   @Expose()
   name: string;
 
@@ -30,7 +29,6 @@ export class AccountDTO {
   })
   @Expose()
   photo?: string | null;
-  
 
   @Expose()
   username: string;
@@ -65,42 +63,13 @@ export class AccountDTO {
   })
   @Expose({ name: 'created_at' })
   created_at?: string | null;
-  
+
   @Transform(({ obj }) => {
     if (!obj?.updated_at) return null;
     return moment(obj.updated_at).format('DD/MM/YYYY HH:mm');
   })
   @Expose({ name: 'updated_at' })
   updated_at?: string | null;
-  
-  
-
-  // 🧑‍🎓 Học vấn
-  @Expose()
-  education?: {
-    degree?: string;
-    university?: string;
-    graduation_year?: number;
-  };
-
-  // 💼 Kinh nghiệm
-  @Expose()
-  experience?: {
-    company?: string;
-    position?: string;
-    years?: number;
-  };
-
-  // 📄 File Resume (trả URL đầy đủ nếu có)
-  @Transform(({ obj }) => {
-  if (!obj?.resume) return null;
-  return obj.resume.startsWith('http')
-    ? obj.resume
-    : `${getImageUrl()}${obj.resume}`;
-  })
-  @Expose()
-  resume?: string | null;
-
 
   // 🧑‍🎓 Học vấn
   @Expose()

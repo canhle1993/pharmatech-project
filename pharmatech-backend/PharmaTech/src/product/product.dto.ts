@@ -3,29 +3,10 @@ import * as moment from 'moment';
 import { getImageUrl } from './config.util';
 
 export class ProductDTO {
-<<<<<<< HEAD
-  // ✅ ID
-=======
->>>>>>> origin/main
   @Transform(({ obj }) => obj?._id?.toString())
   @Expose({ name: 'id' })
   id: string;
 
-<<<<<<< HEAD
-  // ✅ Tên sản phẩm
-  @Expose()
-  name: string;
-
-  // ✅ Mã model (ví dụ: TDP-5, DHF-2Head,...)
-  @Expose()
-  model?: string;
-
-  // ✅ Mô tả chi tiết
-  @Expose()
-  description?: string;
-
-  // ✅ Ảnh chính (tự ghép URL)
-=======
   @Expose()
   name: string;
 
@@ -45,39 +26,10 @@ export class ProductDTO {
   @Expose()
   manufacturer?: string;
 
->>>>>>> origin/main
   @Transform(({ obj }) => (obj?.photo ? `${getImageUrl()}${obj.photo}` : null))
   @Expose()
   photo?: string | null;
 
-<<<<<<< HEAD
-  // ✅ Bộ sưu tập ảnh phụ
-  @Transform(({ obj }) =>
-    obj?.gallery && obj.gallery.length > 0
-      ? obj.gallery.map((img: string) => `${getImageUrl()}${img}`)
-      : [],
-  )
-  @Expose()
-  gallery?: string[];
-
-  @Transform(({ obj }) => obj.category_id?.toString()) // ✅ convert ObjectId to string
-  @Expose({ name: 'categoryId' })
-  categoryId: string;
-
-  // ✅ Thông số kỹ thuật
-  @Expose()
-  specification?: string;
-
-  // ✅ Giá (nếu có)
-  @Expose()
-  price?: number;
-
-  // ✅ Nhà sản xuất
-  @Expose()
-  manufacturer?: string;
-
-  // ✅ Trạng thái
-=======
   /** ✅ Danh sách category mà sản phẩm thuộc về */
   @Expose({ name: 'category_ids' })
   category_ids?: string[];
@@ -86,24 +38,15 @@ export class ProductDTO {
   @Expose()
   categories?: any[];
 
->>>>>>> origin/main
   @Expose({ name: 'is_active' })
   is_active: boolean;
 
   @Expose({ name: 'is_delete' })
   is_delete: boolean;
 
-<<<<<<< HEAD
-  // ✅ Người sửa cuối cùng
   @Expose({ name: 'updated_by' })
   updated_by?: string;
 
-  // ✅ Ngày tạo & cập nhật
-=======
-  @Expose({ name: 'updated_by' })
-  updated_by?: string;
-
->>>>>>> origin/main
   @Transform(({ obj }) =>
     obj?.created_at ? moment(obj.created_at).format('DD/MM/YYYY HH:mm') : null,
   )

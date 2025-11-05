@@ -8,20 +8,14 @@ import {
   IsString,
   IsNumber,
   IsDateString,
-<<<<<<< HEAD
   IsArray,
-=======
->>>>>>> origin/main
 } from 'class-validator';
 
 //
 // 🟢 DTO dùng khi tạo bài đăng
 //
 export class CreateCareerDto {
-<<<<<<< HEAD
   // --- Thông tin cơ bản ---
-=======
->>>>>>> origin/main
   @IsNotEmpty() @IsString() title: string;
   @IsNotEmpty() @IsString() department: string;
   @IsNotEmpty() @IsString() location: string;
@@ -32,7 +26,6 @@ export class CreateCareerDto {
   @IsOptional() @IsString() banner?: string;
   @IsNotEmpty() @IsString() posted_by: string;
 
-<<<<<<< HEAD
   // --- Thông tin chi tiết tuyển dụng ---
   @IsOptional() @IsNumber() quantity?: number;
   @IsOptional() @IsString() level?: string;
@@ -58,16 +51,6 @@ export class CreateCareerDto {
   @Transform(({ value }) => (value ? new Date(value) : null))
   posted_date?: Date;
 
-=======
-  @IsOptional() @IsNumber() quantity?: number;
-  @IsOptional() @IsString() level?: string;
-  @IsOptional() @IsString() experience?: string;
-  @IsOptional() @IsString() work_type?: string;
-  @IsOptional() @IsString() area?: string;
-  @IsOptional()
-  @Transform(({ value }) => (value ? new Date(value) : null))
-  posted_date?: Date;
->>>>>>> origin/main
   @IsOptional()
   @Transform(({ value }) => (value ? new Date(value) : null))
   expiration_date?: Date;
@@ -84,15 +67,11 @@ export class UpdateCareerDto {
   @IsOptional() @IsString() requirements?: string;
   @IsOptional() @IsString() salary_range?: string;
   @IsOptional() @IsString() banner?: string;
-<<<<<<< HEAD
   @IsOptional() @IsString() posted_by?: string;
-=======
->>>>>>> origin/main
 
   @IsOptional() @IsNumber() quantity?: number;
   @IsOptional() @IsString() level?: string;
   @IsOptional() @IsString() experience?: string;
-<<<<<<< HEAD
   @IsOptional() @IsString() min_experience?: string;
   @IsOptional() @IsString() education_level?: string;
   @IsOptional() @IsString() work_type?: string;
@@ -108,10 +87,6 @@ export class UpdateCareerDto {
   @IsOptional() @IsString() marital_status?: string;
   @IsOptional() @IsArray() @IsString({ each: true }) skills?: string[];
   @IsOptional() @IsArray() @IsString({ each: true }) benefits?: string[];
-=======
-  @IsOptional() @IsString() work_type?: string;
-  @IsOptional() @IsString() area?: string;
->>>>>>> origin/main
 
   @IsOptional()
   @Transform(({ value }) => (value ? new Date(value) : null))
@@ -137,24 +112,17 @@ export class CareerDTO {
   @Expose() requirements?: string;
   @Expose() salary_range?: string;
 
-<<<<<<< HEAD
   @Transform(({ obj }) => {
     if (!obj?.banner) return null;
     if (obj.banner.startsWith('http')) return obj.banner;
     return `${getImageUrl()}/career-banners/${obj.banner}`;
   })
-=======
-  @Transform(({ obj }) =>
-    obj?.banner ? `${getImageUrl()}/career-banners/${obj.banner}` : null,
-  )
->>>>>>> origin/main
   @Expose()
   banner?: string | null;
 
   @Expose({ name: 'posted_by' }) posted_by: string;
   @Expose({ name: 'is_active' }) is_active: boolean;
 
-<<<<<<< HEAD
   // --- Chi tiết tuyển dụng ---
   @Expose() quantity?: number;
   @Expose() level?: string;
@@ -176,15 +144,6 @@ export class CareerDTO {
   @Expose() benefits?: string[];
 
   // --- Ngày đăng / hết hạn / tạo / cập nhật ---
-=======
-  // 🆕
-  @Expose() quantity?: number;
-  @Expose() level?: string;
-  @Expose() experience?: string;
-  @Expose() work_type?: string;
-  @Expose() area?: string;
-
->>>>>>> origin/main
   @Transform(({ obj }) =>
     obj?.posted_date ? moment(obj.posted_date).format('YYYY-MM-DD') : null,
   )

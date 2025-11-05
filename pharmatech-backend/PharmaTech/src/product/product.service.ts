@@ -6,45 +6,16 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-<<<<<<< HEAD
-import { plainToInstance } from 'class-transformer';
-import { Product, ProductDocument } from './product.decorator';
-import { ProductDTO } from './product.dto';
-=======
 import { Product } from './product.decorator';
 import { ProductDTO } from './product.dto';
 import { plainToInstance } from 'class-transformer';
 import { ProductImage } from 'src/product-image/product-image.decorator';
 import { ProductCategoryService } from 'src/product-category/product-category.service'; // ✅ Thêm import
->>>>>>> origin/main
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectModel(Product.name)
-<<<<<<< HEAD
-    private productModel: Model<ProductDocument>,
-  ) {}
-
-  async findAll(): Promise<ProductDTO[]> {
-    const products = await this.productModel
-      .find({ is_delete: false })
-      .sort({ created_at: -1 })
-      .exec();
-
-    return products.map((p) =>
-      plainToInstance(ProductDTO, p.toObject(), {
-        excludeExtraneousValues: true,
-      }),
-    );
-  }
-
-  /** 🔹 Tìm sản phẩm theo ID */
-  async findById(id: string): Promise<ProductDTO | null> {
-    const product = await this.productModel
-      .findById(id)
-      .populate('category_id', 'name')
-=======
     private _productModel: Model<Product>,
     @InjectModel(ProductImage.name)
     private _productImageModel: Model<ProductImage>,
@@ -63,23 +34,10 @@ export class ProductService {
         model: 'Category',
         select: '_id name',
       })
->>>>>>> origin/main
       .exec();
 
     if (!product) return null;
 
-<<<<<<< HEAD
-    return plainToInstance(ProductDTO, product.toObject(), {
-      excludeExtraneousValues: true,
-    });
-  }
-
-  /** 🔹 Tìm sản phẩm theo từ khóa (tên hoặc model) */
-  async findByKeyword(keyword: string): Promise<ProductDTO[]> {
-    const products = await this.productModel
-      .find({
-        is_delete: false,
-=======
     // 🔸 Lấy ảnh phụ (nếu có bảng product-image)
     const images = await this._productImageModel
       .find({ product_id: id })
@@ -145,18 +103,12 @@ export class ProductService {
   async findByKeyword(keyword: string): Promise<ProductDTO[]> {
     const products = await this._productModel
       .find({
->>>>>>> origin/main
         $or: [
           { name: { $regex: keyword, $options: 'i' } },
           { model: { $regex: keyword, $options: 'i' } },
         ],
-<<<<<<< HEAD
-      })
-      .populate('category_id', 'name')
-=======
         is_delete: false,
       })
->>>>>>> origin/main
       .exec();
 
     return products.map((p) =>
@@ -166,35 +118,6 @@ export class ProductService {
     );
   }
 
-<<<<<<< HEAD
-  /** 🔹 Thêm sản phẩm mới */
-  async create(productDTO: ProductDTO): Promise<Product> {
-    const product = new this.productModel(productDTO);
-    return product.save();
-  }
-
-  /** 🔹 Cập nhật sản phẩm */
-  async update(productDTO: ProductDTO): Promise<Product> {
-    const product = await this.productModel.findById(productDTO.id);
-    if (!product) {
-      throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
-    }
-
-    Object.assign(product, productDTO, { updated_at: new Date() });
-    return product.save();
-  }
-
-  /** 🔹 Xóa mềm sản phẩm */
-  async delete(id: string, updated_by: string): Promise<any> {
-    const product = await this.productModel.findById(id);
-    if (!product) {
-      throw new NotFoundException('Product not found');
-    }
-
-    if (product.is_delete === true) {
-      return { msg: 'Already deleted' };
-    }
-=======
   /** 🔹 Tạo Product mới (kèm category_ids) */
   async create(productDTO: ProductDTO): Promise<Product> {
     try {
@@ -300,7 +223,6 @@ export class ProductService {
     if (!product) throw new NotFoundException('Product not found');
 
     if (product.is_delete === true) return { msg: 'Already deleted' };
->>>>>>> origin/main
 
     product.is_delete = true;
     product.is_active = false;
@@ -310,8 +232,6 @@ export class ProductService {
     await product.save();
     return { msg: 'Deleted (soft)' };
   }
-<<<<<<< HEAD
-=======
 
   /** 🔹 Lấy danh sách sản phẩm đang active */
   async findActive(): Promise<Product[]> {
@@ -319,5 +239,4 @@ export class ProductService {
       .find({ is_delete: false })
       .sort({ created_at: -1 });
   }
->>>>>>> origin/main
 }

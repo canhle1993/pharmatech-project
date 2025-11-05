@@ -4,9 +4,7 @@
   background-color: #f7f8fa;
   min-height: 100vh;
 }
-<<<<<<< HEAD
-
-.page-title {
+HEAD .page-title {
   font-size: 1.8rem;
   color: #333;
   margin-bottom: 1rem;
@@ -14,14 +12,12 @@
   padding-left: 10px;
 }
 
-=======
 .card {
   background: white;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
 }
->>>>>>> origin/main
 .category-table ::ng-deep .p-datatable-thead > tr > th {
   background: #3b82f6;
   color: #fff;
@@ -38,24 +34,12 @@
 }
 
 /* Ảnh danh mục */
-<<<<<<< HEAD
-.category-photo {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 2px solid #e5e7eb;
-}
-=======
->>>>>>> origin/main
 
 .category-table ::ng-deep .p-datatable-tbody > tr:hover {
   background-color: #eef2ff;
   transition: background 0.2s ease-in-out;
 }
 
-<<<<<<< HEAD
-=======
 .category-table img {
   border-radius: 6px;
   object-fit: cover;
@@ -69,15 +53,12 @@
   transform: scale(1.1);
 }
 
->>>>>>> origin/main
 .loading-spinner {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 200px;
 }
-<<<<<<< HEAD
-=======
 
 /* 🎯 Add + Role + Status + Search layout */
 :host ::ng-deep .p-datatable-caption {
@@ -247,4 +228,3 @@
   background-color: #94a3b8;
   border-radius: 3px;
 }
->>>>>>> origin/main

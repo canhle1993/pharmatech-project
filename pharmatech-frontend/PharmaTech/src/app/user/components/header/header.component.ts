@@ -3,11 +3,8 @@ import { Router, RouterLink } from '@angular/router';
 import { AccountService } from '../../../services/account.service';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
-<<<<<<< HEAD
-=======
 import { HotlineData, HotlineService } from '../../../services/hotline.service';
 import { CategoryService } from '../../../services/category.service'; // ✅ thêm dòng này
->>>>>>> origin/main
 
 @Component({
   selector: 'app-header',
@@ -16,11 +13,6 @@ import { CategoryService } from '../../../services/category.service'; // ✅ th�
   imports: [RouterLink, ButtonModule, CommonModule],
 })
 export class HeaderComponent implements OnInit {
-<<<<<<< HEAD
-  isLoggedIn = false;
-
-  constructor(private accountService: AccountService, private router: Router) {}
-=======
   user: any = null;
   isLoggedIn = false;
   categories: any[] = []; // ✅ thêm biến này
@@ -36,13 +28,10 @@ export class HeaderComponent implements OnInit {
     private hotlineService: HotlineService,
     private categoryService: CategoryService // ✅ thêm vào constructor
   ) {}
->>>>>>> origin/main
 
   ngOnInit() {
     // 🔹 Giả sử token được lưu khi login
     this.isLoggedIn = !!localStorage.getItem('token');
-<<<<<<< HEAD
-=======
     const storedUser = localStorage.getItem('currentUser');
     if (storedUser) {
       this.user = JSON.parse(storedUser);
@@ -77,7 +66,6 @@ export class HeaderComponent implements OnInit {
         console.log('Using default hotline data');
       },
     });
->>>>>>> origin/main
   }
   logout() {
     this.accountService.logout();
@@ -85,10 +73,7 @@ export class HeaderComponent implements OnInit {
     this.isLoggedIn = false;
     this.router.navigate(['/auth/login']);
   }
-<<<<<<< HEAD
-=======
   getPhoneHref(phoneNumber: string): string {
     return 'tel:' + phoneNumber.replace(/[^0-9]/g, '');
   }
->>>>>>> origin/main
 }

@@ -17,21 +17,6 @@ export class CategoryService {
     private categoryModel: Model<Category>,
   ) {}
 
-<<<<<<< HEAD
-  async findById(id: string): Promise<CategoryDTO | null> {
-    const category = await this.categoryModel.findById(id).exec();
-    if (!category) return null;
-    return plainToInstance(CategoryDTO, category.toObject(), {
-      excludeExtraneousValues: true,
-    });
-  }
-  async findByKeyword(keyword: string): Promise<CategoryDTO[]> {
-    let categories = await this.categoryModel
-      .find({
-        name: { $regex: keyword, $options: 'i' }, // chỗ này options phải là string, không phải mảng
-      })
-      .exec();
-=======
   /** 🔹 Lấy 1 category (kèm danh sách products thuộc category đó) */
   async findById(id: string): Promise<CategoryDTO | null> {
     // ✅ Tìm category theo ID
@@ -73,7 +58,6 @@ export class CategoryService {
       .find({ name: { $regex: keyword, $options: 'i' } })
       .exec();
 
->>>>>>> origin/main
     return categories.map((c) =>
       plainToInstance(CategoryDTO, c.toObject(), {
         excludeExtraneousValues: true,
@@ -82,21 +66,11 @@ export class CategoryService {
   }
 
   async findAll(): Promise<CategoryDTO[]> {
-<<<<<<< HEAD
-    // 🔹 Lọc chỉ lấy các category chưa bị xóa
-    const categories = await this.categoryModel
-      .find({ is_delete: false }) // chỉ lấy dữ liệu chưa xóa mềm
-      .sort({ created_at: -1 }) // sắp xếp mới nhất lên đầu
-      .exec();
-
-    // 🔹 Chuyển sang DTO
-=======
     const categories = await this.categoryModel
       .find({ is_delete: false })
       .sort({ created_at: -1 })
       .exec();
 
->>>>>>> origin/main
     return categories.map((c) =>
       plainToInstance(CategoryDTO, c.toObject(), {
         excludeExtraneousValues: true,
@@ -104,22 +78,6 @@ export class CategoryService {
     );
   }
 
-<<<<<<< HEAD
-  create(categoryDTO: CategoryDTO): Promise<Category> {
-    let category = new this.categoryModel(categoryDTO);
-    return category.save();
-  }
-
-  async update(categoryDTO: CategoryDTO): Promise<Category> {
-    const category = await this.categoryModel.findById(categoryDTO.id);
-    if (!category) {
-      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-    } else {
-      Object.assign(category, categoryDTO, {
-        updated_at: new Date(),
-      });
-      return category.save();
-=======
   async create(categoryDTO: CategoryDTO): Promise<Category> {
     try {
       const category = new this.categoryModel({
@@ -193,7 +151,6 @@ export class CategoryService {
         { message: 'Failed to update category', error: error.message },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
->>>>>>> origin/main
     }
   }
 
@@ -210,11 +167,7 @@ export class CategoryService {
     category.is_delete = true;
     category.is_active = false;
     category.updated_at = new Date();
-<<<<<<< HEAD
-    category.updated_by = updated_by; // ✅ nhận từ controller
-=======
     category.updated_by = updated_by;
->>>>>>> origin/main
 
     await category.save();
     return { msg: 'Deleted (soft)' };
