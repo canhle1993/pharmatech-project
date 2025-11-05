@@ -22,6 +22,9 @@ export class CategoryDTO {
   @Expose({ name: 'is_active' })
   is_active: boolean;
 
+  @Expose()
+  products?: any[]; // ✅ thêm để chứa danh sách sản phẩm thuộc category
+
   @Expose({ name: 'is_delete' })
   is_delete: boolean;
 

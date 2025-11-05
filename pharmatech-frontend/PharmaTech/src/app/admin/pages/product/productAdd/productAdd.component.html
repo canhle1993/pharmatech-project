@@ -1,6 +1,6 @@
 <div class="product-container">
   <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">Product /</span> Product Details
+    <span class="text-muted fw-light">Product /</span> Product Add
   </h4>
   <p-toast></p-toast>
 
@@ -110,26 +110,20 @@
         <div class="row text-row">
           <div class="col">
             <label>Specification</label>
-            <textarea
-              pInputTextarea
+            <p-editor
               formControlName="specification"
+              [style]="{ height: '250px', width: '100%' }"
               placeholder="Enter technical specifications"
-              rows="3"
-              style="width: 500px"
-            >
-            </textarea>
+            ></p-editor>
           </div>
 
           <div class="col">
             <label>Description</label>
-            <textarea
-              pInputTextarea
+            <p-editor
               formControlName="description"
+              [style]="{ height: '250px', width: '100%' }"
               placeholder="Enter description"
-              rows="3"
-              style="width: 500px"
-            >
-            </textarea>
+            ></p-editor>
           </div>
         </div>
 

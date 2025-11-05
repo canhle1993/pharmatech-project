@@ -141,32 +141,22 @@ export class CategoryListComponent implements OnInit {
   showEditDialog(cat: any) {
     this.selectedCategory = cat;
     this.editDialog = true;
-
-    // ✅ Hiển thị trước ảnh
     this.editPreview = cat.photo || 'assets/images/no-image.jpg';
 
-    // ✅ Nếu product_ids là mảng object thì map về id
-    const productIds =
-      Array.isArray(cat.product_ids) && typeof cat.product_ids[0] === 'object'
-        ? cat.product_ids.map((p: any) => p.id || p._id)
-        : cat.product_ids || [];
+    // 🔹 Gọi lại API lấy chi tiết Category (có danh sách product)
+    this.categoryService.findById(cat.id).then((res: any) => {
+      const productIds = Array.isArray(res.product_ids)
+        ? res.product_ids
+        : (res.products || []).map((p: any) => p.id || p._id);
 
-    // ✅ Patch lại form
-    this.editForm.patchValue({
-      id: cat.id || cat._id,
-      name: cat.name,
-      description: cat.description,
-      product_id: productIds, // ⚡ đúng định dạng cho p-multiSelect
+      // ✅ Patch form đầy đủ
+      this.editForm.patchValue({
+        id: res.id,
+        name: res.name,
+        description: res.description,
+        product_id: productIds,
+      });
     });
-
-    // ✅ Giữ form height cho dialog (nếu cần)
-    // setTimeout(() => {
-    //   const dialogEl = document.querySelector('.p-dialog') as HTMLElement;
-    //   if (dialogEl) {
-    //     dialogEl.style.maxHeight = '80vh';
-    //     dialogEl.style.height = '80vh';
-    //   }
-    // }, 100);
   }
 
   onFileSelected(event: any) {

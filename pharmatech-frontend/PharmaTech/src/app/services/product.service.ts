@@ -68,9 +68,10 @@ export class ProductService {
   // ==================================================
   // 🧾 CẬP NHẬT SẢN PHẨM (CÓ ẢNH CHÍNH + CATEGORY)
   // ==================================================
-  update(product: any, mainFile?: File) {
+  update(product: any, mainFile?: File, galleryFiles?: File[]) {
     const formData = new FormData();
 
+    // 🧾 Thông tin cơ bản
     formData.append('id', product.id);
     formData.append('name', product.name);
     formData.append('model', product.model || '');
@@ -80,12 +81,19 @@ export class ProductService {
     formData.append('manufacturer', product.manufacturer || '');
     formData.append('updated_by', product.updated_by || 'admin');
 
+    // 🏷️ Danh mục (category)
     if (product.category_ids && product.category_ids.length > 0) {
       formData.append('category_ids', JSON.stringify(product.category_ids));
     }
 
+    // 🖼️ Ảnh chính
     if (mainFile) {
       formData.append('file', mainFile);
+    }
+
+    // 📸 Ảnh gallery (nếu có thêm)
+    if (galleryFiles && galleryFiles.length > 0) {
+      galleryFiles.forEach((file) => formData.append('gallery', file));
     }
 
     return lastValueFrom(

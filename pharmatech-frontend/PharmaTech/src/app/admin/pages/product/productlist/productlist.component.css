@@ -129,7 +129,6 @@
 }
 :host ::ng-deep .search-field input.p-inputtext {
   width: 100% !important;
-  height: 38px;
 }
 
 /* Nút Add */

@@ -17,12 +17,40 @@ export class CategoryService {
     private categoryModel: Model<Category>,
   ) {}
 
+  /** 🔹 Lấy 1 category (kèm danh sách products thuộc category đó) */
   async findById(id: string): Promise<CategoryDTO | null> {
-    const category = await this.categoryModel.findById(id).exec();
+    // ✅ Tìm category theo ID
+    const category = await this.categoryModel.findById(id).lean();
     if (!category) return null;
-    return plainToInstance(CategoryDTO, category.toObject(), {
+
+    // ✅ Populate danh sách sản phẩm thuộc category này
+    const ProductModel = (this.categoryModel.db.models as any)['Product'];
+    const products = await ProductModel.find({
+      category_ids: { $in: [id] },
+      is_delete: false,
+    })
+      .select('_id name model manufacturer price photo')
+      .lean();
+
+    // ✅ Convert sang DTO
+    const dto = plainToInstance(CategoryDTO, category, {
       excludeExtraneousValues: true,
     });
+
+    // ✅ Gán danh sách products vào DTO
+    (dto as any).products = products.map((p: any) => ({
+      id: p._id,
+      name: p.name,
+      model: p.model,
+      manufacturer: p.manufacturer,
+      price: p.price,
+      photo: p.photo,
+    }));
+
+    // ✅ Gán thêm mảng id sản phẩm (để Angular tick MultiSelect)
+    (dto as any).product_ids = products.map((p: any) => p._id.toString());
+
+    return dto;
   }
 
   async findByKeyword(keyword: string): Promise<CategoryDTO[]> {
