@@ -122,20 +122,27 @@
 <!-- Shipping Section End -->
 
 <!-- Product Section Start -->
-<div class="section-padding-03 custom-container-four">
-  <div class="product-row">
+<div class="section-padding-03 custom-container-four" *ngIf="homeCategories">
+  <div class="product-row" *ngIf="productsCat1.length > 0">
     <div
       class="product-wrapper pe-md-5 pe-lg-6 pe-xl-8 pe-xxl-11 order-md-1 order-2"
     >
       <!-- Section Title Strat -->
       <div class="section-title-05">
         <h5 class="section-title-05__title">
-          <span>Capsule/Encapsulation</span>
+          <span>{{ homeCategories.category1?.name || "Category 1" }}</span>
         </h5>
-        <a href="shop.html" class="read-more"
-          ><span>show more</span
-          ><i class="lastudioicon lastudioicon-right-arrow"></i
-        ></a>
+        <a
+          class="read-more"
+          [routerLink]="['/shop']"
+          [queryParams]="{
+            category:
+              homeCategories?.category1?._id || homeCategories?.category1
+          }"
+        >
+          <span>show more</span>
+          <i class="lastudioicon lastudioicon-right-arrow"></i>
+        </a>
       </div>
       <!-- Section Title End -->
 
@@ -143,248 +150,25 @@
         <div class="swiper">
           <div class="swiper-wrapper">
             <!-- swiper-slide start -->
-            <div class="swiper-slide">
+            <div class="swiper-slide" *ngFor="let p of productsCat1">
               <!-- Product Item Start -->
               <div class="product-item product-item-05 border text-center">
                 <div class="product-item__image">
-                  <a [routerLink]="['/productDetails']"
+                  <a [routerLink]="['/productDetails', p.id]"
                     ><img
                       width="250"
                       height="250"
-                      src="assets/images/product/product-9-500x625.jpg"
-                      alt="Product"
+                      [src]="p.photo || 'assets/images/no-image.jpg'"
+                      alt="{{ p.name }}"
                   /></a>
                 </div>
                 <div class="product-item__content">
                   <h5 class="product-item__title">
-                    <a [routerLink]="['/productDetails']">Raisin Bread</a>
+                    <a [routerLink]="['/productDetails', p.id]">{{ p.name }}</a>
                   </h5>
-                  <span class="product-item__price">$4.99</span>
-                </div>
-                <ul class="product-item__meta">
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-quickview"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Quick View"
-                      aria-label="Quick View"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleProductModal"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-cart"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Select options"
-                      aria-label="Select options"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCart"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-wishlist"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Add to wishlist"
-                      aria-label="Add to wishlist"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalWishlist"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-compare"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Add to compare"
-                      aria-label="Add to compare"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCompare"
-                    ></a>
-                  </li>
-                </ul>
-              </div>
-              <!-- Product Item End -->
-            </div>
-            <div class="swiper-slide">
-              <!-- Product Item Start -->
-              <div class="product-item product-item-05 border text-center">
-                <div class="product-item__image">
-                  <a [routerLink]="['/productDetails']"
-                    ><img
-                      width="250"
-                      height="250"
-                      src="assets/images/product/product-15-500x625.jpg"
-                      alt="Product"
-                  /></a>
-                </div>
-                <div class="product-item__content">
-                  <h5 class="product-item__title">
-                    <a [routerLink]="['/productDetails']">Poppy Roll</a>
-                  </h5>
-                  <span class="product-item__price">$5.00</span>
-                </div>
-                <ul class="product-item__meta">
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-quickview"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Quick View"
-                      aria-label="Quick View"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleProductModal"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-cart"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Select options"
-                      aria-label="Select options"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCart"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-wishlist"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Add to wishlist"
-                      aria-label="Add to wishlist"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalWishlist"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-compare"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Add to compare"
-                      aria-label="Add to compare"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCompare"
-                    ></a>
-                  </li>
-                </ul>
-              </div>
-              <!-- Product Item End -->
-            </div>
-            <div class="swiper-slide">
-              <!-- Product Item Start -->
-              <div class="product-item product-item-05 border text-center">
-                <div class="product-item__image">
-                  <a [routerLink]="['/productDetails']"
-                    ><img
-                      width="250"
-                      height="250"
-                      src="assets/images/product/product-16-500x625.jpg"
-                      alt="Product"
-                  /></a>
-                </div>
-                <div class="product-item__content">
-                  <h5 class="product-item__title">
-                    <a [routerLink]="['/productDetails']">Wheat Loaf</a>
-                  </h5>
-                  <span class="product-item__price">$7.55</span>
-                </div>
-                <ul class="product-item__meta">
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-quickview"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Quick View"
-                      aria-label="Quick View"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleProductModal"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-cart"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Select options"
-                      aria-label="Select options"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCart"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-wishlist"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Add to wishlist"
-                      aria-label="Add to wishlist"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalWishlist"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-compare"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Add to compare"
-                      aria-label="Add to compare"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCompare"
-                    ></a>
-                  </li>
-                </ul>
-              </div>
-              <!-- Product Item End -->
-            </div>
-            <div class="swiper-slide">
-              <!-- Product Item Start -->
-              <div class="product-item product-item-05 border text-center">
-                <div class="product-item__image">
-                  <a [routerLink]="['/productDetails']"
-                    ><img
-                      width="250"
-                      height="250"
-                      src="assets/images/product/product-17-500x625.jpg"
-                      alt="Product"
-                  /></a>
-                </div>
-                <div class="product-item__content">
-                  <h5 class="product-item__title">
-                    <a [routerLink]="['/productDetails']">Corn Ciabatta</a>
-                  </h5>
-                  <span class="product-item__price">$9.44</span>
+                  <span class="product-item__price">{{
+                    p.price ? "$" + p.price : ""
+                  }}</span>
                 </div>
                 <ul class="product-item__meta">
                   <li class="product-item__meta-action">
@@ -457,14 +241,33 @@
     <div class="boxbanner-wrapper order-md-2 order-1">
       <!-- Ad Banner Start -->
       <a
-        [routerLink]="['/productDetails']"
+        [routerLink]="['/shop']"
+        [queryParams]="{
+          category: homeCategories?.category1?._id || homeCategories?.category1
+        }"
         class="boxbanner-bg boxbanner"
-        data-bg-image="assets/images/banner/do4.jpg"
+        [attr.data-bg-image]="
+          homeCategories?.category1?.photo
+            ? imageBase + homeCategories.category1.photo
+            : 'assets/images/banner/do4.jpg'
+        "
       >
+        <span class="boxbanner-subtitle">only buy in stores</span>
+        <span
+          class="boxbanner-title"
+          style="color: rgb(247, 138, 70) !important"
+          >Discount</span
+        >
+        <span
+          class="boxbanner-discount"
+          style="color: rgb(247, 138, 70) !important"
+          >10%</span
+        >
         <div class="boxbanner-btn-area">
-          <span class="boxbanner-btn"
-            >Learn More <i class="lastudioicon lastudioicon-right-arrow"></i
-          ></span>
+          <span class="boxbanner-btn">
+            {{ homeCategories?.category1?.name || "Learn More" }}
+            <i class="lastudioicon lastudioicon-right-arrow"></i>
+          </span>
         </div>
       </a>
       <!-- Ad Banner End -->
@@ -474,18 +277,28 @@
 <!-- Product Section End -->
 
 <!-- Product Section Start -->
-<div class="section-padding-03 custom-container-four pt-0">
-  <div class="product-row">
+<div
+  class="section-padding-03 custom-container-four pt-0"
+  *ngIf="homeCategories"
+>
+  <div class="product-row" *ngIf="productsCat2.length > 0">
     <div class="product-wrapper ps-md-5 ps-lg-6 ps-xl-8 ps-xxl-11 order-2">
       <!-- Section Title Strat -->
       <div class="section-title-05">
         <h5 class="section-title-05__title">
-          <span>Tablet process</span>
+          <span>{{ homeCategories.category2?.name || "Category 2" }}</span>
         </h5>
-        <a href="shop.html" class="read-more"
-          ><span>show more</span
-          ><i class="lastudioicon lastudioicon-right-arrow"></i
-        ></a>
+        <a
+          class="read-more"
+          [routerLink]="['/shop']"
+          [queryParams]="{
+            category:
+              homeCategories?.category2?._id || homeCategories?.category2
+          }"
+        >
+          <span>show more</span>
+          <i class="lastudioicon lastudioicon-right-arrow"></i>
+        </a>
       </div>
       <!-- Section Title End -->
 
@@ -493,248 +306,26 @@
         <div class="swiper">
           <div class="swiper-wrapper">
             <!-- swiper-slide start -->
-            <div class="swiper-slide">
+            <div class="swiper-slide" *ngFor="let p of productsCat2">
               <!-- Product Item Start -->
               <div class="product-item product-item-05 border text-center">
                 <div class="product-item__image">
-                  <a [routerLink]="['/productDetails']"
-                    ><img
+                  <a [routerLink]="['/productDetails', p.id]">
+                    <img
+                      [src]="p.photo || 'assets/images/no-image.jpg'"
                       width="250"
                       height="250"
-                      src="assets/images/product/product-12-500x625.jpg"
-                      alt="Product"
-                  /></a>
+                      alt="{{ p.name }}"
+                    />
+                  </a>
                 </div>
                 <div class="product-item__content">
                   <h5 class="product-item__title">
-                    <a [routerLink]="['/productDetails']">Raisin Bread</a>
+                    <a [routerLink]="['/productDetails', p.id]">{{ p.name }}</a>
                   </h5>
-                  <span class="product-item__price">$4.99</span>
-                </div>
-                <ul class="product-item__meta">
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-quickview"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Quick View"
-                      aria-label="Quick View"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleProductModal"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-cart"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Select options"
-                      aria-label="Select options"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCart"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-wishlist"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Add to wishlist"
-                      aria-label="Add to wishlist"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalWishlist"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-compare"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Add to compare"
-                      aria-label="Add to compare"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCompare"
-                    ></a>
-                  </li>
-                </ul>
-              </div>
-              <!-- Product Item End -->
-            </div>
-            <div class="swiper-slide">
-              <!-- Product Item Start -->
-              <div class="product-item product-item-05 border text-center">
-                <div class="product-item__image">
-                  <a [routerLink]="['/productDetails']"
-                    ><img
-                      width="250"
-                      height="250"
-                      src="assets/images/product/product-13-500x625.jpg"
-                      alt="Product"
-                  /></a>
-                </div>
-                <div class="product-item__content">
-                  <h5 class="product-item__title">
-                    <a [routerLink]="['/productDetails']">Poppy Bun</a>
-                  </h5>
-                  <span class="product-item__price">$5.00</span>
-                </div>
-                <ul class="product-item__meta">
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-quickview"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Quick View"
-                      aria-label="Quick View"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleProductModal"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-cart"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Select options"
-                      aria-label="Select options"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCart"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-wishlist"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Add to wishlist"
-                      aria-label="Add to wishlist"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalWishlist"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-compare"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Add to compare"
-                      aria-label="Add to compare"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCompare"
-                    ></a>
-                  </li>
-                </ul>
-              </div>
-              <!-- Product Item End -->
-            </div>
-            <div class="swiper-slide">
-              <!-- Product Item Start -->
-              <div class="product-item product-item-05 border text-center">
-                <div class="product-item__image">
-                  <a [routerLink]="['/productDetails']"
-                    ><img
-                      width="250"
-                      height="250"
-                      src="assets/images/product/product-11-500x625.jpg"
-                      alt="Product"
-                  /></a>
-                </div>
-                <div class="product-item__content">
-                  <h5 class="product-item__title">
-                    <a [routerLink]="['/productDetails']">Olivetta Bread</a>
-                  </h5>
-                  <span class="product-item__price">$7.55</span>
-                </div>
-                <ul class="product-item__meta">
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-quickview"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Quick View"
-                      aria-label="Quick View"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleProductModal"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-cart"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Select options"
-                      aria-label="Select options"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCart"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-wishlist"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Add to wishlist"
-                      aria-label="Add to wishlist"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalWishlist"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-compare"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Add to compare"
-                      aria-label="Add to compare"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCompare"
-                    ></a>
-                  </li>
-                </ul>
-              </div>
-              <!-- Product Item End -->
-            </div>
-            <div class="swiper-slide">
-              <!-- Product Item Start -->
-              <div class="product-item product-item-05 border text-center">
-                <div class="product-item__image">
-                  <a [routerLink]="['/productDetails']"
-                    ><img
-                      width="250"
-                      height="250"
-                      src="assets/images/product/product-17-500x625.jpg"
-                      alt="Product"
-                  /></a>
-                </div>
-                <div class="product-item__content">
-                  <h5 class="product-item__title">
-                    <a [routerLink]="['/productDetails']">Corn Ciabatta</a>
-                  </h5>
-                  <span class="product-item__price">$9.44</span>
+                  <span class="product-item__price">{{
+                    p.price ? "$" + p.price : ""
+                  }}</span>
                 </div>
                 <ul class="product-item__meta">
                   <li class="product-item__meta-action">
@@ -807,18 +398,26 @@
     <div class="boxbanner-wrapper order-1">
       <!-- Ad Banner Start -->
       <a
-        [routerLink]="['/productDetails']"
+        [routerLink]="['/shop']"
+        [queryParams]="{
+          category: homeCategories?.category2?._id || homeCategories?.category2
+        }"
         class="boxbanner-bg boxbanner"
-        data-bg-image="assets/images/banner/do1.jpg"
+        [attr.data-bg-image]="
+          homeCategories?.category2?.photo
+            ? imageBase + homeCategories.category2.photo
+            : 'assets/images/banner/do4.jpg'
+        "
       >
         <div class="boxbanner-two">
           <span class="boxbanner-title">a new product</span>
           <span class="boxbanner-discount-two">from only 1000$</span>
         </div>
         <div class="boxbanner-btn-area">
-          <span class="boxbanner-btn"
-            >Learn More <i class="lastudioicon lastudioicon-right-arrow"></i
-          ></span>
+          <span class="boxbanner-btn">
+            {{ homeCategories?.category2?.name || "Learn More" }}
+            <i class="lastudioicon lastudioicon-right-arrow"></i>
+          </span>
         </div>
       </a>
       <!-- Ad Banner End -->
@@ -827,17 +426,30 @@
 </div>
 <!-- Product Section End -->
 
-<!-- Product Deal Section Start -->
-<div class="custom-container-four container-fluid">
+<!-- Product Section Start -->
+<div
+  class="custom-container-four container-fluid"
+  *ngIf="productsCat3.length > 0"
+>
   <div class="row">
     <div class="col-12">
       <!-- Section Title Strat -->
       <div class="section-title-05">
-        <h5 class="section-title-05__title"><span>Liquid Filling</span></h5>
-        <a href="shop.html" class="read-more"
-          ><span>show more</span
-          ><i class="lastudioicon lastudioicon-right-arrow"></i
-        ></a>
+        <h5 class="section-title-05__title">
+          <span>{{ homeCategories.category3?.name || "Category 3" }}</span>
+        </h5>
+
+        <a
+          class="read-more"
+          [routerLink]="['/shop']"
+          [queryParams]="{
+            category:
+              homeCategories?.category3?._id || homeCategories?.category3
+          }"
+        >
+          <span>show more</span>
+          <i class="lastudioicon lastudioicon-right-arrow"></i>
+        </a>
       </div>
       <!-- Section Title End -->
     </div>
@@ -846,17 +458,18 @@
         <div class="swiper">
           <div class="swiper-wrapper">
             <!-- swiper-slide start -->
-            <div class="swiper-slide">
+            <div class="swiper-slide" *ngFor="let p of productsCat3">
               <!-- Product Item Start -->
               <div class="product-item product-item-06 border text-center">
                 <div class="product-item__image">
-                  <a [routerLink]="['/productDetails']"
-                    ><img
+                  <a [routerLink]="['/productDetails', p.id]">
+                    <img
+                      [src]="p.photo || 'assets/images/no-image.jpg'"
                       width="350"
                       height="350"
-                      src="assets/images/product/m5-prod1.jpg"
-                      alt="Product"
-                  /></a>
+                      alt="{{ p.name }}"
+                    />
+                  </a>
                   <ul class="product-item__meta meta-middle">
                     <li class="product-item__meta-action">
                       <a
@@ -895,211 +508,11 @@
                 </div>
                 <div class="product-item__content">
                   <h5 class="product-item__title">
-                    <a [routerLink]="['/productDetails']"
-                      >White Chocolate Rasberry</a
-                    >
+                    <a [routerLink]="['/productDetails', p.id]">{{ p.name }}</a>
                   </h5>
-                  <span class="product-item__price">$4.99</span>
-                  <p class="product-item__text">
-                    Aliqua id fugiat nostrud irure ex duis ea quis id…
-                  </p>
-                  <a
-                    href="#/"
-                    class="product-item__btn"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalCart"
-                    >Learn More</a
-                  >
-                </div>
-              </div>
-              <!-- Product Item End -->
-            </div>
-            <div class="swiper-slide">
-              <!-- Product Item Start -->
-              <div class="product-item product-item-06 border text-center">
-                <div class="product-item__image">
-                  <a [routerLink]="['/productDetails']"
-                    ><img
-                      width="350"
-                      height="350"
-                      src="assets/images/product/m5-prod2.jpg"
-                      alt="Product"
-                  /></a>
-                  <ul class="product-item__meta meta-middle">
-                    <li class="product-item__meta-action">
-                      <a
-                        class="labtn-icon-quickview"
-                        href="#/"
-                        data-bs-tooltip="tooltip"
-                        data-bs-placement="top"
-                        title="Quick View"
-                        data-bs-toggle="modal"
-                        data-bs-target="#exampleProductModal"
-                      ></a>
-                    </li>
-                    <li class="product-item__meta-action">
-                      <a
-                        class="labtn-icon-wishlist"
-                        href="#/"
-                        data-bs-tooltip="tooltip"
-                        data-bs-placement="top"
-                        title="Add to wishlist"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalWishlist"
-                      ></a>
-                    </li>
-                    <li class="product-item__meta-action">
-                      <a
-                        class="labtn-icon-compare"
-                        href="#/"
-                        data-bs-tooltip="tooltip"
-                        data-bs-placement="top"
-                        title="Add to compare"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalCompare"
-                      ></a>
-                    </li>
-                  </ul>
-                </div>
-                <div class="product-item__content">
-                  <h5 class="product-item__title">
-                    <a [routerLink]="['/productDetails']">Caramel Apple</a>
-                  </h5>
-                  <span class="product-item__price">$5.00</span>
-                  <p class="product-item__text">
-                    Aliqua id fugiat nostrud irure ex duis ea quis id…
-                  </p>
-                  <a
-                    href="#/"
-                    class="product-item__btn"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalCart"
-                    >Learn More</a
-                  >
-                </div>
-              </div>
-              <!-- Product Item End -->
-            </div>
-            <div class="swiper-slide">
-              <!-- Product Item Start -->
-              <div class="product-item product-item-06 border text-center">
-                <div class="product-item__image">
-                  <a [routerLink]="['/productDetails']"
-                    ><img
-                      width="350"
-                      height="350"
-                      src="assets/images/product/m5-prod3.jpg"
-                      alt="Product"
-                  /></a>
-                  <ul class="product-item__meta meta-middle">
-                    <li class="product-item__meta-action">
-                      <a
-                        class="labtn-icon-quickview"
-                        href="#/"
-                        data-bs-tooltip="tooltip"
-                        data-bs-placement="top"
-                        title="Quick View"
-                        data-bs-toggle="modal"
-                        data-bs-target="#exampleProductModal"
-                      ></a>
-                    </li>
-                    <li class="product-item__meta-action">
-                      <a
-                        class="labtn-icon-wishlist"
-                        href="#/"
-                        data-bs-tooltip="tooltip"
-                        data-bs-placement="top"
-                        title="Add to wishlist"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalWishlist"
-                      ></a>
-                    </li>
-                    <li class="product-item__meta-action">
-                      <a
-                        class="labtn-icon-compare"
-                        href="#/"
-                        data-bs-tooltip="tooltip"
-                        data-bs-placement="top"
-                        title="Add to compare"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalCompare"
-                      ></a>
-                    </li>
-                  </ul>
-                </div>
-                <div class="product-item__content">
-                  <h5 class="product-item__title">
-                    <a [routerLink]="['/productDetails']"
-                      >German Chocolate Cake</a
-                    >
-                  </h5>
-                  <span class="product-item__price">$7.55</span>
-                  <p class="product-item__text">
-                    Aliqua id fugiat nostrud irure ex duis ea quis id…
-                  </p>
-                  <a
-                    href="#/"
-                    class="product-item__btn"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalCart"
-                    >Learn More</a
-                  >
-                </div>
-              </div>
-              <!-- Product Item End -->
-            </div>
-            <div class="swiper-slide">
-              <!-- Product Item Start -->
-              <div class="product-item product-item-06 border text-center">
-                <div class="product-item__image">
-                  <a [routerLink]="['/productDetails']"
-                    ><img
-                      width="350"
-                      height="350"
-                      src="assets/images/product/m5-prod2.jpg"
-                      alt="Product"
-                  /></a>
-                  <ul class="product-item__meta meta-middle">
-                    <li class="product-item__meta-action">
-                      <a
-                        class="labtn-icon-quickview"
-                        href="#/"
-                        data-bs-tooltip="tooltip"
-                        data-bs-placement="top"
-                        title="Quick View"
-                        data-bs-toggle="modal"
-                        data-bs-target="#exampleProductModal"
-                      ></a>
-                    </li>
-                    <li class="product-item__meta-action">
-                      <a
-                        class="labtn-icon-wishlist"
-                        href="#/"
-                        data-bs-tooltip="tooltip"
-                        data-bs-placement="top"
-                        title="Add to wishlist"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalWishlist"
-                      ></a>
-                    </li>
-                    <li class="product-item__meta-action">
-                      <a
-                        class="labtn-icon-compare"
-                        href="#/"
-                        data-bs-tooltip="tooltip"
-                        data-bs-placement="top"
-                        title="Add to compare"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalCompare"
-                      ></a>
-                    </li>
-                  </ul>
-                </div>
-                <div class="product-item__content">
-                  <h5 class="product-item__title">
-                    <a [routerLink]="['/productDetails']">Caramel Apple</a>
-                  </h5>
-                  <span class="product-item__price">$9.44</span>
+                  <span class="product-item__price">{{
+                    p.price ? "$" + p.price : ""
+                  }}</span>
                   <p class="product-item__text">
                     Aliqua id fugiat nostrud irure ex duis ea quis id…
                   </p>
@@ -1121,7 +534,7 @@
     </div>
   </div>
 </div>
-<!-- Product Deal Section End -->
+<!-- Product Section End -->
 
 <!-- Why Choose Section Start -->
 <div

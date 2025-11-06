@@ -69,10 +69,56 @@
                   <img
                     [src]="product.photo || 'assets/images/no-image.jpg'"
                     width="350"
-                    height="350"
                     alt="{{ product.name }}"
+                    style="height: 280px !important"
                   />
                 </a>
+                <ul class="product-item__meta">
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-quickview"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Quick View"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleProductModal"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-cart"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to Cart"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCart"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-wishlist"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to wishlist"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalWishlist"
+                    ></a>
+                  </li>
+                  <li class="product-item__meta-action">
+                    <a
+                      class="shadow-1 labtn-icon-compare"
+                      href="#/"
+                      data-bs-tooltip="tooltip"
+                      data-bs-placement="top"
+                      title="Add to compare"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalCompare"
+                    ></a>
+                  </li>
+                </ul>
               </div>
               <div class="product-item__content pt-5">
                 <h5 class="product-item__title">
@@ -124,6 +170,7 @@
             <form action="#" class="sidebars_search">
               <input
                 type="text"
+                class="sidebars_search__input"
                 placeholder="Search here ..."
                 [(ngModel)]="searchTerm"
                 [ngModelOptions]="{ standalone: true }"
