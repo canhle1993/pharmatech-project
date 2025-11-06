@@ -685,6 +685,7 @@
                         : 'assets/images/blog/blog-5-1.jpg'
                     "
                     [alt]="job.title"
+                    style="height: 315px !important"
                   />
                 </a>
                 <div class="blog-itemtwo__content">
@@ -703,7 +704,7 @@
                   </h3>
                   <p
                     class="blog-itemtwo__text"
-                    [innerHTML]="truncateHTML(job.description, 20)"
+                    [innerHTML]="truncateHTML(job.description, 7)"
                   ></p>
 
                   <div class="blog-btn-wrap">

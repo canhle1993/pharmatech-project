@@ -1,4 +1,6 @@
-<!-- Breadcrumb Section Start -->
+<!-- =======================
+    🧭 Breadcrumb Section
+======================= -->
 <div class="breadcrumb" data-bg-image="assets/images/bg/profile1.jpg">
   <div class="container">
     <div class="row">
@@ -14,27 +16,97 @@
     </div>
   </div>
 </div>
-<!-- Breadcrumb Section End -->
 
-<!-- Job Section Start -->
+<!-- =======================
+    💼 CAREER FIELDS SECTION
+======================= -->
+<section
+  class="field-section mt-5 mb-5"
+  *ngIf="!loading && fields.length > 0"
+  data-aos="fade-up"
+>
+  <div class="container">
+    <h4 class="section-title animated-title mb-4" data-aos="fade-up">
+      Career Fields
+    </h4>
+  </div>
+
+  <!-- ✅ Sticky riêng biệt (nằm ngoài container để fixed được) -->
+  <div class="field-slider-sticky">
+    <div class="container">
+      <div
+        class="field-slider-wrapper position-relative"
+        data-aos="zoom-in-up"
+        data-aos-delay="200"
+      >
+        <div class="swiper-button-prev custom-prev">
+          <i class="pi pi-angle-left"></i>
+        </div>
+        <div class="swiper-button-next custom-next">
+          <i class="pi pi-angle-right"></i>
+        </div>
+
+        <div class="swiper field-swiper">
+          <div class="swiper-wrapper">
+            <!-- All -->
+            <div
+              class="swiper-slide field-card"
+              [class.active]="!selectedField"
+              (click)="filterByField(null)"
+            >
+              <div class="card-inner">
+                <div class="icon"><i class="pi pi-globe"></i></div>
+                <h6>All</h6>
+                <p>{{ careers.length }} Jobs</p>
+              </div>
+            </div>
+
+            <!-- Dynamic Fields -->
+            <div
+              class="swiper-slide field-card"
+              *ngFor="let f of fields"
+              [class.active]="selectedField === f.name"
+              (click)="filterByField(f.name)"
+            >
+              <div class="card-inner">
+                <div class="icon"><i class="pi pi-briefcase"></i></div>
+                <h6>{{ f.name }}</h6>
+                <p>{{ f.total }} Jobs</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================
+    🧾 JOB LIST SECTION
+======================= -->
 <div class="blog-sidebar blog-sidebar-right">
   <div class="container">
     <div class="row">
       <div class="col-12 section-padding-04">
-        <!-- 🔄 Loading -->
+        <!-- Loading -->
         <div *ngIf="loading" class="text-center py-5">
           <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
           <p>Loading job postings...</p>
         </div>
 
-        <!-- ✅ Job List -->
+        <!-- Job List -->
         <div
           class="row row-cols-sm-2 row-cols-md-2 row-cols-lg-3 gx-lg-5 gx-xxl-12"
-          *ngIf="!loading && careers.length > 0"
+          *ngIf="!loading && filteredCareers.length > 0"
         >
-          <div class="cols" *ngFor="let job of careers">
+          <div
+            class="cols"
+            *ngFor="let job of filteredCareers; let i = index"
+            [attr.data-aos]="'fade-up'"
+            [attr.data-aos-delay]="i * 100"
+          >
             <div class="blog-post-two">
-              <!-- 🖼️ Thumbnail -->
+              <!-- Thumbnail -->
               <a
                 [routerLink]="['/careerDetails', job.id]"
                 class="blog-post-two_thumb"
@@ -63,9 +135,8 @@
                 </span>
               </a>
 
-              <!-- 📝 Job Content -->
+              <!-- Content -->
               <div class="blog-post-two__content">
-                <!-- 🗂️ Meta -->
                 <ul class="blog-post-two__meta">
                   <li>{{ job.department || "General" }}</li>
                   <li>-</li>
@@ -74,14 +145,12 @@
                   </li>
                 </ul>
 
-                <!-- 🔹 Title -->
                 <h3 class="blog-post-two__title">
                   <a [routerLink]="['/careerDetails', job.id]">{{
                     job.title
                   }}</a>
                 </h3>
 
-                <!-- 📋 Thông tin chi tiết -->
                 <ul class="job-info">
                   <li>
                     <i class="las la-map-marker-alt"></i>
@@ -101,13 +170,11 @@
                   </li>
                 </ul>
 
-                <!-- 💰 Mức lương -->
                 <p class="salary">
                   <i class="las la-coins"></i>
                   {{ job.salary_range || "Negotiable" }}
                 </p>
 
-                <!-- 🔗 Nút Read More -->
                 <a
                   [routerLink]="['/careerDetails', job.id]"
                   class="blog-post-two__btn"
@@ -124,7 +191,7 @@
                       <path
                         fill="currentColor"
                         d="M43.707 8.707a1 1 0 0 0 0-1.414L37.343.929a1 1 0 1 0-1.414 1.414L41.586 8l-5.657 5.657a1 1 0 0 0 1.414 1.414l6.364-6.364zM0 9h43V7H0v2z"
-                      ></path>
+                      />
                     </svg>
                   </span>
                 </a>
@@ -133,13 +200,14 @@
           </div>
         </div>
 
-        <!-- ⚠️ Empty State -->
-        <div *ngIf="!loading && careers.length === 0" class="text-center py-5">
+        <!-- Empty -->
+        <div
+          *ngIf="!loading && filteredCareers.length === 0"
+          class="text-center py-5"
+        >
           <h5>No job postings available.</h5>
-          <p>Please check back later.</p>
         </div>
       </div>
     </div>
   </div>
 </div>
-<!-- Job Section End -->
