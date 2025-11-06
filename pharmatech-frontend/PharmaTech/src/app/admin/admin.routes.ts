@@ -25,6 +25,7 @@ import { ProductAddComponent } from './pages/product/productAdd/productAdd.compo
 import { ProductDetailsComponent } from './pages/product/productDetails/productDetails.component';
 import { HotlineInfoComponent } from './pages/settings/HotlineInfo/HotlineInfo.component';
 import { ProductEditComponent } from './pages/product/productEdit/productEdit.component';
+import { HomeCategoryComponent } from './pages/settings/homeCategory/homeCategory.component';
 
 export const adminRoutes: Routes = [
   {
@@ -48,6 +49,7 @@ export const adminRoutes: Routes = [
       { path: 'contact', component: ContactComponent },
       { path: 'banner', component: BannerComponent },
       { path: 'settings/hotline', component: HotlineInfoComponent },
+      { path: 'settings/homecategory', component: HomeCategoryComponent },
 
       { path: 'recycle/user', component: RecycleAccountComponent },
       { path: 'recycle/category', component: RecycleCategoryComponent },

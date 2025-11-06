@@ -1,0 +1,166 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+  <h4 class="fw-bold py-3 mb-4">
+    <span class="text-muted fw-light">Settings /</span> Home Categories
+  </h4>
+
+  <div class="card p-4">
+    <h5 class="card-header fw-semibold border-bottom pb-3">
+      🏠 Home Categories Settings
+    </h5>
+
+    <div class="row g-4 mt-2">
+      <!-- Category 1 -->
+      <div class="col-md-4">
+        <div class="card border shadow-sm">
+          <div class="card-body">
+            <h6 class="fw-bold mb-2">Category 1</h6>
+            <p class="text-muted small mb-2" *ngIf="currentCategoryName1">
+              Currently: <strong>{{ currentCategoryName1 }}</strong>
+            </p>
+
+            <p-select
+              class="w-100 mb-3"
+              [options]="categories"
+              optionLabel="label"
+              optionValue="value"
+              [(ngModel)]="selectedCategory1"
+              placeholder="Select Category 1"
+              (onChange)="loadProductsForCategory(1)"
+            ></p-select>
+
+            <div
+              class="product-list"
+              *ngIf="categoryProducts[1]?.length > 0; else noData1"
+            >
+              <div
+                *ngFor="let p of categoryProducts[1]"
+                class="d-flex align-items-center border-bottom py-2"
+              >
+                <img
+                  [src]="p.photo || 'assets/images/no-image.jpg'"
+                  alt="Product"
+                  class="rounded me-2"
+                  width="50"
+                  height="50"
+                />
+                <div class="flex-grow-1">
+                  <p class="mb-0 fw-semibold">{{ p.name }}</p>
+                </div>
+              </div>
+            </div>
+            <ng-template #noData1>
+              <p class="text-muted small mb-0">No products available.</p>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category 2 -->
+      <div class="col-md-4">
+        <div class="card border shadow-sm">
+          <div class="card-body">
+            <h6 class="fw-bold mb-2">Category 2</h6>
+            <p class="text-muted small mb-2" *ngIf="currentCategoryName2">
+              Currently: <strong>{{ currentCategoryName2 }}</strong>
+            </p>
+
+            <p-select
+              class="w-100 mb-3"
+              [options]="categories"
+              optionLabel="label"
+              optionValue="value"
+              [(ngModel)]="selectedCategory2"
+              placeholder="Select Category 2"
+              (onChange)="loadProductsForCategory(2)"
+            ></p-select>
+
+            <div
+              class="product-list"
+              *ngIf="categoryProducts[2]?.length > 0; else noData2"
+            >
+              <div
+                *ngFor="let p of categoryProducts[2]"
+                class="d-flex align-items-center border-bottom py-2"
+              >
+                <img
+                  [src]="p.photo || 'assets/images/no-image.jpg'"
+                  alt="Product"
+                  class="rounded me-2"
+                  width="50"
+                  height="50"
+                />
+                <div class="flex-grow-1">
+                  <p class="mb-0 fw-semibold">{{ p.name }}</p>
+                </div>
+              </div>
+            </div>
+            <ng-template #noData2>
+              <p class="text-muted small mb-0">No products available.</p>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category 3 -->
+      <div class="col-md-4">
+        <div class="card border shadow-sm">
+          <div class="card-body">
+            <h6 class="fw-bold mb-2">Category 3</h6>
+            <p class="text-muted small mb-2" *ngIf="currentCategoryName3">
+              Currently: <strong>{{ currentCategoryName3 }}</strong>
+            </p>
+
+            <p-select
+              class="w-100 mb-3"
+              [options]="categories"
+              optionLabel="label"
+              optionValue="value"
+              [(ngModel)]="selectedCategory3"
+              placeholder="Select Category 3"
+              (onChange)="loadProductsForCategory(3)"
+            ></p-select>
+
+            <div
+              class="product-list"
+              *ngIf="categoryProducts[3]?.length > 0; else noData3"
+            >
+              <div
+                *ngFor="let p of categoryProducts[3]"
+                class="d-flex align-items-center border-bottom py-2"
+              >
+                <img
+                  [src]="p.photo || 'assets/images/no-image.jpg'"
+                  alt="Product"
+                  class="rounded me-2"
+                  width="50"
+                  height="50"
+                />
+                <div class="flex-grow-1">
+                  <p class="mb-0 fw-semibold">{{ p.name }}</p>
+                </div>
+              </div>
+            </div>
+            <ng-template #noData3>
+              <p class="text-muted small mb-0">No products available.</p>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="text-end mt-4">
+      <button
+        pButton
+        label="Save Changes"
+        class="btn btn-primary"
+        style="padding: 0.5rem 1.5rem"
+        (click)="saveHomeCategories()"
+      >
+        Save Changes
+      </button>
+    </div>
+  </div>
+
+  <p-toast></p-toast>
+</div>
