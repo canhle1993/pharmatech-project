@@ -3845,6 +3845,7 @@ textarea.form-control {
   }
 }
 .slider-content-05__title {
+  color: black !important;
   font-size: 60px;
   font-weight: 600;
   font-family: Inter, sans-serif;

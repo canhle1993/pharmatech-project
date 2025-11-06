@@ -166,9 +166,7 @@
                   <h5 class="product-item__title">
                     <a [routerLink]="['/productDetails', p.id]">{{ p.name }}</a>
                   </h5>
-                  <span class="product-item__price">{{
-                    p.price ? "$" + p.price : ""
-                  }}</span>
+                  <span class="product-item__price">{{ p.model }}</span>
                 </div>
                 <ul class="product-item__meta">
                   <li class="product-item__meta-action">
@@ -323,9 +321,7 @@
                   <h5 class="product-item__title">
                     <a [routerLink]="['/productDetails', p.id]">{{ p.name }}</a>
                   </h5>
-                  <span class="product-item__price">{{
-                    p.price ? "$" + p.price : ""
-                  }}</span>
+                  <span class="product-item__price">{{ p.model }}</span>
                 </div>
                 <ul class="product-item__meta">
                   <li class="product-item__meta-action">
@@ -510,11 +506,12 @@
                   <h5 class="product-item__title">
                     <a [routerLink]="['/productDetails', p.id]">{{ p.name }}</a>
                   </h5>
-                  <span class="product-item__price">{{
-                    p.price ? "$" + p.price : ""
-                  }}</span>
+                  <span class="product-item__price">{{ p.model }}</span>
                   <p class="product-item__text">
-                    Aliqua id fugiat nostrud irure ex duis ea quis id…
+                    {{
+                      p.introduce?.split(" ").slice(0, 10).join(" ") +
+                        (p.introduce?.split(" ").length > 10 ? "..." : "")
+                    }}
                   </p>
                   <a
                     href="#/"
@@ -670,160 +667,50 @@
       <!-- Section Title End -->
     </div>
     <div class="col-12">
-      <div class="blog-active mt-4">
+      <div class="blog-active mt-4" *ngIf="careers.length > 0; else noJobs">
         <div class="swiper">
           <div class="swiper-wrapper">
             <!-- swiper-slide start -->
-            <div class="swiper-slide">
+            <div class="swiper-slide" *ngFor="let job of careers">
               <!-- Blog Item Strat -->
               <div class="blog-itemtwo">
-                <a href="blog-details.html" class="blog-itemtwo__thumbnail">
-                  <img src="assets/images/blog/blog-5-1.jpg" alt="Blog" />
+                <a
+                  [routerLink]="['/careerDetails', job.id]"
+                  class="blog-itemtwo__thumbnail"
+                >
+                  <img
+                    [src]="
+                      job.banner && job.banner !== ''
+                        ? job.banner
+                        : 'assets/images/blog/blog-5-1.jpg'
+                    "
+                    [alt]="job.title"
+                  />
                 </a>
                 <div class="blog-itemtwo__content">
                   <div class="blog-itemtwo__meta">
-                    <div class="blog-itemtwo__meta-action">August 14, 2022</div>
                     <div class="blog-itemtwo__meta-action">
-                      <a href="#"> - Bakery</a>
+                      {{ job.posted_date | date : "MMM dd, yyyy" }}
+                    </div>
+                    <div class="blog-itemtwo__meta-action">
+                      <a href="#"> - {{ job.department || "General" }}</a>
                     </div>
                   </div>
                   <h3 class="blog-itemtwo__title">
-                    <a href="blog-details.html"
-                      >Things you should know about cakes</a
-                    >
+                    <a [routerLink]="['/careerDetails', job.id]">{{
+                      job.title
+                    }}</a>
                   </h3>
-                  <p class="blog-itemtwo__text">
-                    Things you should know about cakes Donec sed erat ut magna
-                    suscipit…
-                  </p>
+                  <p
+                    class="blog-itemtwo__text"
+                    [innerHTML]="truncateHTML(job.description, 20)"
+                  ></p>
+
                   <div class="blog-btn-wrap">
-                    <a href="blog-details.html" class="blog-itemtwo__btn">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        fill="none"
-                        viewBox="0 0 44 16"
-                      >
-                        <path
-                          fill="currentColor"
-                          d="M43.707 8.707a1 1 0 0 0 0-1.414L37.343.929a1 1 0 1 0-1.414 1.414L41.586 8l-5.657 5.657a1 1 0 0 0 1.414 1.414l6.364-6.364zM0 9h43V7H0v2z"
-                        ></path>
-                      </svg>
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <!-- Blog Item End -->
-            </div>
-            <div class="swiper-slide">
-              <!-- Blog Item Strat -->
-              <div class="blog-itemtwo">
-                <a href="blog-details.html" class="blog-itemtwo__thumbnail">
-                  <img src="assets/images/blog/blog-5-2.jpg" alt="Blog" />
-                </a>
-                <div class="blog-itemtwo__content">
-                  <div class="blog-itemtwo__meta">
-                    <div class="blog-itemtwo__meta-action">August 14, 2022</div>
-                    <div class="blog-itemtwo__meta-action">
-                      <a href="#"> - Bakery</a>
-                    </div>
-                  </div>
-                  <h3 class="blog-itemtwo__title">
-                    <a href="blog-details.html"
-                      >Things you should know about cakes</a
+                    <a
+                      [routerLink]="['/careerDetails', job.id]"
+                      class="blog-itemtwo__btn"
                     >
-                  </h3>
-                  <p class="blog-itemtwo__text">
-                    Things you should know about cakes Donec sed erat ut magna
-                    suscipit…
-                  </p>
-                  <div class="blog-btn-wrap">
-                    <a href="blog-details.html" class="blog-itemtwo__btn">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        fill="none"
-                        viewBox="0 0 44 16"
-                      >
-                        <path
-                          fill="currentColor"
-                          d="M43.707 8.707a1 1 0 0 0 0-1.414L37.343.929a1 1 0 1 0-1.414 1.414L41.586 8l-5.657 5.657a1 1 0 0 0 1.414 1.414l6.364-6.364zM0 9h43V7H0v2z"
-                        ></path>
-                      </svg>
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <!-- Blog Item End -->
-            </div>
-            <div class="swiper-slide">
-              <!-- Blog Item Strat -->
-              <div class="blog-itemtwo">
-                <a href="blog-details.html" class="blog-itemtwo__thumbnail">
-                  <img src="assets/images/blog/blog-5-3.jpg" alt="Blog" />
-                </a>
-                <div class="blog-itemtwo__content">
-                  <div class="blog-itemtwo__meta">
-                    <div class="blog-itemtwo__meta-action">August 14, 2022</div>
-                    <div class="blog-itemtwo__meta-action">
-                      <a href="#"> - Bakery</a>
-                    </div>
-                  </div>
-                  <h3 class="blog-itemtwo__title">
-                    <a href="blog-details.html"
-                      >Things you should know about cakes</a
-                    >
-                  </h3>
-                  <p class="blog-itemtwo__text">
-                    Things you should know about cakes Donec sed erat ut magna
-                    suscipit…
-                  </p>
-                  <div class="blog-btn-wrap">
-                    <a href="blog-details.html" class="blog-itemtwo__btn">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        fill="none"
-                        viewBox="0 0 44 16"
-                      >
-                        <path
-                          fill="currentColor"
-                          d="M43.707 8.707a1 1 0 0 0 0-1.414L37.343.929a1 1 0 1 0-1.414 1.414L41.586 8l-5.657 5.657a1 1 0 0 0 1.414 1.414l6.364-6.364zM0 9h43V7H0v2z"
-                        ></path>
-                      </svg>
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <!-- Blog Item End -->
-            </div>
-            <div class="swiper-slide">
-              <!-- Blog Item Strat -->
-              <div class="blog-itemtwo">
-                <a href="blog-details.html" class="blog-itemtwo__thumbnail">
-                  <img src="assets/images/blog/blog-5-2.jpg" alt="Blog" />
-                </a>
-                <div class="blog-itemtwo__content">
-                  <div class="blog-itemtwo__meta">
-                    <div class="blog-itemtwo__meta-action">August 14, 2022</div>
-                    <div class="blog-itemtwo__meta-action">
-                      <a href="#"> - Bakery</a>
-                    </div>
-                  </div>
-                  <h3 class="blog-itemtwo__title">
-                    <a href="blog-details.html"
-                      >Things you should know about cakes</a
-                    >
-                  </h3>
-                  <p class="blog-itemtwo__text">
-                    Things you should know about cakes Donec sed erat ut magna
-                    suscipit…
-                  </p>
-                  <div class="blog-btn-wrap">
-                    <a href="blog-details.html" class="blog-itemtwo__btn">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="20"
@@ -848,5 +735,10 @@
       </div>
     </div>
   </div>
+  <ng-template #noJobs>
+    <div class="text-center py-4">
+      <h6>No job postings available.</h6>
+    </div>
+  </ng-template>
 </div>
 <!-- Blog Post Section End -->
