@@ -1,3 +1,4 @@
+// src/career/career.controller.ts
 import {
   BadRequestException,
   Body,
@@ -17,14 +18,18 @@ import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 
 import { CareerService } from './career.service';
-import { CreateCareerDto, UpdateCareerDto } from './career.dto';
+import { CareerDTO, CreateCareerDto, UpdateCareerDto } from './career.dto';
 
 const UPLOAD_DIR = './upload/career-banners';
 const now = new Date();
+
 @Controller('api/career')
 export class CareerController {
   constructor(private readonly careerService: CareerService) {}
 
+  /** =======================================
+   * 🟢 CREATE JOB
+   * ======================================= */
   @Post()
   @UseInterceptors(
     FileInterceptor('banner', {
@@ -38,43 +43,30 @@ export class CareerController {
     }),
   )
   async create(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
-    // ép/trim dữ liệu text an toàn
+    console.log('📦 [CREATE] Raw body received from FE:', body);
+    // 🧹 Chuẩn hóa dữ liệu: gộp body và file
     const raw = {
-      title: body?.title ? String(body.title).trim() : undefined,
-      department: body?.department ? String(body.department).trim() : undefined,
-      location: body?.location ? String(body.location).trim() : undefined,
-      description: body?.description
-        ? String(body.description).trim()
-        : undefined,
-      requirements: body?.requirements
-        ? String(body.requirements).trim()
-        : undefined,
-      salary_range: body?.salary_range
-        ? String(body.salary_range).trim()
-        : undefined,
-      posted_by: body?.posted_by ? String(body.posted_by).trim() : undefined,
+      ...body,
       banner: file?.filename || undefined,
-      quantity: body?.quantity ? Number(body.quantity) : undefined,
-      level: body?.level?.trim(),
-      experience: body?.experience?.trim(),
-      work_type: body?.work_type?.trim(),
-      area: body?.area?.trim(),
-      // 🆕 Nếu không có posted_date thì set = now
       posted_date: body?.posted_date
         ? String(body.posted_date)
         : now.toISOString(),
-      expiration_date: body?.expiration_date
-        ? String(body.expiration_date)
-        : undefined,
+      expiration_date: body?.expiration_date || undefined,
     };
 
-    console.log('BODY RAW >>>', body);
-    console.log('RAW AFTER TRIM >>>', raw);
+    // 🧽 Loại field rỗng hoặc undefined
+    Object.keys(raw).forEach((k) => {
+      const v = (raw as any)[k];
+      if (v === undefined || v === '') delete (raw as any)[k];
+    });
 
-    // map -> DTO và chạy validate thủ công
+    console.log('📦 [CREATE] Parsed raw before DTO:', raw);
+
+    // 🧩 Map sang DTO + validate
     const dto = plainToInstance(CreateCareerDto, raw, {
       enableImplicitConversion: true,
     });
+
     const errors = validateSync(dto, {
       whitelist: true,
       forbidUnknownValues: true,
@@ -85,9 +77,13 @@ export class CareerController {
       );
     }
 
+    // ✅ Tạo mới job
     return this.careerService.create(dto);
   }
 
+  /** =======================================
+   * 🟡 UPDATE JOB
+   * ======================================= */
   @Put(':id')
   @UseInterceptors(
     FileInterceptor('banner', {
@@ -106,33 +102,23 @@ export class CareerController {
     @Body() body: any,
   ) {
     const raw = {
-      title: body?.title?.toString().trim(),
-      department: body?.department?.toString().trim(),
-      location: body?.location?.toString().trim(),
-      description: body?.description?.toString().trim(),
-      requirements: body?.requirements?.toString().trim(),
-      salary_range: body?.salary_range?.toString().trim(),
-      banner: file?.filename, // nếu không upload thì sẽ là undefined
-      quantity: body?.quantity ? Number(body.quantity) : undefined,
-      level: body?.level?.trim(),
-      experience: body?.experience?.trim(),
-      work_type: body?.work_type?.trim(),
-      area: body?.area?.trim(),
-      posted_date: body?.posted_date ? String(body.posted_date) : undefined,
-      expiration_date: body?.expiration_date
-        ? String(body.expiration_date)
-        : undefined,
+      ...body,
+      banner: file?.filename || undefined,
     };
 
-    // loại field trống để phù hợp @IsOptional()
+    // 🧽 Loại field trống
     Object.keys(raw).forEach((k) => {
       const v = (raw as any)[k];
       if (v === undefined || v === '') delete (raw as any)[k];
     });
 
+    console.log('📦 [UPDATE] Parsed raw before DTO:', raw);
+
+    // 🧩 Map sang DTO + validate
     const dto = plainToInstance(UpdateCareerDto, raw, {
       enableImplicitConversion: true,
     });
+
     const errors = validateSync(dto, {
       whitelist: true,
       forbidUnknownValues: true,
@@ -143,21 +129,42 @@ export class CareerController {
       );
     }
 
+    // ✅ Cập nhật job
     return this.careerService.update(id, dto);
   }
 
+  /** =======================================
+   * 🔵 GET ALL JOBS
+   * ======================================= */
   @Get()
   async findAll() {
-    return this.careerService.findAll();
+    const careers = await this.careerService.findAll();
+    return plainToInstance(CareerDTO, careers, {
+      excludeExtraneousValues: true,
+    });
   }
 
+  /** =======================================
+   * 🟣 GET JOB BY ID
+   * ======================================= */
   @Get(':id')
   async findById(@Param('id') id: string) {
-    return this.careerService.findById(id);
+    const career = await this.careerService.findById(id);
+    return plainToInstance(CareerDTO, career, {
+      excludeExtraneousValues: true,
+    });
   }
 
+  /** =======================================
+   * 🔴 DELETE JOB (SOFT DELETE)
+   * ======================================= */
   @Delete(':id')
   async delete(@Param('id') id: string) {
     return this.careerService.delete(id);
+  }
+
+  @Get('similar/:id')
+  async getSimilar(@Param('id') id: string): Promise<CareerDTO[]> {
+    return this.careerService.findSimilarById(id);
   }
 }

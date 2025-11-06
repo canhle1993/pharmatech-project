@@ -12,7 +12,6 @@ import { RecycleAccountComponent } from './pages/recycle/recycle-account/recycle
 import { RecycleCategoryComponent } from './pages/recycle/recycle-category/recycle-category.component';
 import { RecycleProductComponent } from './pages/recycle/recycle-product/recycle-product.component';
 import { QuoteComponent } from './pages/quote/quote.component';
-import { JobPostingComponent } from './pages/career/job-posting/job-posting.component';
 import { RecruitmentDetailsComponent } from './pages/career/recruitment-details/recruitment-details.component';
 import { RecruitmentHistoryComponent } from './pages/career/recruitment-history/recruitment-history.component';
 import { OrderListComponent } from './pages/order/order-list/order-list.component';
@@ -26,6 +25,8 @@ import { ProductDetailsComponent } from './pages/product/productDetails/productD
 import { HotlineInfoComponent } from './pages/settings/HotlineInfo/HotlineInfo.component';
 import { ProductEditComponent } from './pages/product/productEdit/productEdit.component';
 import { HomeCategoryComponent } from './pages/settings/homeCategory/homeCategory.component';
+import { JobFormComponent } from './pages/career/job-posting/job-form/job-form.component';
+import { JobPostingComponent } from './pages/career/job-posting/job-posting.component';
 
 export const adminRoutes: Routes = [
   {
@@ -57,6 +58,9 @@ export const adminRoutes: Routes = [
       { path: 'quote', component: QuoteComponent },
 
       { path: 'career/job-posting', component: JobPostingComponent },
+      { path: 'career/job-add', component: JobFormComponent },
+      { path: 'career/job-edit/:id', component: JobFormComponent },
+
       {
         path: 'career/recruitment-details',
         component: RecruitmentDetailsComponent,

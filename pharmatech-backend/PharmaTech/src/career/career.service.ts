@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateCareerDto, UpdateCareerDto } from './career.dto';
+import { CareerDTO, CreateCareerDto, UpdateCareerDto } from './career.dto';
+import { plainToInstance } from 'class-transformer';
 
 type CareerLean = {
   _id?: any;
@@ -121,5 +122,33 @@ export class CareerService {
     );
     if (!deleted) throw new NotFoundException('Career not found');
     return deleted;
+  }
+
+  /** 🔍 Tìm các job tương tự theo field hoặc industry */
+  async findSimilarById(id: string): Promise<CareerDTO[]> {
+    // Lấy job hiện tại
+    const current = (await this.careerModel.findById(id).lean()) as any;
+
+    if (!current) throw new NotFoundException('Career not found');
+
+    // Truy vấn các job khác có field hoặc industry trùng
+    const query = {
+      _id: { $ne: id },
+      is_active: true,
+      $or: [
+        { industry: { $in: current.industry || [] } },
+        { field: { $in: current.field || [] } },
+      ],
+    };
+
+    const results = await this.careerModel
+      .find(query)
+      .limit(4)
+      .sort({ created_at: -1 })
+      .lean();
+
+    return plainToInstance(CareerDTO, results, {
+      excludeExtraneousValues: true,
+    });
   }
 }
