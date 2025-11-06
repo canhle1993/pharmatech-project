@@ -67,7 +67,12 @@
             />
           </td>
           <td>{{ cat.name }}</td>
-          <td>{{ cat.description || "-" }}</td>
+          <td>
+            {{
+              cat.description?.split(" ").slice(0, 10).join(" ") +
+                (cat.description?.split(" ").length > 10 ? "..." : "")
+            }}
+          </td>
           <td>{{ cat.updated_by || "-" }}</td>
           <td>{{ cat.updated_at || "-" }}</td>
           <td>
