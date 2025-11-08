@@ -1,0 +1,22 @@
+.rounded {
+  transition: transform 0.2s ease;
+
+  object-fit: cover;
+}
+
+.rounded:hover {
+  transform: scale(1.1);
+}
+.text-dark {
+  transition: transform 0.2s ease;
+
+  object-fit: cover;
+}
+.text-dark:hover {
+  color: rgb(15, 224, 193) !important;
+  transform: scale(1.1);
+}
+.offcanvas-backdrop.show {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

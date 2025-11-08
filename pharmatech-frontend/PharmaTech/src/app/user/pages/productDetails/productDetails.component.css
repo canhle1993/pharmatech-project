@@ -40,3 +40,62 @@
 .swiper-button-next {
   right: 5px !important;
 }
+.product-desc-content p {
+  white-space: pre-line !important; /* Giữ ngắt dòng \n trong text */
+  word-wrap: break-word !important; /* Ngắt từ quá dài */
+  line-height: 1.6 !important;
+}
+
+.product-desc-content {
+  overflow-wrap: break-word !important;
+  white-space: pre-line !important;
+}
+
+.product-desc-row {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 2rem !important; /* khoảng cách giữa hình và mô tả */
+  margin-top: 1rem !important;
+}
+
+/* 🖼️ Phần hình ảnh chiếm 40% */
+.product-desc-img {
+  flex: 0 0 40% !important;
+  max-width: 40% !important;
+}
+
+.product-desc-img img {
+  width: 100% !important;
+  height: auto !important;
+  border-radius: 8px !important;
+  object-fit: cover !important;
+}
+
+/* 📄 Phần mô tả chiếm 60% */
+.product-desc-content {
+  flex: 1 !important;
+  max-width: 60% !important;
+  line-height: 1.7 !important;
+  color: #222 !important;
+  white-space: pre-line !important;
+  word-break: break-word !important;
+}
+
+.product-desc-title {
+  font-size: 1.4rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 1rem !important;
+  color: #111 !important;
+}
+
+/* 📱 Responsive */
+@media (max-width: 768px) {
+  .product-desc-row {
+    flex-direction: column !important;
+  }
+
+  .product-desc-img,
+  .product-desc-content {
+    max-width: 100% !important;
+  }
+}

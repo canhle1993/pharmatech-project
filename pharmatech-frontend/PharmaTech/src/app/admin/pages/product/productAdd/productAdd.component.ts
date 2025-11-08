@@ -6,9 +6,14 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+
 import { ProductService } from '../../../../services/product.service';
 import { CategoryService } from '../../../../services/category.service';
 import { Product } from '../../../../entities/product.entity';
+import { EditorModule } from 'primeng/editor';
+
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { InputTextModule } from 'primeng/inputtext';
@@ -16,32 +21,35 @@ import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { Router, RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { EditorModule } from 'primeng/editor';
+
+// 🧩 Thêm Quill
+import { QuillModule } from 'ngx-quill';
 import Quill from 'quill';
 import QuillBetterTable from 'quill-better-table';
+
+// 🔹 Đăng ký module bảng
 Quill.register({ 'modules/better-table': QuillBetterTable }, true);
+
 @Component({
   selector: 'app-product-add',
   standalone: true,
-  encapsulation: ViewEncapsulation.None, // 👈 thêm dòng này
-
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
+    RouterLink,
     ToastModule,
     InputTextModule,
     TextareaModule,
     ButtonModule,
     MultiSelectModule,
     InputNumberModule,
-    RouterLink,
-    FormsModule,
-    EditorModule,
+    QuillModule,
+    EditorModule, // ✅ thêm dòng này
   ],
   templateUrl: './productAdd.component.html',
   styleUrls: ['./productAdd.component.css'],
+
   providers: [MessageService],
 })
 export class ProductAddComponent implements OnInit {
@@ -67,15 +75,13 @@ export class ProductAddComponent implements OnInit {
       model: [''],
       introduce: [''],
       description: [''],
-      specification: [''],
+      specification: [''], // dùng Quill editor cho trường này
       price: [0, [Validators.min(0)]],
       category_ids: [[]],
-
-      /** ✅ Chỉ cần số lượng tồn kho */
       stock_quantity: [0, [Validators.min(0)]],
     });
 
-    // 🔹 Load danh sách category để chọn
+    // 🔹 Load danh sách category
     try {
       const res: any = await this.categoryService.findAll();
       this.categories = res.map((c: any) => ({
@@ -86,15 +92,23 @@ export class ProductAddComponent implements OnInit {
       console.error('❌ Load categories failed:', error);
     }
   }
-  // sau dòng Quill.register(...)
+
+  // ⚙️ Cấu hình Quill (có Table)
   editorModules = {
-    toolbar: [
-      ['bold', 'italic', 'underline', 'strike'],
-      ['link'],
-      [{ list: 'ordered' }, { list: 'bullet' }],
-      ['clean'],
-      ['table'], // thêm nút Table
-    ],
+    toolbar: {
+      container: [
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        ['link', 'clean'],
+        ['table'], // ✅ nút Table thật
+      ],
+      handlers: {
+        table: function (this: any) {
+          const tableModule = this.quill.getModule('better-table');
+          if (tableModule) tableModule.insertTable(3, 3);
+        },
+      },
+    },
     'better-table': {
       operationMenu: {
         items: {
@@ -139,7 +153,6 @@ export class ProductAddComponent implements OnInit {
     if (this.addForm.invalid) return;
     this.loading = true;
 
-    // ✅ Tự tính trạng thái tồn kho
     const formValue = this.addForm.value;
     const stock_status =
       formValue.stock_quantity && formValue.stock_quantity > 0
@@ -148,7 +161,7 @@ export class ProductAddComponent implements OnInit {
 
     const product: Product = {
       ...formValue,
-      stock_status, // tự set thay vì người dùng chọn
+      stock_status,
       updated_by: 'admin',
     };
 

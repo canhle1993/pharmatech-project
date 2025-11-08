@@ -58,6 +58,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
   ) {}
 
   async ngOnInit() {
+    this.autoReloadOnce(); // ✅ Thêm hàm reload 1 lần duy nhất
+
     const userId = localStorage.getItem('userId');
     if (userId) await this.cartState.loadUserCart(userId);
 
@@ -86,6 +88,15 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
       });
     } finally {
       this.loading = false;
+    }
+  }
+  private autoReloadOnce(): void {
+    const reloaded = sessionStorage.getItem('productDetails-page-reloaded');
+    if (!reloaded) {
+      sessionStorage.setItem('productDetails-page-reloaded', 'true');
+      window.location.reload();
+    } else {
+      sessionStorage.removeItem('productDetails-page-reloaded');
     }
   }
 

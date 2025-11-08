@@ -118,10 +118,25 @@ export class HeaderComponent implements OnInit, OnDestroy {
       const bsOffcanvas =
         bootstrap.Offcanvas.getInstance(offcanvasElement) ||
         new bootstrap.Offcanvas(offcanvasElement);
+
+      // 🔹 1. Đóng cart
       bsOffcanvas.hide();
+
+      // 🔹 2. Chuyển sang trang cart sau animation
       setTimeout(() => {
         this.router.navigate(['/cart', this.user?._id]);
       }, 300);
+
+      // 🔹 3. Xóa backdrop + class gây khóa body
+      setTimeout(() => {
+        document
+          .querySelectorAll('.offcanvas-backdrop')
+          .forEach((el) => el.remove());
+
+        // ❗ Rất quan trọng: Bootstrap thêm class này để khóa cuộn
+        document.body.classList.remove('offcanvas-open');
+        document.body.style.overflow = ''; // khôi phục scroll
+      }, 600);
     }
   }
 

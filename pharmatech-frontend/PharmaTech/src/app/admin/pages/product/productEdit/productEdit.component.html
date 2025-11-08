@@ -104,10 +104,12 @@
       <div class="desc-grid mt-3">
         <div>
           <label>Specification:</label>
-          <p-editor
+          <quill-editor
             formControlName="specification"
-            [style]="{ height: '220px', width: '100%' }"
-          ></p-editor>
+            [modules]="editorModules"
+            style="height: 250px; width: 100%"
+            placeholder="Enter specification"
+          ></quill-editor>
         </div>
         <div>
           <label>Description:</label>

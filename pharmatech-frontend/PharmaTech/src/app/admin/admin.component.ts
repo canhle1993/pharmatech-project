@@ -1,4 +1,4 @@
-import { Component, OnInit, Renderer2,AfterViewInit } from '@angular/core';
+import { Component, OnInit, Renderer2, AfterViewInit } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AccountService } from '../services/account.service';
 import { ButtonModule } from 'primeng/button';
@@ -22,9 +22,21 @@ export class AdminComponent implements OnInit, AfterViewInit {
     private renderer: Renderer2
   ) {}
   ngOnInit() {
-    
+    this.autoReloadOnce(); // ✅ Thêm hàm reload 1 lần duy nhất
   }
-  ngAfterViewInit():void {
+  /**
+   * 🔁 Reload trang Admin đúng 1 lần duy nhất khi truy cập
+   */
+  private autoReloadOnce(): void {
+    const reloaded = sessionStorage.getItem('admin-page-reloaded');
+    if (!reloaded) {
+      sessionStorage.setItem('admin-page-reloaded', 'true');
+      window.location.reload();
+    } else {
+      sessionStorage.removeItem('admin-page-reloaded');
+    }
+  }
+  ngAfterViewInit(): void {
     // --- CSS ---
     const cssFiles = [
       'assets/admin/vendor/fonts/boxicons.css',

@@ -122,12 +122,15 @@
         <!-- Hàng mô tả -->
         <div class="row text-row">
           <div class="col">
-            <label>Specification</label>
-            <p-editor
-              formControlName="specification"
-              [modules]="editorModules"
-              [style]="{ height: '250px', width: '100%' }"
-            ></p-editor>
+            <div class="col">
+              <label>Specification</label>
+              <quill-editor
+                formControlName="specification"
+                [modules]="editorModules"
+                style="height: 250px; width: 100%"
+                placeholder="Enter specification"
+              ></quill-editor>
+            </div>
           </div>
 
           <div class="col">

@@ -22,6 +22,14 @@ import { EditorModule } from 'primeng/editor';
 import { FormsModule } from '@angular/forms';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
+// 🧩 Thêm Quill
+import { QuillModule } from 'ngx-quill';
+import Quill from 'quill';
+import QuillBetterTable from 'quill-better-table';
+
+// 🔹 Đăng ký module bảng
+Quill.register({ 'modules/better-table': QuillBetterTable }, true);
+
 @Component({
   selector: 'app-product-edit',
   standalone: true,
@@ -39,6 +47,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     InputNumberModule,
     EditorModule,
     ProgressSpinnerModule,
+    QuillModule,
   ],
   providers: [MessageService],
 })
@@ -134,6 +143,35 @@ export class ProductEditComponent implements OnInit {
       this.loading = false;
     }
   }
+  // ⚙️ Cấu hình Quill (có Table)
+  editorModules = {
+    toolbar: {
+      container: [
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        ['link', 'clean'],
+        ['table'], // ✅ nút Table thật
+      ],
+      handlers: {
+        table: function (this: any) {
+          const tableModule = this.quill.getModule('better-table');
+          if (tableModule) tableModule.insertTable(3, 3);
+        },
+      },
+    },
+    'better-table': {
+      operationMenu: {
+        items: {
+          insertColumnRight: true,
+          insertColumnLeft: true,
+          insertRowUp: true,
+          insertRowDown: true,
+          deleteColumn: true,
+          deleteRow: true,
+        },
+      },
+    },
+  };
 
   /** 📸 Ảnh chính */
   onMainFileSelected(event: any) {
