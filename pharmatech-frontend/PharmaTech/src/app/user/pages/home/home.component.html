@@ -120,6 +120,7 @@
   </div>
 </div>
 <!-- Shipping Section End -->
+<p-toast position="top-left"></p-toast>
 
 <!-- Product Section Start -->
 <div class="section-padding-03 custom-container-four" *ngIf="homeCategories">
@@ -166,13 +167,13 @@
                   <h5 class="product-item__title">
                     <a [routerLink]="['/productDetails', p.id]">{{ p.name }}</a>
                   </h5>
-                  <span class="product-item__price">{{ p.model }}</span>
+                  <span class="product-item__price">${{ p.price }}</span>
                 </div>
                 <ul class="product-item__meta">
                   <li class="product-item__meta-action">
                     <a
                       class="labtn-icon-quickview"
-                      href="#"
+                      href="javascript:void(0)"
                       data-bs-tooltip="tooltip"
                       data-bs-placement="top"
                       title=""
@@ -185,40 +186,23 @@
                   <li class="product-item__meta-action">
                     <a
                       class="labtn-icon-cart"
-                      href="#"
+                      href="javascript:void(0)"
+                      (click)="addToCart(p)"
                       data-bs-tooltip="tooltip"
                       data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Select options"
-                      aria-label="Select options"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCart"
+                      title="Add to cart"
+                      aria-label="Add to cart"
                     ></a>
                   </li>
                   <li class="product-item__meta-action">
                     <a
                       class="labtn-icon-wishlist"
-                      href="#"
+                      href="javascript:void(0)"
+                      (click)="addToWishlist(p)"
                       data-bs-tooltip="tooltip"
                       data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Add to wishlist"
+                      title="Add to wishlist"
                       aria-label="Add to wishlist"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalWishlist"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-compare"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Add to compare"
-                      aria-label="Add to compare"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCompare"
                     ></a>
                   </li>
                 </ul>
@@ -321,13 +305,13 @@
                   <h5 class="product-item__title">
                     <a [routerLink]="['/productDetails', p.id]">{{ p.name }}</a>
                   </h5>
-                  <span class="product-item__price">{{ p.model }}</span>
+                  <span class="product-item__price">${{ p.price }}</span>
                 </div>
                 <ul class="product-item__meta">
                   <li class="product-item__meta-action">
                     <a
                       class="labtn-icon-quickview"
-                      href="#"
+                      href="javascript:void(0)"
                       data-bs-tooltip="tooltip"
                       data-bs-placement="top"
                       title=""
@@ -340,40 +324,23 @@
                   <li class="product-item__meta-action">
                     <a
                       class="labtn-icon-cart"
-                      href="#"
+                      href="javascript:void(0)"
+                      (click)="addToCart(p)"
                       data-bs-tooltip="tooltip"
                       data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Select options"
-                      aria-label="Select options"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCart"
+                      title="Add to cart"
+                      aria-label="Add to cart"
                     ></a>
                   </li>
                   <li class="product-item__meta-action">
                     <a
                       class="labtn-icon-wishlist"
-                      href="#"
+                      href="javascript:void(0)"
+                      (click)="addToWishlist(p)"
                       data-bs-tooltip="tooltip"
                       data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Add to wishlist"
+                      title="Add to wishlist"
                       aria-label="Add to wishlist"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalWishlist"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-compare"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Add to compare"
-                      aria-label="Add to compare"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCompare"
                     ></a>
                   </li>
                 </ul>
@@ -481,23 +448,23 @@
                     <li class="product-item__meta-action">
                       <a
                         class="labtn-icon-wishlist"
-                        href="#/"
+                        href="javascript:void(0)"
+                        (click)="addToWishlist(p)"
                         data-bs-tooltip="tooltip"
                         data-bs-placement="top"
                         title="Add to wishlist"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalWishlist"
+                        aria-label="Add to wishlist"
                       ></a>
                     </li>
                     <li class="product-item__meta-action">
                       <a
-                        class="labtn-icon-compare"
-                        href="#/"
+                        class="labtn-icon-cart"
+                        href="javascript:void(0)"
+                        (click)="addToCart(p)"
                         data-bs-tooltip="tooltip"
                         data-bs-placement="top"
-                        title="Add to compare"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalCompare"
+                        title="Add to cart"
+                        aria-label="Add to cart"
                       ></a>
                     </li>
                   </ul>
@@ -506,7 +473,7 @@
                   <h5 class="product-item__title">
                     <a [routerLink]="['/productDetails', p.id]">{{ p.name }}</a>
                   </h5>
-                  <span class="product-item__price">{{ p.model }}</span>
+                  <span class="product-item__price">${{ p.price }}</span>
                   <p class="product-item__text">
                     {{
                       p.introduce?.split(" ").slice(0, 10).join(" ") +
@@ -694,7 +661,9 @@
                       {{ job.posted_date | date : "MMM dd, yyyy" }}
                     </div>
                     <div class="blog-itemtwo__meta-action">
-                      <a href="#"> - {{ job.department || "General" }}</a>
+                      <a href="javascript:void(0)">
+                        - {{ job.department || "General" }}</a
+                      >
                     </div>
                   </div>
                   <h3 class="blog-itemtwo__title">

@@ -17,6 +17,8 @@ import { ContactModule } from './contact/contact.module';
 import { HotlineModule } from './hotline/hotline.module';
 import { ChatModule } from './chat/chat.module';
 import { HomeCategoryModule } from './settingHomeCategory/homeCategory.module';
+import { CartModule } from './cart/cart.module';
+import { WishlistModule } from './wishlist/wishlist.module';
 
 @Module({
   imports: [
@@ -67,6 +69,8 @@ import { HomeCategoryModule } from './settingHomeCategory/homeCategory.module';
     HotlineModule,
     ChatModule,
     HomeCategoryModule,
+    CartModule,
+    WishlistModule,
   ],
   controllers: [],
   providers: [],

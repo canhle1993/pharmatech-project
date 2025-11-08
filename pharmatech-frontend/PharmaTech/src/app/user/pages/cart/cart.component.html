@@ -1,0 +1,195 @@
+<!-- Breadcrumb Section Start -->
+<div class="breadcrumb" data-bg-image="assets/images/bg/JgXAPa.jpg">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="breadcrumb_content">
+          <h1 class="breadcrumb_title">Cart</h1>
+          <ul class="breadcrumb_list">
+            <li><a routerLink="/">Home</a></li>
+            <li>Shopping Cart</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Breadcrumb Section End -->
+<p-toast position="top-left"></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<!-- Shop Cart Section Start -->
+<div class="section section-padding-03">
+  <div class="container">
+    <div class="row mb-n30 cart-row-gap gx-xxl-5">
+      <!-- LEFT: CART TABLE -->
+      <div class="col-lg-8 col-12 mb-30">
+        <!-- 🛒 Empty Cart -->
+        <div
+          *ngIf="!loading && carts.length === 0"
+          class="text-center py-5 border rounded-3 bg-light"
+        >
+          <h5 class="mb-3">🛒 Your cart is empty</h5>
+          <button
+            routerLink="/shop"
+            class="btn btn-outline-dark btn-primary-hover rounded-0"
+          >
+            Continue Shopping
+          </button>
+        </div>
+
+        <!-- ⏳ Loading Spinner -->
+        <div class="text-center py-5" *ngIf="loading">
+          <div class="spinner-border text-dark" role="status"></div>
+          <p class="mt-2">Loading cart...</p>
+        </div>
+
+        <!-- 🧾 Cart Table -->
+        <div
+          class="table-responsive"
+          *ngIf="!loading && carts.length > 0"
+          style="width: 110%"
+        >
+          <table class="cart-table table text-center align-middle mb-6">
+            <thead>
+              <tr>
+                <th></th>
+                <th class="text-start">Product</th>
+                <th class="price">Price</th>
+                <th class="quantity">Quantity</th>
+                <th class="total">Subtotal</th>
+              </tr>
+            </thead>
+
+            <tbody class="border-top-0">
+              <tr *ngFor="let c of carts">
+                <!-- Remove -->
+                <td class="cart-remove">
+                  <button
+                    class="remove-btn"
+                    (click)="removeItem(c)"
+                    [disabled]="loading"
+                    title="Remove item"
+                  >
+                    <i class="lastudioicon lastudioicon-e-remove"></i>
+                  </button>
+                </td>
+
+                <!-- Product info -->
+                <td class="text-start align-middle">
+                  <div class="d-flex align-items-center gap-3">
+                    <img
+                      [src]="c.productPhoto"
+                      [alt]="c.productName"
+                      width="100"
+                      height="100"
+                      class="rounded shadow-sm"
+                    />
+                    <div>
+                      <strong class="aaa">{{ c.productName }}</strong>
+                      <div class="small text-muted" *ngIf="c.productModel">
+                        Model: {{ c.productModel }}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Price -->
+                <td class="align-middle">
+                  {{ c.price | currency : "USD" : "symbol" }}
+                </td>
+
+                <!-- Quantity Control -->
+                <td class="align-middle">
+                  <div class="d-flex justify-content-center align-items-center">
+                    <button
+                      class="btn btn-sm"
+                      (click)="updateQuantity(c, c.quantity - 1)"
+                      [disabled]="c.loading || c.quantity <= 1"
+                    >
+                      -
+                    </button>
+                    <span>{{ c.quantity }}</span>
+                    <button
+                      class="btn btn-sm"
+                      (click)="updateQuantity(c, c.quantity + 1)"
+                      [disabled]="c.loading"
+                    >
+                      +
+                    </button>
+                  </div>
+                </td>
+
+                <!-- Subtotal -->
+                <td class="align-middle fw-semibold text-primary">
+                  {{ c.total_price | currency : "USD" : "symbol" }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Action Buttons -->
+        <div
+          class="row justify-content-between gap-3 mt-4"
+          *ngIf="!loading && carts.length > 0"
+        >
+          <div class="col-auto">
+            <button
+              [routerLink]="['/shop']"
+              class="btn btn-outline-dark btn-primary-hover rounded-0"
+            >
+              Continue Shopping
+            </button>
+          </div>
+
+          <div class="col-auto d-flex flex-wrap gap-3">
+            <button
+              class="btn btn-outline-dark btn-primary-hover rounded-0"
+              (click)="clearCart()"
+              [disabled]="loading"
+            >
+              Clear Cart
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: CART TOTAL -->
+      <div class="col-lg-4 col-12 mb-30" *ngIf="!loading && carts.length > 0">
+        <div
+          class="cart-totals shadow-sm rounded-3 p-4 bg-white"
+          style="margin-left: 20%"
+        >
+          <h4 class="title mb-3">Cart totals</h4>
+          <table class="table bg-transparent">
+            <tbody>
+              <tr class="subtotal">
+                <th class="sub-title">Subtotal</th>
+                <td class="amount text-end">
+                  <span>{{ totalAmount | currency : "USD" : "symbol" }}</span>
+                </td>
+              </tr>
+              <tr class="total border-top">
+                <th class="sub-title">Total</th>
+                <td class="amount text-end">
+                  <strong>{{
+                    totalAmount | currency : "USD" : "symbol"
+                  }}</strong>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <button
+            class="btn btn-dark btn-hover-primary rounded-0 w-100 mt-3"
+            [disabled]="loading"
+          >
+            Proceed to checkout
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Shop Cart Section End -->

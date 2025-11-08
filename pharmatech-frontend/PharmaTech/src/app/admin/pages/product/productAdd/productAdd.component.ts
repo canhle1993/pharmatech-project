@@ -54,7 +54,7 @@ export class ProductAddComponent implements OnInit {
     private productService: ProductService,
     private categoryService: CategoryService,
     private messageService: MessageService,
-    private router: Router // ✅ thêm router
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -66,6 +66,9 @@ export class ProductAddComponent implements OnInit {
       specification: [''],
       price: [0, [Validators.min(0)]],
       category_ids: [[]],
+
+      /** ✅ Chỉ cần số lượng tồn kho */
+      stock_quantity: [0, [Validators.min(0)]],
     });
 
     // 🔹 Load danh sách category để chọn
@@ -110,20 +113,26 @@ export class ProductAddComponent implements OnInit {
     if (this.addForm.invalid) return;
     this.loading = true;
 
+    // ✅ Tự tính trạng thái tồn kho
+    const formValue = this.addForm.value;
+    const stock_status =
+      formValue.stock_quantity && formValue.stock_quantity > 0
+        ? 'in_stock'
+        : 'out_of_stock';
+
     const product: Product = {
-      ...this.addForm.value,
+      ...formValue,
+      stock_status, // tự set thay vì người dùng chọn
       updated_by: 'admin',
     };
 
     try {
-      // 1️⃣ Tạo product
       const created: any = await this.productService.create(
         product,
         this.mainFile
       );
       const newProductId = created?.data?._id || created?._id;
 
-      // 2️⃣ Upload gallery
       if (newProductId && this.galleryFiles.length > 0) {
         await this.productService.uploadGallery(
           newProductId,
@@ -131,17 +140,14 @@ export class ProductAddComponent implements OnInit {
         );
       }
 
-      // ✅ Thông báo
       this.messageService.add({
         severity: 'success',
         summary: 'Success',
         detail: 'Product created successfully!',
       });
 
-      // ✅ Reset form
       this.onCancel();
 
-      // ✅ Đợi 1.5s rồi chuyển sang product-list
       setTimeout(() => {
         this.router.navigate(['/admin/product-list']);
       }, 1500);
@@ -159,7 +165,10 @@ export class ProductAddComponent implements OnInit {
 
   /** ❌ Reset form */
   onCancel() {
-    this.addForm.reset();
+    this.addForm.reset({
+      price: 0,
+      stock_quantity: 0,
+    });
     this.mainFile = undefined;
     this.galleryFiles = [];
     this.mainPreview = null;

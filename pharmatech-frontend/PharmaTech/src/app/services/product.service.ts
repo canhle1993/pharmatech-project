@@ -50,6 +50,13 @@ export class ProductService {
     formData.append('introduce', product.introduce || '');
     formData.append('updated_by', product.updated_by || 'admin');
 
+    /** ✅ Thêm quản lý tồn kho */
+    formData.append(
+      'stock_quantity',
+      product.stock_quantity ? product.stock_quantity.toString() : '0'
+    );
+    formData.append('stock_status', product.stock_status || 'in_stock');
+
     // 🔸 Thêm danh sách category_ids (mảng)
     if (product.category_ids && product.category_ids.length > 0) {
       formData.append('category_ids', JSON.stringify(product.category_ids));
@@ -80,6 +87,13 @@ export class ProductService {
     formData.append('price', product.price ? product.price.toString() : '0');
     formData.append('introduce', product.introduce || '');
     formData.append('updated_by', product.updated_by || 'admin');
+
+    /** ✅ Thêm quản lý tồn kho */
+    formData.append(
+      'stock_quantity',
+      product.stock_quantity ? product.stock_quantity.toString() : '0'
+    );
+    formData.append('stock_status', product.stock_status || 'in_stock');
 
     // 🏷️ Danh mục (category)
     if (product.category_ids && product.category_ids.length > 0) {

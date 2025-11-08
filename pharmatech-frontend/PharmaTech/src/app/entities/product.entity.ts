@@ -18,6 +18,10 @@ export class Product {
   price?: number; // Giá sản phẩm
   introduce?: string; // Nhà sản xuất
 
+  /** 🏷️ Quản lý tồn kho */
+  stock_quantity?: number; // Số lượng hàng trong kho
+  stock_status?: string; // Trạng thái tồn kho (còn hàng / hết hàng / đặt trước)
+
   /** 🔗 Liên kết category */
   category_ids?: string[]; // Danh sách ID category liên kết
   categories?: any[]; // Dữ liệu category populate ra (tên, mô tả,...)

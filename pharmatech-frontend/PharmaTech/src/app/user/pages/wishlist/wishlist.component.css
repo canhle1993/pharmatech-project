@@ -1,0 +1,38 @@
+.rounded {
+  transition: transform 0.2s ease;
+
+  object-fit: cover;
+}
+
+.rounded:hover {
+  transform: scale(1.1);
+}
+.remove-btn {
+  transition: transform 0.2s ease;
+
+  object-fit: cover;
+}
+
+.remove-btn:hover {
+  color: red;
+  transform: scale(1.1);
+}
+
+.btn-sm {
+  transition: transform 0.2s ease;
+
+  object-fit: cover;
+}
+.btn-sm:hover {
+  color: rgb(15, 224, 193);
+  transform: scale(1.1);
+}
+.aaa {
+  transition: transform 0.2s ease;
+
+  object-fit: cover;
+}
+.aaa:hover {
+  color: rgb(15, 224, 193);
+  transform: scale(1.1);
+}

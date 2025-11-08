@@ -75,6 +75,8 @@ export class ProductEditComponent implements OnInit {
       category_ids: [[]],
       specification: [''],
       description: [''],
+      /** ✅ Thêm field tồn kho (nhập số lượng) */
+      stock_quantity: [0, [Validators.min(0)]],
     });
 
     try {
@@ -89,17 +91,12 @@ export class ProductEditComponent implements OnInit {
       const res: any = await this.productService.findById(id);
       this.product = res;
 
-      // ✅ Chuẩn hóa category IDs đúng kiểu string
+      // ✅ Chuẩn hóa category IDs
       const selectedCategories = Array.isArray(this.product.category_ids)
         ? this.product.category_ids.map((c: any) =>
             typeof c === 'object' ? c._id || c.id || c : c
           )
         : [];
-
-      // 🧩 Debug log
-      console.log('🟦 categories:', this.categories);
-      console.log('🟨 product.category_ids:', this.product.category_ids);
-      console.log('🟩 selectedCategories:', selectedCategories);
 
       // ✅ Gán form
       this.editForm.patchValue({
@@ -109,7 +106,8 @@ export class ProductEditComponent implements OnInit {
         price: this.product.price,
         specification: this.product.specification,
         description: this.product.description,
-        category_ids: selectedCategories, // 🔥 phải là mảng string id
+        category_ids: selectedCategories,
+        stock_quantity: this.product.stock_quantity || 0, // ✅ load sẵn tồn kho
       });
 
       // ✅ Hiển thị ảnh chính
@@ -167,9 +165,17 @@ export class ProductEditComponent implements OnInit {
     if (this.editForm.invalid) return;
     this.loading = true;
 
+    // ✅ Tự tính trạng thái tồn kho (frontend hỗ trợ logic)
+    const formValue = this.editForm.value;
+    const stock_status =
+      formValue.stock_quantity && formValue.stock_quantity > 0
+        ? 'in_stock'
+        : 'out_of_stock';
+
     const productData: Product = {
-      ...this.editForm.value,
+      ...formValue,
       id: this.product.id || this.product._id,
+      stock_status, // tự động tính
       updated_by: 'admin',
     };
 

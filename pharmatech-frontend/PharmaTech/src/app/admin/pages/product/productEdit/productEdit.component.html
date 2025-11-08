@@ -76,6 +76,17 @@
           <input type="number" pInputText formControlName="price" />
         </div>
         <div>
+          <label>Stock Quantity:</label>
+          <input
+            type="number"
+            pInputText
+            formControlName="stock_quantity"
+            placeholder="Enter stock quantity"
+            min="0"
+          />
+        </div>
+
+        <div>
           <label>Select Category:</label>
           <p-multiSelect
             [options]="categories"

@@ -5,12 +5,17 @@ import { CategoryService } from '../../../services/category.service';
 import { ProductService } from '../../../services/product.service';
 import { env } from '../../../enviroments/enviroment';
 import { FormsModule } from '@angular/forms';
+import { WishlistService } from '../../../services/wishlist.service';
+import { CartStateService } from '../../../services/cart-state.service';
+import { CartService } from '../../../services/cart.service';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 @Component({
   standalone: true,
   templateUrl: './shop.component.html',
-  imports: [CommonModule, RouterLink, FormsModule],
-  providers: [CategoryService, ProductService],
+  imports: [CommonModule, RouterLink, FormsModule, ToastModule],
+  providers: [CategoryService, ProductService, MessageService],
 })
 export class ShopComponent implements OnInit {
   Math = Math;
@@ -31,10 +36,19 @@ export class ShopComponent implements OnInit {
     private renderer: Renderer2,
     private categoryService: CategoryService,
     private productService: ProductService,
-    private route: ActivatedRoute // ✅ thêm vào
+    private route: ActivatedRoute,
+    private cartService: CartService,
+    private cartState: CartStateService,
+    private wishlistService: WishlistService,
+    private messageService: MessageService
   ) {}
 
   async ngOnInit() {
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      // ✅ Load lại giỏ hàng từ DB để đồng bộ state (fix lỗi F5 mất state)
+      await this.cartState.loadUserCart(userId);
+    }
     await this.loadAssets();
     await this.loadCategories();
     await this.loadProducts();
@@ -46,6 +60,116 @@ export class ShopComponent implements OnInit {
         this.onSelectCategory(categoryId);
       }
     });
+  }
+  async addToWishlist(product: any) {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Please login',
+        detail: 'You must log in to add items to wishlist.',
+      });
+      return;
+    }
+
+    try {
+      // ✅ Gọi API thêm sản phẩm vào wishlist
+      await this.wishlistService.addToWishlist({
+        user_id: userId,
+        product_id: product._id || product.id,
+      });
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Added to Wishlist',
+        detail: `${product.name} has been added to your wishlist.`,
+      });
+    } catch (error: any) {
+      console.error('❌ addToWishlist error:', error);
+
+      // ✅ Nếu sản phẩm đã tồn tại (409 Conflict)
+      const backendMsg =
+        error?.error?.message || error?.message || 'Unable to add to wishlist.';
+
+      const isConflict =
+        error?.status === 409 || backendMsg.includes('already in wishlist');
+
+      this.messageService.add({
+        severity: isConflict ? 'info' : 'error',
+        summary: isConflict ? 'Already in Wishlist' : 'Failed',
+        detail: isConflict
+          ? `${product.name} is already in your wishlist.`
+          : backendMsg,
+      });
+    }
+  }
+
+  async addToCart(product: any) {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Please login',
+        detail: 'You must log in to add items to cart.',
+      });
+      return;
+    }
+
+    // ✅ Kiểm tra tồn kho trước khi thêm
+    if (!product.stock_quantity || product.stock_quantity <= 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Out of stock',
+        detail: `${product.name} is currently out of stock.`,
+      });
+      return;
+    }
+
+    // ✅ Kiểm tra nếu đã có trong giỏ hàng và sắp vượt tồn kho
+    const existingItem = this.cartState['_items']
+      .getValue()
+      .find(
+        (i) => i.product_id?._id === product._id || i.product_id === product._id
+      );
+
+    if (existingItem && existingItem.quantity + 1 > product.stock_quantity) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Stock limit reached',
+        detail: `Only ${product.stock_quantity} items are available in stock.`,
+      });
+      return;
+    }
+
+    try {
+      // ✅ Thêm sản phẩm vào giỏ (qua CartStateService)
+      await this.cartState.addToCart({
+        user_id: userId,
+        product_id: product._id || product.id,
+        price: product.price || 0,
+        quantity: 1,
+      });
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Added to Cart',
+        detail: `${product.name} has been added to your cart.`,
+      });
+    } catch (error: any) {
+      console.error('❌ addToCart error:', error);
+
+      // ✅ Lấy thông báo cụ thể từ backend nếu có
+      const backendMsg =
+        error?.error?.message ||
+        error?.message ||
+        'Unable to add product to cart. Please try again.';
+
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Failed',
+        detail: backendMsg,
+      });
+    }
   }
 
   private async loadAssets() {

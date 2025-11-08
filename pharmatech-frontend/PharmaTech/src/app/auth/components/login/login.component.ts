@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
 
   usernameError = '';
   passwordError = '';
-  
+
   constructor(
     private fb: FormBuilder,
     private accountService: AccountService,
@@ -54,7 +54,7 @@ export class LoginComponent implements OnInit {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required],
-      remember: [false]
+      remember: [false],
     });
   }
 
@@ -159,6 +159,10 @@ export class LoginComponent implements OnInit {
           'token',
           res.token || res.account.email || username
         );
+        // ✅ Lưu ID người dùng để giỏ hàng có thể dùng
+        if (res.account._id) {
+          localStorage.setItem('userId', res.account._id);
+        }
 
         // Ghi nhớ nếu cần
         if (remember) {

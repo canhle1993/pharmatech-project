@@ -20,5 +20,10 @@ import { ProductImageModule } from 'src/product-image/product-image.module';
   ],
   controllers: [ProductController],
   providers: [ProductService],
+  exports: [
+    MongooseModule.forFeature([
+      { name: Product.name, schema: ProductSchema }, // ✅ export chính xác model Product
+    ]),
+  ],
 })
 export class ProductModule {}

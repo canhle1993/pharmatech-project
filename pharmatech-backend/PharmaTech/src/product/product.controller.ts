@@ -68,6 +68,10 @@ export class ProductController {
         updated_by: body.updated_by || 'admin',
         photo: file ? file.filename : null,
 
+        /** ✅ Thêm quản lý tồn kho */
+        stock_quantity: body.stock_quantity ? Number(body.stock_quantity) : 0,
+        stock_status: body.stock_status || 'in_stock',
+
         /** ✅ parse category_ids (nếu frontend gửi chuỗi JSON) */
         category_ids:
           typeof body.category_ids === 'string'
@@ -87,7 +91,7 @@ export class ProductController {
     }
   }
 
-  /** ✅ Cập nhật Product (có thể đổi category_ids và ảnh mới) */
+  /** ✅ Cập nhật Product (có thể đổi category_ids, ảnh và tồn kho) */
   @Put('update')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -113,6 +117,10 @@ export class ProductController {
         price: body.price ? Number(body.price) : 0,
         updated_by: body.updated_by || 'admin',
         photo: file ? file.filename : null,
+
+        /** ✅ Thêm quản lý tồn kho */
+        stock_quantity: body.stock_quantity ? Number(body.stock_quantity) : 0,
+        stock_status: body.stock_status || 'in_stock',
 
         /** ✅ parse category_ids khi update */
         category_ids:

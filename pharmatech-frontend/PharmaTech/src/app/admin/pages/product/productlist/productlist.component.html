@@ -69,8 +69,8 @@
           <th field="model">Model</th>
           <th field="categories">Category</th>
           <!-- ✅ thêm field -->
-          <th field="updated_by">Updated By</th>
-          <th field="updated_at">Updated At</th>
+          <th field="price">Price</th>
+          <th field="stock_quantity">Stock Quantity</th>
           <th>Action</th>
         </tr>
       </ng-template>
@@ -96,8 +96,8 @@
             </ng-container>
             <ng-template #noCat>-</ng-template>
           </td>
-          <td>{{ product.updated_by || "-" }}</td>
-          <td>{{ product.updated_at || "-" }}</td>
+          <td>{{ product.price | currency : "USD" }}</td>
+          <td>{{ product.stock_quantity }}</td>
           <td>
             <button
               pButton

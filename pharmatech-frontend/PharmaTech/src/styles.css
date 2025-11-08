@@ -1,3 +1,7 @@
+/* Font Awesome */
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+@import "swiper/swiper-bundle.css";
+
 /* css cho icons */
 @import "primeicons/primeicons.css";
 @import "aos/dist/aos.css";

@@ -10,7 +10,7 @@ import { Product } from './product.decorator';
 import { ProductDTO } from './product.dto';
 import { plainToInstance } from 'class-transformer';
 import { ProductImage } from 'src/product-image/product-image.decorator';
-import { ProductCategoryService } from 'src/product-category/product-category.service'; // ✅ Thêm import
+import { ProductCategoryService } from 'src/product-category/product-category.service';
 
 @Injectable()
 export class ProductService {
@@ -19,14 +19,11 @@ export class ProductService {
     private _productModel: Model<Product>,
     @InjectModel(ProductImage.name)
     private _productImageModel: Model<ProductImage>,
-
-    /** ✅ Inject thêm ProductCategoryService để xử lý liên kết */
     private readonly productCategoryService: ProductCategoryService,
   ) {}
 
-  /** 🔹 Lấy 1 sản phẩm (kèm ảnh phụ + categories chuẩn ID thật) */
+  /** 🔹 Lấy 1 sản phẩm (kèm ảnh phụ + categories) */
   async findById(id: string): Promise<ProductDTO | null> {
-    // ✅ Lấy product gốc + populate category_ids (đúng bảng Category)
     const product = await this._productModel
       .findById(id)
       .populate({
@@ -38,25 +35,20 @@ export class ProductService {
 
     if (!product) return null;
 
-    // 🔸 Lấy ảnh phụ (nếu có bảng product-image)
     const images = await this._productImageModel
       .find({ product_id: id })
       .sort({ created_at: -1 })
       .exec();
 
-    // 🔸 Convert sang DTO
     const dto = plainToInstance(ProductDTO, product.toObject(), {
       excludeExtraneousValues: true,
     });
 
-    // ✅ Gán gallery + categories
     (dto as any).gallery = images.map((img) => img.url);
     (dto as any).categories = (product as any).category_ids.map((c: any) => ({
       id: c._id,
       name: c.name,
     }));
-
-    // ✅ Và quan trọng nhất: giữ lại category_ids là mảng ObjectId thật
     (dto as any).category_ids = (product as any).category_ids.map((c: any) =>
       c._id.toString(),
     );
@@ -64,7 +56,6 @@ export class ProductService {
     return dto;
   }
 
-  /** 🔹 Lấy tất cả (kèm category_ids) */
   /** 🔹 Lấy tất cả (kèm category_ids + categories) */
   async findAll(): Promise<ProductDTO[]> {
     const products = await this._productModel
@@ -72,26 +63,36 @@ export class ProductService {
       .sort({ created_at: -1 })
       .lean();
 
+    // Dùng đúng bảng trung gian để populate category
     const ProductCategoryModel = (this._productModel.db.models as any)[
       'ProductCategory'
     ];
     const CategoryModel = (this._productModel.db.models as any)['Category'];
 
     for (const p of products) {
+      // 🔹 Lấy tất cả category_id có trong bảng trung gian theo product_id
       const links = await ProductCategoryModel.find({
         product_id: p._id,
       }).lean();
-      const categoryIds = links.map((l: any) => l.category_id?.toString()); // ✅ convert sang string
 
-      const categories = await CategoryModel.find({
-        _id: { $in: categoryIds },
-      }).lean();
+      if (links.length > 0) {
+        const categoryIds = links.map((l: any) => l.category_id?.toString());
+        const categories = await CategoryModel.find({
+          _id: { $in: categoryIds },
+          is_delete: false,
+        })
+          .select('_id name')
+          .lean();
 
-      (p as any).category_ids = categoryIds; // ✅ thêm dòng này để frontend lọc được
-      (p as any).categories = categories.map((c: any) => ({
-        id: c._id.toString(),
-        name: c.name,
-      }));
+        (p as any).category_ids = categoryIds;
+        (p as any).categories = categories.map((c: any) => ({
+          id: c._id.toString(),
+          name: c.name,
+        }));
+      } else {
+        (p as any).category_ids = [];
+        (p as any).categories = [];
+      }
     }
 
     return products.map((p) =>
@@ -118,9 +119,12 @@ export class ProductService {
     );
   }
 
-  /** 🔹 Tạo Product mới (kèm category_ids) */
+  /** 🔹 Tạo Product mới (tự tính trạng thái tồn kho + thêm vào bảng product-category) */
   async create(productDTO: ProductDTO): Promise<Product> {
     try {
+      const stockQty = productDTO.stock_quantity ?? 0;
+      const stockStatus = stockQty > 0 ? 'in_stock' : 'out_of_stock';
+
       const product = new this._productModel({
         name: productDTO.name,
         model: productDTO.model,
@@ -129,7 +133,9 @@ export class ProductService {
         price: productDTO.price,
         introduce: productDTO.introduce,
         photo: productDTO.photo || null,
-        category_ids: productDTO.category_ids || [], // ✅ thêm
+        category_ids: productDTO.category_ids || [],
+        stock_quantity: stockQty,
+        stock_status: stockStatus,
         is_active: true,
         is_delete: false,
         updated_by: productDTO.updated_by || 'admin',
@@ -139,13 +145,14 @@ export class ProductService {
 
       const created = await product.save();
 
-      // ✅ Sau khi tạo product -> lưu liên kết vào bảng product_categories
+      /** ✅ Bước thêm bản ghi vào bảng product-categories */
       if (productDTO.category_ids && productDTO.category_ids.length > 0) {
         for (const cid of productDTO.category_ids) {
+          const catId = cid.toString?.() || cid; // đảm bảo là string
           await this.productCategoryService.add(
             created._id.toString(),
-            cid,
-            productDTO.updated_by,
+            catId,
+            productDTO.updated_by || 'admin',
           );
         }
       }
@@ -165,8 +172,8 @@ export class ProductService {
     }
   }
 
-  /** 🔹 Cập nhật Product (kèm cập nhật danh mục) */
-  async update(productDTO: ProductDTO): Promise<Product> {
+  /** 🔹 Cập nhật Product (tự động tính lại trạng thái tồn kho + cập nhật liên kết category) */
+  async update(productDTO: ProductDTO): Promise<ProductDTO> {
     try {
       const updateData: any = {
         name: productDTO.name,
@@ -179,9 +186,15 @@ export class ProductService {
         updated_at: new Date(),
       };
 
+      if (productDTO.stock_quantity !== undefined) {
+        updateData.stock_quantity = productDTO.stock_quantity;
+        updateData.stock_status =
+          productDTO.stock_quantity > 0 ? 'in_stock' : 'out_of_stock';
+      }
+
       if (productDTO.photo) updateData.photo = productDTO.photo;
       if (productDTO.category_ids)
-        updateData.category_ids = productDTO.category_ids; // ✅ thêm
+        updateData.category_ids = productDTO.category_ids;
 
       const updatedProduct = await this._productModel.findByIdAndUpdate(
         productDTO.id,
@@ -193,16 +206,16 @@ export class ProductService {
         throw new NotFoundException('Product not found');
       }
 
-      // ✅ Cập nhật lại liên kết product-category
-      if (productDTO.category_ids && productDTO.category_ids.length > 0) {
-        await this.productCategoryService.updateCategoryProducts(
-          productDTO.category_ids ? productDTO.category_ids[0] : '',
-          productDTO.category_ids,
-          productDTO.updated_by || 'admin',
-        );
-      }
+      const newCategoryIds = (productDTO.category_ids || []).map(
+        (c) => c.toString?.() || c,
+      );
+      await this.productCategoryService.updateCategoryProducts(
+        productDTO.id,
+        newCategoryIds,
+        productDTO.updated_by || 'admin',
+      );
 
-      return updatedProduct;
+      return await this.findById(productDTO.id);
     } catch (error) {
       if (error.code === 11000) {
         throw new HttpException(

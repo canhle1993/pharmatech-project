@@ -73,7 +73,7 @@
           </div>
 
           <div class="col">
-            <label>introduce</label>
+            <label>Introduce</label>
             <input
               pInputText
               formControlName="introduce"
@@ -88,6 +88,19 @@
               pInputText
               formControlName="price"
               placeholder="Enter price"
+              min="0"
+            />
+          </div>
+
+          <!-- 🏷️ Số lượng và trạng thái tồn kho -->
+          <div class="col">
+            <label>Stock Quantity</label>
+            <input
+              type="number"
+              pInputText
+              formControlName="stock_quantity"
+              placeholder="Enter stock quantity"
+              min="0"
             />
           </div>
 
@@ -146,6 +159,7 @@
       </div>
     </div>
   </form>
+
   <!-- 🔙 Quay lại -->
   <div class="button-group">
     <button

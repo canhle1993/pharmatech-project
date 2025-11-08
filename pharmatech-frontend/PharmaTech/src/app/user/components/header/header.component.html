@@ -66,6 +66,31 @@
                 <i class="lastudioicon-zoom-1"></i>
               </button>
             </li>
+            <li>
+              <button
+                class="action"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasWishlist"
+                [routerLink]="['/wishlist', user?._id]"
+              >
+                <i class="far fa-heart"></i>
+              </button>
+            </li>
+
+            <li>
+              <button
+                class="action"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasCart"
+              >
+                <i class="lastudioicon-shopping-cart-2"></i>
+                <span
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary"
+                >
+                  {{ cartCount }}
+                </span>
+              </button>
+            </li>
             <!-- Khi đã đăng nhập -->
             <li *ngIf="isLoggedIn" class="d-flex align-items-center gap-2">
               <a
@@ -133,33 +158,7 @@
               <a class="menu-item-link" [routerLink]="['/shop']"
                 ><span>Shop</span></a
               >
-              <ul class="sub-menu sub-menu-mega">
-                <li class="mega-menu-item">
-                  <ul>
-                    <li class="mega-menu-item-title">Categories</li>
-                    <li *ngFor="let cat of categories">
-                      <a
-                        class="sub-item-link"
-                        (click)="goToCategory(cat._id || cat.id)"
-                      >
-                        <span>{{ cat.name }}</span>
-                      </a>
-                    </li>
-                  </ul>
-                </li>
-                <li class="mega-menu-item banner-menu-content-wrap">
-                  <ul>
-                    <li>
-                      <a href="shop.html">
-                        <img
-                          src="assets/images/product/featured-product-01.png"
-                          alt="Shop"
-                        />
-                      </a>
-                    </li>
-                  </ul>
-                </li>
-              </ul>
+
               <ul class="sub-menu sub-menu-mega">
                 <li class="mega-menu-item">
                   <ul>
@@ -589,7 +588,7 @@
 </div>
 <!-- offcanvas Menu End -->
 
-<!-- Offcanvas Cart Start  -->
+<!-- 🧾 Offcanvas Cart Start -->
 <div class="offcanvas offcanvas-end offcanvas-cart" id="offcanvasCart">
   <div class="offcanvas-header">
     <h4 class="offcanvas-title">My Cart</h4>
@@ -597,156 +596,107 @@
       type="button"
       class="btn-close text-secondary"
       data-bs-dismiss="offcanvas"
+      aria-label="Close"
     >
       <i class="lastudioicon lastudioicon-e-remove"></i>
     </button>
   </div>
 
   <div class="offcanvas-body">
-    <!-- Offcanvas Cart Items Start  -->
-    <ul class="offcanvas-cart-items">
-      <li>
-        <!-- Mini Cart Item Start  -->
-        <div class="mini-cart-item">
-          <a href="#/" class="mini-cart-item__remove"
-            ><i class="lastudioicon lastudioicon-e-remove"></i
-          ></a>
-          <div class="mini-cart-item__thumbnail">
-            <a href="single-product.html"
-              ><img
+    <!-- Offcanvas Cart Items Start -->
+    <ul class="offcanvas-cart-items list-unstyled mb-0">
+      <!-- 🛍️ Mỗi sản phẩm trong giỏ -->
+      <li *ngFor="let item of cartItems" class="border-bottom py-3">
+        <div class="mini-cart-item d-flex align-items-center gap-3">
+          <!-- ❌ Nút xóa -->
+          <a
+            href="javascript:void(0)"
+            class="mini-cart-item__remove text-danger"
+            (click)="removeCartItem(item._id)"
+            title="Remove item"
+          >
+            <i class="lastudioicon lastudioicon-e-remove"></i>
+          </a>
+
+          <!-- 🖼️ Ảnh sản phẩm -->
+          <div class="mini-cart-item__thumbnail flex-shrink-0">
+            <a
+              [routerLink]="[
+                '/productDetails',
+                item.product_id?._id || item.product_id
+              ]"
+              title="{{ item.product_id?.name }}"
+            >
+              <img
+                [src]="
+                  item.product_id?.photo
+                    ? imageBase + item.product_id.photo
+                    : 'assets/images/no-image.jpg'
+                "
                 width="70"
-                height="88"
-                src="assets/images/mini-cart/cart-1.png"
-                alt="Cart"
-            /></a>
+                height="70"
+                class="rounded shadow-sm"
+                [alt]="item.product_id?.name || 'Product'"
+              />
+            </a>
           </div>
-          <div class="mini-cart-item__content">
-            <h6 class="mini-cart-item__title">
-              <a href="single-product.html">Macaron Cake</a>
+
+          <!-- 🏷️ Thông tin sản phẩm -->
+          <div class="mini-cart-item__content flex-grow-1">
+            <h6 class="mini-cart-item__title mb-1">
+              <a
+                [routerLink]="[
+                  '/productDetails',
+                  item.product_id?._id || item.product_id
+                ]"
+                class="text-dark text-decoration-none"
+              >
+                {{ item.product_id?.name || "Unnamed Product" }}
+              </a>
             </h6>
-            <span class="mini-cart-item__quantity">1 × $4.99</span>
+
+            <span class="mini-cart-item__quantity small text-muted">
+              {{ item.quantity }} ×
+              {{ item.price | currency : "USD" : "symbol" }}
+            </span>
           </div>
         </div>
-        <!-- Mini Cart Item End  -->
       </li>
-      <li>
-        <!-- Mini Cart Item Start  -->
-        <div class="mini-cart-item">
-          <a href="#/" class="mini-cart-item__remove"
-            ><i class="lastudioicon lastudioicon-e-remove"></i
-          ></a>
-          <div class="mini-cart-item__thumbnail">
-            <a href="single-product.html"
-              ><img
-                width="70"
-                height="88"
-                src="assets/images/mini-cart/cart-2.png"
-                alt="Cart"
-            /></a>
-          </div>
-          <div class="mini-cart-item__content">
-            <h6 class="mini-cart-item__title">
-              <a href="single-product.html">Cream Muffin</a>
-            </h6>
-            <span class="mini-cart-item__quantity">1 × $4.99</span>
-          </div>
-        </div>
-        <!-- Mini Cart Item End  -->
-      </li>
-      <li>
-        <!-- Mini Cart Item Start  -->
-        <div class="mini-cart-item">
-          <a href="#/" class="mini-cart-item__remove"
-            ><i class="lastudioicon lastudioicon-e-remove"></i
-          ></a>
-          <div class="mini-cart-item__thumbnail">
-            <a href="single-product.html"
-              ><img
-                width="70"
-                height="88"
-                src="assets/images/mini-cart/cart-3.png"
-                alt="Cart"
-            /></a>
-          </div>
-          <div class="mini-cart-item__content">
-            <h6 class="mini-cart-item__title">
-              <a href="single-product.html">Brownie</a>
-            </h6>
-            <span class="mini-cart-item__quantity">1 × $4.99</span>
-          </div>
-        </div>
-        <!-- Mini Cart Item End  -->
-      </li>
-      <li>
-        <!-- Mini Cart Item Start  -->
-        <div class="mini-cart-item">
-          <a href="#/" class="mini-cart-item__remove"
-            ><i class="lastudioicon lastudioicon-e-remove"></i
-          ></a>
-          <div class="mini-cart-item__thumbnail">
-            <a href="single-product.html"
-              ><img
-                width="70"
-                height="88"
-                src="assets/images/mini-cart/cart-4.png"
-                alt="Cart"
-            /></a>
-          </div>
-          <div class="mini-cart-item__content">
-            <h6 class="mini-cart-item__title">
-              <a href="single-product.html">Chocolate Muffin</a>
-            </h6>
-            <span class="mini-cart-item__quantity">1 × $4.99</span>
-          </div>
-        </div>
-        <!-- Mini Cart Item End  -->
-      </li>
-      <li>
-        <!-- Mini Cart Item Start  -->
-        <div class="mini-cart-item">
-          <a href="#/" class="mini-cart-item__remove"
-            ><i class="lastudioicon lastudioicon-e-remove"></i
-          ></a>
-          <div class="mini-cart-item__thumbnail">
-            <a href="single-product.html"
-              ><img
-                width="70"
-                height="88"
-                src="assets/images/mini-cart/cart-5.png"
-                alt="Cart"
-            /></a>
-          </div>
-          <div class="mini-cart-item__content">
-            <h6 class="mini-cart-item__title">
-              <a href="single-product.html">No-bake chocolate</a>
-            </h6>
-            <span class="mini-cart-item__quantity">1 × $4.99</span>
-          </div>
-        </div>
-        <!-- Mini Cart Item End  -->
+
+      <!-- 🪣 Nếu giỏ hàng trống -->
+      <li *ngIf="cartItems.length === 0" class="text-center py-4">
+        <span class="text-muted">Your cart is empty.</span>
       </li>
     </ul>
-    <!-- Offcanvas Cart Items End  -->
+    <!-- Offcanvas Cart Items End -->
   </div>
 
-  <div class="offcanvas-footer d-flex flex-column gap-4">
-    <!-- Mini Cart Total End  -->
-    <div class="mini-cart-totla">
-      <span class="label">Subtotal:</span>
-      <span class="value">$24.95</span>
+  <!-- 📦 Footer tổng tiền -->
+  <div class="offcanvas-footer d-flex flex-column gap-3 border-top pt-3">
+    <div class="mini-cart-totla d-flex justify-content-between">
+      <span class="label fw-semibold">Subtotal:</span>
+      <span class="value fw-bold">
+        {{ cartTotal | currency : "USD" }}
+      </span>
     </div>
-    <!-- Mini Cart Total End  -->
 
-    <!-- Mini Cart Button End  -->
-    <div class="mini-cart-btn d-flex flex-column gap-2">
-      <a class="d-block btn btn-secondary btn-hover-primary" href="#"
-        >View cart</a
+    <!-- 🛒 Nút điều hướng -->
+    <div class="mini-cart-btn d-flex flex-column gap-2 mt-2">
+      <a
+        class="btn btn-dark btn-hover-primary w-100"
+        [routerLink]="['/cart', user?._id]"
+        (click)="closeCartOffcanvas()"
       >
-      <a class="d-block btn btn-secondary btn-hover-primary" href="#"
-        >Checkout</a
+        View cart
+      </a>
+
+      <a
+        class="btn btn-outline-dark btn-hover-primary w-100"
+        routerLink="/checkout"
       >
+        Checkout
+      </a>
     </div>
-    <!-- Mini Cart Button End  -->
   </div>
 </div>
 <!-- Offcanvas Cart End -->

@@ -34,6 +34,17 @@ export class Product {
   @Prop({ type: [MongooseSchema.Types.ObjectId], ref: 'Category', default: [] })
   category_ids?: string[];
 
+  /** 🏷️ Quản lý tồn kho */
+  @Prop({ type: Number, default: 0 })
+  stock_quantity?: number; // Số lượng hàng trong kho
+
+  @Prop({
+    type: String,
+    default: 'in_stock',
+    enum: ['in_stock', 'out_of_stock', 'preorder'],
+  })
+  stock_status?: string; // Trạng thái tồn kho (còn hàng / hết hàng / đặt trước)
+
   @Prop({ default: true })
   is_active: boolean; // Hiển thị hay không
 

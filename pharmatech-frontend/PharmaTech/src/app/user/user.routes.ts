@@ -8,6 +8,8 @@ import { CareerDetailsComponent } from './pages/careerDetails/careerDetails.comp
 import { ProductDetailsComponent } from './pages/productDetails/productDetails.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { ContactUserComponent } from './pages/contact/contact_user.component';
+import { CartComponent } from './pages/cart/cart.component';
+import { WishlistComponent } from './pages/wishlist/wishlist.component';
 
 export const userRoutes: Routes = [
   {
@@ -21,8 +23,10 @@ export const userRoutes: Routes = [
       { path: 'shop', component: ShopComponent },
       { path: 'career', component: CareerComponent },
       { path: 'careerDetails/:id', component: CareerDetailsComponent },
-      { path: 'productDetails', component: ProductDetailsComponent },
+      { path: 'productDetails/:id', component: ProductDetailsComponent },
       { path: 'profile/:id', component: ProfileComponent },
+      { path: 'cart/:id', component: CartComponent },
+      { path: 'wishlist/:id', component: WishlistComponent },
     ],
   },
 ];

@@ -15,6 +15,7 @@
   </div>
 </div>
 <!-- Breadcrumb Section End -->
+<p-toast position="top-left"></p-toast>
 
 <!-- Product Section Start -->
 <div class="shop-product-section sidebar-left overflow-hidden">
@@ -87,35 +88,24 @@
                   </li>
                   <li class="product-item__meta-action">
                     <a
-                      class="shadow-1 labtn-icon-cart"
-                      href="#/"
+                      class="labtn-icon-cart"
+                      href="javascript:void(0)"
+                      (click)="addToCart(product)"
                       data-bs-tooltip="tooltip"
                       data-bs-placement="top"
-                      title="Add to Cart"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCart"
+                      title="Add to cart"
+                      aria-label="Add to cart"
                     ></a>
                   </li>
                   <li class="product-item__meta-action">
                     <a
-                      class="shadow-1 labtn-icon-wishlist"
-                      href="#/"
+                      class="labtn-icon-wishlist"
+                      href="javascript:void(0)"
+                      (click)="addToWishlist(product)"
                       data-bs-tooltip="tooltip"
                       data-bs-placement="top"
                       title="Add to wishlist"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalWishlist"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="shadow-1 labtn-icon-compare"
-                      href="#/"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title="Add to compare"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCompare"
+                      aria-label="Add to wishlist"
                     ></a>
                   </li>
                 </ul>
@@ -126,9 +116,7 @@
                     product.name
                   }}</a>
                 </h5>
-                <span class="product-item__price">
-                  {{product.model}}
-                </span>
+                <span class="product-item__price">${{ product.price }}</span>
               </div>
             </div>
           </div>
