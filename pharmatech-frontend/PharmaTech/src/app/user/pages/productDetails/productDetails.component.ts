@@ -1,7 +1,12 @@
-import { Component, OnInit, Renderer2, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  ViewEncapsulation,
+  Renderer2,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-
+import { ActivatedRoute } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
@@ -14,12 +19,19 @@ import { ProductService } from '../../../services/product.service';
 import { WishlistService } from '../../../services/wishlist.service';
 import { CartStateService } from '../../../services/cart-state.service';
 import { CartService } from '../../../services/cart.service';
+import Swiper from 'swiper';
+import { Navigation, Thumbs } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/thumbs';
 
 @Component({
   selector: 'app-product-details',
   standalone: true,
   templateUrl: './productDetails.component.html',
   styleUrls: ['./productDetails.component.css'],
+  encapsulation: ViewEncapsulation.None, // ✅ quan trọng để Swiper CSS hoạt động
+
   imports: [
     CommonModule,
     CardModule,
@@ -47,10 +59,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
 
   async ngOnInit() {
     const userId = localStorage.getItem('userId');
-    if (userId) {
-      // ✅ Load lại giỏ hàng từ DB để đồng bộ state (fix lỗi F5 mất state)
-      await this.cartState.loadUserCart(userId);
-    }
+    if (userId) await this.cartState.loadUserCart(userId);
 
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) return;
@@ -59,13 +68,11 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
       const res: any = await this.productService.findById(id);
       this.product = res;
 
-      // ✅ Ghép đường dẫn đầy đủ cho ảnh chính
+      // ✅ nối path ảnh
       if (this.product.photo && !this.product.photo.startsWith('http')) {
         this.product.photo = `${this.imageBase}${this.product.photo}`;
       }
-
-      // ✅ Ghép đường dẫn đầy đủ cho gallery
-      if (this.product.gallery && this.product.gallery.length > 0) {
+      if (this.product.gallery?.length) {
         this.product.gallery = this.product.gallery.map((img: string) =>
           img.startsWith('http') ? img : `${this.imageBase}${img}`
         );
@@ -81,6 +88,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
       this.loading = false;
     }
   }
+
   async addToWishlist(product: any) {
     const userId = localStorage.getItem('userId');
     if (!userId) {
@@ -193,51 +201,36 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    // --- CSS ---
-    const cssFiles = [
-      'assets/css/vendor/bootstrap.min.css',
-      'assets/css/vendor/lastudioicons.css',
-      'assets/css/vendor/dliconoutline.css',
-      'assets/css/animate.min.css',
-      'assets/css/swiper-bundle.min.css',
-      'assets/css/ion.rangeSlider.min.css',
-      'assets/css/lightgallery-bundle.min.css',
-      'assets/css/magnific-popup.css',
-      'assets/css/style.css',
-    ];
-    cssFiles.forEach((href) => {
-      const link = this.renderer.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = href;
-      this.renderer.appendChild(document.head, link);
-    });
+    setTimeout(() => {
+      Swiper.use([Navigation, Thumbs]);
 
-    const fontLink = this.renderer.createElement('link');
-    fontLink.rel = 'stylesheet';
-    fontLink.href =
-      'https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap';
-    this.renderer.appendChild(document.head, fontLink);
+      // ✅ Thumb swiper
+      const thumbs = new Swiper('#thumb-swiper', {
+        direction: 'vertical',
+        slidesPerView: 4,
+        spaceBetween: 10,
+        watchSlidesProgress: true,
+        slideToClickedSlide: true,
+        observer: true,
+        observeParents: true,
+        loop: true, // 🔹 tắt lặp
+      });
 
-    // --- JS ---
-    const jsFiles = [
-      'assets/js/vendor/modernizr-3.11.7.min.js',
-      'assets/js/vendor/jquery-migrate-3.3.2.min.js',
-      'assets/js/countdown.min.js',
-      'assets/js/ajax.js',
-      'assets/js/jquery.validate.min.js',
-      'assets/js/vendor/jquery-3.6.0.min.js',
-      'assets/js/vendor/bootstrap.bundle.min.js',
-      'assets/js/swiper-bundle.min.js',
-      'assets/js/ion.rangeSlider.min.js',
-      'assets/js/lightgallery.min.js',
-      'assets/js/jquery.magnific-popup.min.js',
-      'assets/js/main.js',
-    ];
-    jsFiles.forEach((src) => {
-      const script = this.renderer.createElement('script');
-      script.src = src;
-      script.type = 'text/javascript';
-      this.renderer.appendChild(document.body, script);
-    });
+      // ✅ Main swiper
+      const main = new Swiper('#main-swiper', {
+        spaceBetween: 10,
+        slidesPerView: 1,
+        navigation: {
+          nextEl: '#main-swiper .swiper-button-next',
+          prevEl: '#main-swiper .swiper-button-prev',
+        },
+        thumbs: { swiper: thumbs },
+        observer: true,
+        observeParents: true,
+        loop: true, // 🔹 tắt lặp
+      });
+
+      console.log('✅ Swiper initialized successfully inside Angular!');
+    }, 800);
   }
 }

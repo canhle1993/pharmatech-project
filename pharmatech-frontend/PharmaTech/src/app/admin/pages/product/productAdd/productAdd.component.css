@@ -102,3 +102,59 @@ label {
   justify-content: flex-end;
   margin-top: 1.5rem;
 }
+.ql-editor table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.ql-editor th,
+.ql-editor td {
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+}
+
+.ql-editor th {
+  background-color: #f9fafb;
+  font-weight: 600;
+}
+/* 🎨 Style cho bảng trong Quill Editor */
+::ng-deep .ql-editor table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #cbd5e1;
+  margin-top: 10px;
+}
+
+::ng-deep .ql-editor th,
+::ng-deep .ql-editor td {
+  border: 1px solid #cbd5e1;
+  padding: 8px 10px;
+  text-align: center;
+  font-size: 14px;
+}
+
+::ng-deep .ql-editor th {
+  background-color: #f1f5f9;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+::ng-deep .ql-editor tr:nth-child(even) td {
+  background-color: #f9fafb;
+}
+
+/* 🎯 Tùy chỉnh khung toolbar */
+::ng-deep .ql-toolbar {
+  border-radius: 8px 8px 0 0;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 8px;
+}
+
+/* 🎯 Khung editor */
+::ng-deep .ql-container {
+  border-radius: 0 0 8px 8px;
+  border: 1px solid #e2e8f0;
+  min-height: 250px;
+  background-color: #ffffff;
+}

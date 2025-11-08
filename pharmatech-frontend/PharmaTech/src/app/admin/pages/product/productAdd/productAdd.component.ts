@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -19,10 +19,14 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { EditorModule } from 'primeng/editor';
-
+import Quill from 'quill';
+import QuillBetterTable from 'quill-better-table';
+Quill.register({ 'modules/better-table': QuillBetterTable }, true);
 @Component({
   selector: 'app-product-add',
   standalone: true,
+  encapsulation: ViewEncapsulation.None, // 👈 thêm dòng này
+
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -82,6 +86,28 @@ export class ProductAddComponent implements OnInit {
       console.error('❌ Load categories failed:', error);
     }
   }
+  // sau dòng Quill.register(...)
+  editorModules = {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],
+      ['link'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      ['clean'],
+      ['table'], // thêm nút Table
+    ],
+    'better-table': {
+      operationMenu: {
+        items: {
+          insertColumnRight: true,
+          insertColumnLeft: true,
+          insertRowUp: true,
+          insertRowDown: true,
+          deleteColumn: true,
+          deleteRow: true,
+        },
+      },
+    },
+  };
 
   /** 📸 Ảnh chính */
   onMainFileSelected(event: any) {

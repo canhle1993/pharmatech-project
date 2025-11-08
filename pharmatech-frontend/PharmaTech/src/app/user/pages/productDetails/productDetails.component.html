@@ -27,9 +27,12 @@
       <div class="col-lg-6 offset-lg-0 col-md-10 offset-md-1">
         <!-- Product Details Image Start -->
         <div class="product-details-img d-flex overflow-hidden flex-row">
-          <!-- ✅ Single Product Image Start -->
-          <div class="single-product-vertical-tab swiper order-2">
-            <div class="swiper-wrapper popup-gallery" id="popup-gallery">
+          <!-- ✅ Main Image Swiper -->
+          <div
+            id="main-swiper"
+            class="single-product-vertical-tab swiper order-2"
+          >
+            <div class="swiper-wrapper popup-gallery">
               <div class="swiper-slide h-auto">
                 <img
                   class="w-100"
@@ -43,30 +46,34 @@
                 class="swiper-slide h-auto"
                 *ngFor="let img of product?.gallery"
               >
-                <img class="w-100" [src]="img" alt="Gallery" />
+                <img
+                  class="w-100"
+                  [src]="img"
+                  alt="Gallery"
+                  style="height: 450px !important"
+                />
               </div>
             </div>
 
-            <!-- ✅ Swiper navigation -->
-            <div class="swiper-button-next">
-              <i class="lastudioicon-arrow-right"></i>
-            </div>
-            <div class="swiper-button-prev">
-              <i class="lastudioicon-arrow-left"></i>
-            </div>
-          </div>
-          <!-- Single Product Image End -->
+            <!-- ✅ Navigation -->
 
-          <!-- ✅ Single Product Thumb Start -->
-          <div class="product-thumb-vertical overflow-hidden swiper order-1">
+            <div class="swiper-button-vertical-next swiper-button-next"></div>
+            <div class="swiper-button-vertical-prev swiper-button-prev"></div>
+          </div>
+
+          <!-- ✅ Thumbnail Swiper -->
+          <div
+            id="thumb-swiper"
+            class="product-thumb-vertical swiper overflow-hidden order-1"
+          >
             <div class="swiper-wrapper">
               <div class="swiper-slide" *ngFor="let img of product?.gallery">
                 <img [src]="img" alt="Thumb" />
               </div>
             </div>
           </div>
-          <!-- Single Product Thumb End -->
         </div>
+
         <!-- Product Details Image End -->
       </div>
       <div class="col-lg-6">

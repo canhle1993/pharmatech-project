@@ -1,0 +1,42 @@
+/* ✅ Ẩn hoàn toàn mũi tên mặc định của Swiper */
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  content: none !important; /* <-- dòng này mới ẩn thật */
+  display: none !important;
+  background: none !important;
+  mask: none !important;
+  -webkit-mask: none !important;
+}
+
+/* ✅ Canh icon custom */
+.swiper-button-next i,
+.swiper-button-prev i {
+  font-size: 20px !important;
+  color: #444 !important;
+  transition: color 0.2s ease-in-out;
+}
+
+/* ✅ Hover đổi màu nhẹ */
+.swiper-button-next:hover i,
+.swiper-button-prev:hover i {
+  color: #007bff !important;
+}
+
+/* ✅ Giới hạn vùng click và căn giữa theo chiều dọc */
+.swiper-button-next,
+.swiper-button-prev {
+  width: 30px !important;
+  height: 30px !important;
+  background: transparent !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  box-shadow: none !important;
+}
+
+/* ✅ Đặt vị trí sát mép ảnh */
+.swiper-button-prev {
+  left: 5px !important;
+}
+.swiper-button-next {
+  right: 5px !important;
+}
