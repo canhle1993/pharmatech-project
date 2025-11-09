@@ -1,0 +1,109 @@
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+
+@Schema({ timestamps: true })
+export class Order extends Document {
+  // 🧍 ID người dùng (liên kết với bảng Account)
+  @Prop({ required: true })
+  user_id: string;
+
+  // 💰 Tổng giá trị đơn hàng (tính theo tất cả sản phẩm)
+  @Prop({ required: true })
+  total_amount: number;
+
+  // 💵 Phần trăm đặt cọc (ví dụ: 5, 30, 50)
+  @Prop({ required: true })
+  deposit_percent: number;
+
+  // 💳 Số tiền người dùng đã đặt cọc qua PayPal
+  @Prop({ required: true })
+  deposit_amount: number;
+
+  // 💰 Số tiền còn lại phải thanh toán (sau khi cọc)
+  @Prop({ default: 0 })
+  remaining_payment_amount: number;
+
+  // 🏦 Phương thức thanh toán phần còn lại (Bank, Cash,...)
+  @Prop()
+  remaining_payment_method?: string;
+
+  // 📅 Ngày user thanh toán phần còn lại
+  @Prop()
+  remaining_payment_date?: Date;
+
+  // 📝 Ghi chú thêm khi admin xác nhận thanh toán còn lại
+  @Prop()
+  remaining_payment_note?: string;
+
+  // 📎 Link ảnh biên lai chuyển khoản (nếu có)
+  @Prop()
+  payment_proof_url?: string;
+
+  // 💳 Mã order PayPal (ID do PayPal cấp)
+  @Prop()
+  paypal_order_id?: string;
+
+  // 🧾 Mã thanh toán (capture_id) do PayPal trả về
+  @Prop()
+  payment_id?: string;
+
+  // 💸 Mã hoàn tiền (refund_id) nếu có hoàn lại
+  @Prop()
+  refund_id?: string;
+
+  // 💳 Hình thức thanh toán chính (PayPal, Momo, Bank Transfer,…)
+  @Prop()
+  payment_method?: string;
+
+  // 📦 Trạng thái tổng thể của đơn hàng
+  @Prop({ default: 'Pending' })
+  status: string;
+  /*
+    Pending          - Chưa thanh toán
+    Deposit Paid     - Đã đặt cọc
+    Paid in Full     - Đã thanh toán toàn bộ
+    Cancelled        - Đã huỷ
+    Refunded         - Đã hoàn tiền
+    Completed        - Hoàn tất giao hàng
+  */
+
+  // 🧾 Trạng thái phê duyệt của admin
+  @Prop({ default: 'Pending Approval' })
+  approval_status: string;
+  /*
+    Pending Approval - Chờ admin duyệt
+    Approved         - Đã duyệt
+    Rejected         - Bị từ chối
+  */
+
+  // 🔁 Trạng thái hoàn tiền (nếu có)
+  @Prop({ default: 'None' })
+  refund_status: string;
+  /*
+    None             - Không hoàn tiền
+    Deposit Lost     - Mất cọc
+    Deposit Refunded - Đã hoàn cọc
+  */
+
+  // 🕓 Thời gian thanh toán full (cọc + còn lại)
+  @Prop()
+  paid_at?: Date;
+
+  // 🕓 Thời gian huỷ đơn
+  @Prop()
+  cancelled_at?: Date;
+
+  // 📄 Lý do huỷ đơn
+  @Prop()
+  cancel_reason?: string;
+
+  // 🕓 Thời gian hoàn tiền (nếu có)
+  @Prop()
+  refund_time?: Date;
+
+  // 📦 Gộp tóm tắt danh sách sản phẩm (optional)
+  @Prop({ type: Array })
+  items?: any[];
+}
+
+export const OrderSchema = SchemaFactory.createForClass(Order);

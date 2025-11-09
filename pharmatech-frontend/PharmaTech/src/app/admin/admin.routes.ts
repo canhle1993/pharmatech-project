@@ -27,6 +27,7 @@ import { ProductEditComponent } from './pages/product/productEdit/productEdit.co
 import { HomeCategoryComponent } from './pages/settings/homeCategory/homeCategory.component';
 import { JobFormComponent } from './pages/career/job-posting/job-form/job-form.component';
 import { JobPostingComponent } from './pages/career/job-posting/job-posting.component';
+import { DepositSettingListComponent } from './pages/settings/depositSettingList/depositSettingList.component';
 
 export const adminRoutes: Routes = [
   {
@@ -51,6 +52,7 @@ export const adminRoutes: Routes = [
       { path: 'banner', component: BannerComponent },
       { path: 'settings/hotline', component: HotlineInfoComponent },
       { path: 'settings/homecategory', component: HomeCategoryComponent },
+      { path: 'settings/deposit', component: DepositSettingListComponent },
 
       { path: 'recycle/user', component: RecycleAccountComponent },
       { path: 'recycle/category', component: RecycleCategoryComponent },

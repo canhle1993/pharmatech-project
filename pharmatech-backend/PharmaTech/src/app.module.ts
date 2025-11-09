@@ -19,6 +19,9 @@ import { ChatModule } from './chat/chat.module';
 import { HomeCategoryModule } from './settingHomeCategory/homeCategory.module';
 import { CartModule } from './cart/cart.module';
 import { WishlistModule } from './wishlist/wishlist.module';
+import { OrderDetailsModule } from './order-details/order-details.module';
+import { OrderModule } from './order/order.module';
+import { DepositSettingModule } from './deposit-setting/deposit-setting.module';
 
 @Module({
   imports: [
@@ -71,6 +74,9 @@ import { WishlistModule } from './wishlist/wishlist.module';
     HomeCategoryModule,
     CartModule,
     WishlistModule,
+    DepositSettingModule,
+    OrderModule,
+    OrderDetailsModule,
   ],
   controllers: [],
   providers: [],

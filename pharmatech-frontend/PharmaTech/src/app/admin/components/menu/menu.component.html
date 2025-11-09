@@ -133,7 +133,16 @@
           [routerLinkActiveOptions]="{ exact: true }"
         >
           <a [routerLink]="['/admin/settings/homecategory']" class="menu-link">
-            <div data-i18n="Hotline Info">Home Category</div>
+            <div data-i18n="Home Category">Home Category</div>
+          </a>
+        </li>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a [routerLink]="['/admin/settings/deposit']" class="menu-link">
+            <div data-i18n="Deposit">Deposit</div>
           </a>
         </li>
       </ul>
