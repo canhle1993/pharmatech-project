@@ -12,10 +12,10 @@ import { ButtonModule } from 'primeng/button';
 import { Subscription } from 'rxjs';
 
 import { AccountService } from '../../../../services/account.service';
-import { ChatService } from '../../../../services/chat.service';
+import { ChatService, InboxItem } from '../../../../services/chat.service';
 
 interface ChatMessage {
-  fromRole: string;      // "user", "admin", hoặc id admin (luôn là string)
+  fromRole: 'user' | 'admin';
   text: string;
   createdAt?: string | Date;
 }
@@ -25,9 +25,9 @@ interface Account {
   _id?: string;
   username?: string;
   email?: string;
-  full_name?: string;
+  name?: string;          // ✅ chỉ có name
   is_active?: boolean;
-  [key: string]: any;
+  [k: string]: any;
 }
 
 @Component({
@@ -38,23 +38,17 @@ interface Account {
   styleUrls: ['./chat.component.css'],
 })
 export class ChatComponent implements OnInit, OnDestroy {
-  // -------- STATE: USERS ----------
-  users: Account[] = [];
-  filtered: Account[] = [];
+  inbox: InboxItem[] = [];
+  filtered: InboxItem[] = [];
   q = '';
 
-  // -------- STATE: CURRENT THREAD ----------
-  currentUser?: Account;
   currentUserId = '';
-
-  // -------- STATE: CHAT ----------
-  msg = '';
   history: ChatMessage[] = [];
+  msg = '';
 
-  // unread counter cho từng userId (>=1 là chưa đọc)
-  private unread: Record<string, number> = {};
-
-  private sub?: Subscription;
+  private accountsMap: Record<string, Account> = {};
+  private subMsg?: Subscription;
+  private subInbox?: Subscription;
 
   @ViewChild('chatBoxRef') chatBoxRef!: ElementRef<HTMLDivElement>;
 
@@ -64,198 +58,148 @@ export class ChatComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef
   ) {}
 
-  // ================== INIT / DESTROY ==================
   async ngOnInit() {
-    await this.loadUsers();
+    await this.loadAccountsMap();
 
-    // Nghe tin nhắn realtime
-    this.sub = this.chat.onMessage().subscribe((m: any) => {
-      // m = { userId, fromRole, msg, createdAt }
+    try {
+      this.inbox = await this.chat.loadInbox(50);
+      for (const t of this.inbox) this.ensureSnapshot(t);
+    } catch {
+      this.inbox = [];
+    }
+    this.filtered = [...this.inbox];
 
-      // Nếu đang mở đúng thread => thêm vào lịch sử
-      if (this.currentUserId && m.userId === this.currentUserId) {
-        this.history.push({
-          fromRole: String(m.fromRole ?? ''),
-          text: String(m.msg ?? ''),
-          createdAt: m.createdAt,
-        });
-        this.cdr.detectChanges();
-        this.scrollToBottom();
-        return;
-      }
+    this.subInbox = this.chat.onInboxUpsert().subscribe((row) => {
+      this.ensureSnapshot(row);
+      this.upsertInboxRow(row);
+      this.cdr.detectChanges();
+    });
 
-      // Nếu là user khác: đánh dấu unread + đẩy user lên đầu danh sách
-      const uid = String(m?.userId ?? '');
-      if (uid) {
-        // tăng số lượng chưa đọc
-        this.unread[uid] = (this.unread[uid] ?? 0) + 1;
-
-        // đẩy user lên đầu users
-        this.bumpUserToTop(uid);
-
-        // nếu user chưa có trong users (hiếm), thêm entry mỏng
-        if (!this.users.some((u) => this.getUserId(u) === uid)) {
-          this.users.unshift({ _id: uid, username: uid } as Account);
-        }
-
-        // cập nhật filtered theo search + ưu tiên unread
-        this.applySearchOrdering();
-        this.cdr.detectChanges();
-      }
+    this.subMsg = this.chat.onMessage().subscribe((m: any) => {
+      if (!this.currentUserId || m.userId !== this.currentUserId) return;
+      this.history.push({
+        fromRole: m.fromRole === 'user' ? 'user' : 'admin',
+        text: String(m.msg ?? ''),
+        createdAt: m.createdAt,
+      });
+      this.cdr.detectChanges();
+      this.scrollToBottom();
     });
   }
 
   ngOnDestroy() {
-    this.sub?.unsubscribe();
+    this.subMsg?.unsubscribe();
+    this.subInbox?.unsubscribe();
   }
 
-  // ================== USERS ==================
-  private async loadUsers() {
+  private async loadAccountsMap() {
     try {
       const res: any = await this.accounts.findAll();
       const list: Account[] = Array.isArray(res) ? res : res?.data ?? [];
-      this.users = [...list];
-      this.filtered = [...list];
-    } catch (e) {
-      console.error('Load users failed:', e);
-      this.users = [];
-      this.filtered = [];
+      this.accountsMap = {};
+      for (const a of list) {
+        const id = (a.id as string) || (a._id as string) || '';
+        if (id) this.accountsMap[id] = a;
+      }
+    } catch {
+      this.accountsMap = {};
     }
+  }
+
+  private ensureSnapshot(row: InboxItem) {
+    if (row?.userSnapshot) return;
+    const a = this.accountsMap[row.userId];
+    if (a) {
+      row.userSnapshot = {
+        name: a.name,
+        username: a.username,
+        email: a.email,
+        is_active: a.is_active,
+      };
+    }
+  }
+
+  private upsertInboxRow(row: InboxItem) {
+    const i = this.inbox.findIndex(x => x.userId === row.userId);
+    if (i >= 0) this.inbox.splice(i, 1);
+    this.inbox.unshift(row);
+    this.applySearchOrdering();
   }
 
   onSearch() {
     const k = this.q.trim().toLowerCase();
-    if (!k) {
-      // không filter => dùng ordering hiện tại của users
-      this.filtered = [...this.users];
-      return;
-    }
+    if (!k) { this.filtered = [...this.inbox]; return; }
 
-    const result = this.users.filter((u) => {
+    const result = this.inbox.filter((t) => {
       const s = [
-        u.full_name,
-        u.username,
-        u.email,
-        (u.id ?? u._id ?? '').toString(),
-      ]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase();
+        t.userSnapshot?.name,
+        t.userSnapshot?.username,
+        t.userSnapshot?.email,
+        t.userId
+      ].filter(Boolean).join(' ').toLowerCase();
       return s.includes(k);
     });
 
-    // ưu tiên user unread trước
     result.sort((a, b) => {
-      const ua = (this.unread[this.getUserId(a)] ?? 0) > 0 ? 1 : 0;
-      const ub = (this.unread[this.getUserId(b)] ?? 0) > 0 ? 1 : 0;
+      const ua = (a.unreadCount ?? 0) > 0 ? 1 : 0;
+      const ub = (b.unreadCount ?? 0) > 0 ? 1 : 0;
       return ub - ua;
     });
 
     this.filtered = result;
   }
 
-  /** Giữ filtered theo search hiện tại + ưu tiên unread lên trước */
   private applySearchOrdering() {
     const k = this.q.trim().toLowerCase();
-    if (!k) {
-      this.filtered = [...this.users];
-    } else {
-      this.onSearch();
-    }
+    if (!k) this.filtered = [...this.inbox];
+    else this.onSearch();
   }
 
-  /** Đưa userId lên đầu mảng users */
-  private bumpUserToTop(userId: string) {
-    const idx = this.users.findIndex((u) => this.getUserId(u) === userId);
-    if (idx > 0) {
-      const [u] = this.users.splice(idx, 1);
-      this.users.unshift(u);
-    }
-  }
+  async openThreadByUserId(userId: string) {
+    this.currentUserId = userId;
 
-  isUnread(uid: string): boolean {
-    return (this.unread[uid] ?? 0) > 0;
-  }
-
-  // ================== THREAD ==================
-  async openThread(u: Account) {
-    const uid = this.getUserId(u);
-    if (!uid) return;
-
-    this.currentUser = u;
-    this.currentUserId = uid;
-
-    // Mở thread => clear unread
-    if (this.unread[uid]) {
-      delete this.unread[uid];
-      this.cdr.detectChanges();
-    }
-
-    // Tham gia phòng + load lịch sử
-    await this.chat.joinThread(uid);
-    const raw = await this.chat.loadThread(uid, 100); // giả định trả về mảng newest->oldest
-
+    await this.chat.joinThread(userId);
+    const raw = await this.chat.loadThread(userId, 100);
     const ordered = Array.isArray(raw) ? [...raw].reverse() : [];
     this.history = ordered.map((h: any) => ({
-      fromRole: String(h.fromRole ?? ''),
+      fromRole: String(h.fromRole) === 'user' ? 'user' : 'admin',
       text: String(h.msg ?? ''),
       createdAt: h.createdAt,
     }));
 
-    // đảm bảo user đang mở đứng đầu nếu cần
-    this.bumpUserToTop(uid);
-    this.applySearchOrdering();
-
     this.cdr.detectChanges();
     this.scrollToBottom();
+
+    try { await this.chat.markInboxRead(userId); } catch {}
   }
 
-  // ================== SEND ==================
   async send() {
     const text = this.msg.trim();
     if (!text || !this.currentUserId) return;
-
-    // Lấy adminId (giữ theo logic hiện có của bạn)
-    const token = localStorage.getItem('token');
-    const admin = (await this.accounts.findByEmail(token)) as Account;
-    const adminId = admin?._id || admin?.id;
-
-    console.log('Send message:', { to: this.currentUserId, from: adminId, text });
-
-    await this.chat.sendMessage(this.currentUserId, adminId, text);
-
+    await this.chat.sendMessage(this.currentUserId, 'admin', text);
     this.msg = '';
     this.cdr.detectChanges();
     this.scrollToBottom();
   }
 
-  // ================== UI HELPERS ==================
-  displayName(u: Account) {
-    return u.full_name || u.username || u.email || this.getUserId(u);
+  // ===== DISPLAY HELPERS =====
+  displayNameFromInbox(t: InboxItem) {
+    return t?.userSnapshot?.name
+        || t?.userSnapshot?.username
+        || t?.userSnapshot?.email
+        || t?.userId;
   }
 
-  displayId(u: Account) {
-    return this.getUserId(u);
+  displayNameFromUserId(userId: string) {
+    const a = this.accountsMap[userId];
+    return a?.name || a?.username || a?.email || userId;
   }
 
-  isAdminMsg(m: ChatMessage): boolean {
-    // Nếu fromRole là 'user' => user, còn lại (id, 'admin', v.v.) => admin
-    return typeof m.fromRole === 'string' && m.fromRole.toLowerCase() !== 'user';
-  }
+  isAdminMsg(m: ChatMessage) { return m.fromRole === 'admin'; }
 
-  trackKey(m: ChatMessage, i: number): string {
+  trackKey(m: ChatMessage, i: number) {
     const t = m.createdAt ? String(m.createdAt) : '';
     return `${t}-${m.text}-${i}`;
-  }
-
-  private getUserId(u: Account): string {
-    return (
-      (u.id as string) ||
-      (u._id as string) ||
-      (u.username as string) ||
-      (u.email as string) ||
-      ''
-    );
   }
 
   private scrollToBottom() {
