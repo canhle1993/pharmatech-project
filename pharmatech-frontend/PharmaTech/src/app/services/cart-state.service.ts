@@ -7,6 +7,7 @@ import { CartService } from './cart.service';
 export class CartStateService {
   private _items = new BehaviorSubject<Cart[]>([]);
   items$ = this._items.asObservable();
+  private checkoutData: { carts: Cart[]; totalAmount: number } | null = null;
 
   constructor(private cartService: CartService) {}
 
@@ -111,5 +112,12 @@ export class CartStateService {
       (sum, item) => sum + (item.total_price || 0),
       0
     );
+  }
+  // ✅ LƯU / LẤY DỮ LIỆU CHO CHECKOUT
+  saveCheckoutData(carts: Cart[], totalAmount: number) {
+    this.checkoutData = { carts, totalAmount };
+  }
+  getCheckoutData() {
+    return this.checkoutData;
   }
 }

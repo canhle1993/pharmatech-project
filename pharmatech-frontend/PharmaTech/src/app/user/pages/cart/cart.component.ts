@@ -3,7 +3,7 @@ import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
 import { MessageService } from 'primeng/api';
 import { CartService } from '../../../services/cart.service';
 import { Cart } from '../../../entities/cart.entity';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
@@ -20,7 +20,6 @@ import { Subscription } from 'rxjs';
 })
 export class CartComponent implements OnInit {
   private cartSub!: Subscription;
-
   /** 🧾 Danh sách giỏ hàng */
   carts: Cart[] = [];
 
@@ -38,7 +37,8 @@ export class CartComponent implements OnInit {
     private messageService: MessageService,
     private route: ActivatedRoute,
     private confirmationService: ConfirmationService,
-    private cartState: CartStateService // ✅ Thêm service realtime
+    private cartState: CartStateService,
+    private router: Router
   ) {}
 
   // ==================================================
@@ -105,6 +105,18 @@ export class CartComponent implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+  goToCheckout() {
+    if (!this.carts.length) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Empty cart',
+        detail: 'Your cart is empty.',
+      });
+      return;
+    }
+    this.cartState.saveCheckoutData(this.carts, this.totalAmount);
+    this.router.navigate(['/checkout']);
   }
 
   /** 💰 Tính tổng tiền */

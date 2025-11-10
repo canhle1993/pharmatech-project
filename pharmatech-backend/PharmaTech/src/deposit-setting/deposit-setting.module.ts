@@ -19,6 +19,7 @@ import { DepositSettingController } from './deposit-setting.controller';
     MongooseModule.forFeature([
       { name: DepositSetting.name, schema: DepositSettingSchema }, // ✅ Export model để module khác (Cart, Order) có thể sử dụng
     ]),
+    DepositSettingService,
   ],
 })
 export class DepositSettingModule {}

@@ -1,21 +1,24 @@
-// src/order/order.module.ts
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Order, OrderSchema } from './order.decorator';
-import { DepositSettingModule } from 'src/deposit-setting/deposit-setting.module';
-import { OrderDetailsModule } from 'src/order-details/order-details.module';
+import { OrderService } from './order.service';
+import { OrderController } from './order.controller';
+
+// ✅ Import các module liên quan
+import { DepositSettingModule } from '../deposit-setting/deposit-setting.module';
+import { OrderDetailsModule } from '../order-details/order-details.module';
 
 @Module({
-  // ✅ Đăng ký schema Order với Mongoose
   imports: [
+    // ✅ Đăng ký model cho Order
     MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
+
+    // ✅ Liên kết các module phụ
     DepositSettingModule,
     OrderDetailsModule,
   ],
-
-  // ⚙️ Nếu sau này có controller/service thì add vào đây
-  controllers: [],
-  providers: [],
-  exports: [MongooseModule], // 👉 Cho phép module khác import dùng model này
+  controllers: [OrderController],
+  providers: [OrderService],
+  exports: [OrderService], // ⚡ Export để module khác (như Payment) có thể dùng
 })
 export class OrderModule {}
