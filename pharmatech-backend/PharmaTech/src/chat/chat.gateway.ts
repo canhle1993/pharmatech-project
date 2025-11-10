@@ -47,7 +47,7 @@ export class ChatGateWay {
     @MessageBody()
     payload: {
       userId: string;
-      fromRole: 'user' | 'admin';
+      fromRole: string;
       msg: string;
     },
   ) {

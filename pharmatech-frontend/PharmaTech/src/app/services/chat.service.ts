@@ -3,7 +3,7 @@ import { Injectable, NgZone } from "@angular/core";
 import { Observable } from "rxjs";
 import { io, Socket } from "socket.io-client";
 
-export type ChatRole = 'user' | 'admin';
+//export type ChatRole = 'user' | 'admin';
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
@@ -34,7 +34,8 @@ export class ChatService {
   }
 
   /** Gửi tin nhắn (giữ event tên "senMessage") */
-  sendMessage(userId: string, fromRole: ChatRole, msg: string): Promise<any> {
+  sendMessage(userId: string, fromRole: string, msg: string): Promise<any> {
+    console.log('Sending message via socket.io', { userId, fromRole, msg });
     return new Promise((resolve) => {
       this.socket.emit('senMessage', { userId, fromRole, msg }, (ack: any) => resolve(ack));
     });
@@ -54,4 +55,6 @@ export class ChatService {
   disconnect() {
     try { this.socket?.disconnect(); } catch { }
   }
+
+  
 }

@@ -1,21 +1,17 @@
 import {
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  OnDestroy,
-  OnInit,
-  ViewChild,
+  ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
-import { ChatService } from '../../../services/chat.service';
 import { Subscription } from 'rxjs';
-import { AccountService } from '../../../services/account.service';
 
-type Sender = 'user' | 'bot';
+import { ChatService } from '../../../services/chat.service';
+
+
+
 interface ChatMsg {
-  from: Sender;
+  from: String;   // map từ fromRole string
   text: string;
 }
 
@@ -27,12 +23,12 @@ interface ChatMsg {
   imports: [ButtonModule, CommonModule, FormsModule],
 })
 export class ChatbotComponent implements OnInit, OnDestroy {
-  userId = ''; // luôn là _id, không dùng email
-  msg = '';
+  userId = localStorage.getItem('chatUserId') || ''; // nếu có thì dùng, không thì để rỗng
   open = false;
+  msg = '';
 
   messages: ChatMsg[] = [
-    { from: 'bot', text: 'Chào bạn! Tôi có thể giúp gì hôm nay?' },
+    { from: '', text: 'Chào bạn! Tôi có thể giúp gì hôm nay?' },
   ];
 
   private sub?: Subscription;
@@ -41,43 +37,32 @@ export class ChatbotComponent implements OnInit, OnDestroy {
 
   constructor(
     private chatService: ChatService,
-    private cdr: ChangeDetectorRef,
-    private accountService: AccountService
+    private cdr: ChangeDetectorRef
   ) {}
 
+  // từ fromRole (string) → 'user' | 'bot'
+  private mapRole(fromRole: any): String {
+    return typeof fromRole === 'string' && fromRole.toLowerCase() === 'user'
+      ? 'user'
+      : '';
+  }
+
   async ngOnInit(): Promise<void> {
-    // --- Lấy userId (ưu tiên cache, fallback từ email/token)
-    const cachedId = localStorage.getItem('chatUserId');
-    if (cachedId) {
-      this.userId = cachedId;
+    // Nếu đã có userId thì join và load lịch sử
+    if (this.userId) {
       await this.initThread(this.userId);
-    } else {
-      const email = localStorage.getItem('token');
-      if (email) {
-        try {
-          const user: any = await this.accountService.findByEmail(email);
-          this.userId = user?._id || user?.id || '';
-          if (this.userId) {
-            localStorage.setItem('chatUserId', this.userId);
-            await this.initThread(this.userId);
-          }
-        } catch (err) {
-          console.error('Không tìm được user từ email:', err);
-        }
-      }
     }
 
-    // --- Nghe realtime (1 listener duy nhất)
-    this.sub = this.chatService.onMessage().subscribe({
-      next: (serverMsg: any) => {
-        this.messages.push({
-          from: (serverMsg.fromRole === 'admin' ? 'bot' : 'user') as Sender,
-          text: String(serverMsg.msg),
-        });
-        this.cdr.detectChanges();
-        this.scrollToBottom();
-      },
-      error: (err) => console.error('Lỗi ChatService:', err),
+    // nghe realtime
+    this.sub = this.chatService.onMessage().subscribe((srv: any) => {
+      // srv: { userId, fromRole: string, msg: string }
+      if (this.userId && srv.userId !== this.userId) return; // khác thread thì bỏ
+      this.messages.push({
+        from: this.mapRole(srv.fromRole),
+        text: String(srv.msg),
+      });
+      this.cdr.detectChanges();
+      this.scrollToBottom();
     });
   }
 
@@ -85,87 +70,50 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     this.sub?.unsubscribe();
   }
 
-  /** Gọi khi login xong (đã set token=email) */
-  async reinitAfterLogin() {
-    const email = localStorage.getItem('token');
-    if (!email) return;
-
-    try {
-      const user: any = await this.accountService.findByEmail(email);
-      const newId = user?._id || user?.id || '';
-      if (newId && newId !== this.userId) {
-        this.userId = newId;
-        localStorage.setItem('chatUserId', this.userId);
-        await this.initThread(this.userId);
-      }
-    } catch (e) {
-      console.error('reinitAfterLogin error:', e);
+  // cho app khác tự set userId khi login xong (đơn giản)
+  setUserId(id: string) {
+    this.userId = id || '';
+    if (this.userId) {
+      localStorage.setItem('chatUserId', this.userId);
+      this.initThread(this.userId);
     }
   }
 
-  /** Gọi khi logout */
-  onLogoutCleanup() {
-    this.userId = '';
-    localStorage.removeItem('chatUserId');
-    this.messages = [{ from: 'bot', text: 'Bạn đã đăng xuất.' }];
-    this.chatService.disconnect();
-    this.cdr.detectChanges();
-  }
-
-  /** Join room + load lịch sử */
   private async initThread(userId: string) {
-    if (!userId) return;
-
     await this.chatService.joinThread(userId);
-
-    const history = await this.chatService.loadThread(userId, 100);
+    const history = await this.chatService.loadThread(userId, 50); // [{fromRole, msg}]
     const ordered = [...history].reverse();
-
     this.messages = [
-      { from: 'bot', text: 'Chào bạn! Tôi có thể giúp gì hôm nay?' },
+      { from: '', text: 'Chào bạn! Tôi có thể giúp gì hôm nay?' },
       ...ordered.map((h: any) => ({
-        from: (h.fromRole === 'admin' ? 'bot' : 'user') as Sender,
+        from: this.mapRole(h.fromRole),
         text: String(h.msg),
       })),
     ];
-
     this.cdr.detectChanges();
     this.scrollToBottom();
   }
 
   toggleOpen(): void {
     this.open = !this.open;
-
-    // Nếu vừa mở lại chat và userId bị mất thì lấy lại từ cache
-    if (this.open && !this.userId) {
-      const cachedId = localStorage.getItem('chatUserId');
-      if (cachedId) {
-        this.userId = cachedId;
-        this.initThread(this.userId);
-      }
-    }
-
     setTimeout(() => this.scrollToBottom(), 0);
   }
 
   async send(): Promise<void> {
-    const trimmed = this.msg.trim();
-    if (!trimmed || !this.userId) return;
+    const text = this.msg.trim();
+    if (!text || !this.userId) return;
 
-    try {
-      await this.chatService.sendMessage(this.userId, 'user', trimmed);
-    } catch (e) {
-      console.error('Gửi tin nhắn thất bại:', e);
-    }
+    // user gửi → fromRole = 'user'
+    await this.chatService.sendMessage(this.userId, 'user', text);
 
+    // không push local để tránh trùng; đợi server echo
     this.msg = '';
     this.cdr.detectChanges();
     this.scrollToBottom();
   }
 
   private scrollToBottom(): void {
-    if (!this.chatBoxRef) return;
-    const el = this.chatBoxRef.nativeElement;
-    el.scrollTop = el.scrollHeight;
+    const el = this.chatBoxRef?.nativeElement;
+    if (el) el.scrollTop = el.scrollHeight;
   }
 }

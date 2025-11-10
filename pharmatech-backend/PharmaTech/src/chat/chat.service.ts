@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ChatThreadMessage, ChatThreadMessageDocument, ChatRole } from './chat.schema';
+import { ChatThreadMessage, ChatThreadMessageDocument } from './chat.schema';
 
 @Injectable()
 export class ChatService {
@@ -10,7 +10,7 @@ export class ChatService {
     private readonly msgModel: Model<ChatThreadMessageDocument>,
   ) {}
 
-  saveToThread(params: { userId: string; fromRole: ChatRole; msg: string }) {
+  saveToThread(params: { userId: string; fromRole: string; msg: string }) {
     const doc = new this.msgModel(params);
     return doc.save();
   }

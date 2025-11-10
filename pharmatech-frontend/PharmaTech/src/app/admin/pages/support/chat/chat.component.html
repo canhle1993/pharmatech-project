@@ -4,56 +4,71 @@
     <h3>Người dùng</h3>
 
     <div class="search">
-      <input
-        type="text"
-        [(ngModel)]="q"
-        placeholder="Tìm tên, username, email, id..."
-        (input)="onSearch()"
-      />
+      <input type="text" [(ngModel)]="q" placeholder="Tìm tên, username, email, id..." (input)="onSearch()" />
     </div>
 
-    <ul class="user-list">
+    <!-- DANH SÁCH USER CÓ THANH CUỘN -->
+    <ul
+      class="user-list"
+      style="overflow-y: auto; height: calc(100vh - 220px); padding-right: 4px;"
+    >
+      @for (u of filtered; track displayId(u)) {
       <li
-        *ngFor="let u of filtered"
         (click)="openThread(u)"
         [class.active]="currentUserId === displayId(u)"
+        [class.unread]="isUnread(displayId(u))"
         class="user-item"
       >
         <div class="line1">
           <span class="name">{{ displayName(u) }}</span>
-          <span class="badge" [class.on]="u.is_active">●</span>
+          <span class="line1-right">
+            <span class="badge" [class.on]="u?.is_active">●</span>
+            @if (isUnread(displayId(u))) {
+              <span class="unread-dot"></span>
+            }
+          </span>
         </div>
         <div class="line2 id">{{ displayId(u) }}</div>
       </li>
-      <li *ngIf="!filtered?.length" class="empty">Không có người dùng</li>
+      }
+      @if (!filtered?.length) {
+      <li class="empty">Không có người dùng</li>
+      }
     </ul>
   </aside>
 
   <!-- Khung chat -->
   <section class="chat-panel">
     <header class="chat-header">
-      <ng-container *ngIf="currentUser; else pickUser">
-        Đang chat với: <strong>{{ displayName(currentUser) }}</strong>
-        <span class="id">({{ currentUserId }})</span>
-      </ng-container>
-      <ng-template #pickUser>Chọn một user ở danh sách bên trái để bắt đầu</ng-template>
+      @if (currentUser) {
+      Đang chat với: <strong>{{ displayName(currentUser) }}</strong>
+      <span class="id">({{ currentUserId }})</span>
+      } @else {
+      <ng-container>Chọn một user ở danh sách bên trái để bắt đầu</ng-container>
+      }
     </header>
 
-    <div class="chat-box" #chatBoxRef>
-      <div
-        *ngFor="let m of history"
-        [ngClass]="m.from === 'admin' ? 'msg admin' : 'msg user'"
-      >
+    <!-- KHUNG CHAT CÓ THANH CUỘN -->
+    <div
+      class="chat-box"
+      #chatBoxRef
+      style="overflow-y: auto; height: calc(100vh - 260px); padding-right: 4px;"
+    >
+      @for (m of history; track trackKey(m, $index)) {
+      <div [class.msg]="true" [class.admin]="isAdminMsg(m)" [class.user]="!isAdminMsg(m)">
         <div class="bubble">
-          <span class="from">{{ m.from === 'admin' ? 'Admin' : 'User' }}</span>
+          <span class="from">{{ isAdminMsg(m) ? 'Admin' : '' }}</span>
           <span class="text">{{ m.text }}</span>
-          <span class="time" *ngIf="m.createdAt">{{ m.createdAt | date:'short' }}</span>
+          @if (m.createdAt) {
+          <span class="time">{{ m.createdAt | date:'short' }}</span>
+          }
         </div>
       </div>
+      }
 
-      <div *ngIf="currentUserId && !history.length" class="empty">
-        Chưa có tin nhắn nào. Hãy gửi lời chào trước nhé.
-      </div>
+      @if (currentUserId && !history?.length) {
+      <div class="empty">Chưa có tin nhắn nào. Hãy gửi lời chào trước nhé.</div>
+      }
     </div>
 
     <form class="chat-input" (ngSubmit)="send()">
@@ -66,7 +81,7 @@
         [disabled]="!currentUserId"
         required
       />
-      <button type="submit" pButton [disabled]="!currentUserId || !msg.trim()">Gửi</button>
+      <button type="submit" pButton [disabled]="!currentUserId || !msg?.trim()">Gửi</button>
     </form>
   </section>
 </div>
