@@ -22,6 +22,7 @@ import { WishlistModule } from './wishlist/wishlist.module';
 import { OrderDetailsModule } from './order-details/order-details.module';
 import { OrderModule } from './order/order.module';
 import { DepositSettingModule } from './deposit-setting/deposit-setting.module';
+import { StripeModule } from './stripe/stripe.module';
 
 @Module({
   imports: [
@@ -77,6 +78,7 @@ import { DepositSettingModule } from './deposit-setting/deposit-setting.module';
     DepositSettingModule,
     OrderModule,
     OrderDetailsModule,
+    StripeModule,
   ],
   controllers: [],
   providers: [],

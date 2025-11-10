@@ -103,6 +103,10 @@ export class CartStateService {
       0
     );
   }
+  clearCart() {
+    this._items.next([]);
+    localStorage.removeItem('cart');
+  }
 
   // ==================================================
   // 💵 Tổng tiền

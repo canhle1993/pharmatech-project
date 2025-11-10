@@ -7,6 +7,7 @@ import { MessageService } from 'primeng/api';
 import { Account } from '../../../entities/account.entity';
 import { AccountService } from '../../../services/account.service';
 import { FormsModule } from '@angular/forms';
+import { CartStateService } from '../../../services/cart-state.service';
 
 @Component({
   selector: 'app-profile',
@@ -22,28 +23,51 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   isEditing = false;
   selectedPhoto?: File;
   selectedResume?: File;
-
+  // 🆕 Thêm 3 biến này
+  showPaymentMessage = false;
+  paymentStatus: 'success' | 'error' | null = null;
+  paymentMessage = '';
   constructor(
     private route: ActivatedRoute,
     private accountService: AccountService,
     private messageService: MessageService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private cartState: CartStateService
   ) {}
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) return;
 
+    // 🧾 Kiểm tra nếu từ Stripe redirect về
+    const payment = this.route.snapshot.queryParamMap.get('payment');
+    console.log('🔁 Query payment status:', payment);
+
+    if (payment === 'success') {
+      this.paymentStatus = 'success';
+      this.paymentMessage =
+        '🎉 Payment successful! Thank you for your purchase.';
+      this.showPaymentMessage = true;
+
+      // ✅ Ẩn sau 10 giây
+      setTimeout(() => (this.showPaymentMessage = false), 10000);
+
+      // ✅ Xóa giỏ hàng sau khi thanh toán thành công
+      const userId = localStorage.getItem('userId');
+      if (userId) await this.cartState.clear(userId);
+    } else if (payment === 'cancel') {
+      this.paymentStatus = 'error';
+      this.paymentMessage = '❌ Payment was cancelled. Please try again.';
+      this.showPaymentMessage = true;
+      setTimeout(() => (this.showPaymentMessage = false), 10000);
+    }
+
+    // ✅ Load thông tin account như cũ
     this.loading = true;
     try {
       const result = await this.accountService.findById(id);
+      if (!result.id && (result as any)._id) result.id = (result as any)._id;
 
-      // ✅ Bổ sung fix ID (phòng trường hợp backend không trả đúng)
-      if (!result.id && (result as any)._id) {
-        result.id = (result as any)._id;
-      }
-
-      // ✅ Gán lại vào account
       this.account = {
         ...result,
         education: result.education ?? {
@@ -58,13 +82,10 @@ export class ProfileComponent implements OnInit, AfterViewInit {
         },
       };
 
-      // ✅ Fix đường dẫn ảnh
       if (this.account.photo && !this.account.photo.startsWith('http')) {
         this.account.photo =
           'http://localhost:3000/upload/' + this.account.photo;
       }
-
-      console.log('✅ Dữ liệu account nhận được:', this.account);
     } catch (err) {
       console.error('❌ Lỗi khi lấy account:', err);
     } finally {

@@ -20,3 +20,49 @@ button[data-inline="true"]:hover {
   background-color: #0069d9;
   border-color: #0062cc;
 }
+.payment-alert {
+  position: fixed;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 320px;
+  max-width: 480px;
+  background: #fff;
+  color: #333;
+  border-left: 6px solid #28a745;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 14px 20px;
+  border-radius: 8px;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: "Public Sans", sans-serif;
+  font-size: 15px;
+  animation: slideDown 0.4s ease forwards;
+}
+
+.payment-alert.success {
+  border-left-color: #28a745;
+  background: rgba(40, 167, 69, 0.1);
+}
+
+.payment-alert.error {
+  border-left-color: #dc3545;
+  background: rgba(220, 53, 69, 0.1);
+}
+
+.payment-alert .alert-icon i {
+  font-size: 1.5rem;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}

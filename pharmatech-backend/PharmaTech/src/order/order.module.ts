@@ -7,6 +7,7 @@ import { OrderController } from './order.controller';
 // ✅ Import các module liên quan
 import { DepositSettingModule } from '../deposit-setting/deposit-setting.module';
 import { OrderDetailsModule } from '../order-details/order-details.module';
+import { StripeModule } from 'src/stripe/stripe.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { OrderDetailsModule } from '../order-details/order-details.module';
     // ✅ Liên kết các module phụ
     DepositSettingModule,
     OrderDetailsModule,
+    StripeModule,
   ],
   controllers: [OrderController],
   providers: [OrderService],

@@ -15,6 +15,25 @@
   </div>
 </div>
 <!-- Breadcrumb Section End -->
+<p-toast></p-toast>
+<!-- ✅ Custom Payment Notification -->
+<div
+  *ngIf="showPaymentMessage"
+  class="payment-alert"
+  [class.success]="paymentStatus === 'success'"
+  [class.error]="paymentStatus === 'error'"
+>
+  <span class="alert-icon">
+    <i
+      class="bx"
+      [class.bx-check-circle]="paymentStatus === 'success'"
+      [class.bx-x-circle]="paymentStatus === 'error'"
+    ></i>
+  </span>
+  <span class="alert-text">
+    {{ paymentMessage }}
+  </span>
+</div>
 
 <div class="container-xxl flex-grow-1 container-p-y" *ngIf="account">
   <div class="row pt-3">
@@ -329,4 +348,3 @@
   *ngIf="loading"
   styleClass="custom-spinner"
 ></p-progressSpinner>
-<p-toast></p-toast>

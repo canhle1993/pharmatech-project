@@ -16,6 +16,7 @@ import { CartService } from '../../../services/cart.service';
 import { CartStateService } from '../../../services/cart-state.service';
 import { DepositSettingService } from '../../../services/deposit-setting.service';
 import { DepositSetting } from '../../../entities/deposit-setting.entity';
+import { StripeService } from '../../../services/stripe.service';
 
 @Component({
   selector: 'app-checkout',
@@ -42,7 +43,8 @@ export class CheckoutComponent implements OnInit {
     private messageService: MessageService,
     private cartService: CartService,
     private cartState: CartStateService,
-    private depositService: DepositSettingService
+    private depositService: DepositSettingService,
+    private stripeService: StripeService
   ) {}
 
   async ngOnInit() {
@@ -142,35 +144,52 @@ export class CheckoutComponent implements OnInit {
       return;
     }
 
-    // ⚙️ TODO: gọi API tạo Order ở bước sau
-    const payload = {
-      customer: this.billingForm.value,
-      carts: this.carts.map((c) => ({
-        cart_id: c._id || c.id,
-        product_id:
-          typeof c.product_id === 'object' ? c.product_id._id : c.product_id,
-        product_name: c.productName,
-        quantity: c.quantity,
-        price: c.price,
-        subtotal: c.total_price,
-      })),
-      total_amount: this.totalAmount,
-      deposit_percent: this.depositPercent,
-      deposit_amount: this.depositAmount,
-      remaining_amount: this.remainingAmount,
-      payment_method: 'paypal',
-    };
+    try {
+      const user_id = localStorage.getItem('userId');
+      if (!user_id) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Login Required',
+          detail: 'Please login to continue.',
+        });
+        return;
+      }
 
-    console.log('📦 Order payload:', payload);
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Order Ready',
-      detail: `Deposit ${
-        this.depositPercent
-      }% = ${this.depositAmount.toLocaleString('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      })}`,
-    });
+      // ✅ Chỉ gửi dòng Deposit Payment (thanh toán thật)
+      const stripeItems = [
+        {
+          product_name: 'Deposit Payment',
+          unit_price: this.depositAmount,
+          quantity: 1,
+          description: `Deposit ${this.depositPercent}% of total ${this.totalAmount} USD`,
+        },
+      ];
+
+      const res = await this.stripeService.createCheckoutSession({
+        user_id,
+        items: stripeItems,
+      });
+
+      if (res?.url) {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Redirecting...',
+          detail: `You will be redirected to Stripe to pay your ${this.depositPercent}% deposit.`,
+        });
+
+        setTimeout(() => {
+          window.location.href = res.url;
+        }, 1000);
+      } else {
+        throw new Error('Stripe URL not returned');
+      }
+    } catch (err: any) {
+      console.error('❌ Stripe checkout error:', err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Payment Failed',
+        detail: err?.message || 'Could not create Stripe session.',
+      });
+    }
   }
 }

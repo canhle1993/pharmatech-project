@@ -154,7 +154,7 @@
 
           <!-- Payment Method Start -->
           <div class="checkout-box">
-            <h4 class="mb-4">Paypal Payment</h4>
+            <h4 class="mb-4">Stripe Payment</h4>
 
             <div class="checkout-payment-method">
               <div class="single-method form-check">
@@ -176,10 +176,10 @@
               (click)="placeOrder()"
               [disabled]="billingForm.invalid"
             >
-              Pay Now with PayPal
+              Pay Now with Stripe
             </button>
             <p class="mt-2 text-muted small text-center">
-              You will be redirected to PayPal to pay your
+              You will be redirected to Stripe to pay your
               <strong>{{ depositPercent }}%</strong> deposit of
               <strong>{{ depositAmount | currency : "USD" : "symbol" }}</strong
               >.
