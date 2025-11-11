@@ -38,7 +38,7 @@ export class ChatService {
   }
 
   /** Gửi tin nhắn (GIỮ event "senMessage"); fromRole = 'admin' | 'user' */
-  sendMessage(userId: string, fromRole: 'admin' | 'user', msg: string): Promise<any> {
+  sendMessage(userId: string, fromRole:string, msg: string): Promise<any> {
     return new Promise((resolve) => {
       this.socket.emit('senMessage', { userId, fromRole, msg }, (ack: any) => resolve(ack));
     });

@@ -41,6 +41,7 @@ export class AccountService {
 
     if (res.account) {
       localStorage.setItem('currentUser', JSON.stringify(res.account));
+      localStorage.setItem('chatUserId', res.account._id);
     }
 
     return res;
@@ -49,6 +50,7 @@ export class AccountService {
   /** 🔹 Đăng xuất */
   logout() {
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('chatUserId');
     sessionStorage.clear();
   }
 

@@ -52,7 +52,7 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     if (this.userId) {
       await this.initThread(this.userId);
     }
-
+   
     // nghe realtime
     this.sub = this.chatService.onMessage().subscribe((srv: any) => {
       // srv: { userId, fromRole: string, msg: string }

@@ -175,8 +175,9 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   async send() {
     const text = this.msg.trim();
+    console.log(localStorage.getItem("chatUserId"));
     if (!text || !this.currentUserId) return;
-    await this.chat.sendMessage(this.currentUserId, 'admin', text);
+    await this.chat.sendMessage(this.currentUserId, localStorage.getItem("chatUserId"), text);
     this.msg = '';
     this.cdr.detectChanges();
     this.scrollToBottom();
