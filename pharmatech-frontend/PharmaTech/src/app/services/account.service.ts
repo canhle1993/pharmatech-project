@@ -148,4 +148,14 @@ export class AccountService {
       this.httpClient.get(env.baseUrl + 'account/find-by-email/' + email)
     );
   }
+  /** 🧾 Lưu đơn hàng sau thanh toán Stripe */
+  async createOrderAfterPayment(data: { user_id: string; billing_info?: any }) {
+    console.log('🚀 [AccountService] POST to backend:', data);
+    return await lastValueFrom(
+      this.httpClient.post(
+        env.baseUrl + 'stripe/create-order-after-payment',
+        data
+      )
+    );
+  }
 }

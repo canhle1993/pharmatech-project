@@ -13,6 +13,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { DepositSettingService } from 'src/deposit-setting/deposit-setting.service';
 import { OrderDetailsService } from 'src/order-details/order-details.service';
+import { CartService } from 'src/cart/cart.service';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class OrderService {
@@ -21,6 +23,8 @@ export class OrderService {
     private _orderModel: Model<Order>,
     private readonly depositSettingService: DepositSettingService,
     private readonly orderDetailsService: OrderDetailsService,
+    private readonly cartService: CartService,
+    private readonly mailService: MailService, // ✅ thêm dòng này
   ) {}
 
   // ==================================================
@@ -297,5 +301,100 @@ export class OrderService {
       order_id: order._id,
       refund_status,
     };
+  }
+  async createAfterPayment(userId: string, billing_info?: any) {
+    try {
+      const carts = await this.cartService.findByUser(userId);
+      if (!carts.length)
+        throw new HttpException('Cart is empty', HttpStatus.BAD_REQUEST);
+
+      const total_amount = carts.reduce(
+        (sum, c) => sum + c.quantity * c.price,
+        0,
+      );
+      const deposit_percent = 10;
+      const deposit_amount = (total_amount * deposit_percent) / 100;
+      const remaining_payment_amount = total_amount - deposit_amount;
+
+      // ✅ Dùng thông tin billing từ FE (nếu có)
+      const contact_name = billing_info?.name || 'Stripe User';
+      const contact_email = billing_info?.email || 'stripe_user@example.com';
+      const contact_phone = billing_info?.phone || '000-000-0000';
+      const contact_address = billing_info?.address || 'Not Provided';
+
+      const orderPayload = {
+        user_id: userId,
+        contact_name,
+        contact_email,
+        contact_phone,
+        contact_address,
+        total_amount,
+        deposit_percent,
+        deposit_amount,
+        remaining_payment_amount,
+        payment_method: 'Stripe',
+        status: 'Deposit Paid',
+        approval_status: 'Pending Approval',
+        refund_status: 'None',
+        is_active: true,
+        is_delete: false,
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
+
+      const order = await this._orderModel.create(orderPayload);
+
+      // ✅ Tạo OrderDetails như cũ
+      const detailsPayload = carts.map((c) => ({
+        order_id: order._id.toString(),
+        product_id: c.product_id._id || c.product_id, // fix lỗi cũ
+        quantity: c.quantity,
+        unit_price: c.price,
+        total_price: c.price * c.quantity,
+        status: 'Pending',
+      }));
+      await this.orderDetailsService.createMany(
+        detailsPayload,
+        order._id.toString(),
+        'system',
+      );
+
+      await this.cartService.clearUserCart(userId);
+      // ===============================================
+      // 📧 GỬI EMAIL XÁC NHẬN ĐƠN HÀNG
+      // ===============================================
+      try {
+        const to = billing_info?.email || 'aplevancanh1993@gmail.com';
+        const subject = `Order Confirmation - #${order._id}`;
+        const body = `
+    <h2>🎉 Thank you for your order, ${billing_info?.name || 'Customer'}!</h2>
+    <p>Your payment has been successfully received via <b>Stripe</b>.</p>
+    <p><b>Order ID:</b> ${order._id}</p>
+    <p><b>Total Amount:</b> ${order.total_amount} USD</p>
+    <p><b>Deposit Paid:</b> ${order.deposit_amount} USD (${order.deposit_percent}%)</p>
+    <p><b>Remaining:</b> ${order.remaining_payment_amount} USD</p>
+    <hr>
+    <p>We'll contact you soon to confirm your order details.</p>
+    <p>Best regards,<br><b>PharmaTech Team</b></p>
+  `;
+        const sent = await this.mailService.send2(
+          'aplevancanh1993@gmail.com', // from
+          to, // to
+          subject,
+          body,
+        );
+        console.log('📧 [Mail] Order confirmation sent:', sent);
+      } catch (mailErr) {
+        console.error('❌ [Mail] Failed to send confirmation email:', mailErr);
+      }
+
+      return { message: 'Order created successfully', order_id: order._id };
+    } catch (error) {
+      console.error('❌ [createAfterPayment ERROR]', error);
+      throw new HttpException(
+        'Failed to create order: ' + error.message,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

@@ -103,8 +103,6 @@ export class CheckoutComponent implements OnInit {
 
   private calcDeposit() {
     // 🔹 Ghi log để kiểm tra
-    console.log('💰 Total amount:', this.totalAmount);
-    console.log('📊 Deposit settings:', this.depositSettings);
 
     // 🔹 Tìm mức cọc phù hợp trong danh sách
     const matched = this.depositSettings.find(
@@ -117,7 +115,6 @@ export class CheckoutComponent implements OnInit {
     // 🔹 Nếu có match → dùng cấu hình admin
     if (matched) {
       this.depositPercent = matched.percent;
-      console.log('✅ Matched deposit setting:', matched);
     } else {
       // 🔹 Nếu không có cấu hình phù hợp → mặc định 10%
       this.depositPercent = 10;
@@ -155,7 +152,16 @@ export class CheckoutComponent implements OnInit {
         return;
       }
 
-      // ✅ Chỉ gửi dòng Deposit Payment (thanh toán thật)
+      // ✅ 1️⃣ Lưu thông tin billing vào localStorage (để dùng lại sau redirect)
+      const billing_info = {
+        name: this.billingForm.value.name,
+        email: this.billingForm.value.email,
+        phone: this.billingForm.value.phone,
+        address: this.billingForm.value.address,
+      };
+      localStorage.setItem('billing_info', JSON.stringify(billing_info));
+
+      // ✅ 2️⃣ Chỉ gửi dòng Deposit Payment (thanh toán thật)
       const stripeItems = [
         {
           product_name: 'Deposit Payment',

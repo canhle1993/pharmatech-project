@@ -176,4 +176,8 @@ export class OrderController {
       );
     }
   }
+  @Post('create-after-payment')
+  async createAfterPayment(@Body('userId') userId: string) {
+    return this.orderService.createAfterPayment(userId);
+  }
 }

@@ -1,6 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import Stripe from 'stripe';
 import * as dotenv from 'dotenv';
+import { OrderService } from 'src/order/order.service';
 
 dotenv.config();
 
@@ -8,7 +9,7 @@ dotenv.config();
 export class StripeService {
   private stripe: Stripe;
 
-  constructor() {
+  constructor(private readonly orderService: OrderService) {
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: '2025-10-29.clover',
     });
@@ -67,5 +68,9 @@ export class StripeService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+  /** ✅ Sau khi Stripe thanh toán thành công, lưu đơn hàng */
+  async createOrderAfterPayment(user_id: string, billing_info?: any) {
+    return this.orderService.createAfterPayment(user_id, billing_info);
   }
 }

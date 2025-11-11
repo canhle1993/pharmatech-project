@@ -58,11 +58,11 @@ export class Order {
   @Prop()
   payment_proof_url?: string;
 
-  /** 💳 Mã order PayPal (ID do PayPal cấp) */
+  /** 💳 Mã order Stripe (ID do Stripe cấp) */
   @Prop()
   paypal_order_id?: string;
 
-  /** 🧾 Mã thanh toán (capture_id) do PayPal trả về */
+  /** 🧾 Mã thanh toán (capture_id) do Stripe trả về */
   @Prop()
   payment_id?: string;
 
@@ -70,7 +70,7 @@ export class Order {
   @Prop()
   refund_id?: string;
 
-  /** 💳 Hình thức thanh toán chính (PayPal, Momo, Bank Transfer,...) */
+  /** 💳 Hình thức thanh toán chính (Stripe, Momo, Bank Transfer,...) */
   @Prop()
   payment_method?: string;
 

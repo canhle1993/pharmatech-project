@@ -41,25 +41,57 @@ export class ProfileComponent implements OnInit, AfterViewInit {
 
     // 🧾 Kiểm tra nếu từ Stripe redirect về
     const payment = this.route.snapshot.queryParamMap.get('payment');
-    console.log('🔁 Query payment status:', payment);
 
     if (payment === 'success') {
       this.paymentStatus = 'success';
       this.paymentMessage =
         '🎉 Payment successful! Thank you for your purchase.';
       this.showPaymentMessage = true;
+      setTimeout(() => (this.showPaymentMessage = false), 8000);
 
-      // ✅ Ẩn sau 10 giây
-      setTimeout(() => (this.showPaymentMessage = false), 10000);
+      let userId = localStorage.getItem('userId');
 
-      // ✅ Xóa giỏ hàng sau khi thanh toán thành công
-      const userId = localStorage.getItem('userId');
-      if (userId) await this.cartState.clear(userId);
-    } else if (payment === 'cancel') {
-      this.paymentStatus = 'error';
-      this.paymentMessage = '❌ Payment was cancelled. Please try again.';
-      this.showPaymentMessage = true;
-      setTimeout(() => (this.showPaymentMessage = false), 10000);
+      // Nếu chưa có userId riêng, fallback từ currentUser
+      if (!userId) {
+        const stored = localStorage.getItem('currentUser');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          userId = parsed?.id || parsed?._id || '';
+        }
+      }
+
+      if (userId) {
+        try {
+          // 🔹 Đọc lại billing_info từ localStorage
+          const billing_info_str = localStorage.getItem('billing_info');
+          const billing_info = billing_info_str
+            ? JSON.parse(billing_info_str)
+            : null;
+
+          // ✅ Gọi API lưu đơn hàng
+          await this.accountService.createOrderAfterPayment({
+            user_id: userId,
+            billing_info,
+          });
+
+          // ✅ Xóa giỏ hàng (backend + frontend)
+          await this.cartState.clear(userId);
+          this.cartState.clearCart();
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Payment success',
+            detail: 'Order created and cart cleared!',
+          });
+        } catch (error) {
+          console.error('❌ [Profile] Failed to create order:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to create order after payment!',
+          });
+        }
+      }
     }
 
     // ✅ Load thông tin account như cũ
@@ -96,7 +128,6 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   toggleEdit() {
     // ✅ đổi trạng thái khi bấm nút Edit
     this.isEditing = !this.isEditing;
-    console.log('isEditing =', this.isEditing);
   }
 
   onPhotoSelected(event: any) {
@@ -142,8 +173,6 @@ export class ProfileComponent implements OnInit, AfterViewInit {
           ? uploadedFilename
           : this.account.photo?.replace('http://localhost:3000/upload/', ''),
       };
-
-      console.log('📤 Payload gửi lên server:', updatedData);
 
       const updated = await this.accountService.update(
         this.account.id || this.account._id!,
@@ -206,16 +235,16 @@ export class ProfileComponent implements OnInit, AfterViewInit {
 
     // --- JS ---
     const jsFiles = [
-      'assets/js/vendor/modernizr-3.11.7.min.js',
+      'assets/js/vendor/jquery-3.6.0.min.js',
       'assets/js/vendor/jquery-migrate-3.3.2.min.js',
+      'assets/js/vendor/bootstrap.bundle.min.js',
       'assets/js/countdown.min.js',
       'assets/js/ajax.js',
       'assets/js/jquery.validate.min.js',
-      'assets/js/vendor/jquery-3.6.0.min.js',
-      'assets/js/vendor/bootstrap.bundle.min.js',
       'assets/js/swiper-bundle.min.js',
       'assets/js/ion.rangeSlider.min.js',
       'assets/js/lightgallery.min.js',
+      'assets/js/vendor/modernizr-3.11.7.min.js',
       'assets/js/jquery.magnific-popup.min.js',
       'assets/js/main.js',
     ];
