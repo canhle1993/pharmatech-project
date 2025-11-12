@@ -33,14 +33,20 @@ export class OrderService {
 
   /** 🔹 Lấy tất cả order (bỏ qua soft delete) */
   async findAll(): Promise<OrderDTO[]> {
+    // ✅ Lấy tất cả đơn chưa bị xóa, có _id
     const orders = await this._orderModel
       .find({ is_delete: false })
-      .sort({ createdAt: -1 })
+      .sort({ created_at: -1 })
       .lean();
 
-    return orders.map((o) =>
-      plainToInstance(OrderDTO, o, { excludeExtraneousValues: true }),
-    );
+    // ✅ Thêm field id để Angular có thể sử dụng
+    const withId = orders.map((o) => ({
+      ...o,
+      id: o._id?.toString(),
+    }));
+
+    // ✅ Dùng lại DTO để format chuẩn cho frontend
+    return plainToInstance(OrderDTO, withId, { excludeExtraneousValues: true });
   }
 
   /** 🔹 Lấy 1 order theo ID */
@@ -366,24 +372,24 @@ export class OrderService {
       try {
         const to = billing_info?.email || 'aplevancanh1993@gmail.com';
         const subject = `Order Confirmation - #${order._id}`;
-        const body = `
-    <h2>🎉 Thank you for your order, ${billing_info?.name || 'Customer'}!</h2>
-    <p>Your payment has been successfully received via <b>Stripe</b>.</p>
-    <p><b>Order ID:</b> ${order._id}</p>
-    <p><b>Total Amount:</b> ${order.total_amount} USD</p>
-    <p><b>Deposit Paid:</b> ${order.deposit_amount} USD (${order.deposit_percent}%)</p>
-    <p><b>Remaining:</b> ${order.remaining_payment_amount} USD</p>
-    <hr>
-    <p>We'll contact you soon to confirm your order details.</p>
-    <p>Best regards,<br><b>PharmaTech Team</b></p>
-  `;
-        const sent = await this.mailService.send2(
+
+        await this.mailService.send4(
           'aplevancanh1993@gmail.com', // from
           to, // to
           subject,
-          body,
+          'order-confirmation', // tên file .hbs
+          {
+            name: billing_info?.name || 'Customer',
+            payment_method: 'Stripe',
+            order_id: order._id,
+            total_amount: order.total_amount,
+            deposit_amount: order.deposit_amount,
+            deposit_percent: order.deposit_percent,
+            remaining_payment_amount: order.remaining_payment_amount,
+          },
         );
-        console.log('📧 [Mail] Order confirmation sent:', sent);
+
+        console.log('📧 [Mail] Order confirmation sent successfully');
       } catch (mailErr) {
         console.error('❌ [Mail] Failed to send confirmation email:', mailErr);
       }
@@ -393,6 +399,29 @@ export class OrderService {
       console.error('❌ [createAfterPayment ERROR]', error);
       throw new HttpException(
         'Failed to create order: ' + error.message,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  /** ✅ Cập nhật approval_status (Admin duyệt hoặc từ chối) */
+  async updateApproval(
+    id: string,
+    approval_status: string,
+    updated_by: string,
+  ) {
+    try {
+      const order = await this._orderModel.findById(id);
+      if (!order) throw new NotFoundException('Order not found');
+
+      order.approval_status = approval_status;
+      order.updated_by = updated_by;
+      order.updated_at = new Date();
+
+      await order.save();
+      return { msg: `Order approval updated to ${approval_status}` };
+    } catch (error) {
+      throw new HttpException(
+        { message: 'Failed to update order approval', error: error.message },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

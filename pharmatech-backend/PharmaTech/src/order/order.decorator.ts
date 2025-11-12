@@ -87,6 +87,14 @@ export class Order {
     ],
   })
   status: string;
+  /*
+    Pending - Chưa thanh toán
+    Deposit Paid - Đã đặt cọc
+    Paid in Full - Đã thanh toán toàn bộ
+    Cancelled - Đã huỷ
+    Refunded - Đã hoàn tiền
+    Completed - Hoàn tất giao hàng
+  */
 
   /** 🧾 Trạng thái phê duyệt của admin */
   @Prop({
@@ -94,6 +102,11 @@ export class Order {
     enum: ['Pending Approval', 'Approved', 'Rejected'],
   })
   approval_status: string;
+  /*
+    Pending Approval - Chờ admin duyệt
+    Approved         - Đã duyệt
+    Rejected         - Bị từ chối
+  */
 
   /** 🔁 Trạng thái hoàn tiền (nếu có) */
   @Prop({
@@ -101,6 +114,11 @@ export class Order {
     enum: ['None', 'Deposit Lost', 'Deposit Refunded'],
   })
   refund_status: string;
+  /*
+    None             - Không hoàn tiền
+    Deposit Lost     - Mất cọc
+    Deposit Refunded - Đã hoàn cọc
+  */
 
   /** 🕓 Thời gian thanh toán full (cọc + còn lại) */
   @Prop()

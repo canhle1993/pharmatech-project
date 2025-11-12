@@ -14,7 +14,6 @@ import { RecycleProductComponent } from './pages/recycle/recycle-product/recycle
 import { QuoteComponent } from './pages/quote/quote.component';
 import { RecruitmentDetailsComponent } from './pages/career/recruitment-details/recruitment-details.component';
 import { RecruitmentHistoryComponent } from './pages/career/recruitment-history/recruitment-history.component';
-import { OrderListComponent } from './pages/order/order-list/order-list.component';
 import { OrderDetailsComponent } from './pages/order/order-details/order-details.component';
 import { ChatComponent } from './pages/support/chat/chat.component';
 import { ChatHistoryComponent } from './pages/support/chat-history/chat-history.component';
@@ -28,6 +27,7 @@ import { HomeCategoryComponent } from './pages/settings/homeCategory/homeCategor
 import { JobFormComponent } from './pages/career/job-posting/job-form/job-form.component';
 import { JobPostingComponent } from './pages/career/job-posting/job-posting.component';
 import { DepositSettingListComponent } from './pages/settings/depositSettingList/depositSettingList.component';
+import { OrderListComponent } from './pages/order/orderlist/orderlist.component';
 
 export const adminRoutes: Routes = [
   {

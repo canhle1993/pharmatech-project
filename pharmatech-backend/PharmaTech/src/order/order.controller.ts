@@ -137,6 +137,26 @@ export class OrderController {
       );
     }
   }
+  /** ✅ Cập nhật trạng thái phê duyệt (approval_status) */
+  @Put('update-approval/:id')
+  async updateApproval(
+    @Param('id') id: string,
+    @Body() body: { approval_status: string; updated_by: string },
+  ) {
+    try {
+      const { approval_status, updated_by } = body;
+      return await this.orderService.updateApproval(
+        id,
+        approval_status,
+        updated_by,
+      );
+    } catch (error) {
+      throw new HttpException(
+        { message: 'Failed to update approval status', error: error.message },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 
   // ✅ BỔ SUNG: HUỶ ĐƠN (cancel order)
   @Put('cancel/:id')

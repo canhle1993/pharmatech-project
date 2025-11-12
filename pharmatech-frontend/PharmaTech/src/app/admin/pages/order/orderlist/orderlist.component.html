@@ -1,0 +1,239 @@
+<div class="order-container">
+  <h2 class="page-title">Order Management</h2>
+
+  <!-- ✅ Toast & Confirm Dialog -->
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+
+  <!-- ✅ Spinner khi loading -->
+  <p-progressSpinner
+    *ngIf="loading"
+    styleClass="loading-spinner"
+  ></p-progressSpinner>
+
+  <!-- ✅ Tabs hiển thị danh sách -->
+  <div class="card" *ngIf="!loading">
+    <!-- ✅ Thanh tìm kiếm chung (🆕 CODE MỚI) -->
+    <div class="toolbar flex justify-content-end mb-3" *ngIf="!loading">
+      <p-iconfield iconPosition="left">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input
+          pInputText
+          type="text"
+          placeholder="Search by order code or name"
+          [(ngModel)]="searchText"
+          (input)="onSearchChange()"
+          style="width: 550px"
+        />
+      </p-iconfield>
+    </div>
+    <p-tabs [(value)]="activeTab">
+      <!-- Danh sách tab -->
+      <p-tablist>
+        @for (tab of tabs; track tab.value) {
+        <p-tab [value]="tab.value">
+          {{ tab.title }}
+          <span class="count-badge"
+            >({{ getOrdersByTab(tab.value).length }})</span
+          >
+        </p-tab>
+        }
+      </p-tablist>
+
+      <!-- Nội dung từng tab -->
+      <p-tabpanels>
+        @for (tab of tabs; track tab.value) {
+        <p-tabpanel [value]="tab.value">
+          <!-- 🟩 TAB 1: Pending Approval -->
+          <ng-container *ngIf="tab.value === 'Pending Approval'">
+            <p-table
+              [value]="getFilteredOrders(tab.value)"
+              dataKey="id"
+              [rows]="4"
+              [paginator]="true"
+              [rowsPerPageOptions]="[4, 10, 20]"
+              [responsiveLayout]="'scroll'"
+              showGridlines
+              [loading]="loading"
+              [showCurrentPageReport]="true"
+              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+              class="order-table"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Order code</th>
+                  <th>Customer</th>
+                  <th>Total</th>
+                  <th>Deposit</th>
+                  <th>Remaining</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th>Action</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-order>
+                <tr>
+                  <td>{{ order.id }}</td>
+                  <td>{{ order.contact_name }}</td>
+                  <td>{{ order.formattedTotal }}</td>
+                  <td>{{ order.formattedDeposit }}</td>
+                  <td>{{ order.formattedRemaining }}</td>
+                  <td>
+                    <p-tag
+                      [value]="order.approvalLabel"
+                      [severity]="getBadgeSeverity(order.approval_status)"
+                    ></p-tag>
+                  </td>
+                  <td>{{ order.created_at | date : "dd/MM/yyyy HH:mm" }}</td>
+                  <td class="actions">
+                    <button
+                      pButton
+                      icon="pi pi-search"
+                      class="p-button-text p-button-info"
+                      title="View"
+                      (click)="onView(order)"
+                    ></button>
+
+                    <!-- 🟢 Nút duyệt / từ chối -->
+                    <button
+                      pButton
+                      icon="pi pi-check"
+                      class="p-button-text p-button-success"
+                      title="Approve"
+                      (click)="onApprove(order)"
+                    ></button>
+
+                    <button
+                      pButton
+                      icon="pi pi-times"
+                      class="p-button-text p-button-danger"
+                      title="Reject"
+                      (click)="onReject(order)"
+                    ></button>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </ng-container>
+
+          <!-- 🟨 TAB 2: Approved -->
+          <ng-container *ngIf="tab.value === 'Approved'">
+            <p-table
+              [value]="getFilteredOrders(tab.value)"
+              dataKey="id"
+              [rows]="4"
+              [paginator]="true"
+              [rowsPerPageOptions]="[4, 10, 20]"
+              [responsiveLayout]="'scroll'"
+              showGridlines
+              [loading]="loading"
+              [showCurrentPageReport]="true"
+              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+              class="order-table"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Order code</th>
+                  <th>Customer</th>
+                  <th>Total</th>
+                  <th>Deposit</th>
+                  <th>Overall Status</th>
+                  <!-- 🆕 Cột trạng thái tổng thể -->
+                  <th>Created</th>
+                  <th>Action</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-order>
+                <tr>
+                  <td>{{ order.id }}</td>
+                  <td>{{ order.contact_name }}</td>
+                  <td>{{ order.formattedTotal }}</td>
+                  <td>{{ order.formattedDeposit }}</td>
+                  <td>
+                    <p-tag
+                      [value]="order.status"
+                      [severity]="getBadgeSeverity(order.status)"
+                    ></p-tag>
+                  </td>
+                  <td>{{ order.created_at | date : "dd/MM/yyyy HH:mm" }}</td>
+                  <td>
+                    <button
+                      pButton
+                      icon="pi pi-search"
+                      class="p-button-text p-button-info"
+                      (click)="onView(order)"
+                      title="View Details"
+                    ></button>
+
+                    <!-- 🟡 Nút cập nhật trạng thái tổng thể -->
+                    <button
+                      pButton
+                      icon="pi pi-refresh"
+                      class="p-button-text p-button-warning"
+                      title="Update Order Status"
+                      (click)="onUpdateStatus(order)"
+                    ></button>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </ng-container>
+
+          <!-- 🟥 TAB 3: Rejected -->
+          <ng-container *ngIf="tab.value === 'Rejected'">
+            <p-table
+              [value]="getFilteredOrders(tab.value)"
+              dataKey="id"
+              [rows]="4"
+              [paginator]="true"
+              [rowsPerPageOptions]="[4, 10, 20]"
+              [responsiveLayout]="'scroll'"
+              showGridlines
+              [loading]="loading"
+              [showCurrentPageReport]="true"
+              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+              class="order-table"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Order code</th>
+                  <th>Customer</th>
+                  <th>Rejected Reason</th>
+                  <th>Created</th>
+                  <th>Action</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-order>
+                <tr>
+                  <td>{{ order.id }}</td>
+                  <td>{{ order.contact_name }}</td>
+                  <td>{{ order.cancel_reason || "—" }}</td>
+                  <td>{{ order.created_at | date : "dd/MM/yyyy HH:mm" }}</td>
+                  <td>
+                    <button
+                      pButton
+                      icon="pi pi-search"
+                      class="p-button-text p-button-info"
+                      title="View"
+                      (click)="onView(order)"
+                    ></button>
+                  </td>
+                </tr>
+              </ng-template>
+              <!-- Empty Message -->
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="9" class="text-center">No orders found.</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </ng-container>
+        </p-tabpanel>
+        }
+      </p-tabpanels>
+    </p-tabs>
+  </div>
+</div>

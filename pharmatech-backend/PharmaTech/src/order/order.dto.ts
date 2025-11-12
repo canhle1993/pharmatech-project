@@ -25,6 +25,7 @@ export class OrderDTO {
 
   /** 💰 Tổng giá trị đơn hàng */
   @Expose()
+  @Transform(({ value }) => Number(value.toFixed(2)))
   total_amount: number;
 
   /** 💵 Phần trăm và số tiền đặt cọc */
@@ -32,10 +33,12 @@ export class OrderDTO {
   deposit_percent: number;
 
   @Expose()
+  @Transform(({ value }) => Number(value.toFixed(2)))
   deposit_amount: number;
 
   /** 💳 Số tiền còn lại */
   @Expose()
+  @Transform(({ value }) => Number(value.toFixed(2)))
   remaining_payment_amount: number;
 
   @Expose()
