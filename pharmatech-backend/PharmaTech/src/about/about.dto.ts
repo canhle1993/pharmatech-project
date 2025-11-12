@@ -142,49 +142,29 @@ export class CreateAboutDto {
   bannerImage?: string;
 
   @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => TeamMemberDto)
-  team?: TeamMemberDto[];
+  team?: TeamMemberDto[] | string;
 
   @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => TestimonialDto)
-  testimonials?: TestimonialDto[];
+  testimonials?: TestimonialDto[] | string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  brandImages?: string[];
+  brandImages?: string[] | string;
 
   @IsOptional()
-  @ValidateNested()
-  @Type(() => IntroDto)
-  intro?: IntroDto;
+  intro?: IntroDto | string;
 
   @IsOptional()
-  @ValidateNested()
-  @Type(() => CtaDto)
-  cta?: CtaDto;
+  cta?: CtaDto | string;
 
   @IsOptional()
-  @ValidateNested()
-  @Type(() => OpenDto)
-  open?: OpenDto;
+  open?: OpenDto | string;
 
   @IsOptional()
-  @ValidateNested()
-  @Type(() => ScheduleDto)
-  schedule?: ScheduleDto;
+  schedule?: ScheduleDto | string;
 
   @IsOptional()
-  @ValidateNested()
-  @Type(() => TeamSectionDto)
-  teamSection?: TeamSectionDto;
+  teamSection?: TeamSectionDto | string;
 
   @IsOptional()
-  @ValidateNested()
-  @Type(() => TestimonialsSectionDto)
-  testimonialsSection?: TestimonialsSectionDto;
+  testimonialsSection?: TestimonialsSectionDto | string;
 }

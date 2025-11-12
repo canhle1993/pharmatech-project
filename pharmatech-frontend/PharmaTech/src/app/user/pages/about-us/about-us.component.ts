@@ -42,4 +42,11 @@ export class AboutUsComponent implements OnInit {
     const embedUrl = `https://www.youtube.com/embed/${videoId}`;
     return this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
   }
+
+  // Build absolute image URL for display (supports http(s), data URLs, and backend relative paths)
+  buildImageUrl(path?: string | null): string {
+    if (!path) return '';
+    if (path.startsWith('http') || path.startsWith('data:')) return path;
+    return `http://localhost:3000${path}`;
+  }
 }

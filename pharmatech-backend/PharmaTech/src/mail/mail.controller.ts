@@ -51,4 +51,32 @@ export class MailController {
         }
     }
 
+    @Post('contact')
+    async sendContactForm(@Body() body: any) {
+        const { firstName, lastName, email, message } = body;
+        
+        if (!firstName || !lastName || !email || !message) {
+            throw new HttpException({
+                msg: 'All fields are required'
+            }, HttpStatus.BAD_REQUEST);
+        }
+
+        let result = await this.mailService.sendContactForm(
+            firstName,
+            lastName,
+            email,
+            message
+        );
+        
+        if (result) {
+            return {
+                msg: 'Message sent successfully'
+            }
+        } else {
+            throw new HttpException({
+                msg: 'Failed to send message'
+            }, HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

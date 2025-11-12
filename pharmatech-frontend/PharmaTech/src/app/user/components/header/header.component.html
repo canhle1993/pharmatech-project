@@ -33,13 +33,14 @@
       <div class="headertop-center">
         <!-- Header Logo Start -->
         <div class="header-logo">
-          <a href="index.html"
-            ><img
+          <a [routerLink]="['/home']">
+            <img
               src="assets/images/Pharmatech.png"
               width="229"
               height="62"
               alt="Logo"
-          /></a>
+            />
+          </a>
         </div>
         <!-- Header Logo End -->
       </div>
@@ -148,7 +149,7 @@
                       >
                     </li>
                     <li>
-                      <a class="sub-item-link" href="shop.html"
+                      <a class="sub-item-link" [routerLink]="['/shop']"
                         ><span>Shop 4 Columns</span></a
                       >
                     </li>
@@ -163,33 +164,33 @@
                   <ul>
                     <li class="mega-menu-item-title">Product Types</li>
                     <li>
-                      <a class="sub-item-link" href="single-product.html"
+                      <a class="sub-item-link" [routerLink]="['/productDetails']"
                         ><span>Product Simple</span></a
                       >
                     </li>
                     <li>
                       <a
                         class="sub-item-link"
-                        href="single-product-grouped.html"
+                        [routerLink]="['/productDetails']"
                         ><span>Product Grouped</span></a
                       >
                     </li>
                     <li>
                       <a
                         class="sub-item-link"
-                        href="single-product-variable.html"
+                        [routerLink]="['/productDetails']"
                         ><span>Product Variable</span></a
                       >
                     </li>
                     <li>
                       <a
                         class="sub-item-link"
-                        href="single-product-affiliate.html"
+                        [routerLink]="['/productDetails']"
                         ><span>Product Affiliate</span></a
                       >
                     </li>
                     <li>
-                      <a class="sub-item-link" href="single-product-Custom.html"
+                      <a class="sub-item-link" [routerLink]="['/productDetails']"
                         ><span>Custom Layout</span></a
                       >
                     </li>
@@ -199,32 +200,32 @@
                   <ul>
                     <li class="mega-menu-item-title">Others</li>
                     <li>
-                      <a class="sub-item-link" href="shop-account.html"
+                      <a class="sub-item-link" href="#"
                         ><span>My Account</span></a
                       >
                     </li>
                     <li>
-                      <a class="sub-item-link" href="shop-cart.html"
+                      <a class="sub-item-link" href="#"
                         ><span>Cart</span></a
                       >
                     </li>
                     <li>
-                      <a class="sub-item-link" href="shop-wishlist.html"
+                      <a class="sub-item-link" href="#"
                         ><span>Wishlist</span></a
                       >
                     </li>
                     <li>
-                      <a class="sub-item-link" href="shop-checkout.html"
+                      <a class="sub-item-link" href="#"
                         ><span>Checkout</span></a
                       >
                     </li>
                     <li>
-                      <a class="sub-item-link" href="shop-compare.html"
+                      <a class="sub-item-link" href="#"
                         ><span>Compare</span></a
                       >
                     </li>
                     <li>
-                      <a class="sub-item-link" href="shop-order-tracking.html"
+                      <a class="sub-item-link" href="#"
                         ><span>Order Tracking</span></a
                       >
                     </li>
@@ -233,7 +234,7 @@
                 <li class="mega-menu-item banner-menu-content-wrap">
                   <ul>
                     <li>
-                      <a href="shop.html">
+                      <a [routerLink]="['/shop']">
                         <img
                           src="assets/images/product/featured-product-01.png"
                           alt="Shop"
@@ -382,7 +383,7 @@
                 >
               </li>
               <li>
-                <a class="sub-item-link" href="shop.html"
+                <a class="sub-item-link" [routerLink]="['/shop']"
                   ><span>Shop 4 Columns</span></a
                 >
               </li>
@@ -397,27 +398,27 @@
             <ul>
               <li class="mega-menu-item-title">Product Types</li>
               <li>
-                <a class="sub-item-link" href="single-product.html"
+                <a class="sub-item-link" [routerLink]="['/productDetails']"
                   ><span>Product Simple</span></a
                 >
               </li>
               <li>
-                <a class="sub-item-link" href="single-product-grouped.html"
+                <a class="sub-item-link" [routerLink]="['/productDetails']"
                   ><span>Product Grouped</span></a
                 >
               </li>
               <li>
-                <a class="sub-item-link" href="single-product-variable.html"
+                <a class="sub-item-link" [routerLink]="['/productDetails']"
                   ><span>Product Variable</span></a
                 >
               </li>
               <li>
-                <a class="sub-item-link" href="single-product-affiliate.html"
+                <a class="sub-item-link" [routerLink]="['/productDetails']"
                   ><span>Product Affiliate</span></a
                 >
               </li>
               <li>
-                <a class="sub-item-link" href="single-product-Custom.html"
+                <a class="sub-item-link" [routerLink]="['/productDetails']"
                   ><span>Custom Layout</span></a
                 >
               </li>
@@ -461,7 +462,7 @@
           <li class="mega-menu-item banner-menu-content-wrap">
             <ul>
               <li>
-                <a href="shop.html">
+                <a [routerLink]="['/shop']">
                   <img
                     src="assets/images/product/featured-product-01.png"
                     alt="Shop"
@@ -476,10 +477,10 @@
         <a class="menu-item-link" href="#"><span>Pages</span></a>
         <ul class="sub-menu">
           <li>
-            <a class="sub-item-link" href="about.html"><span>About</span></a>
+            <a class="sub-item-link" [routerLink]="['/about-us']"><span>About</span></a>
           </li>
           <li>
-            <a class="sub-item-link" href="contact.html"
+            <a class="sub-item-link" [routerLink]="['/contact']"
               ><span>Contact</span></a
             >
           </li>
@@ -494,7 +495,7 @@
             >
           </li>
           <li>
-            <a class="sub-item-link" href="faq.html"><span>FAQs</span></a>
+            <a class="sub-item-link" href="#"><span>FAQs</span></a>
           </li>
           <li>
             <a class="sub-item-link" href="pricing.html"
@@ -564,7 +565,7 @@
         </ul>
       </li>
       <li>
-        <a class="menu-item-link" href="contact.html"><span>Contact</span></a>
+        <a class="menu-item-link" [routerLink]="['/contact']"><span>Contact</span></a>
       </li>
     </ul>
     <ul class="hotline-wrapper offcanvas-hotline">

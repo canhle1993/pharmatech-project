@@ -9,6 +9,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { ContactService } from '../../../services/contact.service';
 import { firstValueFrom } from 'rxjs';
+import { EditorModule } from 'primeng/editor';
 
 interface ImageMap {
   [key: string]: File | null;
@@ -22,7 +23,7 @@ interface PreviewMap {
   templateUrl: './contact.component.html',
   styleUrls: ['./contact.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, EditorModule],
   selector: 'app-contact',
 })
 export class ContactComponent implements OnInit {
@@ -197,20 +198,9 @@ export class ContactComponent implements OnInit {
     try {
       const formData = new FormData();
 
-      // Upload banner image if selected
+      // Append banner image file directly (not URL)
       if (this.selectedImages['banner']) {
-        const uploadResult = await firstValueFrom(
-          this.contactService.uploadImage(
-            this.selectedImages['banner'],
-            'contact-banner'
-          )
-        );
-        formData.append('bannerImage', uploadResult.url);
-      } else if (this.contactForm.get('bannerImage')?.value) {
-        formData.append(
-          'bannerImage',
-          this.contactForm.get('bannerImage')?.value
-        );
+        formData.append('bannerImage', this.selectedImages['banner']);
       }
 
       // Append other fields
@@ -235,6 +225,10 @@ export class ContactComponent implements OnInit {
         this.currentId = result._id || '';
         alert('Contact information created successfully!');
       }
+
+      // Clear selected images
+      this.selectedImages = {};
+      this.imagePreviews = {};
 
       // Reload data
       await this.loadContactData();

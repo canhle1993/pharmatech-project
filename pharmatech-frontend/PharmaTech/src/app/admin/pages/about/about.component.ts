@@ -9,6 +9,9 @@ import {
 import { CommonModule } from '@angular/common';
 import { AboutService } from '../../../services/about.service';
 import { firstValueFrom } from 'rxjs'; // <-- thêm import
+import { EditorModule } from 'primeng/editor';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
 
 interface ImageMap {
   [key: string]: File | null;
@@ -22,7 +25,7 @@ interface PreviewMap {
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, EditorModule, ButtonModule, InputTextModule],
   selector: 'app-about',
 })
 export class AboutComponent implements OnInit {
@@ -200,16 +203,7 @@ export class AboutComponent implements OnInit {
         input.value = '';
         return;
       }
-
-      // Validate banner dimensions
-      if (type === 'banner') {
-        const isValid = await this.checkImageDimensions(file, 1920, 720);
-        if (!isValid) {
-          alert('Banner image must be 1920x720 pixels');
-          input.value = '';
-          return;
-        }
-      }
+      // Removed dimension validation per request (only recommendations shown in UI)
 
       const key = type + (index !== undefined ? index : '');
       this.selectedImages[key] = file;
@@ -233,17 +227,7 @@ export class AboutComponent implements OnInit {
           alert('Please upload image files only');
           continue;
         }
-
-        // Validate brand logo dimensions (max 300x300)
-        if (type === 'brands') {
-          const isValid = await this.checkImageMaxDimensions(file, 300, 300);
-          if (!isValid) {
-            alert(
-              `Brand logo "${file.name}" is too large. Maximum size is 300x300 pixels`
-            );
-            continue;
-          }
-        }
+        // Removed brand logo max-dimension validation per request
 
         validFiles.push(file);
       }

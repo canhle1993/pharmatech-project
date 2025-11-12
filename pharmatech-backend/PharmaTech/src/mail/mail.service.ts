@@ -81,4 +81,31 @@ export class MailService {
       return false;
     }
   }
+
+  async sendContactForm(
+    firstName: string,
+    lastName: string,
+    email: string,
+    message: string,
+  ): Promise<boolean> {
+    try {
+      // Email to admin
+      await this.mailerService.sendMail({
+        from: email,
+        to: 'aplevancanh1993@gmail.com', // Admin email
+        subject: `New Contact Form Submission from ${firstName} ${lastName}`,
+        html: `
+          <h2>New Contact Form Message</h2>
+          <p><strong>From:</strong> ${firstName} ${lastName}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Message:</strong></p>
+          <p>${message}</p>
+        `,
+      });
+      return true;
+    } catch (ex) {
+      console.log(ex);
+      return false;
+    }
+  }
 }

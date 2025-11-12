@@ -2,7 +2,7 @@
 <div
   class="breadcrumb breadcrumb-about"
   *ngIf="about; else defaultBreadcrumb"
-  [ngStyle]="{ 'background-image': 'url(' + (about?.bannerImage ? ('http://localhost:3000' + about.bannerImage) : 'assets/images/bg/breadcrumb-bg-3.jpg') + ')' }"
+  [ngStyle]="{ 'background-image': 'url(' + (about?.bannerImage ? buildImageUrl(about.bannerImage) : 'assets/images/bg/breadcrumb-bg-3.jpg') + ')' }"
 >
   <div class="container">
     <div class="row">
@@ -46,12 +46,12 @@
           <h1 class="section-title-10__title">{{ about?.intro?.title || 'we love cake' }}</h1>
           <p class="section-title-10__text" [innerHTML]="about?.intro?.paragraph1 || 'Nullam dictum, justo eu blandit lacinia, diam libero porta sem, sit amet molestie tellus lacus non orci. Nullam orci urna, egestas at dui vel, sagittis semper est.'"></p>
           <p class="section-title-10__text" [innerHTML]="about?.intro?.paragraph2 || 'Vestibulum eu tristique tellus. Praesent at varius nisi, ut dignissim lectus. Praesent venenatis ipsum in arcu ullamcorper tristique. Aliquam et gravida magna, ut tincidunt massa.'"></p>
-          <img [src]="about?.intro?.signatureImage ? ('http://localhost:3000' + about.intro.signatureImage) : 'assets/images/singnecher-2.png'" alt="Signature-Image" />
+          <img [src]="about?.intro?.signatureImage ? buildImageUrl(about.intro.signatureImage) : 'assets/images/singnecher-2.png'" alt="Signature-Image" />
         </div>
       </div>
       <div class="col-md-6">
         <div class="aboutus-image">
-          <img [src]="about?.intro?.image ? ('http://localhost:3000' + about.intro.image) : 'assets/images/about/about.jpg'" alt="About-Image" />
+          <img [src]="about?.intro?.image ? buildImageUrl(about.intro.image) : 'assets/images/about/about.jpg'" alt="About-Image" />
         </div>
       </div>
     </div>
@@ -60,7 +60,7 @@
 <!-- About Section End -->
 
 <!-- Call to Action Section Strat -->
-<div class="call-to-action callto-action-04" [ngStyle]="{ 'background-image': 'url(' + (about?.cta?.backgroundImage ? ('http://localhost:3000' + about.cta.backgroundImage) : 'assets/images/bg/call-to-action-bg-2.jpg') + ')' }">
+<div class="call-to-action callto-action-04" [ngStyle]="{ 'background-image': 'url(' + (about?.cta?.backgroundImage ? buildImageUrl(about.cta.backgroundImage) : 'assets/images/bg/call-to-action-bg-2.jpg') + ')' }">
   <div class="container">
     <div class="row align-items-center gy-8 gx-0">
       <div class="col-12">
@@ -117,7 +117,7 @@
       </div>
       <div class="col-md-7">
         <div class="aboutus-image-two">
-          <img [src]="about?.open?.image ? ('http://localhost:3000' + about.open.image) : 'assets/images/about/about-2.jpg'" alt="About-Image" />
+          <img [src]="about?.open?.image ? buildImageUrl(about.open.image) : 'assets/images/about/about-2.jpg'" alt="About-Image" />
         </div>
       </div>
     </div>
@@ -142,7 +142,7 @@
         <div class="col mb-25" *ngFor="let member of about.team">
           <div class="team-2-wrapper">
             <div class="team-2-thumb">
-              <img [src]="member.image ? ('http://localhost:3000' + member.image) : 'assets/images/team/team-1.jpg'" alt="Team-Image" />
+              <img [src]="member.image ? buildImageUrl(member.image) : 'assets/images/team/team-1.jpg'" alt="Team-Image" />
             </div>
             <div class="team-2-content">
               <span class="team-2-name">{{ member.name }}</span>
@@ -241,7 +241,7 @@
               </div>
               <p class="testimonial-two_text">{{ t.content }}</p>
               <div class="testimonial-two_image">
-                <img width="56" height="56" [src]="t.image ? ('http://localhost:3000' + t.image) : 'assets/images/avatar/testimoial-1.png'" alt="Author" />
+                <img width="56" height="56" [src]="t.image ? buildImageUrl(t.image) : 'assets/images/avatar/testimoial-1.png'" alt="Author" />
               </div>
               <span class="testimonial-two_name">{{ t.name }}</span>
               <span class="testimonial-two_position">{{ t.position || 'Customer' }}</span>
@@ -275,7 +275,7 @@
         <div class="swiper-wrapper align-items-center">
           <ng-container *ngIf="about?.brandImages?.length; else defaultBrands">
             <div class="swiper-slide brand-item" *ngFor="let brandImage of about.brandImages">
-              <img [src]="brandImage.startsWith('http') ? brandImage : ('http://localhost:3000' + brandImage)" alt="Brand" />
+              <img [src]="buildImageUrl(brandImage)" alt="Brand" />
             </div>
           </ng-container>
           <ng-template #defaultBrands>

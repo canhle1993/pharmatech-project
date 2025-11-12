@@ -9,11 +9,11 @@
       <!-- Content Editor -->
       <div class="mb-4">
         <label class="form-label">Main Content:</label>
-        <textarea
+        <p-editor
           formControlName="content"
-          rows="5"
-          class="form-control"
-          placeholder="Enter main contact page content here..."></textarea>
+          [style]="{'height':'200px'}"
+          placeholder="Enter main contact page content here...">
+        </p-editor>
         <small class="text-muted">This text will be displayed in the breadcrumb section</small>
       </div>
 

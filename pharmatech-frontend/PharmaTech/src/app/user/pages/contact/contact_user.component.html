@@ -115,29 +115,62 @@
       <div class="col-md-6">
         <div class="contact-section2_formbg">
           <h2 class="contact-section2_form__title">Say Something...</h2>
+
+          <!-- Success/Error Message -->
+          <div *ngIf="submitMessage"
+               class="alert alert-dismissible fade show mb-3"
+               [ngClass]="{'alert-success': submitMessageType === 'success', 'alert-danger': submitMessageType === 'error'}"
+               role="alert">
+            {{ submitMessage }}
+          </div>
+
           <form
+            [formGroup]="contactMessageForm"
+            (ngSubmit)="onSubmitContactForm()"
             class="contact-section2_form"
-            id="contact-form"
-            action="assets/php/mail.php"
-            method="post"
           >
             <div class="row">
               <div class="col-sm-6 col-6 form-p">
                 <div class="form-group">
                   <label>First Name*</label>
-                  <input class="form-field" type="text" name="name" />
+                  <input
+                    class="form-field"
+                    type="text"
+                    formControlName="firstName"
+                    [class.is-invalid]="contactMessageForm.get('firstName')?.invalid && contactMessageForm.get('firstName')?.touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="contactMessageForm.get('firstName')?.invalid && contactMessageForm.get('firstName')?.touched">
+                    First name is required
+                  </div>
                 </div>
               </div>
               <div class="col-sm-6 col-6 form-p">
                 <div class="form-group">
                   <label>Last Name*</label>
-                  <input class="form-field" type="text" name="lastname" />
+                  <input
+                    class="form-field"
+                    type="text"
+                    formControlName="lastName"
+                    [class.is-invalid]="contactMessageForm.get('lastName')?.invalid && contactMessageForm.get('lastName')?.touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="contactMessageForm.get('lastName')?.invalid && contactMessageForm.get('lastName')?.touched">
+                    Last name is required
+                  </div>
                 </div>
               </div>
               <div class="col-md-12 form-p">
                 <div class="form-group">
                   <label>Email Address*</label>
-                  <input class="form-field" type="email" name="email" />
+                  <input
+                    class="form-field"
+                    type="email"
+                    formControlName="email"
+                    [class.is-invalid]="contactMessageForm.get('email')?.invalid && contactMessageForm.get('email')?.touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="contactMessageForm.get('email')?.invalid && contactMessageForm.get('email')?.touched">
+                    <span *ngIf="contactMessageForm.get('email')?.errors?.['required']">Email is required</span>
+                    <span *ngIf="contactMessageForm.get('email')?.errors?.['email']">Please enter a valid email</span>
+                  </div>
                 </div>
               </div>
               <div class="col-md-12 form-p">
@@ -145,8 +178,12 @@
                   <label>Message*</label>
                   <textarea
                     class="form-control text-area"
-                    name="message"
+                    formControlName="message"
+                    [class.is-invalid]="contactMessageForm.get('message')?.invalid && contactMessageForm.get('message')?.touched"
                   ></textarea>
+                  <div class="invalid-feedback" *ngIf="contactMessageForm.get('message')?.invalid && contactMessageForm.get('message')?.touched">
+                    Message is required
+                  </div>
                 </div>
               </div>
               <div class="col-md-12 form-p">
@@ -154,16 +191,14 @@
                   <button
                     class="btn btn-secondary btn-hover-primary"
                     type="submit"
-                    value="Send Massage"
+                    [disabled]="isSubmitting"
                   >
-                    Send Message
+                    {{ isSubmitting ? 'Sending...' : 'Send Message' }}
                   </button>
                 </div>
               </div>
             </div>
           </form>
-          <!-- Message Notification -->
-          <div class="form-messege"></div>
         </div>
       </div>
     </div>

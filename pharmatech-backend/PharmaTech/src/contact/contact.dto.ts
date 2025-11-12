@@ -18,19 +18,13 @@ export class CreateContactDto {
   bannerImage?: string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  addresses?: string[];
+  addresses?: string[] | string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  phones?: string[];
+  phones?: string[] | string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  emails?: string[];
+  emails?: string[] | string;
 
   @IsOptional()
   @IsString()
@@ -47,19 +41,13 @@ export class UpdateContactDto {
   bannerImage?: string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  addresses?: string[];
+  addresses?: string[] | string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  phones?: string[];
+  phones?: string[] | string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  emails?: string[];
+  emails?: string[] | string;
 
   @IsOptional()
   @IsString()
