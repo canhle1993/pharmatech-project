@@ -1,6 +1,8 @@
 /* css cho icons */
 @import "primeicons/primeicons.css";
 
+@import "aos/dist/aos.css";
+
 /* css cho quill */
 @import "quill/dist/quill.core.css";
 @import "quill/dist/quill.snow.css";

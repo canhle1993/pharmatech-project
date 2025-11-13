@@ -1,4 +1,3 @@
-// src/career/career.controller.ts
 import {
   BadRequestException,
   Body,
@@ -28,7 +27,7 @@ export class CareerController {
   constructor(private readonly careerService: CareerService) {}
 
   /** =======================================
-   * 🟢 CREATE JOB
+   * 🟢 CREATE NEW JOB
    * ======================================= */
   @Post()
   @UseInterceptors(
@@ -44,7 +43,8 @@ export class CareerController {
   )
   async create(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
     console.log('📦 [CREATE] Raw body received from FE:', body);
-    // 🧹 Chuẩn hóa dữ liệu: gộp body và file
+
+    // 🧹 Chuẩn hóa dữ liệu
     const raw = {
       ...body,
       banner: file?.filename || undefined,
@@ -54,7 +54,7 @@ export class CareerController {
       expiration_date: body?.expiration_date || undefined,
     };
 
-    // 🧽 Loại field rỗng hoặc undefined
+    // 🧽 Loại bỏ field rỗng
     Object.keys(raw).forEach((k) => {
       const v = (raw as any)[k];
       if (v === undefined || v === '') delete (raw as any)[k];
@@ -62,11 +62,10 @@ export class CareerController {
 
     console.log('📦 [CREATE] Parsed raw before DTO:', raw);
 
-    // 🧩 Map sang DTO + validate
+    // 🧩 Validate DTO
     const dto = plainToInstance(CreateCareerDto, raw, {
       enableImplicitConversion: true,
     });
-
     const errors = validateSync(dto, {
       whitelist: true,
       forbidUnknownValues: true,
@@ -77,8 +76,12 @@ export class CareerController {
       );
     }
 
-    // ✅ Tạo mới job
-    return this.careerService.create(dto);
+    // ✅ Tạo job và tự động gửi mail đến user liên quan
+    const created = await this.careerService.create(dto);
+    return {
+      msg: 'Job created successfully and notifications sent.',
+      data: created,
+    };
   }
 
   /** =======================================
@@ -101,20 +104,19 @@ export class CareerController {
     @UploadedFile() file: Express.Multer.File,
     @Body() body: any,
   ) {
+    console.log('📦 [UPDATE] Raw body received:', body);
+
     const raw = {
       ...body,
       banner: file?.filename || undefined,
     };
 
-    // 🧽 Loại field trống
+    // 🧽 Loại field rỗng
     Object.keys(raw).forEach((k) => {
       const v = (raw as any)[k];
       if (v === undefined || v === '') delete (raw as any)[k];
     });
 
-    console.log('📦 [UPDATE] Parsed raw before DTO:', raw);
-
-    // 🧩 Map sang DTO + validate
     const dto = plainToInstance(UpdateCareerDto, raw, {
       enableImplicitConversion: true,
     });
@@ -129,8 +131,8 @@ export class CareerController {
       );
     }
 
-    // ✅ Cập nhật job
-    return this.careerService.update(id, dto);
+    const updated = await this.careerService.update(id, dto);
+    return { msg: 'Job updated successfully', data: updated };
   }
 
   /** =======================================
@@ -138,10 +140,8 @@ export class CareerController {
    * ======================================= */
   @Get()
   async findAll() {
-    const careers = await this.careerService.findAll();
-    return plainToInstance(CareerDTO, careers, {
-      excludeExtraneousValues: true,
-    });
+    // ❌ Không cần transform thêm lần nữa
+    return await this.careerService.findAll();
   }
 
   /** =======================================
@@ -149,17 +149,25 @@ export class CareerController {
    * ======================================= */
   @Get(':id')
   async findById(@Param('id') id: string) {
-    const career = await this.careerService.findById(id);
-    return plainToInstance(CareerDTO, career, {
-      excludeExtraneousValues: true,
-    });
+    // ❌ Không cần transform lại
+    return await this.careerService.findById(id);
   }
 
   /** =======================================
-   * 🔴 DELETE JOB (SOFT DELETE)
+   * 🧭 GET SIMILAR JOBS
+   * ======================================= */
+  @Get('similar/:id')
+  async getSimilar(@Param('id') id: string): Promise<CareerDTO[]> {
+    return await this.careerService.findSimilarById(id);
+  }
+
+  /** =======================================
+   * 🔴 SOFT DELETE JOB
    * ======================================= */
   @Delete(':id')
   async delete(@Param('id') id: string) {
-    return this.careerService.delete(id);
+    const ok = await this.careerService.delete(id);
+    if (!ok) throw new BadRequestException('Soft delete failed');
+    return { msg: 'Job marked as inactive successfully' };
   }
 }

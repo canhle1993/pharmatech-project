@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
 
   usernameError = '';
   passwordError = '';
-  
+
   constructor(
     private fb: FormBuilder,
     private accountService: AccountService,
@@ -54,7 +54,7 @@ export class LoginComponent implements OnInit {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required],
-      remember: [false]
+      remember: [false],
     });
   }
 
@@ -153,14 +153,18 @@ export class LoginComponent implements OnInit {
 
       const res: any = await this.accountService.login(username, password);
 
-      if (res?.account) {
-        // Lưu token (tuỳ API của bạn)
-        localStorage.setItem(
-          'token',
-          res.token || res.account.email || username
-        );
+      if (res?.access_token) {
+        const role = res.account.roles?.[0]?.toLowerCase() || 'user';
 
-        // Ghi nhớ nếu cần
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Login successful',
+          detail: `Welcome, ${res.account.name}`,
+        });
+
+        this.success = true;
+
+        // ✅ Ghi nhớ login nếu cần
         if (remember) {
           localStorage.setItem('remember_me', '1');
           localStorage.setItem('remember_user', username);
@@ -169,33 +173,19 @@ export class LoginComponent implements OnInit {
           localStorage.removeItem('remember_user');
         }
 
-        const role = res.account.roles?.[0]?.toLowerCase() || 'user';
-
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Login successful',
-          detail: `Welcome, ${username}`,
-        });
-
-        // Hiệu ứng success mềm
-        this.success = true;
-
         setTimeout(() => {
           if (role === 'admin' || role === 'superadmin') {
             this.router.navigate(['/admin']);
           } else {
             this.router.navigate(['/home']);
           }
-        }, 900);
+        }, 800);
       } else {
-        const msg = res?.msg || 'Invalid credentials';
         this.messageService.add({
           severity: 'error',
           summary: 'Login Error',
-          detail: msg,
+          detail: res?.msg || 'Invalid credentials',
         });
-        this.passwordError = msg;
-        this.loginForm.get('password')?.markAsTouched();
       }
     } catch (err: any) {
       const detailMsg =
@@ -203,13 +193,12 @@ export class LoginComponent implements OnInit {
         err?.error?.msg ||
         err?.message ||
         'Login failed. Please try again.';
+
       this.messageService.add({
         severity: 'error',
         summary: 'Login Error',
         detail: detailMsg,
       });
-      this.passwordError = detailMsg;
-      this.loginForm.get('password')?.markAsTouched();
     } finally {
       this.setLoading(false);
     }

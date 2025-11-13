@@ -31,16 +31,23 @@ export class AccountService {
   }
 
   /** 🔹 Đăng nhập */
+  /** 🔹 Đăng nhập */
   async login(username: string, password: string) {
     const res: any = await lastValueFrom(
-      this.httpClient.post(`${env.baseUrl}account/login`, {
-        username,
-        password,
-      })
+      this.httpClient.post(`${env.baseUrl}auth/login`, { username, password })
     );
 
-    if (res.account) {
+    if (res?.access_token) {
+      // Lưu token thật
+      localStorage.setItem('token', res.access_token);
+
+      // Lưu thông tin user
       localStorage.setItem('currentUser', JSON.stringify(res.account));
+
+      localStorage.setItem('userId', res.account.id || res.account._id || '');
+      localStorage.setItem('userName', res.account.name || '');
+      localStorage.setItem('userEmail', res.account.email || '');
+      localStorage.setItem('userRole', JSON.stringify(res.account.roles || []));
     }
 
     return res;

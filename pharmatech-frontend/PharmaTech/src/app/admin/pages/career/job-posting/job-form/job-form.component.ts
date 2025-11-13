@@ -75,7 +75,7 @@ export class JobFormComponent implements OnInit {
     { name: 'Maintenance & Engineering' },
     { name: 'Procurement & Supply Chain' },
     { name: 'Sales & Marketing' },
-    { name: 'Regulatory Affairs' },
+    { name: 'Regulatory' },
     { name: 'Finance & Accounting' },
     { name: 'Human Resources' },
     { name: 'IT Support' },
@@ -189,6 +189,26 @@ export class JobFormComponent implements OnInit {
     'Other',
   ];
 
+  // 🕐 Working hours & days & age range
+  workingHoursList = [
+    '08:00 - 17:00',
+    '07:30 - 16:30',
+    '09:00 - 18:00',
+    'Shift-based',
+    'Flexible Hours',
+  ];
+
+  workingDaysList = [
+    'Mon - Fri',
+    'Mon - Sat (Alternate)',
+    'Mon - Sat',
+    '5 days/week',
+    '6 days/week',
+    'Rotational shifts',
+  ];
+
+  ageRangeList = ['18 - 24', '25 - 30', '31 - 40', '41 - 50', 'Above 50'];
+
   filteredSkills: any[] = [];
   filteredBenefits: any[] = [];
   filteredIndustry: any[] = [];
@@ -202,6 +222,9 @@ export class JobFormComponent implements OnInit {
   filteredGenders: string[] = [];
   filteredMarital: string[] = [];
   filteredNationality: string[] = [];
+  filteredWorkingHours: string[] = [];
+  filteredWorkingDays: string[] = [];
+  filteredAgeRanges: string[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -458,6 +481,22 @@ export class JobFormComponent implements OnInit {
       case 'nationality':
         this.filteredNationality = this.nationalityList.filter((n) =>
           n.toLowerCase().includes(query)
+        );
+        break;
+
+      case 'working_hours':
+        this.filteredWorkingHours = this.workingHoursList.filter((h) =>
+          h.toLowerCase().includes(query)
+        );
+        break;
+      case 'working_days':
+        this.filteredWorkingDays = this.workingDaysList.filter((d) =>
+          d.toLowerCase().includes(query)
+        );
+        break;
+      case 'age_range':
+        this.filteredAgeRanges = this.ageRangeList.filter((a) =>
+          a.toLowerCase().includes(query)
         );
         break;
     }

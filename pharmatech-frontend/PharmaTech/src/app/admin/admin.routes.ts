@@ -12,7 +12,7 @@ import { RecycleCategoryComponent } from './pages/recycle/recycle-category/recyc
 import { RecycleProductComponent } from './pages/recycle/recycle-product/recycle-product.component';
 import { QuoteComponent } from './pages/quote/quote.component';
 import { JobPostingComponent } from './pages/career/job-posting/job-posting.component';
-import { RecruitmentDetailsComponent } from './pages/career/recruitment-details/recruitment-details.component';
+
 import { RecruitmentHistoryComponent } from './pages/career/recruitment-history/recruitment-history.component';
 import { OrderListComponent } from './pages/order/order-list/order-list.component';
 import { OrderDetailsComponent } from './pages/order/order-details/order-details.component';
@@ -25,6 +25,7 @@ import { ProductDetailsComponent } from './pages/product/productDetails/productD
 import { HotlineInfoComponent } from './pages/settings/HotlineInfo/HotlineInfo.component';
 import { ProductEditComponent } from './pages/product/productEdit/productEdit.component';
 import { JobFormComponent } from './pages/career/job-posting/job-form/job-form.component';
+import { ApplicationManagementComponent } from './pages/career/application-management/application-management.component';
 
 export const adminRoutes: Routes = [
   {
@@ -59,8 +60,8 @@ export const adminRoutes: Routes = [
       { path: 'career/job-edit/:id', component: JobFormComponent },
 
       {
-        path: 'career/recruitment-details',
-        component: RecruitmentDetailsComponent,
+        path: 'career/application-management',
+        component: ApplicationManagementComponent,
       },
       {
         path: 'career/recruitment-history',

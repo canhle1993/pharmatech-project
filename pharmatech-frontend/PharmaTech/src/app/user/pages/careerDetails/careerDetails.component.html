@@ -1,5 +1,10 @@
+<p-toast></p-toast>
+
+
+
+
 <!-- Breadcrumb -->
-<div class="breadcrumb" data-bg-image="assets/images/bg/breadcrumb-bg-5.jpg">
+<div class="breadcrumb" data-bg-image="assets/images/bg/DetailsCareer.jpg">
   <div class="container">
     <div class="row">
       <div class="col-12">
@@ -16,7 +21,8 @@
 </div>
 
 <!-- Job Detail Section -->
-<div class="career-detail container my-5" *ngIf="!loading && career">
+<div class="career-detail container my-5 fade-wrapper" [class.loaded]="!loading" *ngIf="career">
+
   <div class="row g-4">
 
     <!-- ================= LEFT ================= -->
@@ -37,42 +43,182 @@
         </div>
 
         <div class="d-flex gap-2 mt-3">
-          <button class="btn btn-primary rounded-pill px-4">Apply Now</button>
+          <button class="btn btn-primary rounded-pill px-4" (click)="applyJob()">
+            Apply Now
+          </button>
+
           <button class="btn btn-outline-dark rounded-pill px-4">Save Job</button>
         </div>
       </div>
-
       <!-- Job Description -->
       <div class="card border-0 shadow-sm rounded-4 mb-4">
         <div class="card-body">
           <h5 class="fw-bold mb-3 text-dark">Job Description</h5>
-          <p class="text-secondary" [innerHTML]="career.description"></p>
+
+          <div class="text-secondary job-text" [class.collapsed]="!showMoreDesc" [innerHTML]="career.description"></div>
+
+          <button class="toggle-btn mt-2" (click)="toggle('desc')">
+            {{ showMoreDesc ? 'Show less ▲' : 'Show more ▼' }}
+          </button>
 
           <h5 class="fw-bold mt-4 mb-2 text-dark">Requirements</h5>
-          <p class="text-secondary" [innerHTML]="career.requirements"></p>
+
+          <div class="text-secondary job-text" [class.collapsed]="!showMoreReq" [innerHTML]="career.requirements"></div>
+
+          <button class="toggle-btn mt-2" (click)="toggle('req')">
+            {{ showMoreReq ? 'Show less ▲' : 'Show more ▼' }}
+          </button>
         </div>
       </div>
 
-      <!-- Job Information -->
-      <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+      <!-- ======================= 🧩 Job Benefits ======================= -->
+      <div class="card border-0 shadow-sm rounded-4 mb-4" *ngIf="benefitsView.length">
         <div class="card-body">
-          <h5 class="fw-bold mb-3 text-dark">Job Information</h5>
-          <div class="row small text-secondary">
-            <div class="col-md-6">
-              <p><strong>Posted Date:</strong> {{ career.posted_date | date: 'MMM dd, yyyy' }}</p>
-              <p><strong>Department:</strong> {{ career.department }}</p>
-              <p><strong>Area:</strong> {{ career.area || 'N/A' }}</p>
-              <p><strong>Experience:</strong> {{ career.experience || 'No experience required' }}</p>
-            </div>
-            <div class="col-md-6">
-              <p><strong>Language:</strong> English / Vietnamese</p>
-              <p><strong>Gender:</strong> Any</p>
-              <p><strong>Working Hours:</strong> 08:00 - 17:00</p>
-              <p><strong>Type:</strong> {{ career.work_type || 'Full-time' }}</p>
+          <h5 class="fw-bold mb-3 text-dark">Job Benefits</h5>
+
+          <div class="benefit-list">
+            <div class="benefit-item d-flex align-items-start p-3 rounded-3 mb-2"
+              *ngFor="let benefit of benefitsView; let i = index" [ngClass]="{
+          'bg-light-blue': i % 3 === 0,
+          'bg-light-green': i % 3 === 1,
+          'bg-light-orange': i % 3 === 2
+        }">
+              <!-- Icon -->
+              <div class="icon me-3">
+                <i class="las" [ngClass]="{
+              'la-heartbeat': benefit.includes('Health insurance'),
+              'la-trophy': benefit.includes('Annual performance bonus'),
+              'la-umbrella-beach': benefit.includes('Paid annual leave'),
+              'la-graduation-cap': benefit.includes('Professional training'),
+              'la-clock': benefit.includes('Overtime allowance'),
+              'la-utensils': benefit.includes('Meal and transportation'),
+              'la-chart-line': benefit.includes('Career advancement'),
+              'la-users': benefit.includes('Friendly work environment'),
+              'la-hard-hat': benefit.includes('Safety and hygiene')
+            }"></i>
+              </div>
+
+              <!-- Text -->
+              <div>
+                <strong class="text-dark d-block">{{ benefit }}</strong>
+                <small class="text-muted">
+                  {{
+                  benefit.includes('Health insurance') ? 'Medical and wellness coverage' :
+                  benefit.includes('Annual performance bonus') ? 'Yearly incentive based on performance' :
+                  benefit.includes('Paid annual leave') ? 'Enjoy your well-deserved vacations' :
+                  benefit.includes('Professional training') ? 'Continuous skill improvement and certification' :
+                  benefit.includes('Overtime allowance') ? 'Fair compensation for extra working hours' :
+                  benefit.includes('Meal and transportation') ? 'Allowance for meals and commuting' :
+                  benefit.includes('Career advancement') ? 'Clear promotion and growth path' :
+                  benefit.includes('Friendly work environment') ? 'Positive and supportive workplace culture' :
+                  'Safety and hygiene equipment provided'
+                  }}
+                </small>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+
+
+
+
+
+
+      <!-- Job Information -->
+      <!-- Job Information -->
+      <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body">
+          <h5 class="fw-bold mb-3 text-dark">Job Information</h5>
+
+          <div class="row small text-secondary job-info" [class.collapsed]="!showMoreInfo">
+            <!-- Cột trái -->
+            <div class="col-md-6">
+
+              <!-- ✅ Skills moved to top -->
+              <p *ngIf="career.skills?.length">
+                <i class="las la-lightbulb text-primary me-2"></i>
+                <strong>Skills:</strong>
+                <span *ngFor="let skill of career.skills; let last = last">
+                  {{ skill }}<span *ngIf="!last">, </span>
+                </span>
+              </p>
+
+              <p><i class="las la-hourglass-end text-primary me-2"></i>
+                <strong>Expiration Date:</strong> {{ career.expiration_date | date: 'MMM dd, yyyy' }}
+              </p>
+
+              <p><i class="las la-briefcase text-primary me-2"></i>
+                <strong>Department:</strong> {{ career.department }}
+              </p>
+
+              <p><i class="las la-building text-primary me-2"></i>
+                <strong>Industry:</strong> {{ career.industry?.join(', ') || 'N/A' }}
+              </p>
+
+              <p><i class="las la-layer-group text-primary me-2"></i>
+                <strong>Field:</strong> {{ career.field?.join(', ') || 'N/A' }}
+              </p>
+
+              <p><i class="las la-users text-primary me-2"></i>
+                <strong>Quantity:</strong> {{ career.quantity || 1 }}
+              </p>
+
+              <p><i class="las la-chart-line text-primary me-2"></i>
+                <strong>Level:</strong> {{ career.level || 'All levels' }}
+              </p>
+
+              <p><i class="las la-user-graduate text-primary me-2"></i>
+                <strong>Education:</strong> {{ career.education_level || 'N/A' }}
+              </p>
+            </div>
+
+            <!-- Cột phải -->
+            <div class="col-md-6">
+              <p><i class="las la-user-clock text-primary me-2"></i>
+                <strong>Experience:</strong> {{ career.experience || 'No experience required' }}
+              </p>
+
+              <p><i class="las la-clock text-primary me-2"></i>
+                <strong>Working Hours:</strong> {{ career.working_hours || '08:00 - 17:00' }}
+              </p>
+
+              <p><i class="las la-calendar-check text-primary me-2"></i>
+                <strong>Working Days:</strong> {{ career.working_days || 'Mon - Fri' }}
+              </p>
+
+              <p><i class="las la-map-marker-alt text-primary me-2"></i>
+                <strong>Location:</strong> {{ career.location }}
+              </p>
+
+              <p><i class="las la-globe text-primary me-2"></i>
+                <strong>Area:</strong> {{ career.area || 'N/A' }}
+              </p>
+
+              <p><i class="las la-venus-mars text-primary me-2"></i>
+                <strong>Gender:</strong> {{ career.gender || 'Any' }}
+              </p>
+
+              <p><i class="las la-flag text-primary me-2"></i>
+                <strong>Nationality:</strong> {{ career.nationality || 'Any' }}
+              </p>
+
+              <p><i class="las la-language text-primary me-2"></i>
+                <strong>Language:</strong> {{ career.language?.join(', ') || 'English / Vietnamese' }}
+              </p>
+            </div>
+          </div>
+
+          <button class="toggle-btn mt-2" (click)="toggle('info')">
+            {{ showMoreInfo ? 'Show less ▲' : 'Show more ▼' }}
+          </button>
+        </div>
+      </div>
+
+
+
 
       <!-- Work Location -->
       <div class="card border-0 shadow-sm rounded-4">
@@ -189,28 +335,26 @@
 
 
       <!-- Similar Jobs -->
-      <div class="card border-0 shadow-sm rounded-4">
+      <div class="card border-0 shadow-sm rounded-4" *ngIf="similarJobs.length">
         <div class="card-body">
           <h5 class="fw-bold mb-3 text-dark">Similar Jobs</h5>
-          <div class="d-flex align-items-start mb-3">
-            <img src="assets/images/jobs/job1.jpg" alt="Job 1" class="rounded me-3" width="60" />
-            <div>
-              <h6 class="fw-semibold mb-0 text-dark">Campus Nurse</h6>
-              <p class="text-muted small mb-0">British University Vietnam</p>
-              <p class="text-muted small">Hà Nội, Việt Nam</p>
-            </div>
-          </div>
 
-          <div class="d-flex align-items-start">
-            <img src="assets/images/jobs/job2.jpg" alt="Job 2" class="rounded me-3" width="60" />
-            <div>
-              <h6 class="fw-semibold mb-0 text-dark">Medical Assistant</h6>
-              <p class="text-muted small mb-0">Healthcare Co. Ltd</p>
-              <p class="text-muted small">Hồ Chí Minh City</p>
-            </div>
+          <div class="similar-jobs">
+            <a *ngFor="let job of similarJobs" [routerLink]="['/careerDetails', job.id]"
+              class="similar-job-item text-decoration-none">
+              <img [src]="job.banner || 'assets/images/jobs/default-job.jpg'" alt="{{ job.title }}" />
+              <div class="similar-job-info">
+                <h6 class="text-dark fw-semibold mb-1">{{ job.title }}</h6>
+                <p class="text-muted small mb-0">{{ job.department }}</p>
+                <p class="text-muted small">{{ job.location }}</p>
+              </div>
+            </a>
           </div>
         </div>
       </div>
+
+
+
 
     </div>
   </div>

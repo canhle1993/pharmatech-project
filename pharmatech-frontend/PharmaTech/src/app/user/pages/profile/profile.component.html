@@ -1,332 +1,204 @@
-<!-- Breadcrumb Section Start -->
-<div class="breadcrumb" data-bg-image="assets/images/bg/profileTop.png">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <div class="breadcrumb_content">
-          <h1 class="breadcrumb_title">Profile</h1>
-          <ul class="breadcrumb_list">
-            <li><a href="index.html">Home</a></li>
-            <li>Profile</li>
-          </ul>
+<div class="container py-4" *ngIf="account">
+  <div class="profile-card shadow-sm border-0">
+    <!-- Header -->
+    <div class="profile-header d-flex justify-content-between align-items-center px-4 py-3 bg-light border-bottom">
+      <div class="d-flex align-items-center gap-3">
+        <img [src]="account?.photo || 'assets/images/no-image.jpg'" class="profile-avatar border" alt="avatar" />
+
+
+        <div>
+          <h5 class="fw-bold mb-1">{{ account.name }}</h5>
+          <p class="text-muted small mb-1">{{ account.email }}</p>
+          <small>
+            <strong>Status:</strong>
+            <span [class.text-success]="account.is_active" [class.text-danger]="!account.is_active">
+              {{ account.is_active ? 'Active' : 'Inactive' }}
+            </span>
+          </small>
         </div>
       </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-outline-primary rounded-pill px-3" (click)="toggleEdit()">
+          <i class="bx bx-edit-alt me-1"></i>{{ isEditing ? 'Cancel' : 'Edit' }}
+        </button>
+
+        <label *ngIf="isEditing" for="upload-photo" class="btn btn-warning text-white rounded-pill px-3 mb-0">
+          <i class="bx bx-upload me-1"></i> Upload Photo
+          <input type="file" id="upload-photo" hidden accept="image/png, image/jpeg"
+            (change)="onPhotoSelected($event)" />
+        </label>
+      </div>
     </div>
-  </div>
-</div>
-<!-- Breadcrumb Section End -->
 
-<div class="container-xxl flex-grow-1 container-p-y" *ngIf="account">
-  <div class="row pt-3">
-    <div class="col-md-12">
-      <div class="card mb-4">
-        <h5 class="card-header">Profile</h5>
-
-        <!-- Avatar -->
-        <div class="card-body">
-          <div class="d-flex align-items-start align-items-sm-center gap-4">
-            <img
-              [src]="
-                account?.photo ? account.photo : 'assets/images/no-image.jpg'
-              "
-              alt="user-avatar"
-              class="d-block rounded"
-              height="100"
-              width="100"
-              id="uploadedAvatar"
-            />
-            <div>
-              <h5 class="mb-0">{{ account.name }}</h5>
-              <p class="text-muted mb-0">{{ account.email }}</p>
-              <p class="text-muted mb-0">
-                <strong>Status:</strong>
-                <span
-                  [class.text-success]="account.is_active"
-                  [class.text-danger]="!account.is_active"
-                >
-                  {{ account.is_active ? "Active" : "Inactive" }}
-                </span>
-              </p>
+    <!-- Body -->
+    <div class="card-body p-4">
+      <form (ngSubmit)="saveChanges()" #formRef="ngForm">
+        <!-- Section: Basic Info -->
+        <div class="section">
+          <h6 class="section-title">
+            <i class="bx bx-user-circle me-2"></i> Basic Information
+          </h6>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Full Name</label>
+              <input class="form-control" [(ngModel)]="account.name" name="name" [readonly]="!isEditing" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Phone</label>
+              <input class="form-control" [(ngModel)]="account.phone" name="phone" [readonly]="!isEditing" />
             </div>
 
-            <div class="button-wrapper">
-              <button type="button" data-inline="true" (click)="toggleEdit()">
-                <i class="bx bx-edit"></i>
-                {{ isEditing ? "Cancel" : "Edit" }}
-              </button>
+            <div class="col-md-6">
+              <label class="form-label">Address</label>
+              <input class="form-control" [(ngModel)]="account.address" name="address" [readonly]="!isEditing" />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Gender</label>
+              <p-autoComplete [(ngModel)]="account.gender" [suggestions]="filteredGenders"
+                (completeMethod)="filterGender($event)" [dropdown]="true" [disabled]="!isEditing"
+                placeholder="Select gender" name="gender" class="w-100"></p-autoComplete>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Date of Birth</label>
+              <p-datepicker [(ngModel)]="account.dob" name="dob" [showIcon]="true" [disabled]="!isEditing"
+                [iconDisplay]="'input'" dateFormat="dd/mm/yy" [showButtonBar]="true" [touchUI]="true"
+                [minDate]="minDate" [maxDate]="maxDate" placeholder="Select date" inputStyleClass="form-control"
+                (ngModelChange)="onDobChange($event)"></p-datepicker>
 
-              <label
-                *ngIf="isEditing"
-                for="upload-photo"
-                style="
-                  background-color: #fd8d0d;
-                  color: white;
-                  padding: 0.4rem 1rem;
-                  border-radius: 0.25rem;
-                  margin-right: 0.5rem;
-                  margin-bottom: 1rem;
-                  display: inline-block;
-                  cursor: pointer;
-                "
-                tabindex="0"
-              >
-                <span class="d-none d-sm-block">Upload new photo</span>
-                <i class="bx bx-upload d-block d-sm-none"></i>
-                <input
-                  type="file"
-                  id="upload-photo"
-                  hidden
-                  accept="image/png, image/jpeg"
-                  (change)="onPhotoSelected($event)"
-                />
-              </label>
+              <div class="small text-muted mt-1" *ngIf="account?.['age']">
+                Age: {{ account?.['age'] }} years
+              </div>
+            </div>
+
+
+
+
+          </div>
+
+
+        </div>
+
+
+        <!-- Section: Job Preference -->
+        <div class="section">
+          <h6 class="section-title">
+            <i class="bx bx-briefcase me-2"></i> Job Preferences
+          </h6>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Preferred Area</label>
+              <p-autoComplete [(ngModel)]="account.preferred_area" [suggestions]="filteredAreas"
+                (completeMethod)="filterArea($event)" [dropdown]="true" [disabled]="!isEditing"
+                placeholder="Select area" name="preferred_area" class="w-100"></p-autoComplete>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Job Type</label>
+              <p-autoComplete [(ngModel)]="account.job_type" [suggestions]="filteredWorkTypes"
+                (completeMethod)="filterWorkType($event)" [dropdown]="true" [disabled]="!isEditing"
+                placeholder="Select job type" name="job_type" class="w-100"></p-autoComplete>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Expected Salary</label>
+              <div class="input-group">
+                <input type="number" class="form-control" [(ngModel)]="account.expected_salary" name="expected_salary"
+                  [readonly]="!isEditing" />
+                <span class="input-group-text fw-semibold">USD</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <hr class="my-0" />
-
-        <!-- Account Info -->
-        <div class="card-body">
-          <!-- ✅ Đặt ngSubmit đúng vị trí -->
-          <form
-            id="formAccountSettings"
-            (ngSubmit)="saveChanges()"
-            #formRef="ngForm"
-          >
-            <div class="row">
-              <!-- Basic Info -->
-              <div class="mb-3 col-md-6">
-                <label class="form-label">Full Name</label>
-                <input
-                  class="form-control"
-                  type="text"
-                  [(ngModel)]="account.name"
-                  name="name"
-                  [readonly]="!isEditing"
-                />
-              </div>
-
-              <div class="mb-3 col-md-6">
-                <label class="form-label">Phone</label>
-                <input
-                  class="form-control"
-                  type="text"
-                  [(ngModel)]="account.phone"
-                  name="phone"
-                  [readonly]="!isEditing"
-                />
-              </div>
-
-              <div class="mb-3 col-md-6">
-                <label class="form-label">Address</label>
-                <input
-                  class="form-control"
-                  type="text"
-                  [(ngModel)]="account.address"
-                  name="address"
-                  [readonly]="!isEditing"
-                />
-              </div>
-
-              <div class="mb-3 col-md-6">
-                <label class="form-label">Gender</label>
-
-                <!-- 🔹 Khi không edit: chỉ hiển thị text -->
-                <input
-                  *ngIf="!isEditing"
-                  class="form-control"
-                  type="text"
-                  [value]="account.gender || '-'"
-                  readonly
-                />
-
-                <!-- 🔹 Khi đang edit: hiển thị radio chọn -->
-                <div
-                  *ngIf="isEditing"
-                  class="d-flex align-items-center flex-wrap gap-3 mt-1"
-                >
-                  <div class="form-check form-check-inline mb-0">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      id="male"
-                      name="gender"
-                      value="Male"
-                      [(ngModel)]="account.gender"
-                    />
-                    <label class="form-check-label" for="male">Male</label>
-                  </div>
-
-                  <div class="form-check form-check-inline mb-0">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      id="female"
-                      name="gender"
-                      value="Female"
-                      [(ngModel)]="account.gender"
-                    />
-                    <label class="form-check-label" for="female">Female</label>
-                  </div>
-
-                  <div class="form-check form-check-inline mb-0">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      id="other"
-                      name="gender"
-                      value="Other"
-                      [(ngModel)]="account.gender"
-                    />
-                    <label class="form-check-label" for="other">Other</label>
-                  </div>
-                </div>
-              </div>
-
-              <div class="mb-3 col-md-6" *ngIf="!isEditing">
-                <label class="form-label">Username</label>
-                <input
-                  class="form-control"
-                  type="text"
-                  [value]="account.username"
-                  readonly
-                />
-              </div>
-
-              <div class="mb-3 col-md-6" *ngIf="!isEditing">
-                <label class="form-label">Email</label>
-                <input
-                  class="form-control"
-                  type="text"
-                  [value]="account.email"
-                  readonly
-                />
-              </div>
-
-              <!-- Education -->
-              <div class="col-12 mt-4">
-                <h6 class="text-primary">🎓 Education</h6>
-                <hr class="mt-1 mb-3" />
-              </div>
-
-              <div class="mb-3 col-md-4">
-                <label class="form-label">Degree</label>
-                <input
-                  class="form-control"
-                  type="text"
-                  [(ngModel)]="account.education.degree"
-                  name="education_degree"
-                  [readonly]="!isEditing"
-                />
-              </div>
-
-              <div class="mb-3 col-md-4">
-                <label class="form-label">University</label>
-                <input
-                  class="form-control"
-                  type="text"
-                  [(ngModel)]="account.education.university"
-                  name="education_university"
-                  [readonly]="!isEditing"
-                />
-              </div>
-
-              <div class="mb-3 col-md-4">
-                <label class="form-label">Graduation Year</label>
-                <input
-                  class="form-control"
-                  type="number"
-                  [(ngModel)]="account.education.graduation_year"
-                  name="education_graduation_year"
-                  [readonly]="!isEditing"
-                />
-              </div>
-
-              <!-- Experience -->
-              <div class="col-12 mt-4">
-                <h6 class="text-primary">💼 Experience</h6>
-                <hr class="mt-1 mb-3" />
-              </div>
-
-              <div class="mb-3 col-md-4">
-                <label class="form-label">Company</label>
-                <input
-                  class="form-control"
-                  type="text"
-                  [(ngModel)]="account.experience.company"
-                  name="experience_company"
-                  [readonly]="!isEditing"
-                />
-              </div>
-
-              <div class="mb-3 col-md-4">
-                <label class="form-label">Position</label>
-                <input
-                  class="form-control"
-                  type="text"
-                  [(ngModel)]="account.experience.position"
-                  name="experience_position"
-                  [readonly]="!isEditing"
-                />
-              </div>
-
-              <div class="mb-3 col-md-4">
-                <label class="form-label">Years</label>
-                <input
-                  class="form-control"
-                  type="number"
-                  [(ngModel)]="account.experience.years"
-                  name="experience_years"
-                  [readonly]="!isEditing"
-                />
-              </div>
-
-              <!-- Resume -->
-              <div class="col-12 mt-4">
-                <h6 class="text-primary">📄 Resume</h6>
-                <hr class="mt-1 mb-3" />
-
-                <!-- Khi không edit -->
-                <div *ngIf="!isEditing">
-                  <a
-                    *ngIf="account.resume"
-                    [href]="account.resume"
-                    target="_blank"
-                    class="btn btn-sm btn-outline-primary"
-                  >
-                    <i class="bx bx-download"></i> View / Download Resume
-                  </a>
-                  <p *ngIf="!account.resume" class="text-muted mb-0">
-                    No resume uploaded.
-                  </p>
-                </div>
-
-                <!-- Khi đang edit -->
-                <div *ngIf="isEditing">
-                  <input
-                    type="file"
-                    accept=".pdf,.jpg,.png"
-                    (change)="onResumeSelected($event)"
-                  />
-                </div>
-              </div>
+        <!-- Section: Skills -->
+        <div class="section">
+          <h6 class="section-title">
+            <i class="bx bx-brain me-2"></i> Skills & Specialization
+          </h6>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Field</label>
+              <p-multiSelect [options]="fieldList" optionLabel="name" [(ngModel)]="account.field" name="field"
+                [disabled]="!isEditing" defaultLabel="Select field(s)"></p-multiSelect>
             </div>
-
-            <!-- ✅ Nút Save chỉ hiện khi đang Edit -->
-            <div class="mt-2 text-end" *ngIf="isEditing">
-              <button type="submit" data-inline="true">Save changes</button>
+            <div class="col-md-4">
+              <label class="form-label">Skills</label>
+              <p-multiSelect [options]="skillsList" optionLabel="name" [(ngModel)]="account.skills" name="skills"
+                [disabled]="!isEditing" defaultLabel="Select skills"></p-multiSelect>
             </div>
-          </form>
+            <div class="col-md-4">
+              <label class="form-label">Languages</label>
+              <p-multiSelect [options]="languageList" optionLabel="name" [(ngModel)]="account.languages"
+                name="languages" [disabled]="!isEditing" defaultLabel="Select languages"></p-multiSelect>
+            </div>
+          </div>
         </div>
-        <!-- /Account -->
-      </div>
+
+        <!-- Section: Education -->
+        <div class="section">
+          <h6 class="section-title">
+            <i class="bx bxs-graduation me-2"></i> Education
+          </h6>
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label class="form-label">Level</label>
+              <p-autoComplete [(ngModel)]="account.education.education_level" [suggestions]="filteredEducationLevels"
+                (completeMethod)="filterEducationLevel($event)" [dropdown]="true" [disabled]="!isEditing"
+                placeholder="Select level" name="education_level" class="w-100"></p-autoComplete>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Major</label>
+              <input class="form-control" [(ngModel)]="account.education.major" name="major" [readonly]="!isEditing" />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">School</label>
+              <input class="form-control" [(ngModel)]="account.education.school_name" name="school_name"
+                [readonly]="!isEditing" />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Graduation Year</label>
+              <input type="number" class="form-control" [(ngModel)]="account.education.graduation_year"
+                name="graduation_year" [readonly]="!isEditing" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Resume -->
+        <div class="section">
+          <h6 class="section-title">
+            <i class="bx bx-file me-2"></i> Resume
+          </h6>
+          <div>
+            <ng-container *ngIf="!isEditing; else uploadTpl">
+              <a *ngIf="account.resume" [href]="account.resume" target="_blank" class="btn btn-outline-primary btn-sm">
+                <i class="bx bx-download"></i> View Resume
+              </a>
+              <span *ngIf="!account.resume" class="text-muted small ms-2">No resume uploaded.</span>
+            </ng-container>
+
+            <ng-template #uploadTpl>
+              <input type="file" accept=".pdf" (change)="onResumeSelected($event)" />
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Section: Introduction -->
+        <div class="section">
+          <h6 class="section-title">
+            <i class="bx bx-message-rounded-detail me-2"></i> Introduction
+          </h6>
+          <textarea class="form-control" rows="3" [(ngModel)]="account.introduction" name="introduction"
+            [readonly]="!isEditing"></textarea>
+        </div>
+
+        <div class="text-end mt-3" *ngIf="isEditing">
+          <button type="submit" class="btn btn-primary rounded-pill px-4">
+            <i class="bx bx-save me-1"></i> Save Changes
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 
-<p-progressSpinner
-  *ngIf="loading"
-  styleClass="custom-spinner"
-></p-progressSpinner>
+<p-progressSpinner *ngIf="loading" styleClass="custom-spinner"></p-progressSpinner>
 <p-toast></p-toast>

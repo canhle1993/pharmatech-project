@@ -3,7 +3,6 @@ import * as moment from 'moment';
 import { getImageUrl } from './config.util';
 
 export class AccountDTO {
-  // _id (ObjectId) -> id (string)
   @Transform(({ obj }) => obj?._id?.toString())
   @Expose()
   id: string;
@@ -15,12 +14,17 @@ export class AccountDTO {
   phone?: string;
 
   @Expose()
+  email?: string;
+
+  @Expose()
   address?: string;
 
   @Expose()
   gender?: string;
 
-  // Ghép URL ảnh đầy đủ, nếu không có thì trả null
+  @Expose()
+  dob?: Date;
+
   @Transform(({ obj }) => {
     if (!obj?.photo) return null;
     return obj.photo.startsWith('http')
@@ -34,14 +38,8 @@ export class AccountDTO {
   username: string;
 
   @Expose()
-  email: string;
+  roles: string[];
 
-  // Không expose password
-
-  @Expose()
-  roles: string[]; // ví dụ: ['user'] | ['admin', 'user']
-
-  // Giữ đúng tên field như schema
   @Expose({ name: 'is_active' })
   is_active: boolean;
 
@@ -51,48 +49,77 @@ export class AccountDTO {
   @Expose({ name: 'securityCode' })
   securityCode?: string;
 
-  // Định dạng ngày; nếu null/undefined thì trả null
   @Transform(({ obj }) => (obj?.last_login ? new Date(obj.last_login) : null))
   @Expose({ name: 'last_login' })
   last_login?: Date | null;
 
-  @Transform(({ obj }) => {
-    if (!obj?.created_at) return null;
-    // moment tự parse ISO format nên không cần định dạng đầu vào
-    return moment(obj.created_at).format('DD/MM/YYYY HH:mm');
-  })
+  @Transform(({ obj }) =>
+    obj?.created_at
+      ? moment(obj.created_at, moment.ISO_8601).format('DD/MM/YYYY HH:mm')
+      : null,
+  )
   @Expose({ name: 'created_at' })
   created_at?: string | null;
 
-  @Transform(({ obj }) => {
-    if (!obj?.updated_at) return null;
-    return moment(obj.updated_at).format('DD/MM/YYYY HH:mm');
-  })
+  @Transform(({ obj }) =>
+    obj?.updated_at
+      ? moment(obj.updated_at, moment.ISO_8601).format('DD/MM/YYYY HH:mm')
+      : null,
+  )
   @Expose({ name: 'updated_at' })
   updated_at?: string | null;
 
-  // 🧑‍🎓 Học vấn
+  // 🎓 Học vấn
   @Expose()
   education?: {
-    degree?: string;
-    university?: string;
+    education_level?: string;
+    major?: string;
+    school_name?: string;
     graduation_year?: number;
   };
 
   // 💼 Kinh nghiệm
   @Expose()
   experience?: {
-    company?: string;
-    position?: string;
-    years?: number;
+    company_name?: string;
+    job_title?: string;
+    working_years?: number;
+    responsibilities?: string;
   };
 
-  // 📄 File Resume (trả URL đầy đủ nếu có)
+  // 🧠 Kỹ năng & Ngôn ngữ
+  @Expose()
+  skills?: string[];
+
+  @Expose()
+  languages?: string[];
+
+  // 🌐 Lĩnh vực chuyên môn
+  @Expose()
+  field?: string[];
+
+  // 🏙️ Khu vực mong muốn
+  @Expose()
+  preferred_area?: string;
+
+  // 📄 Hồ sơ ứng tuyển
   @Transform(({ obj }) =>
     obj?.resume ? `${getImageUrl()}${obj.resume}` : null,
   )
   @Expose()
   resume?: string | null;
+
+  @Expose()
+  introduction?: string;
+
+  @Expose()
+  expected_salary?: number;
+
+  @Expose()
+  job_type?: string;
+
+  @Expose()
+  available_from?: Date;
 
   constructor(partial: Partial<AccountDTO>) {
     Object.assign(this, partial);

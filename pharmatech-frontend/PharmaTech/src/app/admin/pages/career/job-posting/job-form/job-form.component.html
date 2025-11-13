@@ -90,8 +90,34 @@
             (completeMethod)="filterRecruitment($event, 'nationality')"
             placeholder="Select nationality"></p-autoComplete>
         </div>
+        <!-- 🕐 Working Hours -->
+        <div class="form-group">
+          <label>Working Hours</label>
+          <p-autoComplete formControlName="working_hours" [dropdown]="true" [suggestions]="filteredWorkingHours"
+            (completeMethod)="filterRecruitment($event, 'working_hours')"
+            placeholder="e.g. 08:00 - 17:00"></p-autoComplete>
+        </div>
+
+        <!-- 📅 Working Days -->
+        <div class="form-group">
+          <label>Working Days</label>
+          <p-autoComplete formControlName="working_days" [dropdown]="true" [suggestions]="filteredWorkingDays"
+            (completeMethod)="filterRecruitment($event, 'working_days')" placeholder="e.g. Mon - Fri"></p-autoComplete>
+        </div>
+
+        <!-- 🎯 Age Range -->
+        <div class="form-group">
+          <label>Age Range</label>
+          <p-autoComplete formControlName="age_range" [dropdown]="true" [suggestions]="filteredAgeRanges"
+            (completeMethod)="filterRecruitment($event, 'age_range')" placeholder="e.g. 25 - 30"></p-autoComplete>
+        </div>
+
+
+
       </div>
     </div>
+
+
 
     <!-- 🟩 INDUSTRY / FIELD / LANGUAGE -->
     <div class="form-section">

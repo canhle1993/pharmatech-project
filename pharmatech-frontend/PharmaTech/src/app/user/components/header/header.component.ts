@@ -71,6 +71,7 @@ export class HeaderComponent implements OnInit {
     this.accountService.logout();
     localStorage.removeItem('token');
     this.isLoggedIn = false;
+    localStorage.clear();
     this.router.navigate(['/auth/login']);
   }
   getPhoneHref(phoneNumber: string): string {

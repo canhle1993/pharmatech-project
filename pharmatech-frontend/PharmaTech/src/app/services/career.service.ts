@@ -44,4 +44,11 @@ export class CareerService {
       this.httpClient.delete<void>(env.baseUrl + 'career/' + id)
     );
   }
+
+  /** 🔹 Lấy danh sách job tương tự */
+  async findSimilarById(id: string): Promise<Career[]> {
+    return await lastValueFrom(
+      this.httpClient.get<Career[]>(env.baseUrl + 'career/similar/' + id)
+    );
+  }
 }
