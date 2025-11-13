@@ -75,3 +75,9 @@ logs/
 .DS_Store
 Thumbs.db
 /upload/
+
+.env
+*.env
+!.env.example
+
+upload/
