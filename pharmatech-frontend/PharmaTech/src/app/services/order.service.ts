@@ -182,11 +182,12 @@ export class OrderService {
     id: string,
     status: string,
     updated_by: string
-  ): Promise<{ msg: string }> {
+  ): Promise<{ msg: string; detail?: string }> {
+    // 👈 thêm detail? ở đây
     try {
       const body = { status, updated_by };
       return await lastValueFrom(
-        this.httpClient.put<{ msg: string }>(
+        this.httpClient.put<{ msg: string; detail?: string }>(
           this.baseUrl + 'update-status/' + id,
           body
         )
@@ -194,6 +195,51 @@ export class OrderService {
     } catch (error) {
       console.error('❌ updateStatus error:', error);
       throw error;
+    }
+  }
+
+  async updatePaymentInfo(
+    id: string,
+    payload: {
+      remaining_payment_method: string;
+      remaining_payment_note: string;
+      payment_proof_url: string;
+      updated_by: string;
+    }
+  ): Promise<{ msg: string }> {
+    try {
+      return await lastValueFrom(
+        this.httpClient.put<{ msg: string }>(
+          this.baseUrl + 'update-payment-info/' + id,
+          payload
+        )
+      );
+    } catch (error) {
+      console.error('❌ updatePaymentInfo error:', error);
+      throw error;
+    }
+  }
+  async uploadProofTemp(formData: FormData): Promise<any> {
+    try {
+      return await lastValueFrom(
+        this.httpClient.post<any>(this.baseUrl + 'upload-proof-temp', formData)
+      );
+    } catch (err) {
+      console.error('uploadProof error:', err);
+      throw err;
+    }
+  }
+
+  async markCompleted(id: string, updated_by: string): Promise<any> {
+    try {
+      return await lastValueFrom(
+        this.httpClient.put<any>(this.baseUrl + 'mark-completed/' + id, {
+          updated_by,
+        })
+      );
+    } catch (err) {
+      console.error('markCompleted error:', err);
+      throw err;
     }
   }
 }

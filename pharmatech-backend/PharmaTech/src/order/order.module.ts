@@ -10,6 +10,7 @@ import { OrderDetailsModule } from '../order-details/order-details.module';
 import { StripeModule } from 'src/stripe/stripe.module';
 import { CartModule } from 'src/cart/cart.module'; // ✅ thêm dòng này
 import { MailModule } from 'src/mail/mail.module';
+import { AccountModule } from 'src/account/account.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { MailModule } from 'src/mail/mail.module';
     forwardRef(() => StripeModule), // ✅ tránh circular dependency
     CartModule,
     MailModule,
+    AccountModule,
   ],
   controllers: [OrderController],
   providers: [OrderService],

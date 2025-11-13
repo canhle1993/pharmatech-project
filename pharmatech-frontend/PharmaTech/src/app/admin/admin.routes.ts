@@ -28,6 +28,7 @@ import { JobFormComponent } from './pages/career/job-posting/job-form/job-form.c
 import { JobPostingComponent } from './pages/career/job-posting/job-posting.component';
 import { DepositSettingListComponent } from './pages/settings/depositSettingList/depositSettingList.component';
 import { OrderListComponent } from './pages/order/orderlist/orderlist.component';
+import { OrderHistoryComponent } from './pages/order/order-history/order-history.component';
 
 export const adminRoutes: Routes = [
   {
@@ -73,7 +74,9 @@ export const adminRoutes: Routes = [
       },
 
       { path: 'order/order-list', component: OrderListComponent },
-      { path: 'order/order-details', component: OrderDetailsComponent },
+      { path: 'order/order-history', component: OrderHistoryComponent },
+      { path: 'order/order-details/:id', component: OrderDetailsComponent },
+
       { path: 'support/chat', component: ChatComponent },
       { path: 'support/chat-history', component: ChatHistoryComponent },
     ],

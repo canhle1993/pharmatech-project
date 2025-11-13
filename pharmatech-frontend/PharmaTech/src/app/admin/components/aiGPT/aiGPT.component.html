@@ -1,0 +1,87 @@
+<!-- Nút AI nổi (ẩn đi khi đang mở chat) -->
+<button class="ai-btn" *ngIf="!showChat" (click)="toggleChat()">
+  <img
+    src="https://cdn-icons-png.flaticon.com/512/4712/4712100.png"
+    width="26"
+    height="26"
+    alt="AI"
+  />
+</button>
+
+<!-- Cửa sổ chat: popup hoặc full-screen -->
+<div
+  *ngIf="showChat"
+  [ngClass]="{ 'chat-window': !fullscreen, 'chat-window-full': fullscreen }"
+>
+  <!-- Header kiểu Material AppBar -->
+  <div class="chat-header">
+    <div class="chat-header-left">
+      <div class="chat-title">PharmaTech AI Assistant</div>
+      <div class="chat-subtitle">Hỏi gì về Capsule, Tablet, Career… nhé</div>
+    </div>
+
+    <div class="chat-header-actions">
+      <!-- nút full-screen / exit full-screen -->
+      <button
+        class="icon-btn"
+        type="button"
+        (click)="toggleFullscreen()"
+        [title]="fullscreen ? 'Thu nhỏ' : 'Mở toàn màn hình'"
+      >
+        <span *ngIf="!fullscreen">⛶</span>
+        <span *ngIf="fullscreen">🗗</span>
+      </button>
+
+      <!-- nút đóng -->
+      <button
+        class="icon-btn close-btn"
+        type="button"
+        (click)="toggleChat()"
+        title="Đóng"
+      >
+        ✕
+      </button>
+    </div>
+  </div>
+
+  <!-- Thân chat -->
+  <div class="chat-body">
+    <div *ngFor="let msg of messages" class="msg-row">
+      <!-- tin người dùng -->
+      <div class="msg msg-user" *ngIf="msg.from === 'user'">
+        <span class="msg-text">{{ msg.text }}</span>
+      </div>
+
+      <!-- tin bot -->
+      <div class="msg msg-bot" *ngIf="msg.from === 'bot'">
+        <img
+          class="avatar"
+          src="https://cdn-icons-png.flaticon.com/512/4712/4712100.png"
+          alt="Bot"
+        />
+        <span class="msg-text">{{ msg.text }}</span>
+      </div>
+    </div>
+
+    <!-- typing indicator -->
+    <div class="msg msg-bot typing" *ngIf="typing">
+      <img
+        class="avatar"
+        src="https://cdn-icons-png.flaticon.com/512/4712/4712100.png"
+        alt="Bot"
+      />
+      <span class="dots"></span>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div class="chat-input">
+    <input
+      type="text"
+      placeholder="Nhập câu hỏi..."
+      [(ngModel)]="userMessage"
+      (keyup.enter)="sendMessage()"
+    />
+    <button type="button" (click)="sendMessage()">Send</button>
+  </div>
+</div>

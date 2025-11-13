@@ -1,0 +1,232 @@
+/* Nút AI nổi */
+.ai-btn {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: linear-gradient(135deg, #5c7cff, #3e8ef7);
+  color: white;
+  padding: 16px;
+  border-radius: 50%;
+  font-size: 22px;
+  border: none;
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: 0 6px 15px rgba(15, 23, 42, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+
+.ai-btn img {
+  display: block;
+}
+
+.ai-btn:hover {
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.45);
+}
+
+/* Popup window mặc định */
+.chat-window {
+  position: fixed;
+  bottom: 90px;
+  right: 25px;
+  width: 420px;
+  height: 600px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.35);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 9999;
+}
+
+/* Full-screen mode */
+.chat-window-full {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  z-index: 9999;
+}
+
+/* Header kiểu Material AppBar */
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, #3e8ef7, #5c7cff);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.35);
+}
+
+.chat-header-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-title {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.chat-subtitle {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+/* Nút icon trong header */
+.chat-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  background: rgba(255, 255, 255, 0.18);
+  border: none;
+  color: #ffffff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  font-size: 15px;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.08);
+}
+
+/* close-btn dùng cùng style icon-btn nhưng hơi đậm hơn */
+.close-btn {
+  font-size: 16px;
+}
+
+/* Thân chat */
+.chat-body {
+  flex: 1;
+  padding: 12px 16px;
+  overflow-y: auto;
+  background: #f4f6fb;
+}
+
+/* Row bao quanh mỗi message */
+.msg-row {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Định dạng message chung */
+.msg {
+  max-width: 80%;
+  padding: 8px 12px;
+  margin: 6px 0;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* User bubble bên phải */
+.msg-user {
+  margin-left: auto;
+  background: #e3f2fd;
+  color: #0f172a;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+}
+
+/* Bot bubble bên trái kiểu Material card */
+.msg-bot {
+  margin-right: auto;
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1);
+}
+
+.msg-text {
+  white-space: pre-wrap;
+}
+
+/* Avatar bot */
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+/* Input vùng dưới */
+.chat-input {
+  display: flex;
+  padding: 10px 14px;
+  background: #e5e7eb;
+  border-top: 1px solid #d1d5db;
+  gap: 8px;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+  transition: all 0.2s ease;
+  background: #ffffff;
+  font-size: 14px;
+}
+
+.chat-input input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+/* Nút Send kiểu Material */
+.chat-input button {
+  padding: 8px 20px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.4);
+  transition: all 0.25s ease;
+}
+
+.chat-input button:hover {
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(37, 99, 235, 0.55);
+}
+
+/* Typing indicator */
+.typing .dots::after {
+  content: "•••";
+  letter-spacing: 2px;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.2;
+  }
+}

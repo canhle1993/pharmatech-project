@@ -15,6 +15,7 @@ import { DepositSettingService } from 'src/deposit-setting/deposit-setting.servi
 import { OrderDetailsService } from 'src/order-details/order-details.service';
 import { CartService } from 'src/cart/cart.service';
 import { MailService } from 'src/mail/mail.service';
+import { AccountService } from 'src/account/account.service';
 
 @Injectable()
 export class OrderService {
@@ -24,7 +25,8 @@ export class OrderService {
     private readonly depositSettingService: DepositSettingService,
     private readonly orderDetailsService: OrderDetailsService,
     private readonly cartService: CartService,
-    private readonly mailService: MailService, // ✅ thêm dòng này
+    private readonly mailService: MailService,
+    private readonly accountService: AccountService,
   ) {}
 
   // ==================================================
@@ -36,7 +38,7 @@ export class OrderService {
     // ✅ Lấy tất cả đơn chưa bị xóa, có _id
     const orders = await this._orderModel
       .find({ is_delete: false })
-      .sort({ created_at: -1 })
+      .sort({ updated_at: -1, created_at: -1 })
       .lean();
 
     // ✅ Thêm field id để Angular có thể sử dụng
@@ -50,13 +52,41 @@ export class OrderService {
   }
 
   /** 🔹 Lấy 1 order theo ID */
-  async findById(id: string): Promise<OrderDTO> {
-    const order = await this._orderModel.findById(id).lean();
-    if (!order) throw new NotFoundException('Order not found');
+  // 🧾 order.service.ts
+  // 📌 order.service.ts
+  async findById(id: string) {
+    try {
+      // 1) Lấy order chính
+      const order = await this._orderModel.findById(id).lean();
+      if (!order) throw new NotFoundException('Order not found');
 
-    return plainToInstance(OrderDTO, order, {
-      excludeExtraneousValues: true,
-    });
+      // 2) Lấy thông tin user đặt hàng
+      const account = await this.accountService.findById(order.user_id);
+      const user_info = {
+        name: account?.name || null,
+        email: account?.email || null,
+        phone: account?.phone || null,
+        address: account?.address || null,
+      };
+
+      // 3) Lấy danh sách sản phẩm trong đơn
+      const details = await this.orderDetailsService.findByOrder(
+        order._id.toString(),
+      );
+
+      // 4) Trả về đầy đủ
+      return {
+        ...order,
+        id: order._id.toString(),
+        details,
+        user_info,
+      };
+    } catch (error) {
+      throw new HttpException(
+        { message: 'Failed to load order details', error: error.message },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   // ==================================================
@@ -144,6 +174,7 @@ export class OrderService {
   // ==================================================
 
   /** ✅ Cập nhật trạng thái đơn hàng (admin duyệt / cập nhật tiến trình) */
+  // src/order/order.service.ts
   async updateStatus(id: string, status: string, updated_by: string) {
     try {
       const order = await this._orderModel.findById(id);
@@ -154,6 +185,15 @@ export class OrderService {
       order.updated_at = new Date();
 
       await order.save();
+
+      // ✅ Nếu đơn hàng đã thanh toán đủ -> cập nhật OrderDetails
+      if (status === 'Paid in Full') {
+        await this.orderDetailsService.updateStatusByOrder(
+          id,
+          'Preparing', // 👉 tất cả sản phẩm trong đơn chuyển thành "Preparing"
+        );
+      }
+
       return { msg: `Order status updated to ${status}` };
     } catch (error) {
       throw new HttpException(
@@ -418,10 +458,77 @@ export class OrderService {
       order.updated_at = new Date();
 
       await order.save();
+
+      // ✅ Nếu admin duyệt đơn
+      if (approval_status === 'Approved') {
+        // 👉 Toàn bộ sản phẩm trong OrderDetails => Preparing
+        await this.orderDetailsService.updateStatusByOrder(id, 'Preparing');
+      }
+
       return { msg: `Order approval updated to ${approval_status}` };
     } catch (error) {
       throw new HttpException(
         { message: 'Failed to update order approval', error: error.message },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async updatePaymentInfo(
+    id: string,
+    body: {
+      remaining_payment_method: string;
+      remaining_payment_note: string;
+      payment_proof_url: string;
+      updated_by: string;
+      updated_at: Date;
+    },
+  ) {
+    const {
+      remaining_payment_method,
+      remaining_payment_note,
+      payment_proof_url,
+      updated_by,
+    } = body;
+
+    const order = await this._orderModel.findById(id);
+    if (!order) throw new NotFoundException('Order not found');
+
+    order.remaining_payment_method = remaining_payment_method;
+    order.remaining_payment_note = remaining_payment_note;
+    order.payment_proof_url = payment_proof_url;
+    order.remaining_payment_date = new Date(); // 🟢 ngày hiện tại
+    order.status = 'Paid in Full';
+    order.updated_by = updated_by;
+    order.updated_at = new Date();
+
+    await order.save();
+
+    // 🟦 Update OrderDetails → Completed (hoặc giữ Preparing tùy bạn)
+    await this.orderDetailsService.updateStatusByOrder(id, 'Preparing');
+
+    return { msg: 'Payment info updated successfully' };
+  }
+
+  async markCompleted(orderId: string, updated_by: string) {
+    try {
+      const order = await this._orderModel.findById(orderId);
+      if (!order) throw new NotFoundException('Order not found');
+
+      // Update Order
+      order.status = 'Completed';
+      order.updated_by = updated_by;
+      order.updated_at = new Date();
+
+      await order.save();
+
+      // Update all order details
+      await this.orderDetailsService.updateStatusByOrder(orderId, 'Delivered');
+
+      return { msg: 'Order marked as Completed, all items set to Delivered' };
+    } catch (error) {
+      throw new HttpException(
+        { message: 'Failed to mark completed', error: error.message },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

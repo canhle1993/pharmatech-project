@@ -1,3 +1,107 @@
-<div class="container">
-  <h1>Order Details</h1>
+<div class="order-container">
+  <h4 class="fw-bold py-3 mb-4">
+    <span class="text-muted fw-light">Order /</span> Order Details
+  </h4>
+  <div class="order-detail-container" *ngIf="!loading && order">
+    <h2>
+      <i
+        class="pi pi-shopping-bag"
+        style="color: #4f46e5; margin-right: 6px"
+      ></i>
+      Order Code: {{ order.id }}
+    </h2>
+
+    <!-- 🔹 Thông tin người đặt hàng (từ Account) -->
+    <div
+      class="order-user-info"
+      *ngIf="order.user_info || order.user_info?.email"
+    >
+      <p><b>Order name:</b> {{ order.user_info.name || "—" }}</p>
+      <p><b>Order email:</b> {{ order.user_info.email || "—" }}</p>
+      <p><b>Order phone:</b> {{ order.user_info.phone || "—" }}</p>
+      <p><b>Order address:</b> {{ order.user_info.address || "—" }}</p>
+    </div>
+
+    <!-- 🔹 Thông tin khách hàng -->
+    <div class="order-info">
+      <p><b>Contact person:</b> {{ order.contact_name }}</p>
+      <p><b>Contact email:</b> {{ order.contact_email }}</p>
+      <p><b>Contact phone:</b> {{ order.contact_phone }}</p>
+      <p><b>Contact address:</b> {{ order.contact_address }}</p>
+    </div>
+
+    <!-- 🔹 Thông tin đơn hàng -->
+    <div class="order-summary">
+      <p><b>Total:</b> {{ order.formattedTotal }}</p>
+      <p><b>Deposit:</b> {{ order.formattedDeposit }}</p>
+      <p><b>Remaining:</b> {{ order.formattedRemaining }}</p>
+      <p>
+        <b>Status:</b>
+        <p-tag [value]="order.status" [severity]="order.statusBadge"></p-tag>
+      </p>
+    </div>
+
+    <!-- 🔹 Danh sách sản phẩm -->
+    <p-table
+      [value]="order.details"
+      [responsiveLayout]="'scroll'"
+      class="order-table"
+      [paginator]="true"
+      [rows]="5"
+      [rowsPerPageOptions]="[5, 10]"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>#</th>
+          <th>Photo</th>
+          <th>Name</th>
+          <th>Model</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Total</th>
+          <th>Status</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-item let-i="rowIndex">
+        <tr>
+          <td>{{ i + 1 }}</td>
+          <td>
+            <img
+              [src]="item.product_photo || 'assets/images/no-image.jpg'"
+              alt="{{ item.product_name }}"
+              width="60"
+              height="60"
+              style="object-fit: cover; border-radius: 6px"
+            />
+          </td>
+          <td>{{ item.product_name }}</td>
+          <td>{{ item.product_model }}</td>
+
+          <td>{{ item.unit_price | number : "1.0-0" }} USD</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.total_price | number : "1.0-0" }} USD</td>
+          <td>
+            <p-tag [value]="item.status"></p-tag>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <!-- 🔙 Quay lại -->
+    <div class="button-group">
+      <button
+        pButton
+        icon="pi pi-arrow-left"
+        label="Back to list"
+        class="p-button-text"
+        routerLink="/admin/order/order-list"
+      ></button>
+    </div>
+  </div>
+
+  <!-- Spinner -->
+  <p-progressSpinner
+    *ngIf="loading"
+    styleClass="loading-spinner"
+  ></p-progressSpinner>
 </div>

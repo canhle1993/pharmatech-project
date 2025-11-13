@@ -200,4 +200,62 @@ export class OrderController {
   async createAfterPayment(@Body('userId') userId: string) {
     return this.orderService.createAfterPayment(userId);
   }
+
+  // PUT api/order/update-payment-info/:id
+  @Put('update-payment-info/:id')
+  async updatePaymentInfo(
+    @Param('id') id: string,
+    @Body()
+    body: {
+      remaining_payment_method: string;
+      remaining_payment_note: string;
+      payment_proof_url: string;
+      updated_by: string;
+      updated_at: Date;
+    },
+  ) {
+    try {
+      return await this.orderService.updatePaymentInfo(id, body);
+    } catch (error) {
+      throw new HttpException(
+        { message: 'Failed to update payment info', error: error.message },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  // ==================================================
+  // 📤 UPLOAD ẢNH TẠM (TEMP) — dùng cho Paid in Full Dialog
+  // ==================================================
+  @Post('upload-proof-temp')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './upload',
+        filename: (req, file, cb) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(null, 'proof_temp_' + uniqueSuffix + extname(file.originalname));
+        },
+      }),
+    }),
+  )
+  async uploadProofTemp(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new HttpException('No file uploaded', HttpStatus.BAD_REQUEST);
+    }
+
+    return {
+      message: 'Temp image uploaded successfully',
+      filename: file.filename,
+      url: getImageUrl() + file.filename,
+    };
+  }
+
+  @Put('mark-completed/:id')
+  async markCompleted(
+    @Param('id') id: string,
+    @Body() body: { updated_by: string },
+  ) {
+    return await this.orderService.markCompleted(id, body.updated_by);
+  }
 }

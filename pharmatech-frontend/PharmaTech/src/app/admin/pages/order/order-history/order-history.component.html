@@ -1,0 +1,97 @@
+<div class="order-history-container">
+  <h4 class="fw-bold py-3 mb-4">
+    <span class="text-muted fw-light">Order /</span> Order History
+  </h4>
+
+  <!-- Loading -->
+  <p-progressSpinner
+    *ngIf="loading"
+    styleClass="loading-spinner"
+  ></p-progressSpinner>
+
+  <div class="card" *ngIf="!loading">
+    <p-table
+      [value]="completedOrders"
+      dataKey="id"
+      [paginator]="true"
+      [rows]="6"
+      [rowsPerPageOptions]="[6, 10, 20]"
+      [responsiveLayout]="'scroll'"
+      showGridlines
+      class="order-table"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Order Code</th>
+          <th>Customer</th>
+          <th>Total</th>
+          <th>Deposit</th>
+          <th>Note</th>
+          <th>Proof</th>
+          <th>Completed At</th>
+          <th>Action</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-order>
+        <tr>
+          <td>{{ order.id }}</td>
+          <td>{{ order.contact_name }}</td>
+          <td>{{ order.formattedTotal }}</td>
+          <td>{{ order.formattedDeposit }}</td>
+          <td>{{ order.remaining_payment_note || "—" }}</td>
+
+          <!-- 📸 Proof -->
+          <td>
+            <img
+              *ngIf="order.payment_proof_url"
+              [src]="order.payment_proof_url"
+              class="proof-thumb"
+              (click)="openImage(order.payment_proof_url)"
+            />
+            <span *ngIf="!order.payment_proof_url">—</span>
+          </td>
+
+          <td>{{ order.updated_at }}</td>
+
+          <!-- 🔍 Action -->
+          <td>
+            <button
+              pButton
+              icon="pi pi-search"
+              class="p-button-text p-button-info"
+              title="View Details"
+              (click)="onView(order)"
+            ></button>
+          </td>
+        </tr>
+      </ng-template>
+
+      <!-- Empty -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="text-center py-4">
+            No completed orders found.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- 🔍 Full Image Dialog -->
+  <p-dialog
+    [(visible)]="showImageDialog"
+    [modal]="true"
+    [style]="{ width: '80vw' }"
+    [contentStyle]="{ 'text-align': 'center' }"
+    [breakpoints]="{ '960px': '95vw', '640px': '100vw' }"
+    [closable]="true"
+  >
+    <img
+      [src]="selectedImage"
+      style="max-width: 100%; max-height: 80vh; border-radius: 6px"
+    />
+  </p-dialog>
+</div>

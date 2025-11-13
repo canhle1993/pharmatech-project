@@ -16,7 +16,7 @@ export class AccountService {
   async findAll(): Promise<AccountDTO[]> {
     let accounts = await this.accountModel
       .find({ is_delete: false })
-      .sort({ created_at: -1 })
+      .sort({ updated_at: -1, created_at: -1 })
       .exec();
     return accounts.map((c) =>
       plainToInstance(AccountDTO, c.toObject(), {

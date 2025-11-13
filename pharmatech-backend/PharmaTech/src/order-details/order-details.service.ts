@@ -25,7 +25,7 @@ export class OrderDetailsService {
   async findAll(): Promise<OrderDetailsDTO[]> {
     const docs = await this._orderDetailsModel
       .find({ is_delete: false })
-      .sort({ created_at: -1 })
+      .sort({ updated_at: -1, created_at: -1 })
       .lean();
     return docs.map((d) =>
       plainToInstance(
@@ -153,12 +153,35 @@ export class OrderDetailsService {
   }
 
   // ✅ nếu file bạn chưa có hàm này thì thêm vào:
+  // ✅ Cập nhật trạng thái của toàn bộ sản phẩm trong 1 đơn hàng
   async updateStatusByOrder(order_id: string, status: string) {
-    const res = await this._orderDetailsModel.updateMany(
-      { order_id, is_delete: false },
-      { $set: { status, updated_at: new Date() } },
-    );
-    return { msg: `Updated ${res.modifiedCount} order details to ${status}` };
+    try {
+      const res = await this._orderDetailsModel.updateMany(
+        { order_id, is_delete: false }, // chỉ update những chi tiết còn hiệu lực
+        {
+          $set: {
+            status,
+            updated_at: new Date(),
+            updated_by: 'system', // hoặc admin nếu bạn muốn
+          },
+        },
+      );
+
+      console.log(
+        `✅ [OrderDetailsService] ${res.modifiedCount} items in order ${order_id} updated to "${status}".`,
+      );
+
+      return { msg: `Updated ${res.modifiedCount} order details to ${status}` };
+    } catch (error) {
+      console.error('❌ [updateStatusByOrder] failed:', error);
+      throw new HttpException(
+        {
+          message: 'Failed to update order details status',
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   /** ✏️ Cập nhật 1 dòng */

@@ -10,16 +10,17 @@
 
         <!-- Avatar -->
         <div class="card-body">
-          
-          <div class="d-flex align-items-start align-items-sm-center gap-4" >
+          <div class="d-flex align-items-start align-items-sm-center gap-4">
             <img
-              [src]="account?.photo ? account.photo : 'assets/images/no-image.jpg'"
+              [src]="
+                account?.photo ? account.photo : 'assets/images/no-image.jpg'
+              "
               alt="user-avatar"
               class="d-block rounded"
               height="100"
               width="100"
               id="uploadedAvatar"
-            />          
+            />
             <div>
               <h5 class="mb-0">{{ account.name }}</h5>
               <p class="text-muted mb-0">{{ account.email }}</p>
@@ -30,7 +31,7 @@
                   [class.text-success]="account.is_active"
                   [class.text-danger]="!account.is_active"
                 >
-                  {{ account.is_active ? 'Active' : 'Inactive' }}
+                  {{ account.is_active ? "Active" : "Inactive" }}
                 </span>
               </p>
             </div>
@@ -42,7 +43,7 @@
                 (click)="toggleEdit()"
               >
                 <i class="bx bx-edit"></i>
-                {{ isEditing ? 'Cancel' : 'Edit' }}
+                {{ isEditing ? "Cancel" : "Edit" }}
               </button>
 
               <label
@@ -70,7 +71,6 @@
                   (change)="onPhotoSelected($event)"
                 />
               </label>
-
             </div>
           </div>
         </div>
@@ -122,7 +122,7 @@
 
               <div class="mb-3 col-md-6">
                 <label class="form-label">Gender</label>
-              
+
                 <!-- 🔹 Khi không edit: chỉ hiển thị text -->
                 <input
                   *ngIf="!isEditing"
@@ -131,9 +131,12 @@
                   [value]="account.gender || '-'"
                   readonly
                 />
-              
+
                 <!-- 🔹 Khi đang edit: hiển thị radio chọn -->
-                <div *ngIf="isEditing" class="d-flex align-items-center flex-wrap gap-3 mt-1">
+                <div
+                  *ngIf="isEditing"
+                  class="d-flex align-items-center flex-wrap gap-3 mt-1"
+                >
                   <div class="form-check form-check-inline mb-0">
                     <input
                       class="form-check-input"
@@ -145,7 +148,7 @@
                     />
                     <label class="form-check-label" for="male">Male</label>
                   </div>
-                
+
                   <div class="form-check form-check-inline mb-0">
                     <input
                       class="form-check-input"
@@ -157,7 +160,7 @@
                     />
                     <label class="form-check-label" for="female">Female</label>
                   </div>
-                
+
                   <div class="form-check form-check-inline mb-0">
                     <input
                       class="form-check-input"
@@ -170,7 +173,6 @@
                     <label class="form-check-label" for="other">Other</label>
                   </div>
                 </div>
-                
               </div>
 
               <div class="mb-3 col-md-6" *ngIf="!isEditing">
@@ -202,17 +204,17 @@
                   readonly
                 />
               </div>
-            
+
               <div class="mb-3 col-md-6" *ngIf="!isEditing">
                 <label class="form-label">Last Login</label>
                 <input
                   class="form-control"
                   type="text"
-                  [value]="account.last_login | date:'dd/MM/yyyy HH:mm'"
+                  [value]="account.last_login | date : 'dd/MM/yyyy HH:mm'"
                   readonly
                 />
               </div>
-            
+
               <div class="mb-3 col-md-6" *ngIf="!isEditing">
                 <label class="form-label">Created At</label>
                 <input
@@ -222,7 +224,7 @@
                   readonly
                 />
               </div>
-            
+
               <div class="mb-3 col-md-6" *ngIf="!isEditing">
                 <label class="form-label">Updated At</label>
                 <input
@@ -234,83 +236,82 @@
               </div>
 
               <!-- Education -->
-            <div class="col-12 mt-4" >
-              <h6 class="text-primary">🎓 Education</h6>
-              <hr class="mt-1 mb-3" />
-            </div>
+              <div class="col-12 mt-4">
+                <h6 class="text-primary">🎓 Education</h6>
+                <hr class="mt-1 mb-3" />
+              </div>
 
-            <div class="mb-3 col-md-4">
-              <label class="form-label">Degree</label>
-              <input
-                class="form-control"
-                type="text"
-                [(ngModel)]="account.education.degree"
-                name="education_degree"  
-                [readonly]="!isEditing"
-              />
-            </div>
+              <div class="mb-3 col-md-4">
+                <label class="form-label">Degree</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  [(ngModel)]="account.education.degree"
+                  name="education_degree"
+                  [readonly]="!isEditing"
+                />
+              </div>
 
-            <div class="mb-3 col-md-4">
-              <label class="form-label">University</label>
-              <input
-                class="form-control"
-                type="text"
-                [(ngModel)]="account.education.university"
-                name="education_university" 
-                [readonly]="!isEditing"
-              />
-            </div>
+              <div class="mb-3 col-md-4">
+                <label class="form-label">University</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  [(ngModel)]="account.education.university"
+                  name="education_university"
+                  [readonly]="!isEditing"
+                />
+              </div>
 
-            <div class="mb-3 col-md-4">
-              <label class="form-label">Graduation Year</label>
-              <input
-                class="form-control"
-                type="number"
-                [(ngModel)]="account.education.graduation_year"
-                name="education_graduation_year" 
-                [readonly]="!isEditing"
-              />
-            </div>
+              <div class="mb-3 col-md-4">
+                <label class="form-label">Graduation Year</label>
+                <input
+                  class="form-control"
+                  type="number"
+                  [(ngModel)]="account.education.graduation_year"
+                  name="education_graduation_year"
+                  [readonly]="!isEditing"
+                />
+              </div>
 
-            <!-- Experience -->
-            <div class="col-12 mt-4">
-              <h6 class="text-primary">💼 Experience</h6>
-              <hr class="mt-1 mb-3" />
-            </div>
+              <!-- Experience -->
+              <div class="col-12 mt-4">
+                <h6 class="text-primary">💼 Experience</h6>
+                <hr class="mt-1 mb-3" />
+              </div>
 
-            <div class="mb-3 col-md-4">
-              <label class="form-label">Company</label>
-              <input
-                class="form-control"
-                type="text"
-                [(ngModel)]="account.experience.company"
-                name="experience_company" 
-                [readonly]="!isEditing"
-              />
-            </div>
+              <div class="mb-3 col-md-4">
+                <label class="form-label">Company</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  [(ngModel)]="account.experience.company"
+                  name="experience_company"
+                  [readonly]="!isEditing"
+                />
+              </div>
 
-            <div class="mb-3 col-md-4">
-              <label class="form-label">Position</label>
-              <input
-                class="form-control"
-                type="text"
-                [(ngModel)]="account.experience.position"
-                name="experience_position" 
-                [readonly]="!isEditing"
-              />
-            </div>
+              <div class="mb-3 col-md-4">
+                <label class="form-label">Position</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  [(ngModel)]="account.experience.position"
+                  name="experience_position"
+                  [readonly]="!isEditing"
+                />
+              </div>
 
-            <div class="mb-3 col-md-4">
-              <label class="form-label">Years</label>
-              <input
-                class="form-control"
-                type="number"
-                [(ngModel)]="account.experience.years"
-                name="experience_years" 
-                [readonly]="!isEditing"
-              />
-            </div>
-
+              <div class="mb-3 col-md-4">
+                <label class="form-label">Years</label>
+                <input
+                  class="form-control"
+                  type="number"
+                  [(ngModel)]="account.experience.years"
+                  name="experience_years"
+                  [readonly]="!isEditing"
+                />
+              </div>
 
               <!-- Resume -->
               <div class="col-12 mt-4">
@@ -360,9 +361,20 @@
       </div>
     </div>
   </div>
+  <!-- 🔙 Quay lại -->
+  <div class="button-group">
+    <button
+      pButton
+      icon="pi pi-arrow-left"
+      label="Back to list"
+      class="p-button-text"
+      routerLink="/admin/account-list"
+    ></button>
+  </div>
 </div>
 
-<p-progressSpinner *ngIf="loading" styleClass="custom-spinner"></p-progressSpinner>
+<p-progressSpinner
+  *ngIf="loading"
+  styleClass="custom-spinner"
+></p-progressSpinner>
 <p-toast></p-toast>
-
-

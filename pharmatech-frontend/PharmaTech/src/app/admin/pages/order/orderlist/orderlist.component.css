@@ -97,3 +97,89 @@
   color: #999;
   padding: 1rem;
 }
+/* ================================
+   Dialog Container 
+=================================*/
+.dialog-body {
+  padding: 1.5rem;
+}
+
+/* ================================
+   Form Groups
+=================================*/
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+/* Input + Textarea styling */
+.form-group input[pInputText],
+.form-group textarea[pInputTextarea] {
+  width: 100%;
+  border-radius: 6px;
+  padding: 0.55rem 0.75rem;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* ================================
+   File Upload
+=================================*/
+.p-fileupload {
+  width: 100%;
+}
+
+/* Button bar inside file upload */
+.p-fileupload-buttonbar {
+  padding: 0.5rem !important;
+  gap: 6px;
+}
+
+.p-fileupload-content {
+  padding: 0.5rem 0.8rem !important;
+}
+
+/* ================================
+   Preview Box
+=================================*/
+.preview-box {
+  margin-top: 1rem;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #f7f7f7;
+  text-align: center;
+}
+
+.preview-box img {
+  max-width: 240px;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+/* ================================
+   Footer Buttons
+=================================*/
+.dialog-footer {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+.proof-thumb {
+  width: 70px;
+  height: 70px;
+  cursor: zoom-in;
+  border-radius: 6px;
+  transition: transform 0.2s ease;
+}
+
+.proof-thumb:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}

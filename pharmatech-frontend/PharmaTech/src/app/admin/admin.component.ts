@@ -5,6 +5,8 @@ import { ButtonModule } from 'primeng/button';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
 import { MenuComponent } from './components/menu/menu.component';
+import { ChatAIComponent } from './components/chatAI/chatAI.component';
+import { AiGPTComponent } from './components/aiGPT/aiGPT.component';
 @Component({
   templateUrl: './admin.component.html',
   imports: [
@@ -13,6 +15,8 @@ import { MenuComponent } from './components/menu/menu.component';
     HeaderComponent,
     FooterComponent,
     MenuComponent,
+    // ChatAIComponent,
+    AiGPTComponent,
   ],
 })
 export class AdminComponent implements OnInit, AfterViewInit {

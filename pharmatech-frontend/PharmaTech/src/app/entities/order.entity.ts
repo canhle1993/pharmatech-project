@@ -6,7 +6,13 @@ export class Order {
   _id?: string;
 
   /** 👤 Người đặt hàng */
-  user_id!: string;
+  user_info?: {
+    name?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+  };
+
   contact_name!: string;
   contact_email!: string;
   contact_phone!: string;
@@ -42,8 +48,11 @@ export class Order {
   payment_proof_url?: string;
   cancel_reason?: string;
 
-  /** 🧾 Danh sách sản phẩm */
+  /** 🧾 Danh sách sản phẩm cũ (nếu có dùng items ở phần khác) */
   items?: OrderDetails[];
+
+  /** 🆕 Danh sách sản phẩm thực tế từ API /find-by-id */
+  details?: OrderDetails[];
 
   /** ⚙️ Trạng thái hệ thống */
   is_active?: boolean;
@@ -70,14 +79,22 @@ export class Order {
       : '0 USD';
   }
 
-  get statusBadge(): string {
+  /** 🏷️ Trạng thái đơn hàng (màu tag) */
+  get statusBadge():
+    | 'success'
+    | 'secondary'
+    | 'info'
+    | 'warn'
+    | 'danger'
+    | 'contrast' {
     switch (this.status) {
       case 'Completed':
       case 'Paid in Full':
         return 'success';
-      case 'Pending':
       case 'Deposit Paid':
         return 'info';
+      case 'Pending':
+        return 'warn';
       case 'Cancelled':
       case 'Rejected':
         return 'danger';

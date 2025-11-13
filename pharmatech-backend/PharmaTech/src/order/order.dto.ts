@@ -1,6 +1,6 @@
 import { Expose, Transform } from 'class-transformer';
 import * as moment from 'moment';
-import { buildImageUrl } from './config.util';
+import { getImageUrl } from './config.util';
 
 export class OrderDTO {
   @Expose()
@@ -9,6 +9,15 @@ export class OrderDTO {
   /** 🧍 Thông tin người dùng */
   @Expose()
   user_id: string;
+
+  // 🆕 Thông tin account đặt hàng (lấy từ bảng Account)
+  @Expose()
+  user_info?: {
+    name?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+  };
 
   /** 🧾 Billing info */
   @Expose()
@@ -25,7 +34,9 @@ export class OrderDTO {
 
   /** 💰 Tổng giá trị đơn hàng */
   @Expose()
-  @Transform(({ value }) => Number(value.toFixed(2)))
+  @Transform(({ value }) =>
+    typeof value === 'number' ? Number(value.toFixed(2)) : 0,
+  )
   total_amount: number;
 
   /** 💵 Phần trăm và số tiền đặt cọc */
@@ -33,12 +44,16 @@ export class OrderDTO {
   deposit_percent: number;
 
   @Expose()
-  @Transform(({ value }) => Number(value.toFixed(2)))
+  @Transform(({ value }) =>
+    typeof value === 'number' ? Number(value.toFixed(2)) : 0,
+  )
   deposit_amount: number;
 
   /** 💳 Số tiền còn lại */
   @Expose()
-  @Transform(({ value }) => Number(value.toFixed(2)))
+  @Transform(({ value }) =>
+    typeof value === 'number' ? Number(value.toFixed(2)) : 0,
+  )
   remaining_payment_amount: number;
 
   @Expose()
@@ -54,11 +69,18 @@ export class OrderDTO {
   @Expose()
   remaining_payment_note?: string;
 
-  /** 🧾 Hóa đơn & biên lai */
+  /** 🧾 Hóa đơn & biên lai thanh toán */
   @Expose()
-  @Transform(({ value }) => buildImageUrl(value))
+  @Transform(({ obj }) =>
+    obj?.payment_proof_url
+      ? obj.payment_proof_url.startsWith('http')
+        ? obj.payment_proof_url
+        : `${getImageUrl()}${obj.payment_proof_url}`
+      : null,
+  )
   payment_proof_url?: string;
 
+  /** 🔗 Liên kết với các dịch vụ thanh toán */
   @Expose()
   paypal_order_id?: string;
 
@@ -108,6 +130,10 @@ export class OrderDTO {
   @Expose()
   items?: any[];
 
+  /** 🧾 Danh sách chi tiết sản phẩm trong đơn (find-by-id) */
+  @Expose()
+  details?: any[]; // hoặc: details?: OrderDetailsDTO[];
+
   /** ⚙️ Trạng thái hệ thống */
   @Expose()
   is_active: boolean;
@@ -121,13 +147,13 @@ export class OrderDTO {
 
   @Expose()
   @Transform(({ value }) =>
-    value ? moment(value).format('DD/MM/YYYY HH:mm') : null,
+    value ? moment(value, moment.ISO_8601).format('DD/MM/YYYY HH:mm') : null,
   )
   created_at?: string;
 
   @Expose()
   @Transform(({ value }) =>
-    value ? moment(value).format('DD/MM/YYYY HH:mm') : null,
+    value ? moment(value, moment.ISO_8601).format('DD/MM/YYYY HH:mm') : null,
   )
   updated_at?: string;
 }

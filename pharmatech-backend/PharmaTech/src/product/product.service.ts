@@ -37,7 +37,7 @@ export class ProductService {
 
     const images = await this._productImageModel
       .find({ product_id: id })
-      .sort({ created_at: -1 })
+      .sort({ updated_at: -1, created_at: -1 })
       .exec();
 
     const dto = plainToInstance(ProductDTO, product.toObject(), {
@@ -60,7 +60,7 @@ export class ProductService {
   async findAll(): Promise<ProductDTO[]> {
     const products = await this._productModel
       .find({ is_delete: false })
-      .sort({ created_at: -1 })
+      .sort({ updated_at: -1, created_at: -1 })
       .lean();
 
     // Dùng đúng bảng trung gian để populate category

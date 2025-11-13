@@ -1,0 +1,27 @@
+.vitri3{bottom:50px;left:10px;}
+.tienichcuocgoi{position:fixed;z-index:999;}
+.tienichcuocgoi ul{padding:10px 10px;width:60px;}
+.tienichcuocgoi ul li{margin-bottom:10px;position:relative;display:flex;}
+.tienichcuocgoi ul li .icimg,.tienichcuocgoi ul li .tienichname{float:left;position:absolute;display:flex;}
+.tienichcuocgoi ul li img{width:40px;height:width:40px;border-radius:50%;}
+.tienichcuocgoi ul li a{line-height:40px;height:40px;min-width:40px;}
+.tienich_lenh{width:width:40px;height:width:40px;background-color:var(--ws-bg-title);color:var(--ws-color-title);border-radius:50%;text-align:center;line-height:width:40px;margin:5px 10px;cursor:pointer;display:none;}
+.tienich_lenh i{font-size:25px;}
+.tienichcuocgoi ul li .icimg{z-index:9;}
+.tienichcuocgoi ul li a:hover .icimg{-webkit-animation:phonering-alo-circle-img-anim 1s infinite ease-in-out;animation:phonering-alo-circle-img-anim 1s infinite ease-in-out;-webkit-transform-origin:50% 50%;-ms-transform-origin:50% 50%;transform-origin:50% 50%;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;align-items:center;justify-content:center;}
+.tienichcuocgoi ul li .tienichname{display:none;width:0px;position:absolute;white-space:nowrap;box-shadow:0px 0px 2px #00000057;transition:min-width 1s;z-index:8;}
+.tienichcuocgoi ul li a:hover .tienichname{width:auto;display:block;left:0px;right:unset;background-color:#FFF;box-shadow:0px 0px 2px #00000057;border-radius:40px;padding:0px 10px 0px 50px;}
+.tienichcuocgoi ul li.sodienthoai a{padding-right:13px;color:#F00;font-size:20px;text-transform:uppercase;font-weight:bold;font-family:'ws-font-title', Arial, sans-serif;}
+.vutruso-alo-phone{background-color:transparent;cursor:pointer;height:width:40px;position:fixed;transition:visibility 0.5s ease 0s;z-index:200000;}
+.vutruso-alo-phone.vutruso-alo-green .vutruso-alo-ph-circle{border-color:#005c91;opacity:1;}
+.vutruso-alo-ph-circle{animation:2s ease-in-out 0s normal none infinite running vutruso-alo-circle-anim;background-color:#ff8383;border:2px solid #fc2020;border-radius:100%;width:40px;height:40px;left:0px;opacity:0.1;position:absolute;top:2px;transform-origin:50% 50% 0;transition:all 0.5s ease 0s;}
+.vutruso-alo-phone.vutruso-alo-green .vutruso-alo-ph-circle-fill{background-color:#f072724d;}
+.vutruso-alo-ph-circle-fill{animation:2.3s ease-in-out 0s normal none infinite running vutruso-alo-circle-fill-anim;border:2px solid transparent;border-radius:100%;height:width:40px;width:40px;position:absolute;transform-origin:50% 50% 0;transition:all 0.5s ease 0s;}
+.vutruso-alo-phone.vutruso-alo-green .vutruso-alo-ph-img-circle{background-color:#ff3434;}
+.vutruso-alo-ph-img-circle{border:2px solid transparent;border-radius:100%;width:width:40px;;height:40px;opacity:1;transform-origin:50% 50% 0;}
+img.lac{-webkit-animation:phonering-alo-circle-img-anim 1s infinite ease-in-out;animation:phonering-alo-circle-img-anim 1s infinite ease-in-out;-webkit-transform-origin:50% 50%;-ms-transform-origin:50% 50%;transform-origin:50% 50%;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;align-items:center;justify-content:center;}
+.tienichcuocgoi.themes4 ul li a .icimg{-webkit-animation:phonering-alo-circle-img-anim 1s infinite ease-in-out;animation:phonering-alo-circle-img-anim 1s infinite ease-in-out;-webkit-transform-origin:50% 50%;-ms-transform-origin:50% 50%;transform-origin:50% 50%;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;align-items:center;justify-content:center;}
+.tienichcuocgoi.themes4.vitri3 ul li.sodienthoai a .tienichname{left:unset;width:auto;display:block;left:0px;right:unset;background-color:#FFF;box-shadow:0px 0px 2px #00000057;border-radius:40px;padding:0px 15px 0px 50px;font-size: 18px}
+a:where(:not(.wp-element-button)){text-decoration:none;}
+/*! vutruso keyframes */
+@keyframes phonering-alo-circle-img-anim{0%{-webkit-transform:rotate(0) scale(1) skew(1deg);}10%{-webkit-transform:rotate(-25deg) scale(1) skew(1deg);}20%{-webkit-transform:rotate(25deg) scale(1) skew(1deg);}30%{-webkit-transform:rotate(-25deg) scale(1) skew(1deg);}40%{-webkit-transform:rotate(25deg) scale(1) skew(1deg);}50%{-webkit-transform:rotate(0) scale(1) skew(1deg);}100%{-webkit-transform:rotate(0) scale(1) skew(1deg);}}
