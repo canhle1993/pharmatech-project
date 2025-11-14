@@ -1,258 +1,269 @@
-import { Component, OnInit, AfterViewInit, Renderer2 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { CommonModule } from '@angular/common'; // ✅ thêm
-import { ProgressSpinnerModule } from 'primeng/progressspinner'; // ✅ thêm
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
-import { Account } from '../../../entities/account.entity';
-import { AccountService } from '../../../services/account.service';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CartStateService } from '../../../services/cart-state.service';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ToastModule } from 'primeng/toast';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { MessageService } from 'primeng/api';
+import { AccountService } from '../../../services/account.service';
+import { ProfileService } from '../../../services/profile.service';
+import { Account } from '../../../entities/account.entity';
+
+import { DatePickerModule } from 'primeng/datepicker';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ProgressSpinnerModule, ToastModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ProgressSpinnerModule,
+    ToastModule,
+    MultiSelectModule,
+    AutoCompleteModule,
+    DatePickerModule,
+  ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
   providers: [MessageService],
 })
-export class ProfileComponent implements OnInit, AfterViewInit {
+export class ProfileComponent implements OnInit {
   account: Account | null = null;
   loading = false;
   isEditing = false;
   selectedPhoto?: File;
   selectedResume?: File;
-  // 🆕 Thêm 3 biến này
-  showPaymentMessage = false;
-  paymentStatus: 'success' | 'error' | null = null;
-  paymentMessage = '';
+
+  /** ✅ Giới hạn ngày sinh */
+  minDate = new Date(1950, 0, 1);
+  maxDate = new Date(); // hôm nay
+
+  /** =================== Dropdown data =================== */
+  genderList = ['Any', 'Male', 'Female', 'Other'];
+  workTypeList = ['Full-time', 'Part-time', 'Remote', 'Hybrid'];
+  educationList = ['High School', 'College', 'Bachelor', 'Master', 'PhD'];
+  areaList = [
+    'Hanoi',
+    'Ho Chi Minh City',
+    'Da Nang',
+    'Hai Phong',
+    'Can Tho',
+    'Binh Duong',
+    'Dong Nai',
+    'Bac Ninh',
+    'Hai Duong',
+    'Hue',
+    'Quang Ninh',
+  ];
+
+  fieldList = [
+    { name: 'Production' },
+    { name: 'Research & Development (R&D)' },
+    { name: 'Quality Assurance (QA)' },
+    { name: 'Quality Control (QC)' },
+    { name: 'Validation & Calibration' },
+    { name: 'Maintenance & Engineering' },
+    { name: 'Procurement & Supply Chain' },
+    { name: 'Sales & Marketing' },
+    { name: 'Regulatory' },
+    { name: 'Finance & Accounting' },
+    { name: 'Human Resources' },
+    { name: 'IT Support' },
+  ];
+
+  skillsList = [
+    { name: 'GMP Compliance' },
+    { name: 'Quality Control' },
+    { name: 'Pharmaceutical Manufacturing' },
+    { name: 'Process Validation' },
+    { name: 'Equipment Maintenance' },
+    { name: 'Documentation & Reporting' },
+    { name: 'Research & Development (R&D)' },
+    { name: 'SOP Management' },
+    { name: 'Safety & Hygiene Standards' },
+    { name: 'Machine Operation' },
+  ];
+
+  languageList = [
+    { name: 'English' },
+    { name: 'Vietnamese' },
+    { name: 'Japanese' },
+    { name: 'Korean' },
+    { name: 'Chinese (Mandarin)' },
+    { name: 'French' },
+    { name: 'German' },
+    { name: 'Spanish' },
+    { name: 'Hindi' },
+    { name: 'Thai' },
+    { name: 'Other' },
+  ];
+
+  /** =================== Filtered options =================== */
+  filteredGenders: string[] = [];
+  filteredWorkTypes: string[] = [];
+  filteredEducationLevels: string[] = [];
+  filteredAreas: string[] = [];
+
   constructor(
-    private route: ActivatedRoute,
     private accountService: AccountService,
-    private messageService: MessageService,
-    private renderer: Renderer2,
-    private cartState: CartStateService
+    private profileService: ProfileService,
+    private messageService: MessageService
   ) {}
 
+  /** =================== Lifecycle =================== */
   async ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const id = currentUser?.id || currentUser?._id;
     if (!id) return;
 
-    // 🧾 Kiểm tra nếu từ Stripe redirect về
-    const payment = this.route.snapshot.queryParamMap.get('payment');
-
-    if (payment === 'success') {
-      this.paymentStatus = 'success';
-      this.paymentMessage =
-        '🎉 Payment successful! Thank you for your purchase.';
-      this.showPaymentMessage = true;
-      setTimeout(() => (this.showPaymentMessage = false), 8000);
-
-      let userId = localStorage.getItem('userId');
-
-      // Nếu chưa có userId riêng, fallback từ currentUser
-      if (!userId) {
-        const stored = localStorage.getItem('currentUser');
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          userId = parsed?.id || parsed?._id || '';
-        }
-      }
-
-      if (userId) {
-        try {
-          // 🔹 Đọc lại billing_info từ localStorage
-          const billing_info_str = localStorage.getItem('billing_info');
-          const billing_info = billing_info_str
-            ? JSON.parse(billing_info_str)
-            : null;
-
-          // ✅ Gọi API lưu đơn hàng
-          await this.accountService.createOrderAfterPayment({
-            user_id: userId,
-            billing_info,
-          });
-
-          // ✅ Xóa giỏ hàng (backend + frontend)
-          await this.cartState.clear(userId);
-          this.cartState.clearCart();
-
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Payment success',
-            detail: 'Order created and cart cleared!',
-          });
-        } catch (error) {
-          console.error('❌ [Profile] Failed to create order:', error);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to create order after payment!',
-          });
-        }
-      }
-    }
-
-    // ✅ Load thông tin account như cũ
     this.loading = true;
     try {
       const result = await this.accountService.findById(id);
-      if (!result.id && (result as any)._id) result.id = (result as any)._id;
-
-      this.account = {
-        ...result,
-        education: result.education ?? {
-          degree: '',
-          university: '',
-          graduation_year: '',
-        },
-        experience: result.experience ?? {
-          company: '',
-          position: '',
-          years: '',
-        },
-      };
-
-      if (this.account.photo && !this.account.photo.startsWith('http')) {
-        this.account.photo =
-          'http://localhost:3000/upload/' + this.account.photo;
-      }
+      this.account = this.profileService.normalizeAccountData(result, {
+        fieldList: this.fieldList,
+        skillsList: this.skillsList,
+        languageList: this.languageList,
+      });
     } catch (err) {
-      console.error('❌ Lỗi khi lấy account:', err);
+      console.error('❌ Error loading profile:', err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to load profile.',
+      });
     } finally {
       this.loading = false;
     }
   }
 
+  /** =================== Actions =================== */
   toggleEdit() {
-    // ✅ đổi trạng thái khi bấm nút Edit
     this.isEditing = !this.isEditing;
   }
 
   onPhotoSelected(event: any) {
-    this.selectedPhoto = event.target.files[0];
+    const file = event.target.files[0];
+    if (!file) return;
+    this.selectedPhoto = file;
+
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      if (this.account) this.account.photo = e.target.result;
+    };
+    reader.readAsDataURL(file);
   }
 
   onResumeSelected(event: any) {
-    this.selectedResume = event.target.files[0];
+    const file = event.target.files[0];
+    if (!file) return;
+    this.selectedResume = file;
   }
 
   async saveChanges() {
+    if (!this.account) return;
+
+    this.loading = true;
     try {
-      let uploadedFilename: string | null = null;
-
-      if (this.selectedPhoto) {
-        const upload = await this.accountService.uploadPhoto(
-          this.selectedPhoto
-        );
-        uploadedFilename = upload.filename; // DB sẽ lưu tên file
-        this.account.photo = 'http://localhost:3000/upload/' + upload.filename; // UI hiển thị đầy đủ link
-      }
-
-      if (this.selectedResume) {
-        const upload = await this.accountService.uploadResume(
-          this.selectedResume
-        );
-        this.account.resume = upload.url;
-      }
-
-      const updatedData = {
-        ...this.account,
-        education: {
-          degree: this.account.education?.degree || '',
-          university: this.account.education?.university || '',
-          graduation_year: this.account.education?.graduation_year || null,
-        },
-        experience: {
-          company: this.account.experience?.company || '',
-          position: this.account.experience?.position || '',
-          years: this.account.experience?.years || null,
-        },
-        photo: uploadedFilename
-          ? uploadedFilename
-          : this.account.photo?.replace('http://localhost:3000/upload/', ''),
-      };
-
-      const updated = await this.accountService.update(
-        this.account.id || this.account._id!,
-        updatedData
+      // Upload file
+      this.account = await this.profileService.uploadFiles(
+        this.account,
+        this.selectedPhoto,
+        this.selectedResume
       );
 
-      this.account = {
-        ...this.account,
-        ...updated,
-        education: {
-          ...updated.education,
-        },
-        experience: {
-          ...updated.experience,
-        },
-      };
+      // Validate
+      const errorMsg = this.profileService.validateProfile(this.account);
+      if (errorMsg) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Incomplete',
+          detail: errorMsg,
+        });
+        return;
+      }
 
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Saved',
-        detail: 'Profile updated successfully!',
-      });
+      // Build payload
+      const payload = this.profileService.buildPayload(this.account);
+      const updated = await this.profileService.saveProfile(
+        this.account,
+        payload
+      );
+      console.log('📦 Payload gửi lên BE:', payload);
+
+      if (updated) {
+        // ✅ Cập nhật lại localStorage để applyJob đọc dữ liệu mới nhất
+        localStorage.setItem('user', JSON.stringify(updated));
+
+        // ✅ Normalize lại dữ liệu vừa cập nhật để hiển thị đẹp
+        this.account = this.profileService.normalizeAccountData(updated, {
+          fieldList: this.fieldList,
+          skillsList: this.skillsList,
+          languageList: this.languageList,
+        });
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Profile Updated',
+          detail: 'Your profile information has been saved successfully!',
+        });
+      }
 
       this.isEditing = false;
-    } catch (error) {
-      console.error('❌ Lỗi khi lưu profile:', error);
+    } catch (err) {
+      console.error('❌ Save profile error:', err);
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
-        detail: 'Failed to update profile!',
+        detail: 'An error occurred while saving your profile.',
       });
+    } finally {
+      this.loading = false;
     }
   }
 
-  ngAfterViewInit() {
-    // --- CSS ---
-    const cssFiles = [
-      'assets/css/vendor/bootstrap.min.css',
-      'assets/css/vendor/lastudioicons.css',
-      'assets/css/vendor/dliconoutline.css',
-      'assets/css/animate.min.css',
-      'assets/css/swiper-bundle.min.css',
-      'assets/css/ion.rangeSlider.min.css',
-      'assets/css/lightgallery-bundle.min.css',
-      'assets/css/magnific-popup.css',
-      'assets/css/style.css',
-    ];
-    cssFiles.forEach((href) => {
-      const link = this.renderer.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = href;
-      this.renderer.appendChild(document.head, link);
-    });
+  /** =================== Filters for AutoComplete =================== */
+  filterGender(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredGenders = this.genderList.filter((g) =>
+      g.toLowerCase().includes(query)
+    );
+  }
 
-    const fontLink = this.renderer.createElement('link');
-    fontLink.rel = 'stylesheet';
-    fontLink.href =
-      'https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap';
-    this.renderer.appendChild(document.head, fontLink);
+  filterWorkType(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredWorkTypes = this.workTypeList.filter((t) =>
+      t.toLowerCase().includes(query)
+    );
+  }
 
-    // --- JS ---
-    const jsFiles = [
-      'assets/js/vendor/jquery-3.6.0.min.js',
-      'assets/js/vendor/jquery-migrate-3.3.2.min.js',
-      'assets/js/vendor/bootstrap.bundle.min.js',
-      'assets/js/countdown.min.js',
-      'assets/js/ajax.js',
-      'assets/js/jquery.validate.min.js',
-      'assets/js/swiper-bundle.min.js',
-      'assets/js/ion.rangeSlider.min.js',
-      'assets/js/lightgallery.min.js',
-      'assets/js/vendor/modernizr-3.11.7.min.js',
-      'assets/js/jquery.magnific-popup.min.js',
-      'assets/js/main.js',
-    ];
-    jsFiles.forEach((src) => {
-      const script = this.renderer.createElement('script');
-      script.src = src;
-      script.type = 'text/javascript';
-      this.renderer.appendChild(document.body, script);
-    });
+  filterEducationLevel(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredEducationLevels = this.educationList.filter((e) =>
+      e.toLowerCase().includes(query)
+    );
+  }
+
+  filterArea(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredAreas = this.areaList.filter((a) =>
+      a.toLowerCase().includes(query)
+    );
+  }
+
+  onDobChange(date: Date) {
+    if (!this.account || !date) return;
+
+    const today = new Date();
+    let age = today.getFullYear() - date.getFullYear();
+    const monthDiff = today.getMonth() - date.getMonth();
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < date.getDate())
+    ) {
+      age--;
+    }
+
+    (this.account as any).age = age; // ✅ chỉ gán để hiển thị FE
   }
 }

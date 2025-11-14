@@ -5,7 +5,7 @@ import {
   provideZoneChangeDetection,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-
+import { tokenInterceptor } from './interceptors/token.interceptor';
 import { routes } from './app.routes';
 import {
   provideClientHydration,
@@ -15,7 +15,11 @@ import {
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withFetch,
+  withInterceptors,
+} from '@angular/common/http';
 import { MessageService } from 'primeng/api';
 
 // 🧩 Import QuillModule
@@ -26,7 +30,9 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(withFetch()),
+
+    provideHttpClient(withFetch(), withInterceptors([tokenInterceptor])),
+
     provideClientHydration(withEventReplay()),
     provideAnimations(),
     MessageService,

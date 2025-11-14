@@ -24,6 +24,8 @@ import { OrderModule } from './order/order.module';
 import { DepositSettingModule } from './deposit-setting/deposit-setting.module';
 import { StripeModule } from './stripe/stripe.module';
 import { AiModule } from './ai/ai.module';
+import { AuthModule } from './auth/auth.module';
+import { ApplicationModule } from './application/application.module';
 
 @Module({
   imports: [
@@ -81,6 +83,8 @@ import { AiModule } from './ai/ai.module';
     OrderDetailsModule,
     StripeModule,
     AiModule,
+    ApplicationModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

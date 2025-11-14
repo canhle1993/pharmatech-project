@@ -12,98 +12,99 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AccountService } from './account.service';
-import * as bcrypt from 'bcrypt';
-import { Account } from './account.decorator';
 import { MailService } from 'src/mail/mail.service';
 import { ConfigService } from '@nestjs/config';
+import * as bcrypt from 'bcrypt';
+import { Account } from './account.decorator';
+import { AccountDTO } from './account.dto';
+import { plainToInstance } from 'class-transformer';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import { AccountDTO } from './account.dto';
-import { plainToInstance } from 'class-transformer';
 
 @Controller('api/account')
 export class AccountController {
   constructor(
-    private accountService: AccountService,
-    private mailService: MailService,
-    private configService: ConfigService,
+    private readonly accountService: AccountService,
+    private readonly mailService: MailService,
+    private readonly configService: ConfigService,
   ) {}
 
+  // ===============================
+  // 🔹 Danh sách / Tìm kiếm
+  // ===============================
   @Get('find-all')
-  findAll() {
+  async findAll() {
     return this.accountService.findAll();
+  }
+
+  @Get('find-by-id/:id')
+  async findById(@Param('id') id: string) {
+    const account = await this.accountService.findById(id);
+    if (!account)
+      throw new HttpException('Account not found', HttpStatus.NOT_FOUND);
+    return account;
   }
 
   @Get('find-by-email/:email')
   async findByEmail(@Param('email') email: string) {
-    let account = await this.accountService.findByEmail(email);
-    if (account == null) {
-      throw new HttpException('Email Not Found', HttpStatus.NOT_FOUND);
-    } else {
-      return account;
-    }
+    const acc = await this.accountService.findByEmail(email);
+    if (!acc) throw new HttpException('Email not found', HttpStatus.NOT_FOUND);
+    return plainToInstance(AccountDTO, acc, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Get('find-by-username/:username')
   async findByUsername(@Param('username') username: string) {
     const acc = await this.accountService.findByUsername(username);
-    if (acc) {
-      return { exists: true }; // đã tồn tại
-    }
-    return { exists: false }; // chưa tồn tại
+    return { exists: !!acc };
   }
 
+  // ===============================
+  // 🆕 Đăng ký tài khoản
+  // ===============================
   @Post('create')
-  async create(@Body() account: Account) {
-    account.password = bcrypt.hashSync(account.password, bcrypt.genSaltSync());
+  async create(@Body() account: any) {
     account.is_active = false;
     account.securityCode = Math.floor(1000 + Math.random() * 9000).toString();
-    if (await this.accountService.create(account)) {
-      if (
-        await this.mailService.send2(
-          this.configService.get('mail_username'),
-          account.email,
-          'Verify',
-          'Security Code: ' + account.securityCode,
-        )
-      ) {
-        return {
-          msg: 'Activation email sent successfully',
-        };
-      } else {
-        throw new HttpException(
-          {
-            msg: 'Failed to send activation email',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    } else {
+
+    const created = await this.accountService.create(account);
+    if (!created)
       throw new HttpException(
-        {
-          msg: 'Account registration failed',
-        },
+        'Account registration failed',
         HttpStatus.BAD_REQUEST,
       );
-    }
+
+    const sent = await this.mailService.send2(
+      this.configService.get('mail_username'),
+      account.email,
+      'Verify your account',
+      `Your verification code: ${account.securityCode}`,
+    );
+
+    if (!sent)
+      throw new HttpException(
+        'Failed to send verification email',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+
+    return { msg: 'Activation email sent successfully' };
   }
 
+  // ===============================
+  // ✅ Xác minh tài khoản
+  // ===============================
   @Post('verify')
-  async verify(@Body() body: any) {
-    const email = body['email'];
-    const otp = body['otp'];
-
+  async verify(@Body() body: { email: string; otp: string }) {
+    const { email, otp } = body;
     const account = await this.accountService.findByEmail(email);
-
-    if (!account) {
+    if (!account)
       throw new HttpException('Email does not exist', HttpStatus.NOT_FOUND);
-    }
 
-    if (account.securityCode !== otp) {
+    if (account.securityCode !== otp)
       throw new HttpException('OTP is invalid', HttpStatus.BAD_REQUEST);
-    }
 
     account.is_active = true;
     await this.accountService.update(account._id.toString(), account);
@@ -111,10 +112,12 @@ export class AccountController {
     return { msg: 'Verification successful' };
   }
 
+  // ===============================
+  // 🔐 Đăng nhập
+  // ===============================
   @Post('login')
-  async login(@Body() body: any) {
+  async login(@Body() body: { username: string; password: string }) {
     const { username, password } = body;
-
     const isEmail = username.includes('@');
     const acc = isEmail
       ? await this.accountService.findByEmail(username)
@@ -127,18 +130,16 @@ export class AccountController {
       );
     }
 
-    // ✅ Nếu tài khoản đang bị khóa tạm thời
+    // 🔒 Kiểm tra khóa tạm thời
     if (acc.lockedUntil && acc.lockedUntil > new Date()) {
-      const minutesLeft = Math.ceil(
-        (acc.lockedUntil.getTime() - Date.now()) / 60000,
-      );
+      const mins = Math.ceil((acc.lockedUntil.getTime() - Date.now()) / 60000);
       throw new HttpException(
-        `Account temporarily locked. Try again in ${minutesLeft} minute(s).`,
+        `Account temporarily locked. Try again in ${mins} minute(s).`,
         HttpStatus.FORBIDDEN,
       );
     }
 
-    // Nếu hết thời gian khóa → tự mở khóa
+    // 🔓 Hết hạn khóa
     if (acc.lockedUntil && acc.lockedUntil <= new Date()) {
       acc.lockedUntil = null;
       acc.is_active = true;
@@ -146,76 +147,57 @@ export class AccountController {
       await this.accountService.update(acc._id.toString(), acc);
     }
 
-    // Nếu tài khoản bị khóa thủ công (is_active = false)
+    // 🚫 Kiểm tra trạng thái kích hoạt
     if (!acc.is_active) {
       throw new HttpException(
-        'Account locked due to too many failed attempts. Please reset your password.',
+        'Account is inactive. Please verify or contact admin.',
         HttpStatus.FORBIDDEN,
       );
     }
 
+    // ✅ Kiểm tra mật khẩu
     const isValid = bcrypt.compareSync(password, acc.password);
-
-    // ✅ Nếu mật khẩu sai
     if (!isValid) {
       acc.failedAttempts = (acc.failedAttempts || 0) + 1;
-
-      // Nếu sai >= 5 lần → khóa 5 phút
       if (acc.failedAttempts >= 5) {
         acc.is_active = false;
-        acc.lockedUntil = new Date(Date.now() + 5 * 60 * 1000); // 5 phút
+        acc.lockedUntil = new Date(Date.now() + 5 * 60 * 1000);
       }
-
       await this.accountService.update(acc._id.toString(), acc);
 
-      const msg =
+      throw new HttpException(
         acc.failedAttempts >= 5
-          ? 'Account locked for 5 minutes due to too many failed attempts.'
-          : `Invalid password. Attempts left: ${5 - acc.failedAttempts}`;
-
-      throw new HttpException(msg, HttpStatus.BAD_REQUEST);
+          ? 'Account locked for 5 minutes.'
+          : `Invalid password. Attempts left: ${5 - acc.failedAttempts}`,
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
-    // ✅ Nếu đăng nhập thành công → reset lại failedAttempts và mở khóa nếu có
+    // ✅ Đăng nhập thành công
     acc.failedAttempts = 0;
     acc.lockedUntil = null;
     acc.last_login = new Date();
     acc.is_active = true;
     await this.accountService.update(acc._id.toString(), acc);
 
-    return {
-      msg: 'Login successful',
-      account: acc,
-    };
-  }
-
-  @Get('find-by-id/:id')
-  async findById(@Param('id') id: string) {
-    const account = await this.accountService.findById(id);
-    if (!account) {
-      throw new HttpException('Account not found', HttpStatus.NOT_FOUND);
-    }
-
-    const dto = plainToInstance(AccountDTO, account, {
+    const dto = plainToInstance(AccountDTO, acc.toObject(), {
       excludeExtraneousValues: true,
     });
 
-    if (!dto.id && account._id) {
-      dto.id = account._id.toString();
-    }
-
-    return dto;
+    return { msg: 'Login successful', account: dto };
   }
 
+  // ===============================
+  // 🧾 Upload ảnh & Resume
+  // ===============================
   @Post('upload')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
         destination: './upload',
         filename: (req, file, cb) => {
-          const uniqueName = uuidv4().replace(/-/g, '');
-          const extension = extname(file.originalname);
-          cb(null, uniqueName + extension);
+          const unique = uuidv4().replace(/-/g, '');
+          cb(null, unique + extname(file.originalname));
         },
       }),
     }),
@@ -223,20 +205,18 @@ export class AccountController {
   upload(@UploadedFile() file: Express.Multer.File) {
     return {
       filename: file.filename,
-      url: 'http://localhost:3000/upload/' + file.filename,
+      url: `http://localhost:3000/upload/${file.filename}`,
     };
   }
 
-  // 🟢 Upload resume (CV)
   @Post('upload-resume')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
         destination: './upload',
         filename: (req, file, cb) => {
-          const uniqueName = uuidv4().replace(/-/g, '');
-          const extension = extname(file.originalname);
-          cb(null, uniqueName + extension);
+          const unique = uuidv4().replace(/-/g, '');
+          cb(null, unique + extname(file.originalname));
         },
       }),
     }),
@@ -244,122 +224,115 @@ export class AccountController {
   uploadResume(@UploadedFile() file: Express.Multer.File) {
     return {
       filename: file.filename,
-      url: 'http://localhost:3000/upload/' + file.filename,
+      url: `http://localhost:3000/upload/${file.filename}`,
     };
   }
+
+  // ===============================
+  // ✏️ Cập nhật hồ sơ
+  // ===============================
 
   @Patch('update/:id')
   async update(@Param('id') id: string, @Body() body: any) {
     if (!id)
       throw new HttpException('Missing account ID', HttpStatus.BAD_REQUEST);
     const updated = await this.accountService.update(id, body);
-    return updated;
+    return { msg: 'Account updated successfully', data: updated };
   }
 
-  // =========================
-  // 🔹 FORGOT PASSWORD
-  // =========================
+  // ===============================
+  // 🔐 Quên mật khẩu / Reset
+  // ===============================
   @Post('forgotPassword')
   async forgotPassword(@Body('email') email: string) {
     const account = await this.accountService.findByEmail(email);
-    if (!account) {
+    if (!account)
       throw new HttpException('Email not found', HttpStatus.NOT_FOUND);
-    }
 
-    // Sinh OTP ngẫu nhiên 4 chữ số
     const otp = Math.floor(1000 + Math.random() * 9000).toString();
     account.securityCode = otp;
-
     await this.accountService.update(account._id.toString(), account);
 
     const sent = await this.mailService.send2(
       this.configService.get('mail_username'),
       email,
       'Reset Password OTP',
-      'Your OTP for password reset: ' + otp,
+      'Your OTP: ' + otp,
     );
 
-    if (!sent) {
+    if (!sent)
       throw new HttpException(
-        'Failed to send OTP to email',
+        'Failed to send OTP',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
-    }
 
-    return { msg: 'OTP has been sent to your email' };
+    return { msg: 'OTP sent to your email' };
   }
 
-  // =========================
-  // 🔹 VERIFY OTP
-  // =========================
   @Post('verifyOtp')
-  async verifyOtp(@Body() body: any) {
+  async verifyOtp(@Body() body: { email: string; otp: string }) {
     const { email, otp } = body;
     const account = await this.accountService.findByEmail(email);
-    if (!account) {
+    if (!account)
       throw new HttpException('Email not found', HttpStatus.NOT_FOUND);
-    }
-
-    if (account.securityCode !== otp) {
-      throw new HttpException('Invalid or expired OTP', HttpStatus.BAD_REQUEST);
-    }
-
+    if (account.securityCode !== otp)
+      throw new HttpException('Invalid OTP', HttpStatus.BAD_REQUEST);
     return { msg: 'OTP verified successfully' };
   }
 
-  // =========================
-  // 🔹 RESET PASSWORD
-  // =========================
   @Post('resetPassword')
-  async resetPassword(@Body() body: any) {
+  async resetPassword(@Body() body: { email: string; newPassword: string }) {
     const { email, newPassword } = body;
     const account = await this.accountService.findByEmail(email);
-
-    if (!account) {
+    if (!account)
       throw new HttpException('Email not found', HttpStatus.NOT_FOUND);
-    }
-
-    if (!account.securityCode) {
+    if (!account.securityCode)
       throw new HttpException('OTP not verified', HttpStatus.BAD_REQUEST);
-    }
 
     const hashed = bcrypt.hashSync(newPassword, bcrypt.genSaltSync());
     account.password = hashed;
-    account.securityCode = null; // clear OTP
-
+    account.securityCode = null;
     await this.accountService.update(account._id.toString(), account);
-
-    return { msg: 'Password has been reset successfully' };
+    return { msg: 'Password reset successfully' };
   }
 
-  // account.controller.ts
+  // ===============================
+  // 🗑️ Xóa mềm / Khôi phục
+  // ===============================
   @Delete('delete/:id')
   async delete(@Param('id') id: string) {
-    const result = await this.accountService.delete(id);
-    if (!result) {
+    const ok = await this.accountService.delete(id);
+    if (!ok)
       throw new HttpException('Soft delete failed', HttpStatus.BAD_REQUEST);
-    }
     return { msg: 'Account marked as deleted successfully' };
   }
 
   @Patch('restore/:id')
   async restore(@Param('id') id: string) {
-    const res = await this.accountService.restore(id);
-    if (!res) {
-      throw new HttpException('Restore failed', HttpStatus.BAD_REQUEST);
-    }
+    const ok = await this.accountService.restore(id);
+    if (!ok) throw new HttpException('Restore failed', HttpStatus.BAD_REQUEST);
     return { msg: 'Account restored successfully' };
   }
 
+  // ===============================
+  // 👑 Tạo admin
+  // ===============================
   @Post('admin/create')
   async createAdmin(@Body() dto: any) {
-    // 👈 dùng any
+    dto.password = bcrypt.hashSync(dto.password, bcrypt.genSaltSync());
+    dto.roles = ['admin'];
+    return this.accountService.create(dto);
+  }
+
+  @Get('find-by-role/:role')
+  async findByRole(@Param('role') role: string) {
     try {
-      dto.password = bcrypt.hashSync(dto.password, bcrypt.genSaltSync());
-      dto.roles = ['admin'];
-      return await this.accountService.create(dto);
+      return await this.accountService.findByRole(role);
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Failed to load accounts',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

@@ -31,16 +31,27 @@ export class AccountService {
   }
 
   /** 🔹 Đăng nhập */
+  /** 🔹 Đăng nhập */
   async login(username: string, password: string) {
     const res: any = await lastValueFrom(
-      this.httpClient.post(`${env.baseUrl}account/login`, {
-        username,
-        password,
-      })
+      this.httpClient.post(`${env.baseUrl}auth/login`, { username, password })
     );
 
-    if (res.account) {
+    if (res?.access_token) {
+      // Lưu token thật
+      localStorage.setItem('token', res.access_token);
+
+      // Lưu thông tin user
       localStorage.setItem('currentUser', JSON.stringify(res.account));
+
+      localStorage.setItem('userId', res.account.id || res.account._id || '');
+      localStorage.setItem('userName', res.account.name || '');
+      localStorage.setItem('userEmail', res.account.email || '');
+      localStorage.setItem('userRole', JSON.stringify(res.account.roles || []));
+    }
+
+    if (res.account) {
+      localStorage.setItem('chatUserId', res.account._id);
     }
 
     return res;
@@ -49,6 +60,7 @@ export class AccountService {
   /** 🔹 Đăng xuất */
   logout() {
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('chatUserId');
     sessionStorage.clear();
   }
 
@@ -146,16 +158,6 @@ export class AccountService {
   async findByEmail(email: string) {
     return lastValueFrom(
       this.httpClient.get(env.baseUrl + 'account/find-by-email/' + email)
-    );
-  }
-  /** 🧾 Lưu đơn hàng sau thanh toán Stripe */
-  async createOrderAfterPayment(data: { user_id: string; billing_info?: any }) {
-    console.log('🚀 [AccountService] POST to backend:', data);
-    return await lastValueFrom(
-      this.httpClient.post(
-        env.baseUrl + 'stripe/create-order-after-payment',
-        data
-      )
     );
   }
 }

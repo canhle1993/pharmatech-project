@@ -1,29 +1,40 @@
-import { Component, OnInit, Renderer2, AfterViewInit } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { AccountService } from '../../../services/account.service';
-import { ButtonModule } from 'primeng/button';
+// header.component.ts
+import { Component, OnInit } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AccountService } from '../../../services/account.service';
+import { NotificationService } from '../../../services/notification.service';
 
 @Component({
   selector: 'app-header',
+  standalone: true,
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
-  imports: [ButtonModule, RouterLink, CommonModule],
+  imports: [CommonModule, RouterModule],
 })
 export class HeaderComponent implements OnInit {
   user: any = null;
   currentTime = new Date();
+  notifications: any[] = [];
+  messages: any[] = [];
 
   constructor(
     private accountService: AccountService,
     private router: Router,
-    private renderer: Renderer2
+    private notifyService: NotificationService
   ) {}
-  ngOnInit() {
+
+  ngOnInit(): void {
+    this.notifyService.notifications$.subscribe((list) => {
+      this.notifications = list;
+    });
+
+    this.notifyService.messages$.subscribe((list) => {
+      this.messages = list;
+    });
+
     const storedUser = localStorage.getItem('currentUser');
-    if (storedUser) {
-      this.user = JSON.parse(storedUser);
-    }
+    if (storedUser) this.user = JSON.parse(storedUser);
 
     setInterval(() => (this.currentTime = new Date()), 1000);
   }

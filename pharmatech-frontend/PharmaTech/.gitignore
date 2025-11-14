@@ -68,8 +68,10 @@ pnpm-debug.log*
 # 💻 OS / System Files
 # ============================
 
-src/app/environments/environment.ts
-src/app/environments/environment.prod.ts
+# Angular env
+src/app/enviroments/enviroment.ts
+src/app/enviroments/enviroment.prod.ts
+
 environment*.ts
 *.env
 

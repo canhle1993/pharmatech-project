@@ -1,149 +1,167 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CareerDTO, CreateCareerDto, UpdateCareerDto } from './career.dto';
+import { CreateCareerDto, UpdateCareerDto, CareerDTO } from './career.dto';
 import { plainToInstance } from 'class-transformer';
-
-type CareerLean = {
-  _id?: any;
-  banner?: string | null;
-  is_active?: boolean;
-  created_at?: Date;
-  posted_date?: Date | string | null;
-  updated_at?: Date;
-  title?: string;
-  department?: string;
-  description?: string;
-  location?: string;
-  salary_range?: string;
-  requirements?: string;
-  [k: string]: any;
-};
+import { MailService } from 'src/mail/mail.service';
+import { Account } from 'src/account/account.decorator';
+import { ConfigService } from '@nestjs/config';
+import { getFrontendUrl } from 'src/account/config.util';
 
 @Injectable()
 export class CareerService {
   constructor(
     @InjectModel('Career') private readonly careerModel: Model<any>,
+    @InjectModel(Account.name) private readonly accountModel: Model<Account>,
+    private readonly mailService: MailService,
+    private readonly configService: ConfigService,
   ) {}
 
-  /** Tạo job mới */
-  async create(careerData: CreateCareerDto): Promise<any> {
+  /** 🆕 Tạo bài tuyển dụng mới + Gửi email đến user phù hợp */
+  async create(careerData: CreateCareerDto): Promise<CareerDTO> {
     const now = new Date();
-
-    // ép posted_date và created_at trùng nhau tuyệt đối nếu không có posted_date
     const posted = careerData.posted_date
       ? new Date(careerData.posted_date)
       : now;
 
-    const data: CareerLean = {
+    const doc = new this.careerModel({
       ...careerData,
-      created_at: now,
       posted_date: posted,
-      updated_at: now, // thêm luôn để đồng bộ
+      created_at: now,
+      updated_at: now,
       is_active: true,
-    };
+    });
 
-    const doc = new this.careerModel(data);
     const saved = await doc.save();
 
-    const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
-    return {
-      ...saved.toObject(),
-      banner: saved.banner
-        ? `${BASE_URL}/upload/career-banners/${saved.banner}`
-        : null,
-    };
+    // ✅ Gửi email cho các user có hồ sơ phù hợp
+    await this.notifyUsersWithMatchingProfile(saved);
+
+    return plainToInstance(CareerDTO, saved.toObject(), {
+      excludeExtraneousValues: true,
+    });
   }
 
-  /** Lấy tất cả job */
-  async findAll(): Promise<any[]> {
-    // định kiểu lean để tránh union sai
+  /** 📬 Gửi mail cho user có field / skills / area liên quan */
+  private async notifyUsersWithMatchingProfile(career: any): Promise<void> {
+    try {
+      const query = {
+        is_delete: false,
+        is_active: true,
+        $or: [
+          { field: { $in: career.field || [] } },
+          { skills: { $in: career.skills || [] } },
+          { preferred_area: career.area },
+          { languages: { $in: career.language || [] } },
+        ],
+      };
+
+      const users = await this.accountModel.find(query).lean();
+      if (!users.length) return;
+
+      const subject = `New Job Opportunity: ${career.title}`;
+      const baseUrl = getFrontendUrl();
+      const link = `${baseUrl}/careerDetails/${career._id}`;
+      const content = `
+        <h3>Hi there!</h3>
+        <p>We found a new job opportunity that matches your profile:</p>
+        <ul>
+          <li><strong>Title:</strong> ${career.title}</li>
+          <li><strong>Department:</strong> ${career.department}</li>
+          <li><strong>Location:</strong> ${career.location}</li>
+          <li><strong>Work type:</strong> ${career.work_type || 'N/A'}</li>
+        </ul>
+        <p><a href="${link}" target="_blank">👉 View Job Details</a></p>
+        <hr/>
+        <p>Thank you for using PharmaTech Careers.</p>
+      `;
+
+      for (const u of users) {
+        if (!u.email) continue;
+        await this.mailService.send2(
+          this.configService.get('mail_username'),
+          u.email,
+          subject,
+          content,
+        );
+      }
+
+      console.log(`📩 Sent job notification to ${users.length} users.`);
+    } catch (err) {
+      console.error('❌ Failed to send job notifications:', err.message);
+    }
+  }
+
+  /** 📋 Lấy danh sách job */
+  async findAll(): Promise<CareerDTO[]> {
     const careers = await this.careerModel
       .find({ is_active: true })
       .sort({ created_at: -1 })
-      .lean<CareerLean[]>();
+      .lean();
 
-    const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
-
-    return careers.map((c) => ({
-      ...c,
-      banner: c.banner ? `${BASE_URL}/upload/career-banners/${c.banner}` : null,
-    }));
+    return plainToInstance(CareerDTO, careers, {
+      excludeExtraneousValues: true,
+    });
   }
 
-  /** Lấy chi tiết job */
-  async findById(id: string): Promise<any> {
-    // định kiểu rõ ràng, không còn union với []
-    const job = await this.careerModel.findById(id).lean<CareerLean | null>();
+  /** 🔍 Lấy job theo ID */
+  async findById(id: string): Promise<CareerDTO> {
+    const job = await this.careerModel.findById(id).lean();
     if (!job) throw new NotFoundException('Career not found');
 
-    const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
-    return {
-      ...job,
-      banner: job.banner
-        ? `${BASE_URL}/upload/career-banners/${job.banner}`
-        : null,
-    };
+    return plainToInstance(CareerDTO, job, {
+      excludeExtraneousValues: true,
+    });
   }
 
-  /** Cập nhật job */
-  async update(id: string, updateData: UpdateCareerDto): Promise<any> {
-    const existing = await this.careerModel
-      .findById(id)
-      .lean<CareerLean | null>();
+  /** ✏️ Cập nhật bài đăng */
+  async update(id: string, updateData: UpdateCareerDto): Promise<CareerDTO> {
+    const existing = await this.careerModel.findById(id).lean();
     if (!existing) throw new NotFoundException('Career not found');
 
-    const data: Partial<CareerLean> = {
-      ...updateData,
-      updated_at: new Date(),
-      // giữ nguyên created_at, không cho client override
-      created_at: existing.created_at,
-    };
-
-    const updated = await this.careerModel.findByIdAndUpdate(id, data, {
-      new: true,
-    });
-    const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
-
-    return {
-      ...updated.toObject(),
-      banner: updated.banner
-        ? `${BASE_URL}/upload/career-banners/${updated.banner}`
-        : null,
-    };
-  }
-
-  /** Xoá mềm job */
-  async delete(id: string): Promise<any> {
-    const deleted = await this.careerModel.findByIdAndUpdate(
+    const updated = await this.careerModel.findByIdAndUpdate(
       id,
-      { is_active: false, updated_at: new Date() },
+      { ...updateData, updated_at: new Date() },
       { new: true },
     );
-    if (!deleted) throw new NotFoundException('Career not found');
-    return deleted;
+
+    return plainToInstance(CareerDTO, updated.toObject(), {
+      excludeExtraneousValues: true,
+    });
   }
 
-  /** 🔍 Tìm các job tương tự theo field hoặc industry */
-  async findSimilarById(id: string): Promise<CareerDTO[]> {
-    // Lấy job hiện tại
-    const current = (await this.careerModel.findById(id).lean()) as any;
+  /** 🗑️ Xóa mềm bài đăng */
+  async delete(id: string): Promise<boolean> {
+    const result = await this.careerModel.updateOne(
+      { _id: id },
+      { $set: { is_active: false, updated_at: new Date() } },
+    );
+    return result.modifiedCount > 0;
+  }
 
+  /** 🧭 Gợi ý các job tương tự */
+  async findSimilarById(id: string): Promise<CareerDTO[]> {
+    const current = (await this.careerModel.findById(id).lean()) as any;
     if (!current) throw new NotFoundException('Career not found');
 
-    // Truy vấn các job khác có field hoặc industry trùng
     const query = {
       _id: { $ne: id },
       is_active: true,
       $or: [
-        { industry: { $in: current.industry || [] } },
         { field: { $in: current.field || [] } },
+        { industry: { $in: current.industry || [] } },
+        { area: current.area },
       ],
     };
 
     const results = await this.careerModel
       .find(query)
-      .limit(4)
+      .limit(5)
       .sort({ created_at: -1 })
       .lean();
 

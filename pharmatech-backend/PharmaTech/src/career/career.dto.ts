@@ -145,27 +145,33 @@ export class CareerDTO {
 
   // --- Ngày đăng / hết hạn / tạo / cập nhật ---
   @Transform(({ obj }) =>
-    obj?.posted_date ? moment(obj.posted_date).format('YYYY-MM-DD') : null,
+    obj?.posted_date
+      ? moment(obj.posted_date, moment.ISO_8601).format('YYYY-MM-DD')
+      : null,
   )
   @Expose()
   posted_date?: string | null;
 
   @Transform(({ obj }) =>
     obj?.expiration_date
-      ? moment(obj.expiration_date).format('YYYY-MM-DD')
+      ? moment(obj.expiration_date, moment.ISO_8601).format('YYYY-MM-DD')
       : null,
   )
   @Expose()
   expiration_date?: string | null;
 
   @Transform(({ obj }) =>
-    obj?.created_at ? moment(obj.created_at).format('DD/MM/YYYY HH:mm') : null,
+    obj?.created_at
+      ? moment(obj.created_at, moment.ISO_8601).format('DD/MM/YYYY HH:mm')
+      : null,
   )
   @Expose({ name: 'created_at' })
   created_at?: string | null;
 
   @Transform(({ obj }) =>
-    obj?.updated_at ? moment(obj.updated_at).format('DD/MM/YYYY HH:mm') : null,
+    obj?.updated_at
+      ? moment(obj.updated_at, moment.ISO_8601).format('DD/MM/YYYY HH:mm')
+      : null,
   )
   @Expose({ name: 'updated_at' })
   updated_at?: string | null;

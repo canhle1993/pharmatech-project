@@ -1,13 +1,14 @@
 import { Component, OnInit, Renderer2 } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { CommonModule, DatePipe } from '@angular/common'; // ✅ thêm
-import { ProgressSpinnerModule } from 'primeng/progressspinner'; // ✅ thêm
+import { ActivatedRoute } from '@angular/router';
+import { CommonModule, DatePipe } from '@angular/common';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { Account } from '../../../../entities/account.entity';
 import { AccountService } from '../../../../services/account.service';
 import { FormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { env } from '../../../../enviroments/enviroment';
 
 @Component({
   standalone: true,
@@ -17,8 +18,7 @@ import { ButtonModule } from 'primeng/button';
     ProgressSpinnerModule,
     ToastModule,
     FormsModule,
-    ButtonModule,
-    RouterLink,
+    MultiSelectModule,
   ],
   templateUrl: './accountdetails.component.html',
   styleUrls: ['./accountdetails.component.css'],
@@ -40,46 +40,42 @@ export class AccountDetailsComponent implements OnInit {
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    const editMode = this.route.snapshot.queryParamMap.get('edit') === 'true'; // ✅ lấy query param
+    const editMode = this.route.snapshot.queryParamMap.get('edit') === 'true';
 
     if (!id) return;
-
     this.loading = true;
+
     try {
       const result = await this.accountService.findById(id);
+      if (!result.id && (result as any)._id) result.id = (result as any)._id;
 
-      // ✅ Bổ sung fix ID (phòng trường hợp backend không trả đúng)
-      if (!result.id && (result as any)._id) {
-        result.id = (result as any)._id;
-      }
-
-      // ✅ Gán lại vào account
+      // 🧩 Gán cấu trúc mặc định (đồng bộ backend)
       this.account = {
         ...result,
         education: result.education ?? {
-          degree: '',
-          university: '',
-          graduation_year: '',
+          education_level: '',
+          major: '',
+          school_name: '',
+          graduation_year: undefined,
         },
         experience: result.experience ?? {
-          company: '',
-          position: '',
-          years: '',
+          company_name: '',
+          job_title: '',
+          working_years: undefined,
+          responsibilities: '',
         },
       };
 
-      // ✅ Fix đường dẫn ảnh
+      // ✅ Fix ảnh đầy đủ URL
       if (this.account.photo && !this.account.photo.startsWith('http')) {
-        this.account.photo =
-          'http://localhost:3000/upload/' + this.account.photo;
+        this.account.photo = `${env.baseUrl.replace('/api/', '')}upload/${
+          this.account.photo
+        }`;
       }
 
-      // ✅ Nếu query param có edit=true thì bật sẵn chế độ chỉnh sửa
-      if (editMode) {
-        this.isEditing = true;
-      }
+      if (editMode) this.isEditing = true;
 
-      console.log('✅ Dữ liệu account nhận được:', this.account);
+      console.log('✅ Account detail loaded:', this.account);
     } catch (err) {
       console.error('❌ Lỗi khi lấy account:', err);
     } finally {
@@ -88,9 +84,7 @@ export class AccountDetailsComponent implements OnInit {
   }
 
   toggleEdit() {
-    // ✅ đổi trạng thái khi bấm nút Edit
     this.isEditing = !this.isEditing;
-    console.log('isEditing =', this.isEditing);
   }
 
   onPhotoSelected(event: any) {
@@ -102,17 +96,24 @@ export class AccountDetailsComponent implements OnInit {
   }
 
   async saveChanges() {
+    if (!this.account) return;
+
     try {
+      this.loading = true;
       let uploadedFilename: string | null = null;
 
+      // 📸 Upload avatar nếu có chọn file
       if (this.selectedPhoto) {
         const upload = await this.accountService.uploadPhoto(
           this.selectedPhoto
         );
-        uploadedFilename = upload.filename; // DB sẽ lưu tên file
-        this.account.photo = 'http://localhost:3000/upload/' + upload.filename; // UI hiển thị đầy đủ link
+        uploadedFilename = upload.filename;
+        this.account.photo = `${env.baseUrl.replace('/api/', '')}upload/${
+          upload.filename
+        }`;
       }
 
+      // 📄 Upload resume nếu có chọn file
       if (this.selectedResume) {
         const upload = await this.accountService.uploadResume(
           this.selectedResume
@@ -120,21 +121,36 @@ export class AccountDetailsComponent implements OnInit {
         this.account.resume = upload.url;
       }
 
+      // 🔹 Chuẩn hóa payload gửi backend
       const updatedData = {
         ...this.account,
+        photo: uploadedFilename
+          ? uploadedFilename
+          : this.account.photo?.split('/upload/')[1],
+
         education: {
-          degree: this.account.education?.degree || '',
-          university: this.account.education?.university || '',
+          education_level: this.account.education?.education_level || '',
+          major: this.account.education?.major || '',
+          school_name: this.account.education?.school_name || '',
           graduation_year: this.account.education?.graduation_year || null,
         },
         experience: {
-          company: this.account.experience?.company || '',
-          position: this.account.experience?.position || '',
-          years: this.account.experience?.years || null,
+          company_name: this.account.experience?.company_name || '',
+          job_title: this.account.experience?.job_title || '',
+          working_years: this.account.experience?.working_years || null,
+          responsibilities: this.account.experience?.responsibilities || '',
         },
-        photo: uploadedFilename
-          ? uploadedFilename
-          : this.account.photo?.replace('http://localhost:3000/upload/', ''),
+
+        // 🔸 Chuẩn hóa các list array (nếu có)
+        field: this.account.field?.map((f: any) =>
+          typeof f === 'string' ? f : f.name
+        ),
+        skills: this.account.skills?.map((s: any) =>
+          typeof s === 'string' ? s : s.name
+        ),
+        languages: this.account.languages?.map((l: any) =>
+          typeof l === 'string' ? l : l.name
+        ),
       };
 
       console.log('📤 Payload gửi lên server:', updatedData);
@@ -147,18 +163,14 @@ export class AccountDetailsComponent implements OnInit {
       this.account = {
         ...this.account,
         ...updated,
-        education: {
-          ...updated.education,
-        },
-        experience: {
-          ...updated.experience,
-        },
+        education: { ...updated.education },
+        experience: { ...updated.experience },
       };
 
       this.messageService.add({
         severity: 'success',
         summary: 'Saved',
-        detail: 'Profile updated successfully!',
+        detail: 'Account updated successfully!',
       });
 
       this.isEditing = false;
@@ -167,8 +179,10 @@ export class AccountDetailsComponent implements OnInit {
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
-        detail: 'Failed to update profile!',
+        detail: 'Failed to update account!',
       });
+    } finally {
+      this.loading = false;
     }
   }
 }

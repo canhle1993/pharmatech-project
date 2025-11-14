@@ -1,0 +1,839 @@
+/* 🌫️ BACKDROP - blur & dim */
+:host ::ng-deep .p-dialog-mask {
+  backdrop-filter: blur(8px);
+  background: rgba(15, 23, 42, 0.35);
+}
+
+/* 🪩 DIALOG WRAPPER */
+:host ::ng-deep .p-dialog {
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  animation: dialogFade 0.35s ease;
+}
+
+@keyframes dialogFade {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* 💫 HEADER */
+:host ::ng-deep .p-dialog .p-dialog-header {
+  background: linear-gradient(135deg, #2563eb, #0ea5e9);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 1rem 1.5rem;
+  border: none;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
+}
+
+:host ::ng-deep .p-dialog .p-dialog-header-icon {
+  color: #fff;
+  opacity: 0.85;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-header-icon:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: rotate(90deg);
+}
+
+/* 🧾 CONTENT AREA */
+:host ::ng-deep .p-dialog .p-dialog-content {
+  background: #f9fafb;
+  padding: 2rem 1.8rem 1.6rem;
+  color: #0f172a;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* 📋 FIELD */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 1.2rem;
+}
+
+.field label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ✨ INPUT & TEXTAREA */
+:host ::ng-deep .p-inputtext,
+:host ::ng-deep textarea.p-inputtextarea,
+:host ::ng-deep .p-datepicker input {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  background: #f1f5f9;
+  padding: 0.8rem 1rem;
+  font-size: 0.95rem;
+  color: #0f172a;
+  box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.06),
+    inset -2px -2px 6px rgba(255, 255, 255, 0.8);
+  transition: all 0.25s ease;
+}
+
+:host ::ng-deep .p-inputtext:focus,
+:host ::ng-deep textarea.p-inputtextarea:focus,
+:host ::ng-deep .p-datepicker input:focus {
+  background: #ffffff;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3), 0 3px 8px rgba(37, 99, 235, 0.2);
+  outline: none;
+}
+
+/* Placeholder */
+:host ::ng-deep .p-inputtext::placeholder,
+:host ::ng-deep textarea.p-inputtextarea::placeholder {
+  color: #94a3b8;
+  opacity: 0.9;
+}
+
+/* 📅 DATEPICKER */
+:host ::ng-deep .p-datepicker {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: none !important;
+}
+:host ::ng-deep .p-datepicker-header {
+  background: #eff6ff !important;
+  color: #1e3a8a !important;
+}
+
+/* 🧠 EDITOR */
+:host ::ng-deep .p-editor-container {
+  border: none !important;
+  border-radius: 14px !important;
+  background: #f8fafc !important;
+  box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.05),
+    inset -1px -1px 4px rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+}
+
+:host ::ng-deep .p-editor-toolbar {
+  background: #f9fafb !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  padding: 6px 10px !important;
+}
+
+:host ::ng-deep .ql-toolbar button,
+:host ::ng-deep .ql-toolbar .ql-picker {
+  color: #334155 !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease !important;
+}
+:host ::ng-deep .ql-toolbar button:hover,
+:host ::ng-deep .ql-toolbar .ql-picker:hover {
+  background: rgba(37, 99, 235, 0.1) !important;
+  color: #2563eb !important;
+}
+:host ::ng-deep .ql-editor {
+  min-height: 130px !important;
+  background: #fff !important;
+  border: none !important;
+  padding: 0.9rem 1rem !important;
+  font-size: 0.95rem !important;
+  color: #0f172a !important;
+  border-radius: 0 0 14px 14px !important;
+}
+:host ::ng-deep .ql-editor::before {
+  color: #94a3b8 !important;
+  font-style: italic !important;
+}
+
+/* 🦶 FOOTER */
+:host ::ng-deep .p-dialog .p-dialog-footer {
+  background: #f1f5f9;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+/* ✅ SAVE BUTTON */
+:host ::ng-deep .p-button-success {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  padding: 0.7rem 1.4rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  transition: all 0.25s ease;
+}
+:host ::ng-deep .p-button-success:hover {
+  background: linear-gradient(135deg, #22c55e, #4ade80);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+}
+
+/* ❌ CANCEL BUTTON */
+:host ::ng-deep .p-button-text {
+  color: #64748b;
+  font-weight: 600;
+  padding: 0.65rem 1.3rem;
+  border-radius: 10px;
+  transition: all 0.25s ease;
+}
+:host ::ng-deep .p-button-text:hover {
+  background: rgba(148, 163, 184, 0.15);
+  color: #0f172a;
+  transform: translateY(-2px);
+}
+:host ::ng-deep .p-dialog {
+  overflow: visible !important;
+}
+
+:host ::ng-deep .p-editor-container {
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+:host ::ng-deep .p-editor-toolbar {
+  border-bottom: 1px solid #e2e8f0;
+  background: #f9fafb;
+}
+
+:host ::ng-deep .p-editor-content {
+  background: #ffffff;
+}
+
+/* ====== CARD WRAP ====== */
+.card-wrap {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 22px 24px 12px;
+  box-shadow: 0 10px 28px rgba(16, 24, 40, 0.08);
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
+    Arial, sans-serif;
+}
+
+/* ====== CARD HEADER ====== */
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1.2rem;
+}
+
+.card-head i {
+  font-size: 1.5rem;
+  color: #2563eb;
+}
+
+.card-head h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* ====== TABLE STYLES ====== */
+:host ::ng-deep .p-table {
+  border: none;
+  font-size: 0.95rem;
+}
+
+:host ::ng-deep .p-datatable-thead > tr > th {
+  background: linear-gradient(90deg, #2563eb 0%, #60a5fa 100%);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  padding: 0.85rem 1rem;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr > td {
+  border: none;
+  padding: 1rem;
+  vertical-align: middle;
+  color: #334155;
+  background: #ffffff;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr:hover > td {
+  background: #f1f5ff;
+}
+
+/* Avatar */
+.cell-candidate .avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 3px #e2e8f0;
+}
+
+/* Candidate info */
+.cell-candidate .info .fw-bold {
+  font-weight: 600;
+}
+
+.cell-candidate .text-muted i {
+  color: #64748b;
+  margin-right: 4px;
+}
+
+/* ====== MONEY ====== */
+.col-money {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+/* ====== STATUS BADGE ====== */
+.badge {
+  display: inline-block;
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.badge-success {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.badge-danger {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.badge-warning {
+  background: #fef9c3;
+  color: #a16207;
+}
+
+.badge-info {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.badge-secondary {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.badge-contrast {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+/* ====== ACTION BUTTONS ====== */
+.action-btn {
+  margin: 0 3px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* ====== PAGINATION ====== */
+:host ::ng-deep .p-paginator {
+  background: transparent;
+  border: none;
+  margin-top: 1rem;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page {
+  border-radius: 8px;
+  margin: 0 3px;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-pages .p-highlight {
+  background: #2563eb;
+  color: #fff !important;
+}
+
+/* ====== EMPTY MESSAGE ====== */
+.empty {
+  background: #f8fafc;
+  border-radius: 10px;
+  font-style: italic;
+}
+
+/* ====== LOADING ====== */
+.loading {
+  color: #475569;
+}
+
+.loading i {
+  color: #2563eb;
+}
+
+.loading p {
+  font-size: 0.9rem;
+}
+
+/* ====== DIALOG (kế thừa style bạn gửi) ====== */
+:host ::ng-deep .p-dialog-mask {
+  backdrop-filter: blur(8px);
+  background: rgba(15, 23, 42, 0.35);
+}
+
+:host ::ng-deep .p-dialog {
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+:host ::ng-deep .p-dialog .p-dialog-header {
+  background: linear-gradient(135deg, #2563eb, #0ea5e9);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 1rem 1.5rem;
+  border: none;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-footer {
+  background: #f1f5f9;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+/* ====== BUTTONS ====== */
+:host ::ng-deep .p-button-success {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  padding: 0.6rem 1.3rem;
+  border-radius: 10px;
+}
+
+:host ::ng-deep .p-button-success:hover {
+  background: linear-gradient(135deg, #22c55e, #4ade80);
+}
+
+:host ::ng-deep .p-button-text {
+  color: #64748b;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+:host ::ng-deep .p-button-text:hover {
+  background: rgba(148, 163, 184, 0.15);
+  color: #0f172a;
+}
+/* ===============================
+   🎨 FIX CĂN CHỈNH ICON TIÊU ĐỀ
+   =============================== */
+.card-head {
+  display: flex;
+  align-items: center; /* 🔹 Giúp icon và text thẳng hàng */
+  gap: 8px;
+  margin-bottom: 1.2rem;
+  line-height: 1;
+}
+
+.card-head i {
+  font-size: 1.4rem;
+  color: #2563eb;
+  position: relative;
+  top: 1px; /* 🔹 Đưa icon nhích lên nhẹ */
+}
+
+.card-head h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  line-height: 1; /* 🔹 Giúp không bị lệch baseline */
+}
+/* ===============================
+   💠 TITLE HEADER - GRADIENT STYLE
+   =============================== */
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 0.6rem;
+  margin-bottom: 1.2rem;
+  border-bottom: 3px solid transparent;
+  background: linear-gradient(90deg, #2563eb, #60a5fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+}
+
+.card-head::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #2563eb, #60a5fa);
+  opacity: 0.7;
+}
+
+.card-head i {
+  font-size: 1.4rem;
+  color: #2563eb;
+  position: relative;
+  top: 1px;
+}
+
+.card-head h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* ===============================
+   🌈 STATUS BADGES - COLOR & ANIMATION
+   =============================== */
+@keyframes pulseGreen {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+@keyframes pulseBlue {
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+  }
+}
+@keyframes pulseYellow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(250, 204, 21, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(250, 204, 21, 0);
+  }
+}
+@keyframes pulseRed {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+/* Badge base */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-width: 80px;
+  text-transform: capitalize;
+  animation-duration: 2.5s;
+  animation-iteration-count: infinite;
+}
+
+/* Pending */
+.badge-pending {
+  background: #fff7ed;
+  color: #d97706;
+  animation-name: pulseYellow;
+}
+
+/* Interview */
+.badge-interview {
+  background: #e0f2fe;
+  color: #0369a1;
+  animation-name: pulseBlue;
+}
+
+/* Hired (accepted/success) */
+.badge-hired,
+.badge-success {
+  background: #dcfce7;
+  color: #15803d;
+  animation-name: pulseGreen;
+}
+
+/* Rejected */
+.badge-rejected,
+.badge-danger {
+  background: #fee2e2;
+  color: #b91c1c;
+  animation-name: pulseRed;
+}
+
+/* Reviewed / secondary */
+.badge-reviewed {
+  background: #f3f4f6;
+  color: #374151;
+}
+/* ===== ASSIGN / RESULT / VIEW / CONFIRM DIALOG — common ===== */
+:host ::ng-deep .p-dialog {
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.3);
+}
+:host ::ng-deep .p-dialog .p-dialog-header {
+  background: linear-gradient(135deg, #2563eb, #0ea5e9);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 1rem 1.5rem;
+  border: 0;
+}
+:host ::ng-deep .p-dialog .p-dialog-content {
+  background: #f9fafb;
+  color: #0f172a;
+}
+
+/* ConfirmDialog (delete) */
+:host ::ng-deep .p-confirm-dialog .p-dialog-header {
+  background: linear-gradient(135deg, #ef4444, #f97316);
+}
+:host ::ng-deep .p-confirm-dialog .p-dialog-content {
+  padding-top: 1rem;
+}
+:host ::ng-deep .p-confirm-dialog-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Inputs inside dialogs */
+:host ::ng-deep .p-dialog .p-inputtext,
+:host ::ng-deep .p-dialog textarea.p-inputtextarea,
+:host ::ng-deep .p-dialog select.p-inputtext {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  background: #f1f5f9;
+  padding: 0.8rem 1rem;
+  font-size: 0.95rem;
+  color: #0f172a;
+  box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.06),
+    inset -2px -2px 6px rgba(255, 255, 255, 0.8);
+}
+:host ::ng-deep .p-dialog .p-inputtext:focus,
+:host ::ng-deep .p-dialog textarea.p-inputtextarea:focus,
+:host ::ng-deep .p-dialog select.p-inputtext:focus {
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3), 0 3px 8px rgba(37, 99, 235, 0.2);
+  outline: none;
+}
+
+/* Details dialog layout */
+.details-grid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 18px;
+}
+@media (max-width: 860px) {
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.details-left,
+.details-right {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+.candidate-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.avatar-lg {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 3px #e2e8f0;
+}
+.name {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+.muted {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+.meta-row {
+  margin: 8px 0;
+  color: #334155;
+}
+.job-title {
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+.status-line {
+  margin: 10px 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.note-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px;
+}
+.note-head {
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #334155;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* ===== Animated status badges (blink/shine) ===== */
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.12);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+  }
+}
+.badge {
+  position: relative;
+}
+.badge-success,
+.badge-danger,
+.badge-warning,
+.badge-info,
+.badge-secondary,
+.badge-contrast {
+  animation: pulseGlow 2.2s ease-in-out infinite;
+}
+/* đổi màu theo trạng thái (đúng palette cột Status) */
+.badge-success {
+  background: #dcfce7;
+  color: #15803d;
+}
+.badge-danger {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+.badge-warning {
+  background: #fef9c3;
+  color: #a16207;
+}
+.badge-info {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+.badge-secondary {
+  background: #f3f4f6;
+  color: #374151;
+}
+.badge-contrast {
+  background: #f1f5f9;
+  color: #475569;
+}
+.col-admin {
+  min-width: 160px;
+}
+
+.assigned-blink {
+  display: inline-block;
+  color: #2563eb;
+  font-weight: 600;
+  animation: pulseAdmin 1.2s infinite;
+}
+
+@keyframes pulseAdmin {
+  0% {
+    color: #2563eb;
+    text-shadow: 0 0 3px rgba(37, 99, 235, 0.5);
+  }
+  50% {
+    color: #1d4ed8;
+    text-shadow: 0 0 10px rgba(37, 99, 235, 0.8);
+  }
+  100% {
+    color: #2563eb;
+    text-shadow: 0 0 3px rgba(37, 99, 235, 0.5);
+  }
+}
+.badge-assigned {
+  background-color: #ffb84d;
+  color: #fff;
+  animation: pulse-amber 1.5s infinite;
+}
+
+@keyframes pulse-amber {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 184, 77, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 184, 77, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 184, 77, 0);
+  }
+}
+.assigned-blink {
+  color: #16a34a;
+  font-weight: 600;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}

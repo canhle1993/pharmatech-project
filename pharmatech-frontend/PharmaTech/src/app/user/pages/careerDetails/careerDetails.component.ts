@@ -4,10 +4,13 @@ import { CareerService } from '../../../services/career.service';
 import { Career } from '../../../entities/career.entity';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { ToastModule } from 'primeng/toast';
+import { ApplicationService } from '../../../services/application.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   templateUrl: './careerDetails.component.html',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ToastModule],
   providers: [DatePipe],
   styleUrls: ['./careerDetails.component.css'],
 })
@@ -36,7 +39,9 @@ export class CareerDetailsComponent implements OnInit, AfterViewInit {
   constructor(
     private renderer: Renderer2,
     private route: ActivatedRoute,
-    private careerService: CareerService
+    private careerService: CareerService,
+    private appService: ApplicationService,
+    private messageService: MessageService
   ) {}
 
   async ngOnInit() {
@@ -77,6 +82,69 @@ export class CareerDetailsComponent implements OnInit, AfterViewInit {
       console.error('❌ Error', err);
     } finally {
       this.buildBenefitsView();
+    }
+  }
+
+  /** 🟢 When user clicks "Apply Now" */
+  /** 🟢 When user clicks "Apply Now" */
+  async applyJob() {
+    const userId = localStorage.getItem('userId');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+    // 🔒 Kiểm tra đăng nhập
+    if (!userId) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Please login',
+        detail: 'You must login to apply for this job.',
+      });
+      return;
+    }
+
+    if (!this.career?.id) return;
+
+    // ⚠️ Kiểm tra bắt buộc có CV
+    if (!user.resume) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Incomplete profile',
+        detail:
+          'Please upload your resume (CV) in your profile before applying.',
+      });
+      return;
+    }
+
+    try {
+      this.loading = true;
+
+      // 🧩 Chuẩn hóa payload
+      const payload = {
+        account_id: userId,
+        career_id: this.career.id,
+        resume: user.resume,
+        expected_salary: user.expected_salary ?? null,
+        available_from: user.available_from ?? null,
+        introduction: user.introduction ?? null,
+      };
+
+      console.log('📤 Applying job with payload:', payload);
+
+      const res = await this.appService.create(payload);
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Application submitted',
+        detail: `You have successfully applied for "${this.career.title}".`,
+      });
+    } catch (err: any) {
+      console.error('❌ Error applying job:', err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to submit your application.',
+      });
+    } finally {
+      this.loading = false;
     }
   }
 
