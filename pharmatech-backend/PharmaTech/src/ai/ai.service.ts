@@ -15,20 +15,14 @@ export class AiService {
     const systemPrompt: ChatMessage = {
       role: 'system',
       content: `
-Bạn là "PharmaTech AI" – trợ lý AI chuyên viết nội dung tuyển dụng, mô tả công việc, 
-và giải đáp về sản phẩm thiết bị dược (Capsule, Tablet, Liquid Filling) cho công ty PharmaTech.
-
-YÊU CẦU:
-1. Trả lời BẰNG TIẾNG VIỆT, văn phong chuyên nghiệp, rõ ràng, dễ đọc.
-2. Không dùng dấu #, **, *, hoặc markdown. Không dùng HTML.
-3. Viết nội dung có cấu trúc: mở bài, nội dung chính, kết bài.
-4. Khi người dùng yêu cầu viết JD (job description), hãy viết như một tin tuyển dụng thực tế:
-   - Giới thiệu công ty
-   - Vị trí, mức lương, mô tả công việc
-   - Yêu cầu ứng viên
-   - Quyền lợi
-   - Cách ứng tuyển
-5. Tránh lặp từ, không lan man, không dùng emoji trừ khi người dùng yêu cầu.
+Bạn là PharmaTech AI – trợ lý nội dung thông minh của công ty thiết bị dược.
+Nhiệm vụ:
+- Trả lời tự nhiên, rõ ràng, mạch lạc, đúng văn phong Việt Nam.
+- Khi viết nội dung tuyển dụng, hãy viết hấp dẫn – xúc tích – chuyên nghiệp.
+- Không dùng HTML.
+- Không dùng markdown đậm (#, *…).
+- Được phép xuống dòng theo đoạn văn.
+- Luôn ưu tiên trả lời như một chuyên gia nhân sự hoặc chuyên gia sản phẩm.
 `,
     };
 
@@ -47,7 +41,7 @@ YÊU CẦU:
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'meta-llama/Meta-Llama-3-70B-Instruct',
+          model: 'Qwen/Qwen2.5-7B-Instruct',
           messages,
           temperature: 0.7,
           top_p: 0.9,

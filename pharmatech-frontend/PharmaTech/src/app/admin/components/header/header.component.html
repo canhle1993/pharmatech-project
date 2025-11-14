@@ -95,11 +95,7 @@
         >
           <div class="avatar avatar-online">
             <img
-              [src]="
-                user?.photo
-                  ? 'http://localhost:3000/upload/' + user.photo
-                  : 'assets/images/no-image.jpg'
-              "
+              [src]="user?.photo ? user.photo : 'assets/images/no-image.jpg'"
               alt="Avatar"
               class="w-px-40 h-auto rounded-circle"
             />
@@ -113,9 +109,7 @@
                   <div class="avatar avatar-online">
                     <img
                       [src]="
-                        user?.photo
-                          ? 'http://localhost:3000/upload/' + user.photo
-                          : 'assets/images/no-image.jpg'
+                        user?.photo ? user.photo : 'assets/images/no-image.jpg'
                       "
                       alt="Avatar"
                       class="w-px-40 h-auto rounded-circle"

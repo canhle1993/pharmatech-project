@@ -16,6 +16,7 @@ import { OrderDetailsService } from 'src/order-details/order-details.service';
 import { CartService } from 'src/cart/cart.service';
 import { MailService } from 'src/mail/mail.service';
 import { AccountService } from 'src/account/account.service';
+import { ProductService } from 'src/product/product.service';
 
 @Injectable()
 export class OrderService {
@@ -27,6 +28,7 @@ export class OrderService {
     private readonly cartService: CartService,
     private readonly mailService: MailService,
     private readonly accountService: AccountService,
+    private readonly productService: ProductService,
   ) {}
 
   // ==================================================
@@ -348,32 +350,30 @@ export class OrderService {
       refund_status,
     };
   }
-  async createAfterPayment(userId: string, billing_info?: any) {
+  async createAfterPayment(
+    user_id: string,
+    billing_info: any,
+    carts: any[],
+    total_amount: number,
+    deposit_amount: number,
+  ) {
     try {
-      const carts = await this.cartService.findByUser(userId);
-      if (!carts.length)
+      // 0️⃣ Validate carts
+      if (!carts || !carts.length) {
         throw new HttpException('Cart is empty', HttpStatus.BAD_REQUEST);
+      }
 
-      const total_amount = carts.reduce(
-        (sum, c) => sum + c.quantity * c.price,
-        0,
-      );
-      const deposit_percent = 10;
-      const deposit_amount = (total_amount * deposit_percent) / 100;
+      // 1️⃣ Tính toán thêm
+      const deposit_percent = Math.round((deposit_amount / total_amount) * 100);
       const remaining_payment_amount = total_amount - deposit_amount;
 
-      // ✅ Dùng thông tin billing từ FE (nếu có)
-      const contact_name = billing_info?.name || 'Stripe User';
-      const contact_email = billing_info?.email || 'stripe_user@example.com';
-      const contact_phone = billing_info?.phone || '000-000-0000';
-      const contact_address = billing_info?.address || 'Not Provided';
-
+      // 2️⃣ Tạo order chính
       const orderPayload = {
-        user_id: userId,
-        contact_name,
-        contact_email,
-        contact_phone,
-        contact_address,
+        user_id,
+        contact_name: billing_info?.name,
+        contact_email: billing_info?.email,
+        contact_phone: billing_info?.phone,
+        contact_address: billing_info?.address,
         total_amount,
         deposit_percent,
         deposit_amount,
@@ -390,22 +390,25 @@ export class OrderService {
 
       const order = await this._orderModel.create(orderPayload);
 
-      // ✅ Tạo OrderDetails như cũ
+      // 3️⃣ Tạo OrderDetails
       const detailsPayload = carts.map((c) => ({
         order_id: order._id.toString(),
-        product_id: c.product_id._id || c.product_id, // fix lỗi cũ
+        product_id: c.product_id._id || c.product_id,
         quantity: c.quantity,
         unit_price: c.price,
         total_price: c.price * c.quantity,
         status: 'Pending',
       }));
+
       await this.orderDetailsService.createMany(
         detailsPayload,
         order._id.toString(),
         'system',
       );
 
-      await this.cartService.clearUserCart(userId);
+      // 4️⃣ Xóa cart trong DB
+      await this.cartService.clearUserCart(user_id);
+
       // ===============================================
       // 📧 GỬI EMAIL XÁC NHẬN ĐƠN HÀNG
       // ===============================================
@@ -417,7 +420,7 @@ export class OrderService {
           'aplevancanh1993@gmail.com', // from
           to, // to
           subject,
-          'order-confirmation', // tên file .hbs
+          'order-confirmation', // template .hbs
           {
             name: billing_info?.name || 'Customer',
             payment_method: 'Stripe',
@@ -434,7 +437,10 @@ export class OrderService {
         console.error('❌ [Mail] Failed to send confirmation email:', mailErr);
       }
 
-      return { message: 'Order created successfully', order_id: order._id };
+      return {
+        message: 'Order created successfully',
+        order_id: order._id,
+      };
     } catch (error) {
       console.error('❌ [createAfterPayment ERROR]', error);
       throw new HttpException(
@@ -443,6 +449,7 @@ export class OrderService {
       );
     }
   }
+
   /** ✅ Cập nhật approval_status (Admin duyệt hoặc từ chối) */
   async updateApproval(
     id: string,
@@ -532,5 +539,82 @@ export class OrderService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  /**
+   * 🚫 Reject Order (Admin hoặc User)
+   * Logic:
+   * - Nếu Pending Approval → hoàn cọc (Deposit Refunded)
+   * - Nếu Approved → mất cọc (None)
+   */
+  async rejectOrder(
+    id: string,
+    body: {
+      cancel_reason: string;
+      payment_proof_url?: string; // optional (chỉ dùng khi hoàn cọc)
+      updated_by: string;
+    },
+  ) {
+    const { cancel_reason, payment_proof_url, updated_by } = body;
+
+    const order = await this._orderModel.findById(id);
+    if (!order) throw new NotFoundException('Order not found');
+
+    // 🕓 Ghi thời gian
+    const now = new Date();
+
+    // ============================================
+    // 1️⃣ TRƯỜNG HỢP 1: CHƯA ĐƯỢC DUYỆT → HOÀN CỌC
+    // ============================================
+    if (order.approval_status === 'Pending Approval') {
+      order.approval_status = 'Rejected';
+      order.refund_status = 'Deposit Refunded'; // hoàn cọc
+      order.cancel_reason = cancel_reason;
+      order.payment_proof_url = payment_proof_url || null; // ảnh minh chứng hoàn tiền
+      order.cancelled_at = now;
+      order.refund_time = now;
+    }
+
+    // ============================================
+    // 2️⃣ TRƯỜNG HỢP 2: ĐÃ DUYỆT → MẤT CỌC
+    // ============================================
+    else if (order.approval_status === 'Approved') {
+      order.approval_status = 'Rejected';
+      order.refund_status = 'None'; // mất cọc
+      order.cancel_reason = cancel_reason;
+      order.cancelled_at = now;
+      order.refund_time = now;
+    } else {
+      throw new HttpException(
+        'This order cannot be rejected.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // Cập nhật thông tin sửa
+    order.updated_by = updated_by;
+    order.updated_at = now;
+
+    await order.save();
+
+    // 🟦 Update OrderDetails → Cancelled
+    await this.orderDetailsService.updateStatusByOrder(id, 'Cancelled');
+
+    // 🔍 Lấy danh sách sản phẩm trong đơn
+    const details = await this.orderDetailsService.findByOrder(id);
+
+    // ♻️ HOÀN STOCK CHO TỪNG SẢN PHẨM
+    for (const d of details) {
+      const productId = d.product_id; // luôn là string
+      await this.productService.increaseStock(productId, d.quantity);
+    }
+
+    console.log('♻️ Stock restored for rejected order:', id);
+
+    return {
+      msg: 'Order rejected successfully',
+      approval_status: order.approval_status,
+      refund_status: order.refund_status,
+    };
   }
 }

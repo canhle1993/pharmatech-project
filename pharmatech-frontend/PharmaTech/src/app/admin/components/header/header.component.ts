@@ -34,7 +34,15 @@ export class HeaderComponent implements OnInit {
     });
 
     const storedUser = localStorage.getItem('currentUser');
-    if (storedUser) this.user = JSON.parse(storedUser);
+
+    console.log('📦 currentUser stored:', storedUser);
+
+    if (storedUser) {
+      this.user = JSON.parse(storedUser);
+    }
+
+    console.log('👤 Parsed user:', this.user);
+    console.log('🖼 Photo:', this.user?.photo);
 
     setInterval(() => (this.currentTime = new Date()), 1000);
   }

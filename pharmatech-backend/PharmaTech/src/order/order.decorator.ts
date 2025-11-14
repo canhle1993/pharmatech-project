@@ -34,7 +34,7 @@ export class Order {
   @Prop({ required: true })
   deposit_percent: number;
 
-  /** 💳 Số tiền người dùng đã đặt cọc qua PayPal */
+  /** 💳 Số tiền người dùng đã đặt cọc qua Stripe */
   @Prop({ required: true })
   deposit_amount: number;
 

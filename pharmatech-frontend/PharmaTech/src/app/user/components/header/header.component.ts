@@ -32,7 +32,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   cartCount = 0;
   cartItems: Cart[] = [];
   private cartSub!: Subscription;
-  imageBase = env.imageUrl; // 🌐 base URL ảnh cho tất cả sản phẩm
+  imageBase = env.imageUrl;
 
   hotlineData: HotlineData = {
     hotlineNumber: '(012) 345-6789',
@@ -48,23 +48,33 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     private renderer: Renderer2
   ) {}
 
+  // =====================================================
+  // 🔥 FIX QUAN TRỌNG NHẤT: LẤY USER ĐÚNG SAU KHI LOGIN
+  // =====================================================
   async ngOnInit() {
-    // 🔹 Xác thực login
-    this.isLoggedIn = !!localStorage.getItem('token');
+    // 1️⃣ Kiểm tra login đúng theo login.component.ts
+    this.isLoggedIn = !!localStorage.getItem('access_token');
+
+    // 2️⃣ Load user đúng format đã lưu
     const storedUser = localStorage.getItem('currentUser');
     if (storedUser) {
       this.user = JSON.parse(storedUser);
+      this.user.id = this.user.id || this.user._id;
+    }
+
+    // 3️⃣ Nếu user hợp lệ → load giỏ hàng
+    const userId = this.user?._id;
+    if (userId) {
+      await this.cartState.loadUserCart(userId);
     }
 
     this.loadHotlineData();
     this.loadCategories();
 
-    // 🔹 Load giỏ hàng ban đầu (nếu có user)
+    // 4️⃣ Realtime giỏ hàng
     if (this.user?._id) {
       await this.cartState.loadUserCart(this.user._id);
     }
-
-    // 🔹 Theo dõi realtime (khi thêm hoặc xóa)
     this.cartSub = this.cartState.items$.subscribe((items) => {
       this.cartItems = items;
       this.cartCount = this.cartState.getTotalQuantity();
@@ -75,12 +85,11 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     this.cartSub?.unsubscribe();
   }
 
-  // 💰 Tổng tiền giỏ hàng realtime
   get cartTotal(): number {
     return this.cartState.getTotalPrice();
   }
 
-  // 🏷️ Load danh mục
+  // Load categories
   async loadCategories() {
     try {
       const res: any = await this.categoryService.findAll();
@@ -90,12 +99,10 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  // 🔗 Điều hướng category
   goToCategory(categoryId: string) {
     this.router.navigate(['/shop'], { queryParams: { category: categoryId } });
   }
 
-  // ☎️ Hotline
   loadHotlineData(): void {
     this.hotlineService.getHotlineInfo().subscribe({
       next: (data: HotlineData) => {
@@ -105,20 +112,27 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  // 🚪 Logout
+  // =====================================================
+  // 🚪 LOGOUT (FIX: XÓA ĐÚNG TOKEN)
+  // =====================================================
   logout() {
     this.accountService.logout();
-    localStorage.removeItem('token');
+
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('userId');
+
     this.isLoggedIn = false;
     this.router.navigate(['/auth/login']);
   }
 
-  // 📞 Tạo link call
   getPhoneHref(phoneNumber: string): string {
     return 'tel:' + phoneNumber.replace(/[^0-9]/g, '');
   }
 
-  // 🧾 Đóng giỏ hàng và mở trang Cart
+  // =====================================================
+  // 🧾 ĐÓNG OFFCANVAS VÀ ĐI ĐẾN TRANG CART
+  // =====================================================
   closeCartOffcanvas() {
     const offcanvasElement = document.getElementById('offcanvasCart');
     if (offcanvasElement) {
@@ -126,28 +140,22 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
         bootstrap.Offcanvas.getInstance(offcanvasElement) ||
         new bootstrap.Offcanvas(offcanvasElement);
 
-      // 🔹 1. Đóng cart
       bsOffcanvas.hide();
 
-      // 🔹 2. Chuyển sang trang cart sau animation
       setTimeout(() => {
-        this.router.navigate(['/cart', this.user?._id]);
+        this.router.navigate(['/cart', this.user?.id]);
       }, 300);
 
-      // 🔹 3. Xóa backdrop + class gây khóa body
       setTimeout(() => {
         document
           .querySelectorAll('.offcanvas-backdrop')
           .forEach((el) => el.remove());
-
-        // ❗ Rất quan trọng: Bootstrap thêm class này để khóa cuộn
         document.body.classList.remove('offcanvas-open');
-        document.body.style.overflow = ''; // khôi phục scroll
+        document.body.style.overflow = '';
       }, 600);
     }
   }
 
-  // ❌ Xóa sản phẩm trong mini-cart
   async removeCartItem(id: string) {
     await this.cartState.removeItem(id);
   }

@@ -1,32 +1,78 @@
+<!-- 🔔 Order success banner -->
+<div *ngIf="showOrderSuccess" class="order-success-banner">
+  <div class="order-success-icon">
+    <i class="bx bx-check-circle"></i>
+  </div>
+
+  <div class="order-success-content">
+    <h5>Order placed successfully</h5>
+    <p>
+      Thank you! We have received your deposit payment. Our team will review
+      your order and contact you soon.
+    </p>
+  </div>
+
+  <button
+    type="button"
+    class="btn-close order-success-close"
+    aria-label="Close"
+    (click)="showOrderSuccess = false"
+  ></button>
+</div>
+
+<div class="container py-4" *ngIf="account">
+  <!-- phần profile-card như cũ -->
+</div>
+
 <div class="container py-4" *ngIf="account">
   <div class="profile-card shadow-sm border-0">
     <!-- Header -->
-    <div class="profile-header d-flex justify-content-between align-items-center px-4 py-3 bg-light border-bottom">
+    <div
+      class="profile-header d-flex justify-content-between align-items-center px-4 py-3 bg-light border-bottom"
+    >
       <div class="d-flex align-items-center gap-3">
-        <img [src]="account?.photo || 'assets/images/no-image.jpg'" class="profile-avatar border" alt="avatar" />
-
+        <img
+          [src]="account?.photo || 'assets/images/no-image.jpg'"
+          class="profile-avatar border"
+          alt="avatar"
+        />
 
         <div>
           <h5 class="fw-bold mb-1">{{ account.name }}</h5>
           <p class="text-muted small mb-1">{{ account.email }}</p>
           <small>
             <strong>Status:</strong>
-            <span [class.text-success]="account.is_active" [class.text-danger]="!account.is_active">
-              {{ account.is_active ? 'Active' : 'Inactive' }}
+            <span
+              [class.text-success]="account.is_active"
+              [class.text-danger]="!account.is_active"
+            >
+              {{ account.is_active ? "Active" : "Inactive" }}
             </span>
           </small>
         </div>
       </div>
 
       <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-outline-primary rounded-pill px-3" (click)="toggleEdit()">
-          <i class="bx bx-edit-alt me-1"></i>{{ isEditing ? 'Cancel' : 'Edit' }}
+        <button
+          class="btn btn-outline-primary rounded-pill px-3"
+          (click)="toggleEdit()"
+        >
+          <i class="bx bx-edit-alt me-1"></i>{{ isEditing ? "Cancel" : "Edit" }}
         </button>
 
-        <label *ngIf="isEditing" for="upload-photo" class="btn btn-warning text-white rounded-pill px-3 mb-0">
+        <label
+          *ngIf="isEditing"
+          for="upload-photo"
+          class="btn btn-warning text-white rounded-pill px-3 mb-0"
+        >
           <i class="bx bx-upload me-1"></i> Upload Photo
-          <input type="file" id="upload-photo" hidden accept="image/png, image/jpeg"
-            (change)="onPhotoSelected($event)" />
+          <input
+            type="file"
+            id="upload-photo"
+            hidden
+            accept="image/png, image/jpeg"
+            (change)="onPhotoSelected($event)"
+          />
         </label>
       </div>
     </div>
@@ -42,43 +88,69 @@
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Full Name</label>
-              <input class="form-control" [(ngModel)]="account.name" name="name" [readonly]="!isEditing" />
+              <input
+                class="form-control"
+                [(ngModel)]="account.name"
+                name="name"
+                [readonly]="!isEditing"
+              />
             </div>
             <div class="col-md-6">
               <label class="form-label">Phone</label>
-              <input class="form-control" [(ngModel)]="account.phone" name="phone" [readonly]="!isEditing" />
+              <input
+                class="form-control"
+                [(ngModel)]="account.phone"
+                name="phone"
+                [readonly]="!isEditing"
+              />
             </div>
 
             <div class="col-md-6">
               <label class="form-label">Address</label>
-              <input class="form-control" [(ngModel)]="account.address" name="address" [readonly]="!isEditing" />
+              <input
+                class="form-control"
+                [(ngModel)]="account.address"
+                name="address"
+                [readonly]="!isEditing"
+              />
             </div>
             <div class="col-md-3">
               <label class="form-label">Gender</label>
-              <p-autoComplete [(ngModel)]="account.gender" [suggestions]="filteredGenders"
-                (completeMethod)="filterGender($event)" [dropdown]="true" [disabled]="!isEditing"
-                placeholder="Select gender" name="gender" class="w-100"></p-autoComplete>
+              <p-autoComplete
+                [(ngModel)]="account.gender"
+                [suggestions]="filteredGenders"
+                (completeMethod)="filterGender($event)"
+                [dropdown]="true"
+                [disabled]="!isEditing"
+                placeholder="Select gender"
+                name="gender"
+                class="w-100"
+              ></p-autoComplete>
             </div>
             <div class="col-md-3">
               <label class="form-label">Date of Birth</label>
-              <p-datepicker [(ngModel)]="account.dob" name="dob" [showIcon]="true" [disabled]="!isEditing"
-                [iconDisplay]="'input'" dateFormat="dd/mm/yy" [showButtonBar]="true" [touchUI]="true"
-                [minDate]="minDate" [maxDate]="maxDate" placeholder="Select date" inputStyleClass="form-control"
-                (ngModelChange)="onDobChange($event)"></p-datepicker>
+              <p-datepicker
+                [(ngModel)]="account.dob"
+                name="dob"
+                [showIcon]="true"
+                [disabled]="!isEditing"
+                [iconDisplay]="'input'"
+                dateFormat="dd/mm/yy"
+                [showButtonBar]="true"
+                [touchUI]="true"
+                [minDate]="minDate"
+                [maxDate]="maxDate"
+                placeholder="Select date"
+                inputStyleClass="form-control"
+                (ngModelChange)="onDobChange($event)"
+              ></p-datepicker>
 
               <div class="small text-muted mt-1" *ngIf="account?.['age']">
                 Age: {{ account?.['age'] }} years
               </div>
             </div>
-
-
-
-
           </div>
-
-
         </div>
-
 
         <!-- Section: Job Preference -->
         <div class="section">
@@ -88,21 +160,40 @@
           <div class="row g-3">
             <div class="col-md-4">
               <label class="form-label">Preferred Area</label>
-              <p-autoComplete [(ngModel)]="account.preferred_area" [suggestions]="filteredAreas"
-                (completeMethod)="filterArea($event)" [dropdown]="true" [disabled]="!isEditing"
-                placeholder="Select area" name="preferred_area" class="w-100"></p-autoComplete>
+              <p-autoComplete
+                [(ngModel)]="account.preferred_area"
+                [suggestions]="filteredAreas"
+                (completeMethod)="filterArea($event)"
+                [dropdown]="true"
+                [disabled]="!isEditing"
+                placeholder="Select area"
+                name="preferred_area"
+                class="w-100"
+              ></p-autoComplete>
             </div>
             <div class="col-md-4">
               <label class="form-label">Job Type</label>
-              <p-autoComplete [(ngModel)]="account.job_type" [suggestions]="filteredWorkTypes"
-                (completeMethod)="filterWorkType($event)" [dropdown]="true" [disabled]="!isEditing"
-                placeholder="Select job type" name="job_type" class="w-100"></p-autoComplete>
+              <p-autoComplete
+                [(ngModel)]="account.job_type"
+                [suggestions]="filteredWorkTypes"
+                (completeMethod)="filterWorkType($event)"
+                [dropdown]="true"
+                [disabled]="!isEditing"
+                placeholder="Select job type"
+                name="job_type"
+                class="w-100"
+              ></p-autoComplete>
             </div>
             <div class="col-md-4">
               <label class="form-label">Expected Salary</label>
               <div class="input-group">
-                <input type="number" class="form-control" [(ngModel)]="account.expected_salary" name="expected_salary"
-                  [readonly]="!isEditing" />
+                <input
+                  type="number"
+                  class="form-control"
+                  [(ngModel)]="account.expected_salary"
+                  name="expected_salary"
+                  [readonly]="!isEditing"
+                />
                 <span class="input-group-text fw-semibold">USD</span>
               </div>
             </div>
@@ -117,18 +208,36 @@
           <div class="row g-3">
             <div class="col-md-4">
               <label class="form-label">Field</label>
-              <p-multiSelect [options]="fieldList" optionLabel="name" [(ngModel)]="account.field" name="field"
-                [disabled]="!isEditing" defaultLabel="Select field(s)"></p-multiSelect>
+              <p-multiSelect
+                [options]="fieldList"
+                optionLabel="name"
+                [(ngModel)]="account.field"
+                name="field"
+                [disabled]="!isEditing"
+                defaultLabel="Select field(s)"
+              ></p-multiSelect>
             </div>
             <div class="col-md-4">
               <label class="form-label">Skills</label>
-              <p-multiSelect [options]="skillsList" optionLabel="name" [(ngModel)]="account.skills" name="skills"
-                [disabled]="!isEditing" defaultLabel="Select skills"></p-multiSelect>
+              <p-multiSelect
+                [options]="skillsList"
+                optionLabel="name"
+                [(ngModel)]="account.skills"
+                name="skills"
+                [disabled]="!isEditing"
+                defaultLabel="Select skills"
+              ></p-multiSelect>
             </div>
             <div class="col-md-4">
               <label class="form-label">Languages</label>
-              <p-multiSelect [options]="languageList" optionLabel="name" [(ngModel)]="account.languages"
-                name="languages" [disabled]="!isEditing" defaultLabel="Select languages"></p-multiSelect>
+              <p-multiSelect
+                [options]="languageList"
+                optionLabel="name"
+                [(ngModel)]="account.languages"
+                name="languages"
+                [disabled]="!isEditing"
+                defaultLabel="Select languages"
+              ></p-multiSelect>
             </div>
           </div>
         </div>
@@ -141,42 +250,72 @@
           <div class="row g-3">
             <div class="col-md-3">
               <label class="form-label">Level</label>
-              <p-autoComplete [(ngModel)]="account.education.education_level" [suggestions]="filteredEducationLevels"
-                (completeMethod)="filterEducationLevel($event)" [dropdown]="true" [disabled]="!isEditing"
-                placeholder="Select level" name="education_level" class="w-100"></p-autoComplete>
+              <p-autoComplete
+                [(ngModel)]="account.education.education_level"
+                [suggestions]="filteredEducationLevels"
+                (completeMethod)="filterEducationLevel($event)"
+                [dropdown]="true"
+                [disabled]="!isEditing"
+                placeholder="Select level"
+                name="education_level"
+                class="w-100"
+              ></p-autoComplete>
             </div>
             <div class="col-md-3">
               <label class="form-label">Major</label>
-              <input class="form-control" [(ngModel)]="account.education.major" name="major" [readonly]="!isEditing" />
+              <input
+                class="form-control"
+                [(ngModel)]="account.education.major"
+                name="major"
+                [readonly]="!isEditing"
+              />
             </div>
             <div class="col-md-3">
               <label class="form-label">School</label>
-              <input class="form-control" [(ngModel)]="account.education.school_name" name="school_name"
-                [readonly]="!isEditing" />
+              <input
+                class="form-control"
+                [(ngModel)]="account.education.school_name"
+                name="school_name"
+                [readonly]="!isEditing"
+              />
             </div>
             <div class="col-md-3">
               <label class="form-label">Graduation Year</label>
-              <input type="number" class="form-control" [(ngModel)]="account.education.graduation_year"
-                name="graduation_year" [readonly]="!isEditing" />
+              <input
+                type="number"
+                class="form-control"
+                [(ngModel)]="account.education.graduation_year"
+                name="graduation_year"
+                [readonly]="!isEditing"
+              />
             </div>
           </div>
         </div>
 
         <!-- Section: Resume -->
         <div class="section">
-          <h6 class="section-title">
-            <i class="bx bx-file me-2"></i> Resume
-          </h6>
+          <h6 class="section-title"><i class="bx bx-file me-2"></i> Resume</h6>
           <div>
             <ng-container *ngIf="!isEditing; else uploadTpl">
-              <a *ngIf="account.resume" [href]="account.resume" target="_blank" class="btn btn-outline-primary btn-sm">
+              <a
+                *ngIf="account.resume"
+                [href]="account.resume"
+                target="_blank"
+                class="btn btn-outline-primary btn-sm"
+              >
                 <i class="bx bx-download"></i> View Resume
               </a>
-              <span *ngIf="!account.resume" class="text-muted small ms-2">No resume uploaded.</span>
+              <span *ngIf="!account.resume" class="text-muted small ms-2"
+                >No resume uploaded.</span
+              >
             </ng-container>
 
             <ng-template #uploadTpl>
-              <input type="file" accept=".pdf" (change)="onResumeSelected($event)" />
+              <input
+                type="file"
+                accept=".pdf"
+                (change)="onResumeSelected($event)"
+              />
             </ng-template>
           </div>
         </div>
@@ -186,8 +325,13 @@
           <h6 class="section-title">
             <i class="bx bx-message-rounded-detail me-2"></i> Introduction
           </h6>
-          <textarea class="form-control" rows="3" [(ngModel)]="account.introduction" name="introduction"
-            [readonly]="!isEditing"></textarea>
+          <textarea
+            class="form-control"
+            rows="3"
+            [(ngModel)]="account.introduction"
+            name="introduction"
+            [readonly]="!isEditing"
+          ></textarea>
         </div>
 
         <div class="text-end mt-3" *ngIf="isEditing">
@@ -200,5 +344,8 @@
   </div>
 </div>
 
-<p-progressSpinner *ngIf="loading" styleClass="custom-spinner"></p-progressSpinner>
+<p-progressSpinner
+  *ngIf="loading"
+  styleClass="custom-spinner"
+></p-progressSpinner>
 <p-toast></p-toast>

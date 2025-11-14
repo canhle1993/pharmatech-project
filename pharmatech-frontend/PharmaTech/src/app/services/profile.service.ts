@@ -195,13 +195,29 @@ export class ProfileService {
   // ========================================================
   async saveProfile(account: Account, payload: any): Promise<Account | null> {
     try {
-      const updated = await this.accountService.update(account.id!, payload);
-      const merged = { ...account, ...updated.data };
+      // 🟢 Luôn dùng id chuẩn
+      const userId = account._id || account.id;
+      if (!userId) {
+        throw new Error('Missing userId in account!');
+      }
 
-      // ✅ Lưu lại vào localStorage
-      localStorage.setItem('user', JSON.stringify(merged));
+      // 🟢 Gửi update lên backend
+      const updated = await this.accountService.update(userId, payload);
 
-      // ✅ Toast hiển thị tại component cha (Profile)
+      // 🟢 Backend chỉ trả về phần "data" (không chứa _id)
+      //    nên phải merge chính xác:
+      const merged: any = {
+        ...account, // giữ nguyên _id
+        ...updated.data, // gộp các field update
+        _id: userId, // đảm bảo tồn tại
+        id: userId, // FE dùng id cũng ok
+      };
+
+      // 🟢 Lưu lại localStorage
+      localStorage.setItem('currentUser', JSON.stringify(merged));
+      localStorage.setItem('userId', userId);
+
+      // 🟢 Thông báo
       this.messageService.add({
         severity: 'success',
         summary: 'Profile Updated',
@@ -211,11 +227,13 @@ export class ProfileService {
       return merged;
     } catch (err) {
       console.error('❌ Error saving profile:', err);
+
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
         detail: 'Failed to save profile!',
       });
+
       return null;
     }
   }

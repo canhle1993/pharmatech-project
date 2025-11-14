@@ -161,20 +161,30 @@ export class OrderService {
   // 💳 TẠO ĐƠN HÀNG SAU THANH TOÁN STRIPE
   // ==================================================
 
-  /** ✅ Tạo đơn hàng sau khi thanh toán thành công qua Stripe */
-  async createAfterPayment(userId: string): Promise<{ message: string }> {
-    try {
-      const body = { userId };
-      return await lastValueFrom(
-        this.httpClient.post<{ message: string }>(
-          this.baseUrl + 'create-after-payment',
-          body
-        )
-      );
-    } catch (error) {
-      console.error('❌ createAfterPayment error:', error);
-      throw error;
-    }
+  // ==================================================
+  // 📌 TẠO ĐƠN HÀNG SAU THANH TOÁN STRIPE
+  // ==================================================
+  async createAfterPayment(payload: {
+    user_id: string;
+    carts: any[];
+    billing_info: any;
+    total_amount: number;
+    deposit_amount: number;
+  }): Promise<any> {
+    return await lastValueFrom(
+      this.httpClient.post(this.baseUrl + 'create-after-payment', payload)
+    );
+  }
+
+  // ==================================================
+  // 📌 TRỪ STOCK SẢN PHẨM
+  // ==================================================
+  async reduceStock(productId: string, quantity: number): Promise<any> {
+    return await lastValueFrom(
+      this.httpClient.put(env.baseUrl + 'product/reduce-stock/' + productId, {
+        quantity,
+      })
+    );
   }
 
   /** ✅ Cập nhật trạng thái tổng thể (Approved Tab) */
@@ -240,6 +250,29 @@ export class OrderService {
     } catch (err) {
       console.error('markCompleted error:', err);
       throw err;
+    }
+  }
+
+  /** 🚫 Reject Order (Pending Approval hoặc Approved) */
+  async rejectOrder(
+    id: string,
+    payload: {
+      cancel_reason: string;
+      payment_proof_url?: string; // Chỉ có ở case Pending Approval
+      updated_by: string;
+    }
+  ): Promise<{ msg: string; approval_status: string; refund_status: string }> {
+    try {
+      return await lastValueFrom(
+        this.httpClient.put<{
+          msg: string;
+          approval_status: string;
+          refund_status: string;
+        }>(this.baseUrl + 'reject/' + id, payload)
+      );
+    } catch (error) {
+      console.error('❌ rejectOrder error:', error);
+      throw error;
     }
   }
 }

@@ -172,3 +172,53 @@
     border-radius: 50%;
   }
 }
+.order-success-banner {
+  max-width: 960px;
+  margin: 16px auto;
+  padding: 14px 18px;
+  border-radius: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: linear-gradient(135deg, #16a34a15, #22c55e30);
+  border: 1px solid #22c55e55;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  position: relative;
+}
+
+.order-success-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: #ffffffcc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #16a34a;
+  flex-shrink: 0;
+}
+
+.order-success-content h5 {
+  margin: 0;
+  font-weight: 700;
+  color: #166534;
+}
+
+.order-success-content p {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: #14532d;
+}
+
+.order-success-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+.order-success-close:hover {
+  opacity: 1;
+}

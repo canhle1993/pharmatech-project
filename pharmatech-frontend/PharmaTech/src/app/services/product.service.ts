@@ -146,4 +146,14 @@ export class ProductService {
       this.httpClient.delete(env.baseUrl + 'product-image/delete/' + imageId)
     );
   }
+
+  // 📉 TRỪ TỒN KHO SẢN PHẨM SAU KHI ĐẶT HÀNG THÀNH CÔNG
+  // ==================================================
+  async reduceStock(productId: string, quantity: number): Promise<any> {
+    return await lastValueFrom(
+      this.httpClient.put(env.baseUrl + 'product/reduce-stock/' + productId, {
+        quantity,
+      })
+    );
+  }
 }

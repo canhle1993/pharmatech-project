@@ -11,6 +11,8 @@ import { ContactUserComponent } from './pages/contact/contact_user.component';
 import { CartComponent } from './pages/cart/cart.component';
 import { WishlistComponent } from './pages/wishlist/wishlist.component';
 import { CheckoutComponent } from './pages/checkout/checkout.component';
+import { PaymentSuccessComponent } from './pages/payment-success/payment-success.component';
+import { PaymentCancelComponent } from './pages/payment-cancel/payment-cancel.component';
 
 export const userRoutes: Routes = [
   {
@@ -29,6 +31,8 @@ export const userRoutes: Routes = [
       { path: 'profile/:id', component: ProfileComponent },
       { path: 'cart/:id', component: CartComponent },
       { path: 'wishlist/:id', component: WishlistComponent },
+      { path: 'payment/success', component: PaymentSuccessComponent },
+      { path: 'payment/cancel', component: PaymentCancelComponent }, // nếu có
     ],
   },
 ];

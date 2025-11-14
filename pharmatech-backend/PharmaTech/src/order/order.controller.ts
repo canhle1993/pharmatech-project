@@ -197,8 +197,14 @@ export class OrderController {
     }
   }
   @Post('create-after-payment')
-  async createAfterPayment(@Body('userId') userId: string) {
-    return this.orderService.createAfterPayment(userId);
+  async createAfterPayment(@Body() body: any) {
+    return this.orderService.createAfterPayment(
+      body.user_id,
+      body.billing_info,
+      body.carts,
+      body.total_amount,
+      body.deposit_amount,
+    );
   }
 
   // PUT api/order/update-payment-info/:id
@@ -257,5 +263,25 @@ export class OrderController {
     @Body() body: { updated_by: string },
   ) {
     return await this.orderService.markCompleted(id, body.updated_by);
+  }
+
+  @Put('reject/:id')
+  async rejectOrder(
+    @Param('id') id: string,
+    @Body()
+    body: {
+      cancel_reason: string;
+      payment_proof_url?: string;
+      updated_by: string;
+    },
+  ) {
+    try {
+      return await this.orderService.rejectOrder(id, body);
+    } catch (error) {
+      throw new HttpException(
+        { message: 'Failed to reject order', error: error.message },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

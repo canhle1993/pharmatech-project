@@ -50,9 +50,9 @@ export class AccountService {
       localStorage.setItem('userRole', JSON.stringify(res.account.roles || []));
     }
 
-    if (res.account) {
-      localStorage.setItem('chatUserId', res.account._id);
-    }
+    // if (res.account) {
+    //   localStorage.setItem('chatUserId', res.account._id);
+    // }
 
     return res;
   }

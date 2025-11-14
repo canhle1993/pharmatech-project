@@ -38,6 +38,39 @@ export class CartStateService {
   // ==================================================
   // ➕ Thêm sản phẩm vào giỏ (có đồng bộ backend)
   // ==================================================
+  // async addToCart(item: {
+  //   user_id: string;
+  //   product_id: string;
+  //   price: number;
+  //   quantity?: number;
+  // }) {
+  //   const items = [...this._items.value];
+  //   const found = items.find(
+  //     (c) =>
+  //       c.product_id?._id === item.product_id ||
+  //       c.product_id === item.product_id
+  //   );
+
+  //   if (found) {
+  //     // Sản phẩm đã tồn tại → update
+  //     found.quantity += item.quantity || 1;
+  //     found.total_price = found.quantity * found.price;
+
+  //     await this.cartService.updateQuantity(found._id!, found.quantity);
+  //   } else {
+  //     // Sản phẩm mới → gọi backend add
+  //     await this.cartService.addToCart({
+  //       user_id: item.user_id,
+  //       product_id: item.product_id,
+  //       quantity: item.quantity || 1,
+  //       price: item.price,
+  //     });
+  //   }
+
+  //   // ⭐⭐ QUAN TRỌNG: Reload lại cart từ backend để populate product_id ⭐⭐
+  //   await this.loadUserCart(item.user_id);
+  // }
+
   async addToCart(item: {
     user_id: string;
     product_id: string;
@@ -51,27 +84,36 @@ export class CartStateService {
         c.product_id === item.product_id
     );
 
-    if (found) {
-      // 🔹 Nếu sản phẩm đã có → cộng dồn số lượng
-      found.quantity += item.quantity || 1;
-      found.total_price = found.quantity * found.price;
+    try {
+      if (found) {
+        // ❗ KHÔNG tăng số lượng ở FE
+        const newQty = found.quantity + (item.quantity || 1);
 
-      // 🔹 Gọi API update backend
-      await this.cartService.updateQuantity(found._id!, found.quantity);
-    } else {
-      // 🔹 Nếu sản phẩm mới → thêm mới vào backend
-      const created = await this.cartService.addToCart({
-        user_id: item.user_id,
-        product_id: item.product_id,
-        quantity: item.quantity || 1,
-        price: item.price,
-      });
+        // 🟢 FE chỉ gửi số lượng dự kiến, BE kiểm tra stock
+        await this.cartService.updateQuantity(found._id!, newQty);
+      } else {
+        // 🟢 Sản phẩm mới → giao BE kiểm tra stock luôn
+        await this.cartService.addToCart({
+          user_id: item.user_id,
+          product_id: item.product_id,
+          quantity: item.quantity || 1,
+          price: item.price,
+        });
+      }
 
-      // ⚠️ Không phẳng hóa product_id (giữ nguyên object)
-      items.push(Object.assign(new Cart(), created));
+      // 🟢 Luôn reload từ BE để đảm bảo data đúng
+      await this.loadUserCart(item.user_id);
+    } catch (err: any) {
+      // 🛑 Trả lỗi ra ngoài component
+      throw new Error(
+        err?.error?.message ||
+          err?.message ||
+          'Cannot add more items. Not enough stock.'
+      );
+
+      // 🟢 Rollback lại giỏ hàng đúng từ server
+      await this.loadUserCart(item.user_id);
     }
-
-    this._items.next([...items]); // 🔄 realtime update
   }
 
   // ==================================================

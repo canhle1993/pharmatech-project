@@ -42,14 +42,22 @@ export class CartService {
   // =====================================================
   // 🧾 LẤY GIỎ HÀNG THEO USER
   // =====================================================
+  // =====================================================
+  // 🧾 LẤY GIỎ HÀNG THEO USER
+  // =====================================================
   async findByUser(userId: string): Promise<CartDTO[]> {
+    // 🛡️ Guard: nếu userId không phải ObjectId hợp lệ → trả mảng rỗng
+    if (!userId || !Types.ObjectId.isValid(userId)) {
+      console.warn('[CartService.findByUser] Invalid userId:', userId);
+      return [];
+    }
+
     const carts = await this._cartModel
       .find({ user_id: new Types.ObjectId(userId) })
       .populate({
         path: 'product_id',
         select: 'name model price photo specification introduce',
       })
-
       .populate({
         path: 'user_id',
         select: 'name email photo',
@@ -59,6 +67,24 @@ export class CartService {
 
     return carts.map((c) => plainToInstance(CartDTO, c));
   }
+
+  // async findByUser(userId: string): Promise<CartDTO[]> {
+  //   const carts = await this._cartModel
+  //     .find({ user_id: new Types.ObjectId(userId) })
+  //     .populate({
+  //       path: 'product_id',
+  //       select: 'name model price photo specification introduce',
+  //     })
+
+  //     .populate({
+  //       path: 'user_id',
+  //       select: 'name email photo',
+  //     })
+  //     .sort({ created_at: -1 })
+  //     .lean();
+
+  //   return carts.map((c) => plainToInstance(CartDTO, c));
+  // }
 
   // =====================================================
   // 🛒 THÊM SẢN PHẨM VÀO GIỎ
@@ -175,7 +201,19 @@ export class CartService {
   // =====================================================
   // 🧹 XÓA TOÀN BỘ GIỎ HÀNG CỦA USER
   // =====================================================
+  // async clearUserCart(userId: string) {
+  //   await this._cartModel.deleteMany({ user_id: new Types.ObjectId(userId) });
+  //   return { msg: 'User cart cleared' };
+  // }
+  // =====================================================
+  // 🧹 XÓA TOÀN BỘ GIỎ HÀNG CỦA USER
+  // =====================================================
   async clearUserCart(userId: string) {
+    if (!userId || !Types.ObjectId.isValid(userId)) {
+      console.warn('[CartService.clearUserCart] Invalid userId:', userId);
+      return { msg: 'User cart cleared (invalid userId, nothing to delete)' };
+    }
+
     await this._cartModel.deleteMany({ user_id: new Types.ObjectId(userId) });
     return { msg: 'User cart cleared' };
   }

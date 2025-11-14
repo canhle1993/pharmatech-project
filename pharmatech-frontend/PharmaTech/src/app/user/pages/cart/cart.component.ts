@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Renderer2, AfterViewInit } from '@angular/core';
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
 import { MessageService } from 'primeng/api';
 import { CartService } from '../../../services/cart.service';
@@ -18,7 +18,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./cart.component.css'],
   providers: [MessageService, DatePipe, CurrencyPipe, ConfirmationService],
 })
-export class CartComponent implements OnInit {
+export class CartComponent implements OnInit, AfterViewInit {
   private cartSub!: Subscription;
   /** 🧾 Danh sách giỏ hàng */
   carts: Cart[] = [];
@@ -38,20 +38,32 @@ export class CartComponent implements OnInit {
     private route: ActivatedRoute,
     private confirmationService: ConfirmationService,
     private cartState: CartStateService,
-    private router: Router
+    private router: Router,
+    private renderer: Renderer2
   ) {}
 
   // ==================================================
   // 🚀 LIFECYCLE HOOKS
   // ==================================================
   async ngOnInit() {
-    // ✅ Lấy userId
+    // 🔥 Lấy user đang đăng nhập từ localStorage
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+    // 🔥 Ưu tiên lấy từ route, sau đó lấy từ currentUser.id
     this.userId =
       this.route.snapshot.paramMap.get('id') ||
-      localStorage.getItem('userId') ||
+      currentUser?.id ||
+      currentUser?._id ||
       '';
 
-    if (!this.userId) {
+    console.log('🔍 Loaded userId:', this.userId);
+
+    // 🛡️ Kiểm tra userId hợp lệ
+    if (
+      !this.userId ||
+      this.userId === 'undefined' ||
+      this.userId.length !== 24
+    ) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Please login first',
@@ -60,14 +72,16 @@ export class CartComponent implements OnInit {
       return;
     }
 
+    // ✅ Load giỏ hàng lần đầu
     await this.loadCart();
 
-    // ✅ Theo dõi realtime giỏ hàng (khi header thay đổi)
+    // 🔁 Theo dõi realtime thay đổi giỏ hàng
     this.cartSub = this.cartState.items$.subscribe((items) => {
       this.carts = items;
       this.calcTotal();
     });
   }
+
   ngOnDestroy() {
     this.cartSub?.unsubscribe();
   }
@@ -80,7 +94,7 @@ export class CartComponent implements OnInit {
     try {
       const res = await this.cartService.findByUser(this.userId);
 
-      // ✅ Ánh xạ lại tồn kho từ product_id (populate object)
+      // ✅ Ánh xạ lại tồn kho từ productid (populate object)
       this.carts = (Array.isArray(res) ? res : [res]).map((c: any) =>
         Object.assign(new Cart(), {
           ...c,
@@ -132,7 +146,7 @@ export class CartComponent implements OnInit {
   async updateQuantity(cart: Cart, newQty: number): Promise<void> {
     if (newQty < 1 || cart.loading) return;
 
-    // ✅ Lấy tồn kho thực tế từ product_id (populate)
+    // ✅ Lấy tồn kho thực tế từ productid (populate)
     const stock =
       typeof cart.product_id === 'object'
         ? cart.product_id.stock_quantity || 0
@@ -261,6 +275,55 @@ export class CartComponent implements OnInit {
           this.loading = false;
         }
       },
+    });
+  }
+
+  ngAfterViewInit() {
+    // --- CSS ---
+    const cssFiles = [
+      'assets/css/vendor/bootstrap.min.css',
+      'assets/css/vendor/lastudioicons.css',
+      'assets/css/vendor/dliconoutline.css',
+      'assets/css/animate.min.css',
+      'assets/css/swiper-bundle.min.css',
+      'assets/css/ion.rangeSlider.min.css',
+      'assets/css/lightgallery-bundle.min.css',
+      'assets/css/magnific-popup.css',
+      'assets/css/style.css',
+    ];
+    cssFiles.forEach((href) => {
+      const link = this.renderer.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href;
+      this.renderer.appendChild(document.head, link);
+    });
+
+    const fontLink = this.renderer.createElement('link');
+    fontLink.rel = 'stylesheet';
+    fontLink.href =
+      'https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap';
+    this.renderer.appendChild(document.head, fontLink);
+
+    // --- JS ---
+    const jsFiles = [
+      'assets/js/vendor/modernizr-3.11.7.min.js',
+      'assets/js/vendor/jquery-migrate-3.3.2.min.js',
+      'assets/js/countdown.min.js',
+      'assets/js/ajax.js',
+      'assets/js/jquery.validate.min.js',
+      'assets/js/vendor/jquery-3.6.0.min.js',
+      'assets/js/vendor/bootstrap.bundle.min.js',
+      'assets/js/swiper-bundle.min.js',
+      'assets/js/ion.rangeSlider.min.js',
+      'assets/js/lightgallery.min.js',
+      'assets/js/jquery.magnific-popup.min.js',
+      'assets/js/main.js',
+    ];
+    jsFiles.forEach((src) => {
+      const script = this.renderer.createElement('script');
+      script.src = src;
+      script.type = 'text/javascript';
+      this.renderer.appendChild(document.body, script);
     });
   }
 }

@@ -50,23 +50,26 @@ export class CheckoutComponent implements OnInit {
   async ngOnInit() {
     this.initForm();
 
-    // ✅ Lấy dữ liệu từ CartState trước
+    // 🔥 Lấy userId chuẩn
+    const userId = localStorage.getItem('userId');
+
+    if (!userId || userId.length !== 24) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Please login',
+        detail: 'You must be logged in to checkout.',
+      });
+      this.loading = false;
+      return;
+    }
+
+    // ✅ Nếu có state cart
     const stateData = this.cartState.getCheckoutData();
     if (stateData?.carts?.length) {
       this.carts = stateData.carts;
       this.totalAmount = stateData.totalAmount;
     } else {
-      // 🔁 Fallback nếu user F5/truy cập trực tiếp: nạp lại từ backend
-      const userId = localStorage.getItem('userId') || '';
-      if (!userId) {
-        this.messageService.add({
-          severity: 'warn',
-          summary: 'Please login',
-          detail: 'You must be logged in to checkout.',
-        });
-        this.loading = false;
-        return;
-      }
+      // 🔁 Load lại từ backend
       this.carts = await this.cartService.findByUser(userId);
       this.totalAmount = this.cartService.calcTotal(this.carts);
     }
@@ -142,8 +145,9 @@ export class CheckoutComponent implements OnInit {
     }
 
     try {
-      const user_id = localStorage.getItem('userId');
-      if (!user_id) {
+      const userId = localStorage.getItem('userId');
+
+      if (!userId || userId.length !== 24) {
         this.messageService.add({
           severity: 'warn',
           summary: 'Login Required',
@@ -152,7 +156,7 @@ export class CheckoutComponent implements OnInit {
         return;
       }
 
-      // ✅ 1️⃣ Lưu thông tin billing vào localStorage (để dùng lại sau redirect)
+      // 1️⃣ Save Billing
       const billing_info = {
         name: this.billingForm.value.name,
         email: this.billingForm.value.email,
@@ -161,7 +165,12 @@ export class CheckoutComponent implements OnInit {
       };
       localStorage.setItem('billing_info', JSON.stringify(billing_info));
 
-      // ✅ 2️⃣ Chỉ gửi dòng Deposit Payment (thanh toán thật)
+      // 2️⃣ Save checkout data
+      localStorage.setItem('checkout_carts', JSON.stringify(this.carts));
+      localStorage.setItem('checkout_total', String(this.totalAmount));
+      localStorage.setItem('checkout_deposit', String(this.depositAmount));
+
+      // 3️⃣ Stripe
       const stripeItems = [
         {
           product_name: 'Deposit Payment',
@@ -172,20 +181,18 @@ export class CheckoutComponent implements OnInit {
       ];
 
       const res = await this.stripeService.createCheckoutSession({
-        user_id,
+        user_id: userId,
         items: stripeItems,
+        billing_info,
       });
 
       if (res?.url) {
         this.messageService.add({
           severity: 'info',
           summary: 'Redirecting...',
-          detail: `You will be redirected to Stripe to pay your ${this.depositPercent}% deposit.`,
+          detail: `Redirecting to Stripe for ${this.depositPercent}% deposit.`,
         });
-
-        setTimeout(() => {
-          window.location.href = res.url;
-        }, 1000);
+        setTimeout(() => (window.location.href = res.url), 900);
       } else {
         throw new Error('Stripe URL not returned');
       }

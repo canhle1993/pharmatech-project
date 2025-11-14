@@ -42,6 +42,8 @@ export class OrderDetails extends Document {
     Preparing   - Đang chuẩn bị
     Delivered   - Đã giao
     Returned    - Đã trả hàng
+    Cancelled   - Đã huỷ
+
   */
 
   /** ⚙️ Trạng thái hệ thống */

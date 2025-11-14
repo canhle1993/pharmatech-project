@@ -11,6 +11,7 @@ import { StripeModule } from 'src/stripe/stripe.module';
 import { CartModule } from 'src/cart/cart.module'; // ✅ thêm dòng này
 import { MailModule } from 'src/mail/mail.module';
 import { AccountModule } from 'src/account/account.module';
+import { ProductModule } from 'src/product/product.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AccountModule } from 'src/account/account.module';
     CartModule,
     MailModule,
     AccountModule,
+    ProductModule,
   ],
   controllers: [OrderController],
   providers: [OrderService],

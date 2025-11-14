@@ -432,3 +432,105 @@
     style="max-width: 100%; max-height: 80vh; border-radius: 6px"
   />
 </p-dialog>
+
+<!-- 🟥 DIALOG: REJECT PENDING APPROVAL (Refund Deposit) -->
+<p-dialog
+  header="Reject Order (Refund Deposit)"
+  [(visible)]="showRejectPendingDialog"
+  [modal]="true"
+  [style]="{ width: '620px' }"
+  [closable]="true"
+>
+  <div class="dialog-body">
+    <!-- Cancel Reason -->
+    <div class="form-group">
+      <label>Cancel reason</label>
+      <textarea
+        pInputTextarea
+        rows="3"
+        placeholder="Enter cancel reason"
+        [(ngModel)]="rejectData.cancel_reason"
+      ></textarea>
+    </div>
+
+    <!-- Upload Refund Proof -->
+    <div class="form-group">
+      <label>Upload refund proof (transfer slip)</label>
+
+      <p-fileUpload
+        name="file"
+        customUpload="true"
+        chooseLabel="Choose Image"
+        uploadLabel="Upload"
+        cancelLabel="Cancel"
+        accept="image/*"
+        maxFileSize="5000000"
+        (uploadHandler)="onUploadRejectProof($event)"
+      ></p-fileUpload>
+
+      <!-- Preview -->
+      <div *ngIf="rejectData.payment_proof_url" class="preview-box">
+        <small>Upload success ✓ Preview:</small><br />
+        <img [src]="rejectData.payment_proof_url" alt="proof" />
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="dialog-footer">
+      <button
+        pButton
+        class="p-button-text p-button-danger"
+        label="Cancel"
+        (click)="showRejectPendingDialog = false"
+      ></button>
+
+      <button
+        pButton
+        class="p-button-warning"
+        label="Confirm Reject"
+        [disabled]="!rejectData.cancel_reason || !rejectData.payment_proof_url"
+        (click)="submitRejectPending()"
+      ></button>
+    </div>
+  </div>
+</p-dialog>
+
+<!-- 🟥 DIALOG: REJECT APPROVED (Deposit Lost) -->
+<p-dialog
+  header="Reject Order (Deposit Lost)"
+  [(visible)]="showRejectApprovedDialog"
+  [modal]="true"
+  [style]="{ width: '620px' }"
+  [closable]="true"
+>
+  <div class="dialog-body">
+    <!-- Cancel Reason -->
+    <div class="form-group">
+      <label>Cancel reason</label>
+      <textarea
+        pInputTextarea
+        rows="3"
+        placeholder="Enter cancel reason"
+        [(ngModel)]="rejectData.cancel_reason"
+      ></textarea>
+    </div>
+
+    <!-- Footer -->
+    <div class="dialog-footer">
+      <button
+        pButton
+        class="p-button-text p-button-danger"
+        label="Cancel"
+        (click)="showRejectApprovedDialog = false"
+      ></button>
+
+      <button
+        pButton
+        class="p-button-warning"
+        label="Confirm Reject"
+        [disabled]="!rejectData.cancel_reason"
+        (click)="submitRejectApproved()"
+      ></button>
+    </div>
+  </div>
+</p-dialog>

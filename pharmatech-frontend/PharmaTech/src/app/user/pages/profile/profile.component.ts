@@ -9,6 +9,7 @@ import { MessageService } from 'primeng/api';
 import { AccountService } from '../../../services/account.service';
 import { ProfileService } from '../../../services/profile.service';
 import { Account } from '../../../entities/account.entity';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 import { DatePickerModule } from 'primeng/datepicker';
 
@@ -23,6 +24,7 @@ import { DatePickerModule } from 'primeng/datepicker';
     MultiSelectModule,
     AutoCompleteModule,
     DatePickerModule,
+    RouterModule,
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
@@ -34,6 +36,7 @@ export class ProfileComponent implements OnInit {
   isEditing = false;
   selectedPhoto?: File;
   selectedResume?: File;
+  showOrderSuccess = false;
 
   /** ✅ Giới hạn ngày sinh */
   minDate = new Date(1950, 0, 1);
@@ -108,16 +111,47 @@ export class ProfileComponent implements OnInit {
   constructor(
     private accountService: AccountService,
     private profileService: ProfileService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private route: ActivatedRoute, // 👈 thêm
+    private router: Router
   ) {}
 
   /** =================== Lifecycle =================== */
   async ngOnInit() {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const id = currentUser?.id || currentUser?._id;
-    if (!id) return;
+    const id = localStorage.getItem('userId');
+
+    console.log('🔍 Loaded profile userId:', id);
+
+    if (!id || id.length !== 24) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Invalid User',
+        detail: 'Cannot load user profile.',
+      });
+      return;
+    }
+
+    // 👇 ĐỌC query param orderSuccess
+    this.route.queryParamMap.subscribe((params) => {
+      const status = params.get('orderSuccess');
+      if (status === '1') {
+        this.showOrderSuccess = true;
+
+        // Optional: xoá param khỏi URL cho sạch
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { orderSuccess: null },
+          queryParamsHandling: 'merge',
+          replaceUrl: true,
+        });
+
+        // Optional: tự tắt sau 5 giây
+        setTimeout(() => (this.showOrderSuccess = false), 5000);
+      }
+    });
 
     this.loading = true;
+
     try {
       const result = await this.accountService.findById(id);
       this.account = this.profileService.normalizeAccountData(result, {
@@ -193,7 +227,8 @@ export class ProfileComponent implements OnInit {
 
       if (updated) {
         // ✅ Cập nhật lại localStorage để applyJob đọc dữ liệu mới nhất
-        localStorage.setItem('user', JSON.stringify(updated));
+        localStorage.setItem('currentUser', JSON.stringify(updated));
+        localStorage.setItem('userId', updated._id);
 
         // ✅ Normalize lại dữ liệu vừa cập nhật để hiển thị đẹp
         this.account = this.profileService.normalizeAccountData(updated, {

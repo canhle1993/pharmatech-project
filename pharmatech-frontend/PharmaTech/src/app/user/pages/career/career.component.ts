@@ -127,8 +127,18 @@ export class CareerComponent implements OnInit, AfterViewInit {
     });
 
     const jsFiles = [
+      'assets/js/vendor/modernizr-3.11.7.min.js',
+      'assets/js/vendor/jquery-migrate-3.3.2.min.js',
+      'assets/js/countdown.min.js',
+      'assets/js/ajax.js',
+      'assets/js/jquery.validate.min.js',
+      'assets/js/vendor/jquery-3.6.0.min.js',
       'assets/js/vendor/bootstrap.bundle.min.js',
       'assets/js/swiper-bundle.min.js',
+      'assets/js/ion.rangeSlider.min.js',
+      'assets/js/lightgallery.min.js',
+      'assets/js/jquery.magnific-popup.min.js',
+      'assets/js/main.js',
     ];
     jsFiles.forEach((src) => {
       const script = this.renderer.createElement('script');

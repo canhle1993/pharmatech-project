@@ -252,4 +252,51 @@ export class ProductService {
       .find({ is_delete: false })
       .sort({ created_at: -1 });
   }
+
+  /** 📉 Giảm số lượng tồn kho sau khi đặt hàng */
+  async reduceStock(productId: string, quantity: number) {
+    const product = await this._productModel.findById(productId);
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    const newQty = (product.stock_quantity || 0) - quantity;
+
+    if (newQty < 0) {
+      throw new HttpException('Not enough stock', HttpStatus.BAD_REQUEST);
+    }
+
+    product.stock_quantity = newQty;
+    product.stock_status = newQty > 0 ? 'in_stock' : 'out_of_stock';
+    product.updated_at = new Date();
+
+    await product.save();
+
+    return {
+      msg: 'Stock reduced successfully',
+      remaining: newQty,
+    };
+  }
+
+  /** 📈 Tăng số lượng tồn kho khi hủy đơn */
+  async increaseStock(productId: string, quantity: number) {
+    const product = await this._productModel.findById(productId);
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    product.stock_quantity = (product.stock_quantity || 0) + quantity;
+    product.stock_status =
+      product.stock_quantity > 0 ? 'in_stock' : 'out_of_stock';
+    product.updated_at = new Date();
+
+    await product.save();
+
+    return {
+      msg: 'Stock increased successfully',
+      remaining: product.stock_quantity,
+    };
+  }
 }

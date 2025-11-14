@@ -154,4 +154,29 @@ export class ProductController {
   async findActive() {
     return this.productService.findActive();
   }
+
+  /** 📉 Giảm tồn kho sản phẩm */
+  @Put('reduce-stock/:id')
+  async reduceStock(
+    @Param('id') id: string,
+    @Body('quantity') quantity: number,
+  ) {
+    if (!quantity || quantity <= 0) {
+      throw new HttpException('Invalid quantity', HttpStatus.BAD_REQUEST);
+    }
+
+    return await this.productService.reduceStock(id, quantity);
+  }
+
+  @Put('increase-stock/:id')
+  async increaseStock(
+    @Param('id') id: string,
+    @Body('quantity') quantity: number,
+  ) {
+    if (!quantity || quantity <= 0) {
+      throw new HttpException('Invalid quantity', HttpStatus.BAD_REQUEST);
+    }
+
+    return await this.productService.increaseStock(id, quantity);
+  }
 }

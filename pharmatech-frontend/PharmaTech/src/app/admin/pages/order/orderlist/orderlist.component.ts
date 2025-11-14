@@ -66,6 +66,15 @@ export class OrderListComponent implements OnInit {
   loading = true;
   searchText: string = '';
   private searchTimeout?: any;
+
+  showRejectPendingDialog = false;
+  showRejectApprovedDialog = false;
+
+  rejectData = {
+    cancel_reason: '',
+    payment_proof_url: '',
+  };
+
   constructor(
     private orderService: OrderService,
     private messageService: MessageService,
@@ -359,40 +368,155 @@ export class OrderListComponent implements OnInit {
 
   /** 🔸 Từ chối đơn hàng */
   async onReject(order: Order) {
-    this.confirmService.confirm({
-      message: `Reject order #${order.safeId}?`,
-      header: 'Confirm Rejection',
-      icon: 'pi pi-times-circle',
-      accept: async () => {
-        try {
-          const currentUser = JSON.parse(
-            localStorage.getItem('currentUser') || '{}'
-          );
-          const updated_by = currentUser?.name || 'admin';
+    // 👉 TH1: Đơn hàng đang Pending Approval
+    if (order.approval_status === 'Pending Approval') {
+      this.openRejectPending(order);
+      return;
+    }
 
-          await this.orderService.updateApproval(
-            order.safeId!,
-            'Rejected',
-            updated_by
-          );
+    // 👉 TH2: Đơn hàng đã Approved
+    if (order.approval_status === 'Approved') {
+      this.openRejectApproved(order);
+      return;
+    }
 
-          this.messageService.add({
-            severity: 'warn',
-            summary: 'Rejected',
-            detail: `Order #${order.safeId} has been rejected.`,
-          });
-
-          await this.loadOrders();
-        } catch (err) {
-          console.error('❌ onReject error:', err);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to reject order.',
-          });
-        }
-      },
+    // 👉 TH3: Các trạng thái khác (nếu có)
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Not allowed',
+      detail: 'This order cannot be rejected in the current state.',
     });
+  }
+
+  /** 🔥 Reject đơn hàng khi đang Pending Approval (có hoàn cọc + upload ảnh) */
+  openRejectPending(order: Order) {
+    this.selectedOrder = order;
+
+    this.rejectData = {
+      cancel_reason: '',
+      payment_proof_url: '', // file upload sau khi upload-proof-temp
+    };
+
+    this.showRejectPendingDialog = true;
+  }
+
+  /** 🔥 Reject đơn hàng khi đã Approved (mất cọc – không upload ảnh) */
+  openRejectApproved(order: Order) {
+    this.selectedOrder = order;
+
+    this.rejectData = {
+      cancel_reason: '',
+      payment_proof_url: '', // không dùng, gửi rỗng
+    };
+
+    this.showRejectApprovedDialog = true;
+  }
+
+  async submitRejectPending() {
+    if (!this.rejectData.cancel_reason.trim()) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Missing information',
+        detail: 'Please enter cancel reason.',
+      });
+      return;
+    }
+
+    if (!this.rejectData.payment_proof_url) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Missing information',
+        detail: 'Please upload refund proof image.',
+      });
+      return;
+    }
+
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+    try {
+      this.loading = true;
+
+      await this.orderService.rejectOrder(this.selectedOrder.safeId!, {
+        cancel_reason: this.rejectData.cancel_reason,
+        payment_proof_url: this.rejectData.payment_proof_url,
+        updated_by: currentUser?.name || 'admin',
+      });
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Rejected',
+        detail: `Order #${this.selectedOrder.safeId} has been rejected and refunded.`,
+      });
+
+      this.showRejectPendingDialog = false;
+      await this.loadOrders();
+      this.activeTab = 'Rejected';
+    } catch (err) {
+      console.error('❌ submitRejectPending error:', err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to reject order.',
+      });
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  async submitRejectApproved() {
+    if (!this.rejectData.cancel_reason.trim()) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Missing information',
+        detail: 'Please enter cancel reason.',
+      });
+      return;
+    }
+
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+    try {
+      this.loading = true;
+
+      await this.orderService.rejectOrder(this.selectedOrder.safeId!, {
+        cancel_reason: this.rejectData.cancel_reason,
+        updated_by: currentUser?.name || 'admin',
+      });
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Rejected (Deposit Lost)',
+        detail: `Order #${this.selectedOrder.safeId} has been rejected and deposit is lost.`,
+      });
+
+      this.showRejectApprovedDialog = false;
+      await this.loadOrders();
+      this.activeTab = 'Rejected';
+    } catch (err) {
+      console.error('❌ submitRejectApproved error:', err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to reject order.',
+      });
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  async onUploadRejectProof(event: any) {
+    const file = event.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await this.orderService.uploadProofTemp(formData);
+      this.rejectData.payment_proof_url = res.url; // hoặc res.filename tùy backend trả
+    } catch (err) {
+      console.error('❌ Upload reject proof error:', err);
+    }
   }
 
   /** 🔸 Hủy đơn hàng */

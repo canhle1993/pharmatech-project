@@ -20,6 +20,7 @@ import { AiGPTComponent } from './components/aiGPT/aiGPT.component';
   ],
 })
 export class AdminComponent implements OnInit, AfterViewInit {
+  user: any = null;
   constructor(
     private accountService: AccountService,
     private router: Router,
@@ -27,6 +28,16 @@ export class AdminComponent implements OnInit, AfterViewInit {
   ) {}
   ngOnInit() {
     this.autoReloadOnce(); // ✅ Thêm hàm reload 1 lần duy nhất
+    // const storedUser = localStorage.getItem('currentUser');
+
+    // console.log('📦 currentUser stored:', storedUser);
+
+    // if (storedUser) {
+    //   this.user = JSON.parse(storedUser);
+    // }
+
+    // console.log('👤 Parsed user:', this.user);
+    // console.log('🖼 Photo:', this.user?.photo);
   }
   /**
    * 🔁 Reload trang Admin đúng 1 lần duy nhất khi truy cập
