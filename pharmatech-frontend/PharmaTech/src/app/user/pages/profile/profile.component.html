@@ -52,6 +52,66 @@
         </div>
       </div>
 
+      <!-- AI tạo ảnh -->
+      <div class="d-flex align-items-center gap-3" *ngIf="isEditing">
+        <!-- 🎡 Carousel -->
+        <div id="carouselWrap" *ngIf="isGenerating">
+          <div class="carousel">
+            <img
+              *ngFor="let img of carouselImages; let i = index"
+              [src]="img"
+              [class.active]="i === carouselIndex"
+            />
+          </div>
+          <div class="hint">Generating...</div>
+        </div>
+
+        <!-- 🖼️ Avatar preview -->
+        <img
+          *ngIf="!isGenerating && account?.photo"
+          [src]="account.photo"
+          class="gen-avatar"
+          alt="Generated"
+        />
+
+        <!-- 📝 Prompt -->
+        <textarea
+          class="a2"
+          [(ngModel)]="avatarPrompt"
+          placeholder="Describe your avatar..."
+        ></textarea>
+
+        <!-- 🔘 Generate -->
+        <button
+          class="btn rounded-pill px-4"
+          style="
+            background: linear-gradient(90deg, #43ff33, #33bdff);
+            color: #fff;
+            font-weight: 600;
+            border: none;
+          "
+          (click)="generateAvatar()"
+        >
+          Generate
+        </button>
+        <!-- 🆕 Save Avatar -->
+        <button
+          *ngIf="generatedAvatar && isEditing"
+          class="save-btn"
+          style="
+            background: linear-gradient(90deg, #3355ff, #33ebff);
+            color: #fff;
+            font-weight: 600;
+            border: none;
+          "
+          (click)="saveGeneratedAvatar()"
+        >
+          <i class="bx bx-save me-1"></i> Save Changes
+        </button>
+      </div>
+
+      <!--END AI tạo ảnh -->
+
       <div class="d-flex align-items-center gap-2">
         <button
           class="btn btn-outline-primary rounded-pill px-3"

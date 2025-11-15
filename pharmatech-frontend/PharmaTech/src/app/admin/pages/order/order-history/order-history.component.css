@@ -85,3 +85,17 @@
   transform: scale(1.05);
   opacity: 0.9;
 }
+.ocr-result-box {
+  padding: 8px;
+  background: #f3f3f3;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-top: 5px;
+  line-height: 1.4;
+}
+
+.proof-img {
+  width: 80px;
+  border-radius: 4px;
+  cursor: pointer;
+}

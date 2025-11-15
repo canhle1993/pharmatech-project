@@ -56,7 +56,8 @@ export class CartService {
       .find({ user_id: new Types.ObjectId(userId) })
       .populate({
         path: 'product_id',
-        select: 'name model price photo specification introduce',
+        select:
+          'name model price photo specification introduce stock_quantity stock_status is_delete',
       })
       .populate({
         path: 'user_id',
@@ -65,7 +66,13 @@ export class CartService {
       .sort({ created_at: -1 })
       .lean();
 
-    return carts.map((c) => plainToInstance(CartDTO, c));
+    // 🧹 LOẠI wishlist item nếu product bị xóa hoặc null
+    const filtered = carts.filter((c) => {
+      const p: any = c.product_id; // ép kiểu
+      return p && p.is_delete !== true;
+    });
+
+    return filtered.map((c) => plainToInstance(CartDTO, c));
   }
 
   // async findByUser(userId: string): Promise<CartDTO[]> {

@@ -186,6 +186,14 @@
                       title="Update Order Status"
                       (click)="onUpdateStatus(order)"
                     ></button>
+
+                    <button
+                      pButton
+                      icon="pi pi-times"
+                      class="p-button-text p-button-danger"
+                      title="Reject"
+                      (click)="onReject(order)"
+                    ></button>
                   </td>
                 </tr>
               </ng-template>
@@ -216,8 +224,8 @@
                   <th>Remaining Date</th>
                   <th>Note</th>
                   <th>Proof</th>
+                  <th>OCR Result</th>
                   <th>Overall Status</th>
-                  <th>Created</th>
                   <th>Action</th>
                 </tr>
               </ng-template>
@@ -249,6 +257,35 @@
                     <span *ngIf="!order.payment_proof_url">—</span>
                   </td>
 
+                  <!-- 🆕 OCR Result -->
+                  <td>
+                    <button
+                      class="btn btn-sm btn-primary"
+                      (click)="runOCR(order)"
+                    >
+                      Scan OCR
+                    </button>
+
+                    <!-- Loading -->
+                    <div *ngIf="ocrLoading">Scanning...</div>
+
+                    <!-- Kết quả -->
+                    <div
+                      *ngIf="ocrMap[order.id] && !ocrLoadingMap[order.id]"
+                      class="ocr-result-box"
+                    >
+                      <div><b>Amount:</b> {{ ocrMap[order.id].amount }}</div>
+                      <div><b>Time:</b> {{ ocrMap[order.id].time }}</div>
+                      <div><b>Ref:</b> {{ ocrMap[order.id].ref }}</div>
+                      <div><b>Sender:</b> {{ ocrMap[order.id].sender }}</div>
+                      <div>
+                        <b>Receiver:</b> {{ ocrMap[order.id].receiver }}
+                      </div>
+                    </div>
+
+                    <div *ngIf="ocrLoadingMap[order.id]">Scanning...</div>
+                  </td>
+
                   <!-- Overall Order Status -->
                   <td>
                     <p-tag
@@ -256,8 +293,6 @@
                       [severity]="getOrderStatusBadge(order.status)"
                     ></p-tag>
                   </td>
-
-                  <td>{{ order.created_at }}</td>
 
                   <td>
                     <button
@@ -308,6 +343,9 @@
                   <th>Order code</th>
                   <th>Customer</th>
                   <th>Rejected Reason</th>
+                  <th>Refund Status</th>
+                  <th>Proof</th>
+                  <th>OCR Result</th>
                   <th>Created</th>
                   <th>Action</th>
                 </tr>
@@ -318,6 +356,49 @@
                   <td>{{ order.id }}</td>
                   <td>{{ order.contact_name }}</td>
                   <td>{{ order.cancel_reason || "—" }}</td>
+                  <td>
+                    {{ order.refund_status || "—" }}
+                    <!-- Payment Proof -->
+                  </td>
+
+                  <td>
+                    <img
+                      *ngIf="order.payment_proof_url"
+                      [src]="order.payment_proof_url"
+                      alt="proof"
+                      class="proof-thumb"
+                      (click)="openImagePreview(order.payment_proof_url)"
+                    />
+                    <span *ngIf="!order.payment_proof_url">—</span>
+                  </td>
+                  <!-- 🆕 OCR Result -->
+                  <td>
+                    <button
+                      class="btn btn-sm btn-primary"
+                      (click)="runOCR(order)"
+                    >
+                      Scan OCR
+                    </button>
+
+                    <!-- Loading -->
+                    <div *ngIf="ocrLoading">Scanning...</div>
+
+                    <!-- Kết quả -->
+                    <div
+                      *ngIf="ocrMap[order.id] && !ocrLoadingMap[order.id]"
+                      class="ocr-result-box"
+                    >
+                      <div><b>Amount:</b> {{ ocrMap[order.id].amount }}</div>
+                      <div><b>Time:</b> {{ ocrMap[order.id].time }}</div>
+                      <div><b>Ref:</b> {{ ocrMap[order.id].ref }}</div>
+                      <div><b>Sender:</b> {{ ocrMap[order.id].sender }}</div>
+                      <div>
+                        <b>Receiver:</b> {{ ocrMap[order.id].receiver }}
+                      </div>
+                    </div>
+
+                    <div *ngIf="ocrLoadingMap[order.id]">Scanning...</div>
+                  </td>
                   <td>{{ order.created_at }}</td>
                   <td>
                     <button

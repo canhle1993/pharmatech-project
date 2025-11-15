@@ -222,3 +222,72 @@
 .order-success-close:hover {
   opacity: 1;
 }
+
+.a2 {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  font-size: 14px;
+}
+.a2 {
+  min-height: 90px;
+}
+
+/* Avatar carousel */
+#carouselWrap {
+  width: 80px;
+  height: 80px;
+}
+
+.carousel {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.carousel img {
+  position: absolute;
+  inset: 0;
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  border-radius: 50%;
+}
+
+.carousel img.active {
+  opacity: 1;
+}
+
+.hint {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* Generated avatar preview */
+.gen-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+}
+
+/* Prompt + Button layout */
+.a2 {
+  width: 250px;
+  min-height: 0px;
+  padding: 6px;
+}
+.save-btn {
+  padding: 10px 20px;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  height: 42px;
+}

@@ -50,7 +50,7 @@ export class WishlistService {
       .populate({
         path: 'product_id',
         select:
-          'name model price photo specification introduce stock_quantity stock_status',
+          'name model price photo specification introduce stock_quantity stock_status is_delete',
       })
       .populate({
         path: 'user_id',
@@ -59,7 +59,13 @@ export class WishlistService {
       .sort({ created_at: -1 })
       .lean();
 
-    return wishlists.map((w) =>
+    // 🧹 LOẠI wishlist item nếu product bị xóa hoặc null
+    const filtered = wishlists.filter((w) => {
+      const p: any = w.product_id; // ép kiểu
+      return p && p.is_delete !== true;
+    });
+
+    return filtered.map((w) =>
       plainToInstance(WishlistDTO, w, { excludeExtraneousValues: true }),
     );
   }

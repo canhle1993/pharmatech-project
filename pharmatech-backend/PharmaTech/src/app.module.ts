@@ -26,6 +26,7 @@ import { StripeModule } from './stripe/stripe.module';
 import { AiModule } from './ai/ai.module';
 import { AuthModule } from './auth/auth.module';
 import { ApplicationModule } from './application/application.module';
+import { OcrModule } from './ocr/ocr.module';
 
 @Module({
   imports: [
@@ -85,6 +86,7 @@ import { ApplicationModule } from './application/application.module';
     AiModule,
     ApplicationModule,
     AuthModule,
+    OcrModule,
   ],
   controllers: [],
   providers: [],

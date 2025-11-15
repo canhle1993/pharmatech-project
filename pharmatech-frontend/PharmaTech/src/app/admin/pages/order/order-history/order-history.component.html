@@ -14,8 +14,8 @@
       [value]="completedOrders"
       dataKey="id"
       [paginator]="true"
-      [rows]="6"
-      [rowsPerPageOptions]="[6, 10, 20]"
+      [rows]="4"
+      [rowsPerPageOptions]="[4, 10, 20]"
       [responsiveLayout]="'scroll'"
       showGridlines
       class="order-table"
@@ -30,6 +30,7 @@
           <th>Deposit</th>
           <th>Note</th>
           <th>Proof</th>
+          <th>OCR Result</th>
           <th>Completed At</th>
           <th>Action</th>
         </tr>
@@ -52,6 +53,29 @@
               (click)="openImage(order.payment_proof_url)"
             />
             <span *ngIf="!order.payment_proof_url">—</span>
+          </td>
+          <!-- 🆕 OCR Result -->
+          <td>
+            <button class="btn btn-sm btn-primary" (click)="runOCR(order)">
+              Scan OCR
+            </button>
+
+            <!-- Loading -->
+            <div *ngIf="ocrLoading">Scanning...</div>
+
+            <!-- Kết quả -->
+            <div
+              *ngIf="ocrMap[order.id] && !ocrLoadingMap[order.id]"
+              class="ocr-result-box"
+            >
+              <div><b>Amount:</b> {{ ocrMap[order.id].amount }}</div>
+              <div><b>Time:</b> {{ ocrMap[order.id].time }}</div>
+              <div><b>Ref:</b> {{ ocrMap[order.id].ref }}</div>
+              <div><b>Sender:</b> {{ ocrMap[order.id].sender }}</div>
+              <div><b>Receiver:</b> {{ ocrMap[order.id].receiver }}</div>
+            </div>
+
+            <div *ngIf="ocrLoadingMap[order.id]">Scanning...</div>
           </td>
 
           <td>{{ order.updated_at }}</td>

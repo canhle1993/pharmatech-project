@@ -38,6 +38,10 @@ export class CheckoutComponent implements OnInit {
   billingForm!: FormGroup;
   loading = true;
 
+  provinces: any[] = [];
+  districts: any[] = [];
+  wards: any[] = [];
+
   constructor(
     private fb: FormBuilder,
     private messageService: MessageService,
@@ -49,6 +53,7 @@ export class CheckoutComponent implements OnInit {
 
   async ngOnInit() {
     this.initForm();
+    this.loadProvinces();
 
     // 🔥 Lấy userId chuẩn
     const userId = localStorage.getItem('userId');
@@ -82,9 +87,56 @@ export class CheckoutComponent implements OnInit {
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10,11}$/)]],
-      address: ['', Validators.required],
+
+      // 🇻🇳 Thêm 4 field địa chỉ Việt Nam
+      province: ['', Validators.required],
+      district: ['', Validators.required],
+      ward: ['', Validators.required],
+      address_detail: ['', Validators.required],
+
       accept_terms: [false, Validators.requiredTrue],
     });
+  }
+
+  // 🇻🇳 Load tỉnh thành
+  loadProvinces() {
+    fetch('https://provinces.open-api.vn/api/p/')
+      .then((res) => res.json())
+      .then((data) => (this.provinces = data));
+  }
+
+  // 🇻🇳 Khi chọn tỉnh → load quận huyện
+  onProvinceChange(event: any) {
+    const code = event.target.value;
+
+    this.districts = [];
+    this.wards = [];
+
+    this.billingForm.patchValue({ district: '', ward: '' });
+
+    fetch(`https://provinces.open-api.vn/api/p/${code}?depth=2`)
+      .then((res) => res.json())
+      .then((data) => (this.districts = data.districts));
+  }
+
+  // 🇻🇳 Khi chọn huyện → load phường xã
+  onDistrictChange(event: any) {
+    const code = event.target.value;
+
+    this.wards = [];
+    this.billingForm.patchValue({ ward: '' });
+
+    fetch(`https://provinces.open-api.vn/api/d/${code}?depth=2`)
+      .then((res) => res.json())
+      .then((data) => (this.wards = data.wards));
+  }
+
+  getProvinceName(code: string) {
+    return this.provinces.find((p) => p.code == code)?.name || '';
+  }
+
+  getDistrictName(code: string) {
+    return this.districts.find((d) => d.code == code)?.name || '';
   }
 
   private async loadDepositSettings() {
@@ -157,12 +209,21 @@ export class CheckoutComponent implements OnInit {
       }
 
       // 1️⃣ Save Billing
+      // 🇻🇳 Build full Vietnam Address
+      const f = this.billingForm.value;
+
+      const fullAddress =
+        `${f.address_detail}, ${f.ward}, ` +
+        `${this.getDistrictName(f.district)}, ` +
+        `${this.getProvinceName(f.province)}`;
+
       const billing_info = {
-        name: this.billingForm.value.name,
-        email: this.billingForm.value.email,
-        phone: this.billingForm.value.phone,
-        address: this.billingForm.value.address,
+        name: f.name,
+        email: f.email,
+        phone: f.phone,
+        address: fullAddress,
       };
+
       localStorage.setItem('billing_info', JSON.stringify(billing_info));
 
       // 2️⃣ Save checkout data

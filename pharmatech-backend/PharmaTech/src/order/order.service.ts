@@ -580,7 +580,7 @@ export class OrderService {
     // ============================================
     else if (order.approval_status === 'Approved') {
       order.approval_status = 'Rejected';
-      order.refund_status = 'None'; // mất cọc
+      order.refund_status = 'Deposit Lost'; // mất cọc
       order.cancel_reason = cancel_reason;
       order.cancelled_at = now;
       order.refund_time = now;

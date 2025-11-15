@@ -78,21 +78,96 @@
                   >Phone must be 10–11 digits.</small
                 >
               </div>
+              <!-- Province -->
+              <div class="col-sm-6">
+                <label>Province*</label>
+                <div class="select-wrapper">
+                  <select
+                    class="form-field"
+                    formControlName="province"
+                    (change)="onProvinceChange($event)"
+                  >
+                    <option value="">Select Province</option>
+                    <option *ngFor="let p of provinces" [value]="p.code">
+                      {{ p.name }}
+                    </option>
+                  </select>
+                </div>
+
+                <small
+                  *ngIf="
+                    billingForm.get('province')?.invalid &&
+                    billingForm.get('province')?.touched
+                  "
+                  class="text-danger"
+                  >Province is required.</small
+                >
+              </div>
+
+              <!-- District -->
+              <div class="col-sm-6">
+                <label>District*</label>
+                <div class="select-wrapper">
+                  <select
+                    class="form-field"
+                    formControlName="district"
+                    (change)="onDistrictChange($event)"
+                  >
+                    <option value="">Select District</option>
+                    <option *ngFor="let d of districts" [value]="d.code">
+                      {{ d.name }}
+                    </option>
+                  </select>
+                </div>
+
+                <small
+                  *ngIf="
+                    billingForm.get('district')?.invalid &&
+                    billingForm.get('district')?.touched
+                  "
+                  class="text-danger"
+                  >District is required.</small
+                >
+              </div>
+
+              <!-- Ward -->
+              <div class="col-sm-6">
+                <label>Ward*</label>
+                <div class="select-wrapper">
+                  <select class="form-field" formControlName="ward">
+                    <option value="">Select Ward</option>
+                    <option *ngFor="let w of wards" [value]="w.name">
+                      {{ w.name }}
+                    </option>
+                  </select>
+                </div>
+
+                <small
+                  *ngIf="
+                    billingForm.get('ward')?.invalid &&
+                    billingForm.get('ward')?.touched
+                  "
+                  class="text-danger"
+                  >Ward is required.</small
+                >
+              </div>
+
+              <!-- Address Detail -->
               <div class="col-sm-12">
-                <label>Address*</label>
+                <label>Address Detail*</label>
                 <input
                   class="form-field"
                   type="text"
-                  formControlName="address"
-                  placeholder="Your delivery address"
+                  formControlName="address_detail"
+                  placeholder="Street, house number..."
                 />
                 <small
                   *ngIf="
-                    billingForm.get('address')?.invalid &&
-                    billingForm.get('address')?.touched
+                    billingForm.get('address_detail')?.invalid &&
+                    billingForm.get('address_detail')?.touched
                   "
                   class="text-danger"
-                  >Address is required.</small
+                  >Address detail is required.</small
                 >
               </div>
             </div>

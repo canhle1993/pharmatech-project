@@ -301,4 +301,174 @@ export class ProfileComponent implements OnInit {
 
     (this.account as any).age = age; // ✅ chỉ gán để hiển thị FE
   }
+
+  /* ===========================
+    🚀 AVATAR GENERATOR (HF FLUX)
+   =========================== */
+
+  // Hiển thị loading carousel
+  isGenerating = false;
+  carouselImages = [
+    'https://picsum.photos/id/1015/80/80',
+    'https://picsum.photos/id/1025/80/80',
+    'https://picsum.photos/id/1035/80/80',
+    'https://picsum.photos/id/1041/80/80',
+    'https://picsum.photos/id/1050/80/80',
+  ];
+  carouselIndex = 0;
+  carouselTimer: any = null;
+
+  // Ảnh tạo xong
+  generatedAvatar: string | null = null;
+
+  // Prompt từ textarea
+  avatarPrompt: string = '';
+
+  // HuggingFace Token của anh
+  HF_TOKEN = ''; // đổi lại nếu cần
+
+  // ===============================
+  // 🎡 Start Carousel
+  // ===============================
+  startCarousel() {
+    this.carouselIndex = 0;
+    if (this.carouselTimer) clearInterval(this.carouselTimer);
+
+    this.carouselTimer = setInterval(() => {
+      this.carouselIndex =
+        (this.carouselIndex + 1) % this.carouselImages.length;
+    }, 900);
+  }
+
+  // ===============================
+  // 🛑 Stop Carousel
+  // ===============================
+  stopCarousel() {
+    if (this.carouselTimer) clearInterval(this.carouselTimer);
+    this.carouselTimer = null;
+    this.isGenerating = false;
+  }
+
+  // ===============================
+  // 📌 CALL HF API — generate avatar
+  // ===============================
+  async generateAvatar() {
+    if (!this.avatarPrompt.trim()) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Missing prompt',
+        detail: 'Please enter a short description for your avatar.',
+      });
+      return;
+    }
+
+    this.isGenerating = true;
+    this.generatedAvatar = null;
+    this.startCarousel();
+
+    try {
+      const response = await fetch(
+        'https://router.huggingface.co/nebius/v1/images/generations',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${this.HF_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'black-forest-labs/flux-dev',
+            prompt: this.avatarPrompt,
+            response_format: 'b64_json',
+          }),
+        }
+      );
+
+      const result = await response.json();
+      const b64 = result?.b64_json || result?.data?.[0]?.b64_json;
+
+      if (!b64) throw new Error('No base64 returned from model');
+
+      this.generatedAvatar = 'data:image/png;base64,' + b64;
+
+      // ✔ HIỂN THỊ LÊN PROFILE CHO USER XEM TRƯỚC
+      if (this.account) {
+        this.account.photo = this.generatedAvatar;
+      }
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Avatar generated',
+        detail: 'Preview updated — click Save to upload.',
+      });
+    } catch (err) {
+      console.error(err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Generation failed',
+        detail: 'Cannot generate avatar.',
+      });
+    } finally {
+      this.stopCarousel();
+    }
+  }
+
+  /* ===========================
+    💾 SAVE GENERATED AVATAR
+   =========================== */
+
+  async saveGeneratedAvatar() {
+    if (!this.generatedAvatar || !this.account) {
+      return;
+    }
+
+    try {
+      this.loading = true;
+
+      // 🔥 BƯỚC 1 — Convert Base64 → File
+      const file = await this.base64ToFile(
+        this.generatedAvatar,
+        'avatar_ai.png'
+      );
+
+      // 🔥 BƯỚC 2 — Gọi service upload như upload avatar thường
+      const updated = await this.profileService.uploadFiles(
+        this.account,
+        file,
+        null
+      );
+
+      // 🔥 BƯỚC 3 — Lưu vào DB
+      const payload = this.profileService.buildPayload(updated);
+      const saved = await this.profileService.saveProfile(updated, payload);
+
+      if (saved) {
+        this.account.photo = saved.photo;
+        localStorage.setItem('currentUser', JSON.stringify(saved));
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Avatar Saved',
+          detail: 'Your AI-generated avatar has been updated successfully!',
+        });
+
+        this.generatedAvatar = null; // Ẩn nút Save
+      }
+    } catch (err) {
+      console.error('❌ Save avatar error:', err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to save avatar.',
+      });
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  /* Utility: Convert base64 → File */
+  base64ToFile(base64: string, filename: string): Promise<File> {
+    return fetch(base64)
+      .then((res) => res.blob())
+      .then((blob) => new File([blob], filename, { type: blob.type }));
+  }
 }
