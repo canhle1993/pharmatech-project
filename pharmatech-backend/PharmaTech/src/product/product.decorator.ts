@@ -12,7 +12,7 @@ export class Product {
   @Prop({ required: true, unique: true })
   name: string; // Tên sản phẩm
 
-  @Prop({ type: String })
+  @Prop({ required: true, unique: true })
   model?: string; // Mã model (VD: TDP-5, DHF-2Head,...)
 
   @Prop()

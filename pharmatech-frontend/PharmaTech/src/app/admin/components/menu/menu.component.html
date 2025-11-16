@@ -70,6 +70,17 @@
       </a>
     </li>
 
+    <li
+      class="menu-item"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <a [routerLink]="['/admin/product-stock-management']" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-category"></i>
+        <div data-i18n="Product Stock Management">Stock Management</div>
+      </a>
+    </li>
+
     <!-- Order -->
     <li class="menu-header small text-uppercase">
       <span class="menu-header-text">Order</span>

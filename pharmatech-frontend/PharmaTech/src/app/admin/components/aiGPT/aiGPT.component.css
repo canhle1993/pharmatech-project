@@ -1,7 +1,7 @@
 /* Nút AI nổi */
 .ai-btn {
   position: fixed;
-  bottom: 25px;
+  bottom: 6px;
   right: 25px;
   background: linear-gradient(135deg, #5c7cff, #3e8ef7);
   color: white;

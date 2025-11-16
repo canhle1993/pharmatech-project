@@ -69,6 +69,7 @@ export class AccountController {
   async create(@Body() account: any) {
     account.is_active = false;
     account.securityCode = Math.floor(1000 + Math.random() * 9000).toString();
+    account.otpExpiredAt = new Date(Date.now() + 5 * 60 * 1000); // +5 phút
 
     const created = await this.accountService.create(account);
     if (!created)
@@ -80,7 +81,7 @@ export class AccountController {
     const sent = await this.mailService.send2(
       this.configService.get('mail_username'),
       account.email,
-      'Verify your account',
+      'Verify your account at PharmaTech: ',
       `Your verification code: ${account.securityCode}`,
     );
 
@@ -90,7 +91,10 @@ export class AccountController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
 
-    return { msg: 'Activation email sent successfully' };
+    return {
+      msg: 'Activation email sent successfully',
+      otpExpiredAt: account.otpExpiredAt,
+    };
   }
 
   // ===============================
@@ -103,10 +107,23 @@ export class AccountController {
     if (!account)
       throw new HttpException('Email does not exist', HttpStatus.NOT_FOUND);
 
+    // ⛔ Kiểm tra OTP hết hạn
+    if (account.otpExpiredAt && new Date() > new Date(account.otpExpiredAt)) {
+      throw new HttpException(
+        'OTP expired. Please request a new one.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // ⛔ Kiểm tra OTP đúng hay không
     if (account.securityCode !== otp)
       throw new HttpException('OTP is invalid', HttpStatus.BAD_REQUEST);
 
+    // Nếu ok → kích hoạt
     account.is_active = true;
+    account.securityCode = null;
+    account.otpExpiredAt = null;
+
     await this.accountService.update(account._id.toString(), account);
 
     return { msg: 'Verification successful' };
@@ -243,56 +260,95 @@ export class AccountController {
   // ===============================
   // 🔐 Quên mật khẩu / Reset
   // ===============================
+  // ===============================
+  // 🔐 QUÊN MẬT KHẨU
+  // ===============================
   @Post('forgotPassword')
   async forgotPassword(@Body('email') email: string) {
-    const account = await this.accountService.findByEmail(email);
-    if (!account)
+    const account: any = await this.accountService.findByEmail(email);
+    if (!account) {
       throw new HttpException('Email not found', HttpStatus.NOT_FOUND);
+    }
 
     const otp = Math.floor(1000 + Math.random() * 9000).toString();
+
+    // Lưu OTP & thời gian hết hạn (5 phút)
     account.securityCode = otp;
+    account.otpExpiredAt = new Date(Date.now() + 5 * 60 * 1000);
+
     await this.accountService.update(account._id.toString(), account);
 
+    // Gửi email
     const sent = await this.mailService.send2(
       this.configService.get('mail_username'),
       email,
       'Reset Password OTP',
-      'Your OTP: ' + otp,
+      `Your OTP: ${otp} (valid for 5 minutes)`,
     );
 
-    if (!sent)
+    if (!sent) {
       throw new HttpException(
         'Failed to send OTP',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
+    }
 
-    return { msg: 'OTP sent to your email' };
+    return {
+      msg: 'OTP sent to email',
+      otpExpiredAt: account.otpExpiredAt,
+    };
   }
 
+  // ===============================
+  // 🔐 Kiểm tra OTP
+  // ===============================
   @Post('verifyOtp')
   async verifyOtp(@Body() body: { email: string; otp: string }) {
     const { email, otp } = body;
-    const account = await this.accountService.findByEmail(email);
+    const account: any = await this.accountService.findByEmail(email);
+
     if (!account)
       throw new HttpException('Email not found', HttpStatus.NOT_FOUND);
-    if (account.securityCode !== otp)
+
+    // ⛔ OTP hết hạn
+    if (account.otpExpiredAt && new Date() > new Date(account.otpExpiredAt)) {
+      throw new HttpException('OTP expired', HttpStatus.BAD_REQUEST);
+    }
+
+    // ⛔ OTP sai
+    if (account.securityCode !== otp) {
       throw new HttpException('Invalid OTP', HttpStatus.BAD_REQUEST);
+    }
+
+    // ✔ Nếu OTP ĐÚNG → reset lại các trường OTP
+    account.securityCode = null;
+    account.otpExpiredAt = null;
+
+    await this.accountService.update(account._id.toString(), account);
+
     return { msg: 'OTP verified successfully' };
   }
 
+  // ===============================
+  // 🔐 Đổi mật khẩu sau khi verify OTP
+  // ===============================
   @Post('resetPassword')
   async resetPassword(@Body() body: { email: string; newPassword: string }) {
     const { email, newPassword } = body;
-    const account = await this.accountService.findByEmail(email);
+
+    const account: any = await this.accountService.findByEmail(email);
     if (!account)
       throw new HttpException('Email not found', HttpStatus.NOT_FOUND);
-    if (!account.securityCode)
-      throw new HttpException('OTP not verified', HttpStatus.BAD_REQUEST);
 
     const hashed = bcrypt.hashSync(newPassword, bcrypt.genSaltSync());
     account.password = hashed;
+
+    // clear OTP
     account.securityCode = null;
+    account.otpExpiredAt = null;
+
     await this.accountService.update(account._id.toString(), account);
+
     return { msg: 'Password reset successfully' };
   }
 

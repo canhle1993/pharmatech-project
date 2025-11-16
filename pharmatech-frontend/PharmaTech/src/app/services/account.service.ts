@@ -31,7 +31,6 @@ export class AccountService {
   }
 
   /** 🔹 Đăng nhập */
-  /** 🔹 Đăng nhập */
   async login(username: string, password: string) {
     const res: any = await lastValueFrom(
       this.httpClient.post(`${env.baseUrl}auth/login`, { username, password })
@@ -48,6 +47,11 @@ export class AccountService {
       localStorage.setItem('userName', res.account.name || '');
       localStorage.setItem('userEmail', res.account.email || '');
       localStorage.setItem('userRole', JSON.stringify(res.account.roles || []));
+
+      localStorage.setItem(
+        'chatUserId',
+        res.account.id || res.account._id || ''
+      );
     }
 
     // if (res.account) {

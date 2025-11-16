@@ -1,0 +1,80 @@
+.stock-container {
+  padding: 1rem 1.5rem;
+  background: #f7f8fa;
+  min-height: 100vh;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+.page-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* --- Search & Bulk box --- */
+.top-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+  gap: 1rem;
+}
+
+.search-input {
+  width: 300px;
+}
+
+.bulk-box {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.bulk-box input {
+  width: 150px;
+}
+
+/* --- Table --- */
+.stock-table ::ng-deep .p-datatable-thead > tr > th {
+  background: #3b82f6;
+  color: white;
+  text-align: center;
+  padding: 0.75rem;
+}
+
+.stock-table ::ng-deep .p-datatable-tbody > tr > td {
+  text-align: center;
+  padding: 0.75rem;
+}
+
+.qty-input {
+  width: 110px;
+}
+
+.out-of-stock {
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+.loading-spinner {
+  padding: 2rem;
+  text-align: center;
+}
+.stock-danger {
+  color: #ff3d3d;
+  font-weight: 700;
+}
+
+.stock-warning {
+  color: #ff9800;
+  font-weight: 700;
+}
+
+.stock-safe {
+  color: #2e7d32;
+  font-weight: 700;
+}

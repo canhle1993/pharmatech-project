@@ -51,6 +51,9 @@ export class OrderHistoryComponent implements OnInit {
 
   ocrMap: Record<string, any> = {}; // Lưu OCR theo order ID
   ocrLoadingMap: Record<string, boolean> = {};
+  filteredOrders: any[] = [];
+  searchText: string = '';
+  private searchTimeout: any;
 
   constructor(
     private orderService: OrderService,
@@ -60,6 +63,32 @@ export class OrderHistoryComponent implements OnInit {
 
   async ngOnInit() {
     await this.loadCompletedOrders();
+  }
+  /** =====================================================
+   * 🔍 Tìm kiếm theo Order Code + Customer Name
+   * ===================================================== */
+  /** =====================================================
+   * 🔍 Tìm kiếm theo Order Code + Customer Name
+   * ===================================================== */
+  onSearchChange() {
+    clearTimeout(this.searchTimeout);
+
+    this.searchTimeout = setTimeout(() => {
+      const keyword = this.searchText.trim().toLowerCase();
+
+      // Nếu ô tìm kiếm trống → trả lại danh sách gốc
+      if (!keyword) {
+        this.filteredOrders = [...this.completedOrders];
+        return;
+      }
+
+      this.filteredOrders = this.completedOrders.filter((o: any) => {
+        const orderCode = (o.id || '').toString().toLowerCase();
+        const customerName = (o.contact_name || '').toLowerCase();
+
+        return orderCode.includes(keyword) || customerName.includes(keyword);
+      });
+    }, 300);
   }
 
   async loadCompletedOrders() {
@@ -74,6 +103,9 @@ export class OrderHistoryComponent implements OnInit {
           new Date(b.updated_at || '').getTime() -
           new Date(a.updated_at || '').getTime()
       );
+
+      // 🔥 Gán danh sách ban đầu cho filteredOrders
+      this.filteredOrders = [...this.completedOrders];
     } catch (err) {
       console.error('❌ loadCompletedOrders error:', err);
     } finally {

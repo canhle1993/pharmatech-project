@@ -56,7 +56,9 @@ export class AccountService {
       const created = await this.accountModel.create({
         ...account,
         password: hashed,
-        is_active: true,
+        is_active: account.is_active ?? true,
+        otpExpiredAt: account.otpExpiredAt,
+        securityCode: account.securityCode,
       });
 
       return plainToInstance(AccountDTO, created.toObject(), {
@@ -117,6 +119,12 @@ export class AccountService {
         working_years: account.experience?.working_years || null,
         responsibilities: account.experience?.responsibilities || '',
       },
+
+      // 🛠 FIX QUAN TRỌNG
+      securityCode: account.securityCode ?? exists.securityCode,
+      otpExpiredAt: account.otpExpiredAt ?? exists.otpExpiredAt,
+
+      password: account.password ?? exists.password,
     };
 
     const updated = await this.accountModel.findByIdAndUpdate(

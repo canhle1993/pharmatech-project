@@ -321,16 +321,26 @@
   [(visible)]="visible"
   [modal]="true"
   [style]="{ width: '25rem' }"
+  (onShow)="startCountdown()"
 >
-  <div style="text-align: center">
+  <div style="text-align: center; margin-bottom: 30px">
+    <b>OTP expires in:</b>
+    <div style="font-size: 20px; margin-top: 4px; color: #d9534f">
+      {{ countdownText }}
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-left: 90px; margin-bottom: 40px">
     <p-inputotp [(ngModel)]="otp"></p-inputotp>
   </div>
+
   <div style="text-align: right; margin-top: 1rem">
     <button
       pButton
       label="Confirm"
       class="p-button-primary"
       (click)="verify()"
+      [disabled]="otpExpired"
     ></button>
     <button
       pButton

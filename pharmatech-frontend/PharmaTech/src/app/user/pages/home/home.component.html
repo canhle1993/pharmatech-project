@@ -172,19 +172,6 @@
                 <ul class="product-item__meta">
                   <li class="product-item__meta-action">
                     <a
-                      class="labtn-icon-quickview"
-                      href="javascript:void(0)"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Quick View"
-                      aria-label="Quick View"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleProductModal"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
                       class="labtn-icon-cart"
                       href="javascript:void(0)"
                       (click)="addToCart(p)"
@@ -238,12 +225,12 @@
         <span
           class="boxbanner-title"
           style="color: rgb(247, 138, 70) !important"
-          >Discount</span
+          >Capsules</span
         >
         <span
           class="boxbanner-discount"
           style="color: rgb(247, 138, 70) !important"
-          >10%</span
+          >New</span
         >
         <div class="boxbanner-btn-area">
           <span class="boxbanner-btn">
@@ -308,19 +295,6 @@
                   <span class="product-item__price">${{ p.price }}</span>
                 </div>
                 <ul class="product-item__meta">
-                  <li class="product-item__meta-action">
-                    <a
-                      class="labtn-icon-quickview"
-                      href="javascript:void(0)"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title=""
-                      data-bs-original-title="Quick View"
-                      aria-label="Quick View"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleProductModal"
-                    ></a>
-                  </li>
                   <li class="product-item__meta-action">
                     <a
                       class="labtn-icon-cart"
@@ -436,17 +410,6 @@
                   <ul class="product-item__meta meta-middle">
                     <li class="product-item__meta-action">
                       <a
-                        class="labtn-icon-quickview"
-                        href="#/"
-                        data-bs-tooltip="tooltip"
-                        data-bs-placement="top"
-                        title="Quick View"
-                        data-bs-toggle="modal"
-                        data-bs-target="#exampleProductModal"
-                      ></a>
-                    </li>
-                    <li class="product-item__meta-action">
-                      <a
                         class="labtn-icon-wishlist"
                         href="javascript:void(0)"
                         (click)="addToWishlist(p)"
@@ -481,11 +444,10 @@
                     }}
                   </p>
                   <a
-                    href="#/"
+                    href="javascript:void(0)"
                     class="product-item__btn"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalCart"
-                    >Learn More</a
+                    (click)="addToCart(p)"
+                    >Add to cart</a
                   >
                 </div>
               </div>

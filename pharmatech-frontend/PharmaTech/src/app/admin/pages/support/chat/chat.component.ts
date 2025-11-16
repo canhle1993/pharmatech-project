@@ -13,7 +13,6 @@ import { Subscription } from 'rxjs';
 
 import { AccountService } from '../../../../services/account.service';
 import { ChatService, InboxItem } from '../../../../services/chat.service';
-import { NotificationService } from '../../../../services/notification.service';
 
 interface ChatMessage {
   fromRole: 'user' | 'admin';
@@ -26,7 +25,7 @@ interface Account {
   _id?: string;
   username?: string;
   email?: string;
-  name?: string;          // ✅ chỉ có name
+  name?: string; // ✅ chỉ có name
   is_active?: boolean;
   [k: string]: any;
 }
@@ -56,9 +55,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   constructor(
     private accounts: AccountService,
     private chat: ChatService,
-    private notifyService: NotificationService,
     private cdr: ChangeDetectorRef
-  ) { }
+  ) {}
 
   async ngOnInit() {
     await this.loadAccountsMap();
@@ -79,13 +77,11 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.subMsg = this.chat.onMessage().subscribe((m: any) => {
       if (!this.currentUserId || m.userId !== this.currentUserId) return;
-
       this.history.push({
         fromRole: m.fromRole === 'user' ? 'user' : 'admin',
         text: String(m.msg ?? ''),
         createdAt: m.createdAt,
       });
-
       this.cdr.detectChanges();
       this.scrollToBottom();
     });
@@ -124,7 +120,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   private upsertInboxRow(row: InboxItem) {
-    const i = this.inbox.findIndex(x => x.userId === row.userId);
+    const i = this.inbox.findIndex((x) => x.userId === row.userId);
     if (i >= 0) this.inbox.splice(i, 1);
     this.inbox.unshift(row);
     this.applySearchOrdering();
@@ -132,15 +128,21 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   onSearch() {
     const k = this.q.trim().toLowerCase();
-    if (!k) { this.filtered = [...this.inbox]; return; }
+    if (!k) {
+      this.filtered = [...this.inbox];
+      return;
+    }
 
     const result = this.inbox.filter((t) => {
       const s = [
         t.userSnapshot?.name,
         t.userSnapshot?.username,
         t.userSnapshot?.email,
-        t.userId
-      ].filter(Boolean).join(' ').toLowerCase();
+        t.userId,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
       return s.includes(k);
     });
 
@@ -174,34 +176,45 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
     this.scrollToBottom();
 
-    try { await this.chat.markInboxRead(userId); } catch { }
+    try {
+      await this.chat.markInboxRead(userId);
+    } catch {}
   }
 
   async send() {
     const text = this.msg.trim();
-    // console.log(localStorage.getItem("chatUserId"));
+    console.log(localStorage.getItem('chatUserId'));
     if (!text || !this.currentUserId) return;
-    await this.chat.sendMessage(this.currentUserId, localStorage.getItem("chatUserId"), text);
+    await this.chat.sendMessage(
+      this.currentUserId,
+      localStorage.getItem('chatUserId'),
+      text
+    );
     this.msg = '';
-
     this.cdr.detectChanges();
     this.scrollToBottom();
   }
 
   // ===== DISPLAY HELPERS =====
   displayNameFromInbox(t: InboxItem) {
-    return t?.userSnapshot?.name
-      || t?.userSnapshot?.username
-      || t?.userSnapshot?.email
-      || t?.userId;
+    return (
+      t?.userSnapshot?.name ||
+      t?.userSnapshot?.username ||
+      t?.userSnapshot?.email ||
+      t?.userId
+    );
   }
 
   displayNameFromUserId(userId: string) {
+    // const b = this.accounts.findById(userId) as Account;
+    // console.log(b);
     const a = this.accountsMap[userId];
     return a?.name || a?.username || a?.email || userId;
   }
 
-  isAdminMsg(m: ChatMessage) { return m.fromRole === 'admin'; }
+  isAdminMsg(m: ChatMessage) {
+    return m.fromRole === 'admin';
+  }
 
   trackKey(m: ChatMessage, i: number) {
     const t = m.createdAt ? String(m.createdAt) : '';

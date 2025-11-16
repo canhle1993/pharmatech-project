@@ -58,10 +58,22 @@
             formControlName="name"
             placeholder="Enter product name"
           />
+          <div
+            *ngIf="editForm.get('name')?.hasError('duplicate')"
+            class="error-text"
+          >
+            Name already exists.
+          </div>
         </div>
         <div>
           <label>Model:</label>
           <input pInputText formControlName="model" placeholder="Enter model" />
+          <div
+            *ngIf="editForm.get('model')?.hasError('duplicate')"
+            class="error-text"
+          >
+            Model already exists.
+          </div>
         </div>
         <div>
           <label>introduce:</label>

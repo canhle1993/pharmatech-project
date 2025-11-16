@@ -42,6 +42,9 @@ export class Account extends Document {
   @Prop()
   securityCode?: string;
 
+  @Prop({ type: Date, default: null })
+  otpExpiredAt?: Date;
+
   @Prop()
   last_login?: Date;
 

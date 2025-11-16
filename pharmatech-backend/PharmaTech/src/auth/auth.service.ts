@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  HttpException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { AccountService } from '../account/account.service';
@@ -10,28 +15,68 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  /** 🟢 Đăng nhập và sinh JWT */
+  /** 🔐 Đăng nhập + check khóa 5 phút */
   async login(username: string, password: string) {
-    // 🔍 Lấy tài khoản từ DB
-    // Cho phép đăng nhập bằng username hoặc email
     const account =
       (await this.accountService.findByUsername(username)) ||
       (await this.accountService.findByEmail(username));
 
-    if (!account) throw new UnauthorizedException('Account not found');
+    if (!account) {
+      throw new UnauthorizedException('Account not found');
+    }
 
-    // 🔐 Kiểm tra mật khẩu
+    // 🔒 Kiểm tra khóa tạm thời
+    if (account.lockedUntil && account.lockedUntil > new Date()) {
+      const mins = Math.ceil(
+        (account.lockedUntil.getTime() - Date.now()) / 60000,
+      );
+      throw new HttpException(
+        `Account temporarily locked. Try again in ${mins} minute(s).`,
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    // 🔓 Đã hết hạn khóa → mở lại
+    if (account.lockedUntil && account.lockedUntil <= new Date()) {
+      account.failedAttempts = 0;
+      account.lockedUntil = null;
+      account.is_active = true;
+      await account.save();
+    }
+
+    // 🚫 Kiểm tra mật khẩu sai
     const isMatch = bcrypt.compareSync(password, account.password);
-    if (!isMatch) throw new UnauthorizedException('Invalid credentials');
+    if (!isMatch) {
+      account.failedAttempts = (account.failedAttempts || 0) + 1;
 
-    // ⚙️ Payload chứa roles, id, email
+      if (account.failedAttempts >= 5) {
+        account.is_active = false;
+        account.lockedUntil = new Date(Date.now() + 5 * 60 * 1000); // 5 phút
+      }
+
+      await account.save();
+
+      throw new HttpException(
+        account.failedAttempts >= 5
+          ? 'Account locked for 5 minutes.'
+          : `Invalid password. Attempts left: ${5 - account.failedAttempts}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // 🟢 Đăng nhập OK
+    account.failedAttempts = 0;
+    account.lockedUntil = null;
+    account.last_login = new Date();
+    account.is_active = true;
+    await account.save();
+
     const payload = {
       sub: account._id.toString(),
       email: account.email,
       roles: account.roles,
     };
 
-    // 🧾 Sinh token
     const token = this.jwtService.sign(payload);
 
     return {
@@ -41,6 +86,7 @@ export class AuthService {
         name: account.name,
         email: account.email,
         roles: account.roles,
+        last_login: account.last_login,
       },
     };
   }

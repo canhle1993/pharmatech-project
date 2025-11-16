@@ -1,0 +1,207 @@
+<p-toast></p-toast>
+
+<div class="stock-container">
+  <div class="card">
+    <h2 class="page-title">📦 Product Stock Management</h2>
+
+    <!-- 🔍 SEARCH + BULK INPUT -->
+    <div class="top-actions">
+      <input
+        pInputText
+        type="text"
+        [(ngModel)]="searchText"
+        (input)="onSearchChange()"
+        placeholder="Search by ID or Name"
+        class="search-input"
+      />
+
+      <div class="bulk-box">
+        <input
+          pInputText
+          type="number"
+          min="1"
+          [(ngModel)]="bulkQty"
+          placeholder="Bulk Add Qty"
+        />
+        <button
+          pButton
+          class="p-button-sm p-button-help"
+          label="Bulk Update"
+          (click)="updateBulkStock()"
+        ></button>
+        <button
+          pButton
+          label="Export Excel"
+          icon="pi pi-file-excel"
+          class="p-button-sm p-button-info"
+          (click)="exportExcel()"
+        ></button>
+      </div>
+    </div>
+
+    <p-tabs [(value)]="activeTab">
+      <p-tablist>
+        @for (tab of tabs; track tab.value) {
+        <p-tab [value]="tab.value">{{ tab.title }}</p-tab>
+        }
+      </p-tablist>
+
+      <p-tabpanels>
+        <!-- ========================================= -->
+        <!--           TAB 1 — IN STOCK               -->
+        <!-- ========================================= -->
+        <p-tabpanel [value]="0">
+          <ng-container *ngIf="loading; else inStockTpl">
+            <div class="loading-spinner">
+              <p-progressSpinner></p-progressSpinner>
+            </div>
+          </ng-container>
+
+          <ng-template #inStockTpl>
+            <p-table
+              [value]="inStock"
+              [paginator]="true"
+              [rows]="rows"
+              [first]="first"
+              [rowsPerPageOptions]="[7, 15, 20]"
+              responsiveLayout="scroll"
+              class="stock-table"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Select</th>
+                  <th>Product Code</th>
+                  <th>Name</th>
+                  <th>Model</th>
+                  <th pSortableColumn="stock_quantity">
+                    Stock
+                    <p-sortIcon field="stock_quantity"></p-sortIcon>
+                  </th>
+                  <th>Add Qty</th>
+                  <th>Action</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-item>
+                <tr>
+                  <td>
+                    <p-checkbox
+                      [binary]="true"
+                      [ngModel]="selectedIds.has(item.id!)"
+                      (ngModelChange)="toggleSelect(item.id!)"
+                    >
+                    </p-checkbox>
+                  </td>
+
+                  <td>{{ item.id }}</td>
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.model }}</td>
+                  <td [ngClass]="getStockClass(item.stock_quantity)">
+                    {{ item.stock_quantity }}
+                  </td>
+
+                  <td>
+                    <input
+                      pInputText
+                      type="number"
+                      min="1"
+                      [(ngModel)]="addedQtyMap[item.id]"
+                      class="qty-input"
+                      placeholder="Qty"
+                    />
+                  </td>
+
+                  <td>
+                    <button
+                      pButton
+                      label="Update"
+                      icon="pi pi-refresh"
+                      class="p-button-sm p-button-success"
+                      [disabled]="item.loading"
+                      (click)="updateStock(item)"
+                    ></button>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </ng-template>
+        </p-tabpanel>
+
+        <!-- ========================================= -->
+        <!--           TAB 2 — OUT OF STOCK           -->
+        <!-- ========================================= -->
+        <p-tabpanel [value]="1">
+          <ng-container *ngIf="loading; else outStockTpl">
+            <div class="loading-spinner">
+              <p-progressSpinner></p-progressSpinner>
+            </div>
+          </ng-container>
+
+          <ng-template #outStockTpl>
+            <p-table
+              [value]="outOfStock"
+              [paginator]="true"
+              [rows]="rows"
+              [first]="first"
+              [rowsPerPageOptions]="[7, 15, 20]"
+              responsiveLayout="scroll"
+              class="stock-table"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Select</th>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Model</th>
+                  <th>Stock</th>
+                  <th>Add Qty</th>
+                  <th>Action</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-item>
+                <tr>
+                  <td>
+                    <p-checkbox
+                      [binary]="true"
+                      [ngModel]="selectedIds.has(item.id!)"
+                      (ngModelChange)="toggleSelect(item.id!)"
+                    >
+                    </p-checkbox>
+                  </td>
+
+                  <td>{{ item.id }}</td>
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.model }}</td>
+                  <td [ngClass]="getStockClass(0)">0</td>
+
+                  <td>
+                    <input
+                      pInputText
+                      type="number"
+                      [(ngModel)]="addedQtyMap[item.id]"
+                      min="1"
+                      class="qty-input"
+                      placeholder="Qty"
+                    />
+                  </td>
+
+                  <td>
+                    <button
+                      pButton
+                      label="Update"
+                      icon="pi pi-refresh"
+                      class="p-button-sm p-button-success"
+                      [disabled]="item.loading"
+                      (click)="updateStock(item)"
+                    ></button>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </ng-template>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
+</div>

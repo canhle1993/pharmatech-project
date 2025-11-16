@@ -62,6 +62,8 @@ export class ProductEditComponent implements OnInit {
   loading = true;
   imageBase = env.imageUrl;
 
+  existingProducts: Product[] = [];
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -96,9 +98,24 @@ export class ProductEditComponent implements OnInit {
         name: c.name,
       }));
 
+      // ============================================================
+      // 2️⃣ LOAD TOÀN BỘ PRODUCT (để kiểm tra trùng name/model)
+      // ============================================================
+      try {
+        const allProducts: any = await this.productService.findAll();
+        this.existingProducts = allProducts || [];
+      } catch (err) {
+        console.error('❌ Load existing products failed:', err);
+      }
+
       // 🔹 Load product
       const res: any = await this.productService.findById(id);
       this.product = res;
+
+      // 🔥 Remove current product from duplicate checking list
+      this.existingProducts = this.existingProducts.filter(
+        (p) => (p.id || p._id) !== (this.product.id || this.product._id)
+      );
 
       // ✅ Chuẩn hóa category IDs
       const selectedCategories = Array.isArray(this.product.category_ids)
@@ -205,6 +222,44 @@ export class ProductEditComponent implements OnInit {
 
     // ✅ Tự tính trạng thái tồn kho (frontend hỗ trợ logic)
     const formValue = this.editForm.value;
+    const name = (formValue.name || '').trim();
+    const model = (formValue.model || '').trim();
+
+    // ⭐ Kiểm tra trùng name
+    const nameExists = this.existingProducts.some(
+      (p) => p.name && p.name.trim().toLowerCase() === name.toLowerCase()
+    );
+
+    if (nameExists) {
+      this.editForm.get('name')?.setErrors({ duplicate: true });
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Duplicate name',
+        detail: 'Product name already exists. Please choose another name.',
+      });
+      this.loading = false;
+      return;
+    }
+
+    // ⭐ Kiểm tra trùng model (nếu có nhập)
+    if (model) {
+      const modelExists = this.existingProducts.some(
+        (p) => p.model && p.model.trim().toLowerCase() === model.toLowerCase()
+      );
+
+      if (modelExists) {
+        this.editForm.get('model')?.setErrors({ duplicate: true });
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Duplicate model',
+          detail: 'Product model already exists. Please choose another model.',
+        });
+        this.loading = false;
+        return;
+      }
+    }
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
     const stock_status =
       formValue.stock_quantity && formValue.stock_quantity > 0
         ? 'in_stock'
@@ -214,7 +269,7 @@ export class ProductEditComponent implements OnInit {
       ...formValue,
       id: this.product.id || this.product._id,
       stock_status, // tự động tính
-      updated_by: 'admin',
+      updated_by: currentUser?.name || 'admin',
     };
 
     try {

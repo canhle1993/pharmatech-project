@@ -42,11 +42,11 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private messageService: MessageService
   ) {
-    this.loginForm = this.fb.group({
-      username: ['', [Validators.required]], // email hoặc username
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      remember: [false],
-    });
+    // this.loginForm = this.fb.group({
+    //   username: ['', [Validators.required]], // email hoặc username
+    //   password: ['', [Validators.required, Validators.minLength(6)]],
+    //   remember: [false],
+    // });
   }
   ngOnInit(): void {
     this.autoReloadOnce();
@@ -151,8 +151,13 @@ export class LoginComponent implements OnInit {
     try {
       const { username, password, remember } = this.loginForm.value;
 
+      const usernameOrEmail = (username || '').trim().toLowerCase();
+
       // 1️⃣ Gọi login -> lấy token + rawAccount
-      const res: any = await this.accountService.login(username, password);
+      const res: any = await this.accountService.login(
+        usernameOrEmail,
+        password
+      );
       if (!res?.access_token) {
         this.messageService.add({
           severity: 'error',

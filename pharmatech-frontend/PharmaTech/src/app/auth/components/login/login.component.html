@@ -32,7 +32,7 @@
       <div class="form-group" [class.error]="isInvalid('username')">
         <div class="input-group neu-input">
           <input
-            id="email"
+            id="username"
             type="text"
             formControlName="username"
             autocomplete="off"
@@ -42,7 +42,7 @@
             (focus)="onInputFocus($event)"
             (blur)="onInputBlur($event)"
           />
-          <label for="email">Email or Username</label>
+          <label for="username">Email or Username</label>
           <div class="input-icon">
             <svg
               viewBox="0 0 24 24"

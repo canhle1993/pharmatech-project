@@ -69,7 +69,10 @@
                   <th>Deposit</th>
                   <th>Remaining</th>
                   <th>Deposit status</th>
-                  <th>Created</th>
+                  <th pSortableColumn="created_at">
+                    Created
+                    <p-sortIcon field="created_at"></p-sortIcon>
+                  </th>
                   <th>Action</th>
                 </tr>
               </ng-template>
@@ -151,7 +154,10 @@
                   <th>Deposit</th>
                   <th>Overall Status</th>
                   <!-- 🆕 Cột trạng thái tổng thể -->
-                  <th>Created</th>
+                  <th pSortableColumn="created_at">
+                    Created
+                    <p-sortIcon field="created_at"></p-sortIcon>
+                  </th>
                   <th>Action</th>
                 </tr>
               </ng-template>
@@ -221,7 +227,11 @@
                   <th>Customer</th>
                   <th>Total</th>
                   <th>Remaining Method</th>
-                  <th>Remaining Date</th>
+
+                  <th pSortableColumn="remaining_payment_date">
+                    Remaining Date
+                    <p-sortIcon field="remaining_payment_date"></p-sortIcon>
+                  </th>
                   <th>Note</th>
                   <th>Proof</th>
                   <th>OCR Result</th>
@@ -346,7 +356,10 @@
                   <th>Refund Status</th>
                   <th>Proof</th>
                   <th>OCR Result</th>
-                  <th>Created</th>
+                  <th pSortableColumn="created_at">
+                    Created
+                    <p-sortIcon field="created_at"></p-sortIcon>
+                  </th>
                   <th>Action</th>
                 </tr>
               </ng-template>

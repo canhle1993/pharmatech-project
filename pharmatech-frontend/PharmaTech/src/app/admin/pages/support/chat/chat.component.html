@@ -1,18 +1,26 @@
-<div class="admin-chat">
-  <aside class="sidebar">
-    <h3>Người dùng</h3>
+<div class="container">
+  <div class="admin-chat">
+    <aside class="sidebar">
+      <h3>Người dùng</h3>
 
-    <div class="search">
-      <input
-        type="text"
-        [(ngModel)]="q"
-        placeholder="Tìm tên, username, email, id..."
-        (input)="onSearch()"
-      />
-    </div>
+      <div class="search">
+        <input
+          type="text"
+          [(ngModel)]="q"
+          placeholder="Tìm tên, username, email, id..."
+          (input)="onSearch()"
+        />
+      </div>
 
-    <ul class="user-list" style="overflow-y:auto;height:calc(100vh - 220px);padding-right:4px;">
-      @for (t of filtered; track t.userId) {
+      <ul
+        class="user-list"
+        style="
+          overflow-y: auto;
+          height: calc(100vh - 220px);
+          padding-right: 4px;
+        "
+      >
+        @for (t of filtered; track t.userId) {
         <li
           (click)="openThreadByUserId(t.userId)"
           [class.active]="currentUserId === t.userId"
@@ -23,65 +31,81 @@
             <span class="name">{{ displayNameFromInbox(t) }}</span>
             <span class="line1-right">
               @if ((t.unreadCount || 0) > 0) {
-                <span class="unread-count">{{ t.unreadCount }}</span>
+              <span class="unread-count">{{ t.unreadCount }}</span>
               }
-              <span class="badge" [class.on]="t.userSnapshot?.is_active">●</span>
+              <span class="badge" [class.on]="t.userSnapshot?.is_active"
+                >●</span
+              >
             </span>
           </div>
           <div class="line2 id">
             {{ t.userSnapshot?.email || t.userSnapshot?.username || t.userId }}
           </div>
         </li>
-      }
-      @if (!filtered?.length) {
+        } @if (!filtered?.length) {
         <li class="empty">Không có cuộc trò chuyện</li>
-      }
-    </ul>
-  </aside>
+        }
+      </ul>
+    </aside>
 
-  <section class="chat-panel">
-    <header class="chat-header">
-      @if (currentUserId) {
-        Đang chat với:
+    <section class="chat-panel">
+      <header class="chat-header">
+        @if (currentUserId) { Đang chat với:
         <strong>{{ displayNameFromUserId(currentUserId) }}</strong>
         <!-- <span class="id">({{ currentUserId }})</span> -->
-      } @else {
-        <ng-container>Chọn một cuộc trò chuyện ở danh sách bên trái</ng-container>
-      }
-    </header>
+        } @else {
+        <ng-container
+          >Chọn một cuộc trò chuyện ở danh sách bên trái</ng-container
+        >
+        }
+      </header>
 
-    <div class="chat-box" #chatBoxRef style="overflow-y:auto;height:calc(100vh - 260px);padding-right:4px;">
-      @if (!currentUserId) {
+      <div
+        class="chat-box"
+        #chatBoxRef
+        style="overflow-y: auto; height: calc(93vh - 260px); padding-right: 4px"
+      >
+        @if (!currentUserId) {
         <div class="empty">Chưa chọn cuộc trò chuyện.</div>
-      } @else {
-        @for (m of history; track trackKey(m, $index)) {
-          <div [class.msg]="true" [class.admin]="isAdminMsg(m)" [class.user]="!isAdminMsg(m)">
-            <div class="bubble">
-              <span class="from">{{ isAdminMsg(m) ? 'Admin' : '' }}</span>
-              <span class="text">{{ m.text }}</span>
-              @if (m.createdAt) {
-                <span class="time">{{ m.createdAt | date:'short' }}</span>
-              }
-            </div>
+        } @else { @for (m of history; track trackKey(m, $index)) {
+        <div
+          [class.msg]="true"
+          [class.admin]="isAdminMsg(m)"
+          [class.user]="!isAdminMsg(m)"
+        >
+          <div class="bubble">
+            <span class="from">{{ isAdminMsg(m) ? "Admin" : "" }}</span>
+            <span class="text">{{ m.text }}</span>
+            @if (m.createdAt) {
+            <span class="time">{{ m.createdAt | date : "short" }}</span>
+            }
           </div>
-        }
-        @if (history?.length === 0) {
-          <div class="empty">Chưa có tin nhắn nào. Hãy gửi lời chào trước nhé.</div>
-        }
-      }
-    </div>
+        </div>
+        } @if (history?.length === 0) {
+        <div class="empty">
+          Chưa có tin nhắn nào. Hãy gửi lời chào trước nhé.
+        </div>
+        } }
+      </div>
 
-    <form class="chat-input" (ngSubmit)="send()">
-      <input
-        type="text"
-        [(ngModel)]="msg"
-        name="message"
-        placeholder="Nhập tin nhắn..."
-        autocomplete="off"
-        [disabled]="!currentUserId"
-        required
-      />
-      <button type="submit" pButton [disabled]="!currentUserId || !msg?.trim()">Gửi</button>
-    </form>
-  </section>
+      <form class="chat-input" (ngSubmit)="send()">
+        <input
+          type="text"
+          [(ngModel)]="msg"
+          name="message"
+          placeholder="Nhập tin nhắn..."
+          autocomplete="off"
+          [disabled]="!currentUserId"
+          required
+        />
+        <button
+          type="submit"
+          pButton
+          [disabled]="!currentUserId || !msg?.trim()"
+        >
+          Gửi
+        </button>
+      </form>
+    </section>
+  </div>
 </div>

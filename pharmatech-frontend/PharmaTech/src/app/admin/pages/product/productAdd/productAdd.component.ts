@@ -61,6 +61,8 @@ export class ProductAddComponent implements OnInit {
   categories: any[] = [];
   loading = false;
 
+  existingProducts: Product[] = [];
+
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
@@ -90,6 +92,14 @@ export class ProductAddComponent implements OnInit {
       }));
     } catch (error) {
       console.error('❌ Load categories failed:', error);
+    }
+
+    // 🔹 Load tất cả product để kiểm tra trùng name/model
+    try {
+      const productsRes: any = await this.productService.findAll();
+      this.existingProducts = productsRes || [];
+    } catch (error) {
+      console.error('❌ Load products failed (for duplicate check):', error);
     }
   }
 
@@ -154,6 +164,43 @@ export class ProductAddComponent implements OnInit {
     this.loading = true;
 
     const formValue = this.addForm.value;
+    const name = (formValue.name || '').trim();
+    const model = (formValue.model || '').trim();
+
+    // 🔍 Check trùng name (case-insensitive)
+    const nameExists = this.existingProducts.some(
+      (p) => p.name && p.name.trim().toLowerCase() === name.toLowerCase()
+    );
+
+    if (nameExists) {
+      this.addForm.get('name')?.setErrors({ duplicate: true });
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Duplicate name',
+        detail: 'Product name already exists. Please choose another name.',
+      });
+      this.loading = false;
+      return;
+    }
+
+    // 🔍 Check trùng model (nếu có nhập)
+    if (model) {
+      const modelExists = this.existingProducts.some(
+        (p) => p.model && p.model.trim().toLowerCase() === model.toLowerCase()
+      );
+
+      if (modelExists) {
+        this.addForm.get('model')?.setErrors({ duplicate: true });
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Duplicate model',
+          detail: 'Product model already exists. Please choose another model.',
+        });
+        this.loading = false;
+        return;
+      }
+    }
+
     const stock_status =
       formValue.stock_quantity && formValue.stock_quantity > 0
         ? 'in_stock'

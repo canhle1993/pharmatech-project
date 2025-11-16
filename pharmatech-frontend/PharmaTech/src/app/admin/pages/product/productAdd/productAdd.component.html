@@ -61,6 +61,15 @@
               placeholder="Enter product name"
               required
             />
+            <div
+              class="error-text"
+              *ngIf="
+                addForm.get('name')?.hasError('duplicate') &&
+                addForm.get('name')?.touched
+              "
+            >
+              Name already exists.
+            </div>
           </div>
 
           <div class="col">
@@ -70,6 +79,15 @@
               formControlName="model"
               placeholder="Enter model code"
             />
+            <div
+              class="error-text"
+              *ngIf="
+                addForm.get('model')?.hasError('duplicate') &&
+                addForm.get('model')?.touched
+              "
+            >
+              Model already exists.
+            </div>
           </div>
 
           <div class="col">

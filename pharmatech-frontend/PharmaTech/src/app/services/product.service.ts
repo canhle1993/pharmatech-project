@@ -156,4 +156,28 @@ export class ProductService {
       })
     );
   }
+
+  /** 🔹 Tab 1: Sản phẩm còn hàng (stock_quantity > 0) */
+  getProductsInStock() {
+    return lastValueFrom(
+      this.httpClient.get(env.baseUrl + 'product/stock/in-stock')
+    );
+  }
+
+  /** 🔹 Tab 2: Sản phẩm hết hàng (stock_quantity = 0) */
+  getProductsOutOfStock() {
+    return lastValueFrom(
+      this.httpClient.get(env.baseUrl + 'product/stock/out-of-stock')
+    );
+  }
+
+  /** 🟩 Nhập kho: cộng thêm số lượng mới */
+  updateStock(productId: string, added_quantity: number, updated_by: string) {
+    return lastValueFrom(
+      this.httpClient.put(env.baseUrl + 'product/update-stock/' + productId, {
+        added_quantity,
+        updated_by,
+      })
+    );
+  }
 }

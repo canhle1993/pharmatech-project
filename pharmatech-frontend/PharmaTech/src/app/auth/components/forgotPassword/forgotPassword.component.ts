@@ -44,10 +44,19 @@ export class ForgotPasswordComponent {
   form!: FormGroup;
   resetForm!: FormGroup;
   otp = '';
+
   visibleOtp = false;
   visibleReset = false;
   msg = '';
   otpSent = false;
+
+  countdown = 300;
+  countdownText = '05:00';
+  timer: any = null;
+  otpExpired = false;
+
+  emailForOtp = '';
+  step: 'email' | 'otp' | 'reset' = 'email';
 
   constructor(
     private fb: FormBuilder,
@@ -88,23 +97,28 @@ export class ForgotPasswordComponent {
       : null;
   }
 
-  /** 🔹 Gửi yêu cầu quên mật khẩu */
+  // =========================
+  // SEND OTP
+  // =========================
   async sendOtp() {
-    if (this.form.invalid) {
-      this.msg = 'Please enter a valid email';
-      return;
-    }
+    if (this.form.invalid) return;
+
+    const email = this.form.value.email;
+    this.emailForOtp = email;
 
     try {
-      const email = this.form.value.email;
       const res: any = await this.accountService.sendOtp(email);
+
       this.messageService.add({
         severity: 'success',
-        summary: 'OTP Sent',
-        detail: res.msg || 'Please check your email for OTP',
+        summary: 'OTP sent',
+        detail: res.msg,
       });
+
+      this.otpSent = true;
       this.visibleOtp = true;
-      this.otpSent = true; // ✅ Đánh dấu đã gửi OTP
+
+      this.startCountdown();
     } catch (err: any) {
       this.messageService.add({
         severity: 'error',
@@ -114,69 +128,103 @@ export class ForgotPasswordComponent {
     }
   }
 
-  /** 🔹 Xác minh OTP */
+  // =========================
+  // VERIFY OTP
+  // =========================
   async verifyOtp() {
-    const email = this.form.value.email;
-    if (!this.otp || this.otp.length !== 4) {
+    try {
+      const res = await this.accountService.verifyOtp(
+        this.emailForOtp,
+        this.otp
+      );
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'OTP verified',
+        detail: 'Please reset your password now',
+      });
+
+      this.visibleOtp = false;
+      this.visibleReset = true;
+
+      // stop countdown
+      clearInterval(this.timer);
+      this.timer = null;
+    } catch (err: any) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Invalid OTP',
-        detail: 'Please enter a valid 4-digit code',
-      });
-      return;
-    }
-
-    try {
-      const res: any = await this.accountService.verifyOtp(email, this.otp);
-      this.messageService.add({
-        severity: 'success',
-        summary: 'OTP Verified',
-        detail: res.msg || 'Enter your new password',
-      });
-      this.visibleOtp = false;
-      this.visibleReset = true;
-    } catch (err: any) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Verification failed',
-        detail: err.error?.msg || 'Invalid or expired OTP',
+        detail: err.error?.msg || 'Wrong OTP',
       });
     }
-    this.otpSent = false;
   }
 
-  /** 🔹 Đặt lại mật khẩu */
+  // =========================
+  // RESET PASSWORD
+  // =========================
   async resetPassword() {
-    if (this.resetForm.invalid) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Invalid password',
-        detail: 'Please fill password fields correctly',
-      });
-      return;
-    }
-
-    const email = this.form.value.email;
-    const newPassword = this.resetForm.value.newPassword;
+    if (this.resetForm.invalid) return;
 
     try {
-      const res: any = await this.accountService.resetPassword(
-        email,
-        newPassword
+      await this.accountService.resetPassword(
+        this.emailForOtp,
+        this.resetForm.value.newPassword
       );
+
       this.messageService.add({
         severity: 'success',
-        summary: 'Password reset',
-        detail: res.msg || 'You can now login with your new password',
+        summary: 'Success',
+        detail: 'Password reset successfully',
       });
-      this.visibleReset = false;
-      setTimeout(() => this.router.navigate(['/auth/login']), 1500);
+
+      setTimeout(() => {
+        this.router.navigate(['/auth/login']);
+      }, 1500);
     } catch (err: any) {
       this.messageService.add({
         severity: 'error',
-        summary: 'Failed',
+        summary: 'Error',
         detail: err.error?.msg || 'Reset failed',
       });
     }
+  }
+
+  // =========================
+  // COUNTDOWN
+  // =========================
+  startCountdown() {
+    // Nếu timer đang chạy → không tạo timer mới
+    if (this.timer) return;
+
+    this.countdown = 300;
+    this.otpExpired = false;
+    this.updateCountdownText();
+
+    this.timer = setInterval(() => {
+      this.countdown--;
+      this.updateCountdownText();
+
+      if (this.countdown <= 0) {
+        clearInterval(this.timer);
+        this.timer = null;
+
+        this.otpExpired = true;
+        this.visibleOtp = false;
+
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Expired',
+          detail: 'OTP expired. Please request a new one.',
+        });
+      }
+    }, 1000);
+  }
+
+  updateCountdownText() {
+    const m = Math.floor(this.countdown / 60);
+    const s = this.countdown % 60;
+    this.countdownText = `${m.toString().padStart(2, '0')}:${s
+      .toString()
+      .padStart(2, '0')}`;
   }
 }

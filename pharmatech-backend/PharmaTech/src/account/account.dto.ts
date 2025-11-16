@@ -49,6 +49,9 @@ export class AccountDTO {
   @Expose({ name: 'securityCode' })
   securityCode?: string;
 
+  @Expose()
+  otpExpiredAt?: Date;
+
   @Transform(({ obj }) => (obj?.last_login ? new Date(obj.last_login) : null))
   @Expose({ name: 'last_login' })
   last_login?: Date | null;

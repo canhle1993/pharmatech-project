@@ -7,6 +7,8 @@ import { HeaderComponent } from './components/header/header.component';
 import { MenuComponent } from './components/menu/menu.component';
 import { ChatAIComponent } from './components/chatAI/chatAI.component';
 import { AiGPTComponent } from './components/aiGPT/aiGPT.component';
+import { NgChartsModule } from 'ng2-charts';
+
 @Component({
   templateUrl: './admin.component.html',
   imports: [
@@ -17,6 +19,7 @@ import { AiGPTComponent } from './components/aiGPT/aiGPT.component';
     MenuComponent,
     // ChatAIComponent,
     AiGPTComponent,
+    NgChartsModule,
   ],
 })
 export class AdminComponent implements OnInit, AfterViewInit {
@@ -59,7 +62,6 @@ export class AdminComponent implements OnInit, AfterViewInit {
       'assets/admin/vendor/css/theme-default.css',
       'assets/admin/css/demo.css',
       'assets/admin/vendor/libs/perfect-scrollbar/perfect-scrollbar.css',
-      'assets/admin/vendor/libs/apex-charts/apex-charts.css',
     ];
     cssFiles.forEach((href) => {
       const link = this.renderer.createElement('link');
@@ -83,9 +85,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
       'assets/admin/vendor/js/bootstrap.js',
       'assets/admin/vendor/libs/perfect-scrollbar/perfect-scrollbar.js',
       'assets/admin/vendor/js/menu.js',
-      'assets/admin/vendor/libs/apex-charts/apexcharts.js',
       'assets/admin/js/main.js',
-      'assets/admin/js/dashboards-analytics.js',
       'https://buttons.github.io/buttons.js',
     ];
     jsFiles.forEach((src) => {

@@ -299,4 +299,47 @@ export class ProductService {
       remaining: product.stock_quantity,
     };
   }
+
+  /** 🟩 Cập nhật tồn kho: cộng thêm số lượng mới */
+  async updateStock(
+    productId: string,
+    added_quantity: number,
+    updated_by?: string,
+  ) {
+    const product = await this._productModel.findById(productId);
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    const newQty = (product.stock_quantity || 0) + added_quantity;
+
+    product.stock_quantity = newQty;
+    product.stock_status = newQty > 0 ? 'in_stock' : 'out_of_stock';
+    product.updated_at = new Date();
+    product.updated_by = updated_by || 'admin';
+
+    await product.save();
+
+    return {
+      msg: 'Stock updated successfully',
+      new_quantity: newQty,
+    };
+  }
+
+  async getProductsInStock() {
+    const list = await this._productModel
+      .find({ stock_quantity: { $gt: 0 }, is_delete: false })
+      .sort({ updated_at: -1 });
+
+    return plainToInstance(ProductDTO, list, { excludeExtraneousValues: true });
+  }
+
+  async getProductsOutOfStock() {
+    const list = await this._productModel
+      .find({ stock_quantity: 0, is_delete: false })
+      .sort({ updated_at: -1 });
+
+    return plainToInstance(ProductDTO, list, { excludeExtraneousValues: true });
+  }
 }

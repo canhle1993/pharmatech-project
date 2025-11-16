@@ -10,8 +10,22 @@
   ></p-progressSpinner>
 
   <div class="card" *ngIf="!loading">
+    <!-- ✅ Thanh tìm kiếm -->
+    <div class="toolbar flex justify-content-end mb-3">
+      <p-iconfield iconPosition="left">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input
+          pInputText
+          type="text"
+          placeholder="Search by order code or customer name"
+          [(ngModel)]="searchText"
+          (input)="onSearchChange()"
+          style="width: 350px"
+        />
+      </p-iconfield>
+    </div>
     <p-table
-      [value]="completedOrders"
+      [value]="filteredOrders"
       dataKey="id"
       [paginator]="true"
       [rows]="4"
@@ -26,12 +40,18 @@
         <tr>
           <th>Order Code</th>
           <th>Customer</th>
-          <th>Total</th>
+          <th pSortableColumn="formattedTotal">
+            Total
+            <p-sortIcon field="formattedTotal"></p-sortIcon>
+          </th>
           <th>Deposit</th>
           <th>Note</th>
           <th>Proof</th>
           <th>OCR Result</th>
-          <th>Completed At</th>
+          <th pSortableColumn="updated_at">
+            Completed At
+            <p-sortIcon field="updated_at"></p-sortIcon>
+          </th>
           <th>Action</th>
         </tr>
       </ng-template>

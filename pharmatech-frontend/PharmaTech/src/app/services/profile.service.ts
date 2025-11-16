@@ -40,9 +40,6 @@ export class ProfileService {
       { key: 'phone', label: 'Phone number' },
       { key: 'address', label: 'Address' },
       { key: 'dob', label: 'Date of birth' },
-      { key: 'preferred_area', label: 'Preferred area' },
-      { key: 'job_type', label: 'Job type' },
-      { key: 'expected_salary', label: 'Expected salary' },
     ];
 
     for (const f of requiredFields) {

@@ -52,7 +52,10 @@
           <th>Category Name</th>
           <th>Description</th>
           <th>Updated By</th>
-          <th>Updated At</th>
+          <th pSortableColumn="updated_at">
+            Updated At
+            <p-sortIcon field="updated_at"></p-sortIcon>
+          </th>
           <th>Action</th>
         </tr>
       </ng-template>
@@ -133,6 +136,27 @@
             placeholder="Enter category name"
             required
           />
+          <!-- ❗ Lỗi bắt buộc nhập -->
+          <small
+            class="p-error"
+            *ngIf="
+              editForm.get('name')?.touched &&
+              editForm.get('name')?.hasError('required')
+            "
+          >
+            Name is required.
+          </small>
+
+          <!-- ❗ Lỗi trùng tên -->
+          <small
+            class="p-error"
+            *ngIf="
+              editForm.get('name')?.touched &&
+              editForm.get('name')?.hasError('duplicate')
+            "
+          >
+            Category name already exists.
+          </small>
         </div>
 
         <!-- Description -->
@@ -226,6 +250,25 @@
             placeholder="Enter category name"
             required
           />
+          <small
+            class="p-error"
+            *ngIf="
+              addForm.get('name')?.touched &&
+              addForm.get('name')?.hasError('required')
+            "
+          >
+            Name is required.
+          </small>
+
+          <small
+            class="p-error"
+            *ngIf="
+              addForm.get('name')?.touched &&
+              addForm.get('name')?.hasError('duplicate')
+            "
+          >
+            Category name already exists.
+          </small>
         </div>
 
         <!-- Description -->

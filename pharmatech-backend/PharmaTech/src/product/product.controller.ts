@@ -179,4 +179,32 @@ export class ProductController {
 
     return await this.productService.increaseStock(id, quantity);
   }
+
+  /** 🟩 Cập nhật tồn kho: thêm số lượng mới */
+  @Put('update-stock/:id')
+  async updateStock(
+    @Param('id') id: string,
+    @Body('added_quantity') added_quantity: number,
+    @Body('updated_by') updated_by: string,
+  ) {
+    if (!added_quantity || added_quantity <= 0) {
+      throw new HttpException('Invalid added quantity', HttpStatus.BAD_REQUEST);
+    }
+
+    return await this.productService.updateStock(
+      id,
+      added_quantity,
+      updated_by || 'admin',
+    );
+  }
+
+  @Get('stock/in-stock')
+  async getProductsInStock() {
+    return this.productService.getProductsInStock();
+  }
+
+  @Get('stock/out-of-stock')
+  async getProductsOutOfStock() {
+    return this.productService.getProductsOutOfStock();
+  }
 }

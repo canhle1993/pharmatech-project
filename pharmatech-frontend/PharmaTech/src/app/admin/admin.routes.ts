@@ -29,6 +29,7 @@ import { DepositSettingListComponent } from './pages/settings/depositSettingList
 import { OrderListComponent } from './pages/order/orderlist/orderlist.component';
 import { OrderHistoryComponent } from './pages/order/order-history/order-history.component';
 import { ApplicationManagementComponent } from './pages/career/application-management/application-management.component';
+import { ProductStockManagementComponent } from './pages/product/product-stock-management/product-stock-management.component';
 
 export const adminRoutes: Routes = [
   {
@@ -44,6 +45,11 @@ export const adminRoutes: Routes = [
       { path: 'product-add', component: ProductAddComponent },
       { path: 'product-details/:id', component: ProductDetailsComponent },
       { path: 'product-edit/:id', component: ProductEditComponent },
+      { path: 'product-add', component: ProductAddComponent },
+      {
+        path: 'product-stock-management',
+        component: ProductStockManagementComponent,
+      },
 
       { path: 'category-list', component: CategoryListComponent },
       { path: 'category-details/:id', component: CategoryDetailsComponent },

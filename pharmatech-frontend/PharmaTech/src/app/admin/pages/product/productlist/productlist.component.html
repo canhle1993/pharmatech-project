@@ -69,8 +69,12 @@
           <th field="model">Model</th>
           <th field="categories">Category</th>
           <!-- ✅ thêm field -->
-          <th field="price">Price</th>
-          <th field="stock_quantity">Stock Quantity</th>
+          <th field="price" pSortableColumn="price">
+            Price<p-sortIcon field="price"></p-sortIcon>
+          </th>
+          <th field="stock_quantity" pSortableColumn="stock_quantity">
+            Quantity<p-sortIcon field="stock_quantity"></p-sortIcon>
+          </th>
           <th>Action</th>
         </tr>
       </ng-template>
