@@ -24,6 +24,7 @@ export class MailService {
     from: string,
     to: string,
     subject: string,
+    
     body: string,
   ): Promise<boolean> {
     try {

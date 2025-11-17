@@ -1,3 +1,333 @@
-<div class="container">
-  <h1>Quote</h1>
+<div class="container mt-4">
+  <!-- Toast Notifications -->
+  <p-toast position="top-right"></p-toast>
+
+  <h1 class="mb-4">Quote Management</h1>
+
+  <!-- Filter Section -->
+  <div class="bg-white p-4 rounded shadow-sm mb-4">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <h5 class="mb-3 mb-md-0">Messages</h5>
+      </div>
+      <div class="col-md-6">
+        <div class="d-flex gap-2 align-items-center justify-content-md-end">
+          <span class="badge bg-primary">Total: {{ totalQuotes }}</span>
+          <select class="form-select" style="width: 180px;" [(ngModel)]="selectedStatus" (change)="onFilterChange()">
+            <option value="">All Messages</option>
+            <option value="unread">Unread</option>
+            <option value="read">Read</option>
+            <option value="replied">Replied</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="bg-white p-5 rounded shadow-sm text-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3 text-muted">Loading messages...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && quotes.length === 0" class="bg-white p-5 rounded shadow-sm text-center">
+    <i class="bx bx-message-rounded-dots" style="font-size: 64px; color: #ccc;"></i>
+    <p class="text-muted mt-3 mb-0">No messages found</p>
+  </div>
+
+  <!-- Table Section -->
+  <div *ngIf="!loading && quotes.length > 0" class="bg-white p-4 rounded shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Message</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let quote of quotes" [class.table-primary]="quote.status === 'unread'">
+            <td>
+              <strong>{{ quote.firstName }} {{ quote.lastName }}</strong>
+            </td>
+            <td>
+              <small class="text-muted">{{ quote.email }}</small>
+            </td>
+            <td>
+              <div class="text-truncate" style="max-width: 300px;" [title]="quote.message">
+                {{ quote.message }}
+              </div>
+            </td>
+            <td>
+              <small>{{ quote.createdAt | date: 'short' }}</small>
+            </td>
+            <td>
+              <span class="badge"
+                    [ngClass]="{
+                      'bg-warning text-dark': quote.status === 'unread',
+                      'bg-info text-dark': quote.status === 'read',
+                      'bg-success': quote.status === 'replied'
+                    }">
+                {{ quote.status | uppercase }}
+              </span>
+            </td>
+            <td class="text-end">
+              <div class="btn-group btn-group-sm" role="group">
+                <button type="button" class="btn btn-outline-primary" (click)="viewDetail(quote)" title="View">
+                  <i class="bx bx-show"></i>
+                </button>
+                <button type="button"
+                        class="btn btn-outline-info"
+                        *ngIf="quote.status === 'unread'"
+                        (click)="markAsRead(quote._id)"
+                        title="Mark as Read">
+                  <i class="bx bx-check"></i>
+                </button>
+                <button type="button"
+                        class="btn btn-outline-success"
+                        *ngIf="quote.status !== 'replied'"
+                        (click)="openReplyDialog(quote)"
+                        title="Reply">
+                  <i class="bx bx-reply"></i>
+                </button>
+                <button type="button"
+                        class="btn btn-outline-danger"
+                        (click)="confirmDelete(quote._id)"
+                        title="Delete">
+                  <i class="bx bx-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+      <div class="text-muted">
+        <small>
+          Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ Math.min(currentPage * pageSize, totalQuotes) }} of {{ totalQuotes }} entries
+        </small>
+      </div>
+      <nav>
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <a class="page-link" href="javascript:void(0);" (click)="onPageChange(currentPage - 1)">Previous</a>
+          </li>
+          <li class="page-item" *ngFor="let page of getPageNumbers()"
+              [class.active]="page === currentPage">
+            <a class="page-link" href="javascript:void(0);" (click)="onPageChange(page)">{{ page }}</a>
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <a class="page-link" href="javascript:void(0);" (click)="onPageChange(currentPage + 1)">Next</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
+
+<!-- View Detail Modal -->
+<div class="modal fade" id="viewDetailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title">
+          <i class="bx bx-message-rounded-detail me-2"></i>
+          Message Details
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedQuote">
+        <!-- Contact Information Section -->
+        <div class="section mb-4">
+          <h6 class="text-muted mb-3">Contact Information</h6>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-bold">Name:</label>
+              <p class="mb-0">{{ selectedQuote.firstName }} {{ selectedQuote.lastName }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-bold">Email:</label>
+              <p class="mb-0">
+                <a href="mailto:{{ selectedQuote.email }}">{{ selectedQuote.email }}</a>
+              </p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-bold">Date:</label>
+              <p class="mb-0">{{ selectedQuote.createdAt | date: 'medium' }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-bold">Status:</label>
+              <p class="mb-0">
+                <span class="badge"
+                      [ngClass]="{
+                        'bg-warning text-dark': selectedQuote.status === 'unread',
+                        'bg-info text-dark': selectedQuote.status === 'read',
+                        'bg-success': selectedQuote.status === 'replied'
+                      }">
+                  {{ selectedQuote.status | uppercase }}
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Message Section -->
+        <div class="section mb-4">
+          <h6 class="text-muted mb-3">Message Content</h6>
+          <div class="alert alert-secondary mb-0">
+            <p class="mb-0" style="white-space: pre-wrap;">{{ selectedQuote.message }}</p>
+          </div>
+        </div>
+
+        <!-- Reply Section -->
+        <div *ngIf="selectedQuote.status === 'replied' && selectedQuote.replyMessage" class="section">
+          <h6 class="text-muted mb-3">Your Reply</h6>
+          <div class="alert alert-success">
+            <div [innerHTML]="selectedQuote.replyMessage"></div>
+          </div>
+          <small class="text-muted">
+            <i class="bx bx-time-five me-1"></i>
+            Replied on: {{ selectedQuote.repliedAt | date: 'medium' }}
+          </small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="bx bx-x me-1"></i>
+          Close
+        </button>
+        <button type="button"
+                class="btn btn-primary"
+                *ngIf="selectedQuote && selectedQuote.status !== 'replied'"
+                (click)="openReplyDialogFromDetail()">
+          <i class="bx bx-reply me-1"></i>
+          Reply
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reply Modal -->
+<div class="modal fade" id="replyModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title">
+          <i class="bx bx-reply me-2"></i>
+          Compose Reply
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedQuote">
+        <!-- Recipient Section -->
+        <div class="section mb-4">
+          <h6 class="text-muted mb-3">Recipient</h6>
+          <div class="d-flex align-items-center p-3 bg-light rounded">
+            <i class="bx bx-user-circle me-3" style="font-size: 32px;"></i>
+            <div>
+              <p class="mb-0 fw-bold">{{ selectedQuote.firstName }} {{ selectedQuote.lastName }}</p>
+              <small class="text-muted">{{ selectedQuote.email }}</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Original Message Section -->
+        <div class="section mb-4">
+          <h6 class="text-muted mb-3">Original Message</h6>
+          <div class="alert alert-secondary mb-0">
+            <p class="mb-0" style="white-space: pre-wrap;">{{ selectedQuote.message }}</p>
+          </div>
+        </div>
+
+        <!-- Reply Editor Section -->
+        <div class="section">
+          <h6 class="text-muted mb-3">
+            Your Reply <span class="text-danger">*</span>
+          </h6>
+          <p-editor
+            [(ngModel)]="replyMessage"
+            [style]="{ height: '320px' }"
+            placeholder="Type your reply here...">
+            <ng-template pTemplate="header">
+              <span class="ql-formats">
+                <button type="button" class="ql-bold" aria-label="Bold"></button>
+                <button type="button" class="ql-italic" aria-label="Italic"></button>
+                <button type="button" class="ql-underline" aria-label="Underline"></button>
+              </span>
+              <span class="ql-formats">
+                <button type="button" class="ql-list" value="ordered"></button>
+                <button type="button" class="ql-list" value="bullet"></button>
+              </span>
+              <span class="ql-formats">
+                <button type="button" class="ql-link"></button>
+              </span>
+            </ng-template>
+          </p-editor>
+          <small class="text-muted d-block mt-2">
+            <i class="bx bx-info-circle me-1"></i>
+            Use the editor to format your reply with HTML
+          </small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" [disabled]="sendingReply">
+          <i class="bx bx-x me-1"></i>
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" (click)="sendReply()" [disabled]="sendingReply || !hasReplyContent()">
+          <span *ngIf="sendingReply" class="spinner-border spinner-border-sm me-1"></span>
+          <i *ngIf="!sendingReply" class="bx bx-send me-1"></i>
+          {{ sendingReply ? 'Sending...' : 'Send Reply' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">
+          <i class="bx bx-trash me-2"></i>
+          Confirm Delete
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center py-3">
+          <i class="bx bx-error-circle text-danger" style="font-size: 64px;"></i>
+          <h5 class="mt-3">Are you sure?</h5>
+          <p class="text-muted mb-0">
+            This action cannot be undone. The message will be permanently deleted from the system.
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancelDelete()">
+          <i class="bx bx-x me-1"></i>
+          Cancel
+        </button>
+        <button type="button" class="btn btn-danger" (click)="deleteQuote()">
+          <i class="bx bx-trash me-1"></i>
+          Yes, Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

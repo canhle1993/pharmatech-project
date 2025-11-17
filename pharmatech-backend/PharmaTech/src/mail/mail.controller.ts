@@ -1,11 +1,13 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Post, Inject, forwardRef } from '@nestjs/common';
 import { MailService } from './mail.service';
+import { QuoteService } from '../quote/quote.service';
 
 @Controller('api/mail')
 export class MailController {
 
     constructor(
-        private mailService: MailService
+        private mailService: MailService,
+        @Inject(forwardRef(() => QuoteService)) private quoteService: QuoteService
     ) { }
 
     @Get('send')
@@ -61,6 +63,21 @@ export class MailController {
             }, HttpStatus.BAD_REQUEST);
         }
 
+        // Save quote to database
+        try {
+            await this.quoteService.create({
+                firstName,
+                lastName,
+                email,
+                message,
+                status: 'unread',
+                createdAt: new Date(),
+            });
+        } catch (error) {
+            console.error('Error saving quote:', error);
+        }
+
+        // Send email notification to admin
         let result = await this.mailService.sendContactForm(
             firstName,
             lastName,

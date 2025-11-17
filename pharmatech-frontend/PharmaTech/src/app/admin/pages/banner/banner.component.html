@@ -1,3 +1,75 @@
-<div class="container">
-  <h1>Banner</h1>
+<div class="container mt-4">
+  <!-- Header -->
+  <div class="job-header text-center mb-4">
+    <h2 class="job-title"><i class="pi pi-image"></i> Banner Management</h2>
+    <p class="job-subtitle">Upload and manage homepage carousel banner images</p>
+  </div>
+
+  <div class="card shadow-sm p-4">
+    <form class="dialog-form">
+      <!-- Slide 1 -->
+      <details class="accordion-section" open>
+        <summary class="accordion-header">Slide 1</summary>
+        <div class="accordion-content">
+          <div class="form-group full">
+            <label>Banner Image</label>
+            <div class="banner-preview-wrapper">
+              <input type="file" accept="image/*" (change)="onFileSelected($event, 'slide1')" #slide1Input />
+              <button type="button" pButton label="Clear" class="p-button-text p-button-sm mt-2"
+                      *ngIf="selectedImages['slide1']" (click)="clearImage('slide1')"></button>
+              <small class="text-muted d-block">Recommended: 1920x720 px</small>
+              <div *ngIf="imagePreviews['slide1']" class="preview-container mt-2">
+                <img [src]="imagePreviews['slide1']" alt="Slide 1 preview" class="preview-img-large" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- Slide 2 -->
+      <details class="accordion-section">
+        <summary class="accordion-header">Slide 2</summary>
+        <div class="accordion-content">
+          <div class="form-group full">
+            <label>Banner Image</label>
+            <div class="banner-preview-wrapper">
+              <input type="file" accept="image/*" (change)="onFileSelected($event, 'slide2')" #slide2Input />
+              <button type="button" pButton label="Clear" class="p-button-text p-button-sm mt-2"
+                      *ngIf="selectedImages['slide2']" (click)="clearImage('slide2')"></button>
+              <small class="text-muted d-block">Recommended: 1920x720 px</small>
+              <div *ngIf="imagePreviews['slide2']" class="preview-container mt-2">
+                <img [src]="imagePreviews['slide2']" alt="Slide 2 preview" class="preview-img-large" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- Slide 3 -->
+      <details class="accordion-section">
+        <summary class="accordion-header">Slide 3</summary>
+        <div class="accordion-content">
+          <div class="form-group full">
+            <label>Banner Image</label>
+            <div class="banner-preview-wrapper">
+              <input type="file" accept="image/*" (change)="onFileSelected($event, 'slide3')" #slide3Input />
+              <button type="button" pButton label="Clear" class="p-button-text p-button-sm mt-2"
+                      *ngIf="selectedImages['slide3']" (click)="clearImage('slide3')"></button>
+              <small class="text-muted d-block">Recommended: 1920x720 px</small>
+              <div *ngIf="imagePreviews['slide3']" class="preview-container mt-2">
+                <img [src]="imagePreviews['slide3']" alt="Slide 3 preview" class="preview-img-large" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- Actions -->
+      <div class="flex justify-content-end mt-4">
+        <button pButton type="button" class="p-button-primary" [disabled]="isUploading" (click)="save()">
+          {{ isUploading ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

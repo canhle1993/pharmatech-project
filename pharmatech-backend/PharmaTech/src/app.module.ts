@@ -16,6 +16,8 @@ import { AboutModule } from './about/about.module';
 import { ContactModule } from './contact/contact.module';
 import { HotlineModule } from './hotline/hotline.module';
 import { ChatModule } from './chat/chat.module';
+import { QuoteModule } from './quote/quote.module';
+import { BannerModule } from './banner/banner.module';
 
 @Module({
   imports: [
@@ -65,6 +67,8 @@ import { ChatModule } from './chat/chat.module';
     ContactModule,
     HotlineModule,
     ChatModule,
+    QuoteModule,
+    BannerModule,
   ],
   controllers: [],
   providers: [],

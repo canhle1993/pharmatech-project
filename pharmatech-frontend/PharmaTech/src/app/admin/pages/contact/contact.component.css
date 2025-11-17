@@ -4,3 +4,48 @@
   background-color: #f7f8fa;
   min-height: 100vh;
 }
+
+/* Match About page file-input and preview styling */
+.banner-preview-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Support both plain input and .form-control variants */
+input[type="file"],
+input[type="file"].form-control {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.95rem;
+}
+
+.text-muted {
+  font-size: 0.85rem;
+  color: #6b7280 !important;
+  margin-top: 3px;
+}
+
+.preview-container,
+.mt-3 {
+  margin-top: 0.75rem !important;
+}
+
+.preview-img,
+.preview-img-large,
+.img-fluid.rounded {
+  border-radius: 6px;
+  border: 2px solid #e5e7eb;
+  object-fit: cover;
+}
+
+.preview-img {
+  max-height: 120px;
+  width: auto;
+}
+
+.preview-img-large {
+  max-height: 200px;
+  width: auto;
+}

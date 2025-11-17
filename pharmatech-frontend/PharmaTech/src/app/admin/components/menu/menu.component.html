@@ -175,6 +175,7 @@
       <a [routerLink]="['/admin/quote']" class="menu-link">
         <i class="menu-icon tf-icons bx bx-message-rounded-dots"></i>
         <div data-i18n="Quote">Quote</div>
+        <span *ngIf="unreadCount > 0" class="badge bg-danger ms-auto">{{ unreadCount }}</span>
       </a>
     </li>
 

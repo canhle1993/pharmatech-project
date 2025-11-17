@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { ContactService } from '../../../services/contact.service';
 import { firstValueFrom } from 'rxjs';
 import { EditorModule } from 'primeng/editor';
+import { ButtonModule } from 'primeng/button';
 
 interface ImageMap {
   [key: string]: File | null;
@@ -23,7 +24,7 @@ interface PreviewMap {
   templateUrl: './contact.component.html',
   styleUrls: ['./contact.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, EditorModule],
+  imports: [ReactiveFormsModule, CommonModule, EditorModule, ButtonModule],
   selector: 'app-contact',
 })
 export class ContactComponent implements OnInit {
@@ -150,25 +151,13 @@ export class ContactComponent implements OnInit {
   onFileSelected(event: any, type: string) {
     const file = event.target.files[0];
     if (file) {
-      // Validate banner image size
-      if (type === 'banner') {
-        const img = new Image();
-        img.onload = () => {
-          if (img.width !== 1920 || img.height !== 720) {
-            alert('Banner image must be 1920x720 pixels!');
-            event.target.value = '';
-            return;
-          }
-          this.selectedImages[type] = file;
-          // Create preview
-          const reader = new FileReader();
-          reader.onload = (e: any) => {
-            this.imagePreviews[type] = e.target.result;
-          };
-          reader.readAsDataURL(file);
-        };
-        img.src = URL.createObjectURL(file);
-      }
+      this.selectedImages[type] = file;
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imagePreviews[type] = e.target.result;
+      };
+      reader.readAsDataURL(file);
     }
   }
 
