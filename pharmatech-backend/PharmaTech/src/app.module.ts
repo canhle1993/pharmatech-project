@@ -28,6 +28,7 @@ import { AuthModule } from './auth/auth.module';
 import { ApplicationModule } from './application/application.module';
 import { OcrModule } from './ocr/ocr.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { ReturnRequestModule } from './return-request/return-request.module';
 
 @Module({
   imports: [
@@ -89,6 +90,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     AuthModule,
     OcrModule,
     AnalyticsModule,
+    ReturnRequestModule,
   ],
   controllers: [],
   providers: [],

@@ -1,0 +1,324 @@
+<div class="return-container">
+  <h4 class="fw-bold py-3 mb-4">
+    <span class="text-muted fw-light">Return /</span> Return Management
+  </h4>
+
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+
+  <p-progressSpinner
+    *ngIf="loading"
+    styleClass="loading-spinner"
+  ></p-progressSpinner>
+
+  <div class="card" *ngIf="!loading">
+    <div
+      class="toolbar flex justify-content-end mb-3"
+      style="margin: 20px !important"
+    >
+      <button
+        pButton
+        label="Add"
+        icon="pi pi-plus"
+        class="p-button-success"
+        (click)="showAddDialog = true"
+      ></button>
+    </div>
+
+    <!-- 🔍 Thanh tìm kiếm chung -->
+    <div
+      class="toolbar flex justify-content-end mb-3"
+      style="margin: 20px !important"
+    >
+      <p-iconfield iconPosition="left">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input
+          pInputText
+          type="text"
+          placeholder="Search by order code or replacement"
+          [(ngModel)]="searchText"
+          (input)="onSearchChange()"
+          style="width: 550px"
+        />
+      </p-iconfield>
+    </div>
+
+    <p-tabs [(value)]="activeTab">
+      <p-tablist>
+        @for (tab of tabs; track tab.value) {
+        <p-tab [value]="tab.value">
+          {{ tab.title }}
+          <span class="count-badge">
+            ({{
+              tab.value === "Pending Manufacturer"
+                ? pendingList.length
+                : completedList.length
+            }})
+          </span>
+        </p-tab>
+        }
+      </p-tablist>
+
+      <p-tabpanels>
+        <!-- TAB 1 -->
+        <p-tabpanel value="Pending Manufacturer">
+          <p-table
+            [value]="getFilteredReturns('Pending Manufacturer')"
+            dataKey="id"
+            [rows]="4"
+            [paginator]="true"
+            [rowsPerPageOptions]="[4, 10, 20]"
+            responsiveLayout="scroll"
+            showGridlines
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Order</th>
+                <th>Damage</th>
+
+                <th>Quantity</th>
+                <th>Replacement</th>
+                <th>Status</th>
+                <th pSortableColumn="created_at">
+                  Created At <p-sortIcon field="created_at"></p-sortIcon>
+                </th>
+                <th pSortableColumn="updated_by">
+                  Updated By
+                  <p-sortIcon field="updated_by"></p-sortIcon>
+                </th>
+                <th>Action</th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-row>
+              <tr>
+                <td>{{ row.order_id }}</td>
+                <td>
+                  <div class="damage-wrap">
+                    <img
+                      *ngFor="let img of row.damage_photos"
+                      [src]="img"
+                      class="damage-img"
+                    />
+                  </div>
+                </td>
+
+                <td>{{ row.total_quantity }}</td>
+                <td>{{ row.replacement_product_name }}</td>
+                <td>
+                  <p-tag
+                    [value]="row.status"
+                    [severity]="getBadge(row.status)"
+                  ></p-tag>
+                </td>
+                <td>{{ row.created_at }}</td>
+                <td>{{ row.updated_by }}</td>
+                <td>
+                  <button
+                    pButton
+                    icon="pi pi-search"
+                    class="p-button-text p-button-info"
+                    (click)="onView(row)"
+                    title="View Details"
+                  ></button>
+                  <button
+                    pButton
+                    icon="pi pi-check-circle"
+                    class="p-button-text p-button-success"
+                    (click)="markComplete(row)"
+                  ></button>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-tabpanel>
+
+        <!-- TAB 2 -->
+        <p-tabpanel value="Completed">
+          <p-table
+            [value]="getFilteredReturns('Completed')"
+            dataKey="id"
+            [rows]="4"
+            [paginator]="true"
+            [rowsPerPageOptions]="[4, 10, 20]"
+            responsiveLayout="scroll"
+            showGridlines
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Order</th>
+                <th>Damage</th>
+                <th>Quantity</th>
+                <th>Replacement</th>
+                <th>Status</th>
+                <th pSortableColumn="created_at">
+                  Created At <p-sortIcon field="created_at"></p-sortIcon>
+                </th>
+                <th pSortableColumn="updated_by">
+                  Updated By
+                  <p-sortIcon field="updated_by"></p-sortIcon>
+                </th>
+                <th>Action</th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-row>
+              <tr>
+                <td>{{ row.order_id }}</td>
+                <td>
+                  <div class="damage-wrap">
+                    <img
+                      *ngFor="let img of row.damage_photos"
+                      [src]="img"
+                      class="damage-img"
+                    />
+                  </div>
+                </td>
+
+                <td>{{ row.total_quantity }}</td>
+                <td>{{ row.replacement_product_name }}</td>
+                <td>
+                  <p-tag [value]="row.status" severity="success"></p-tag>
+                </td>
+                <td>{{ row.created_at }}</td>
+                <td>{{ row.updated_by }}</td>
+                <td>
+                  <button
+                    pButton
+                    icon="pi pi-search"
+                    class="p-button-text p-button-info"
+                    (click)="onView(row)"
+                    title="View Details"
+                  ></button>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
+</div>
+
+<!-- ADD RETURN REQUEST DIALOG -->
+<p-dialog
+  [(visible)]="showAddDialog"
+  header="Create Return Request"
+  [modal]="true"
+  [style]="{ width: '650px' }"
+>
+  <div class="dialog-body">
+    <!-- Select Order -->
+    <div class="form-group">
+      <label>Order</label>
+      <p-multiSelect
+        [options]="completedOrders"
+        optionLabel="contact_name"
+        optionValue="safeId"
+        [(ngModel)]="addData.order_id"
+        (onChange)="onSelectOrder()"
+        [filter]="true"
+        [selectionLimit]="1"
+        defaultLabel="-- Select Order --"
+        display="chip"
+      >
+        <ng-template pTemplate="item" let-item>
+          {{ item.safeId }} - {{ item.contact_name }}
+        </ng-template>
+      </p-multiSelect>
+    </div>
+
+    <!-- Select OrderDetails -->
+
+    <div class="form-group">
+      <label>Order Items</label>
+
+      <div class="order-item-box" *ngFor="let item of returnItems">
+        <div class="item-row">
+          <input
+            type="checkbox"
+            [(ngModel)]="item.selected"
+            (change)="onToggleItem(item)"
+          />
+
+          <span class="item-label">
+            {{ item.product_name }} ({{ item.product_model }}) - Ordered:
+            {{ item.quantity }}
+          </span>
+        </div>
+
+        <div *ngIf="item.selected" class="qty-row">
+          <label>Qty to return:</label>
+          <p-inputNumber
+            [(ngModel)]="item.return_qty"
+            [min]="1"
+            [max]="item.quantity"
+          ></p-inputNumber>
+        </div>
+
+        <hr />
+      </div>
+    </div>
+
+    <!-- Replacement Product -->
+    <div class="form-group">
+      <label>Replacement Product</label>
+      <p-multiSelect
+        [options]="replacementProducts"
+        optionLabel="name"
+        optionValue="id"
+        [(ngModel)]="addData.replacement_product_id"
+        [selectionLimit]="1"
+        [filter]="true"
+        display="chip"
+        defaultLabel="-- Select Replacement Product --"
+      >
+        <ng-template let-item pTemplate="item">
+          {{ item.name }} ({{ item.model }})
+        </ng-template>
+      </p-multiSelect>
+    </div>
+
+    <!-- Reason -->
+    <div class="form-group">
+      <label>Reason</label>
+      <textarea rows="3" [(ngModel)]="addData.reason"></textarea>
+    </div>
+
+    <!-- Upload Damage Photo -->
+    <div class="form-group">
+      <label>Damage Photos</label>
+
+      <p-fileUpload
+        name="file"
+        customUpload="true"
+        (uploadHandler)="uploadDamageFile($event)"
+        accept="image/*"
+        maxFileSize="5000000"
+      ></p-fileUpload>
+
+      <div *ngIf="addData.damage_photos.length">
+        <b>Uploaded:</b>
+        <ul>
+          <li *ngFor="let img of addData.damage_photos">{{ img }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="dialog-footer">
+      <button
+        pButton
+        class="p-button-danger p-button-text"
+        label="Cancel"
+        (click)="showAddDialog = false"
+      ></button>
+      <button
+        pButton
+        class="p-button-success"
+        label="Create"
+        (click)="submitAdd()"
+      ></button>
+    </div>
+  </div>
+</p-dialog>

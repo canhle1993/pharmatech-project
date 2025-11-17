@@ -45,7 +45,7 @@ export class OrderDetailsService {
     return docs.map((d) =>
       plainToInstance(
         OrderDetailsDTO,
-        { id: d._id, ...d },
+        { id: d._id.toString(), ...d },
         { excludeExtraneousValues: true },
       ),
     );

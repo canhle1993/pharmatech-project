@@ -93,7 +93,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
       'assets/admin/vendor/libs/popper/popper.js',
       'assets/admin/vendor/js/bootstrap.js',
       'assets/admin/vendor/libs/perfect-scrollbar/perfect-scrollbar.js',
-      'assets/admin/vendor/js/menu.js',
+      // 'assets/admin/vendor/js/menu.js',
       'assets/admin/js/main.js',
       'https://buttons.github.io/buttons.js',
     ];

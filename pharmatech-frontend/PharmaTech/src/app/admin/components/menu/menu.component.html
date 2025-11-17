@@ -111,6 +111,15 @@
             <div data-i18n="Order history">Order History</div>
           </a>
         </li>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a [routerLink]="['/admin/order/return-list']" class="menu-link">
+            <div data-i18n="Return list">Return Management</div>
+          </a>
+        </li>
       </ul>
     </li>
 

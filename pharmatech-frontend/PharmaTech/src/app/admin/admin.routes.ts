@@ -30,6 +30,7 @@ import { OrderListComponent } from './pages/order/orderlist/orderlist.component'
 import { OrderHistoryComponent } from './pages/order/order-history/order-history.component';
 import { ApplicationManagementComponent } from './pages/career/application-management/application-management.component';
 import { ProductStockManagementComponent } from './pages/product/product-stock-management/product-stock-management.component';
+import { ReturnListComponent } from './pages/order/return-list/return-list.component';
 
 export const adminRoutes: Routes = [
   {
@@ -82,6 +83,7 @@ export const adminRoutes: Routes = [
       { path: 'order/order-list', component: OrderListComponent },
       { path: 'order/order-history', component: OrderHistoryComponent },
       { path: 'order/order-details/:id', component: OrderDetailsComponent },
+      { path: 'order/return-list', component: ReturnListComponent },
 
       { path: 'support/chat', component: ChatComponent },
       { path: 'support/chat-history', component: ChatHistoryComponent },
