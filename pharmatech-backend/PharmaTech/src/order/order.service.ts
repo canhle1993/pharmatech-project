@@ -17,6 +17,7 @@ import { CartService } from 'src/cart/cart.service';
 import { MailService } from 'src/mail/mail.service';
 import { AccountService } from 'src/account/account.service';
 import { ProductService } from 'src/product/product.service';
+import { OrderGateway } from './order.gateway';
 
 @Injectable()
 export class OrderService {
@@ -29,6 +30,7 @@ export class OrderService {
     private readonly mailService: MailService,
     private readonly accountService: AccountService,
     private readonly productService: ProductService,
+    private readonly orderGateway: OrderGateway,
   ) {}
 
   // ==================================================
@@ -123,6 +125,9 @@ export class OrderService {
 
       const created = await order.save();
 
+      // 🟢 Emit Socket: có đơn hàng mới
+      this.orderGateway.emitNewOrder(created);
+
       return plainToInstance(OrderDTO, created.toObject(), {
         excludeExtraneousValues: true,
       });
@@ -182,11 +187,20 @@ export class OrderService {
       const order = await this._orderModel.findById(id);
       if (!order) throw new NotFoundException('Order not found');
 
+      const oldStatus = order.status;
+
       order.status = status;
       order.updated_by = updated_by;
       order.updated_at = new Date();
 
       await order.save();
+
+      // 🟡 Emit socket: trạng thái thay đổi
+      this.orderGateway.emitOrderStatusChanged({
+        id: id,
+        from: oldStatus,
+        to: status,
+      });
 
       // ✅ Nếu đơn hàng đã thanh toán đủ -> cập nhật OrderDetails
       if (status === 'Paid in Full') {
@@ -272,6 +286,9 @@ export class OrderService {
     });
 
     const createdOrder = await order.save();
+
+    // 🟢 Emit socket: có đơn hàng mới
+    this.orderGateway.emitNewOrder(createdOrder);
 
     // 3️⃣ Tạo OrderDetails (từ giỏ hàng)
     await this.orderDetailsService.createMany(
@@ -389,6 +406,8 @@ export class OrderService {
       };
 
       const order = await this._orderModel.create(orderPayload);
+      // 🟢 Emit socket: đơn mới (Stripe)
+      this.orderGateway.emitNewOrder(order);
 
       // 3️⃣ Tạo OrderDetails
       const detailsPayload = carts.map((c) => ({
@@ -460,11 +479,18 @@ export class OrderService {
       const order = await this._orderModel.findById(id);
       if (!order) throw new NotFoundException('Order not found');
 
+      const currentStatus = order.approval_status;
+
       order.approval_status = approval_status;
       order.updated_by = updated_by;
       order.updated_at = new Date();
 
       await order.save();
+      this.orderGateway.emitOrderStatusChanged({
+        id,
+        from: currentStatus,
+        to: approval_status,
+      });
 
       // ✅ Nếu admin duyệt đơn
       if (approval_status === 'Approved') {
@@ -501,6 +527,8 @@ export class OrderService {
     const order = await this._orderModel.findById(id);
     if (!order) throw new NotFoundException('Order not found');
 
+    const oldStatus = order.status;
+
     order.remaining_payment_method = remaining_payment_method;
     order.remaining_payment_note = remaining_payment_note;
     order.payment_proof_url = payment_proof_url;
@@ -510,6 +538,12 @@ export class OrderService {
     order.updated_at = new Date();
 
     await order.save();
+
+    this.orderGateway.emitOrderStatusChanged({
+      id,
+      from: oldStatus,
+      to: 'Paid in Full',
+    });
 
     // 🟦 Update OrderDetails → Completed (hoặc giữ Preparing tùy bạn)
     await this.orderDetailsService.updateStatusByOrder(id, 'Preparing');
@@ -522,12 +556,19 @@ export class OrderService {
       const order = await this._orderModel.findById(orderId);
       if (!order) throw new NotFoundException('Order not found');
 
+      const oldStatus = order.status;
       // Update Order
       order.status = 'Completed';
       order.updated_by = updated_by;
       order.updated_at = new Date();
 
       await order.save();
+
+      this.orderGateway.emitOrderStatusChanged({
+        id: orderId,
+        from: oldStatus,
+        to: 'Completed',
+      });
 
       // Update all order details
       await this.orderDetailsService.updateStatusByOrder(orderId, 'Delivered');
@@ -551,7 +592,7 @@ export class OrderService {
     id: string,
     body: {
       cancel_reason: string;
-      payment_proof_url?: string; // optional (chỉ dùng khi hoàn cọc)
+      payment_proof_url?: string;
       updated_by: string;
     },
   ) {
@@ -560,27 +601,29 @@ export class OrderService {
     const order = await this._orderModel.findById(id);
     if (!order) throw new NotFoundException('Order not found');
 
-    // 🕓 Ghi thời gian
     const now = new Date();
 
+    // 🟢 LẤY oldStatus TRƯỚC KHI ĐỔI
+    const oldStatus = order.approval_status; // <<<  FIX HERE
+
     // ============================================
-    // 1️⃣ TRƯỜNG HỢP 1: CHƯA ĐƯỢC DUYỆT → HOÀN CỌC
+    // 1) PENDING APPROVAL => REJECTED (hoàn cọc)
     // ============================================
-    if (order.approval_status === 'Pending Approval') {
+    if (oldStatus === 'Pending Approval') {
       order.approval_status = 'Rejected';
-      order.refund_status = 'Deposit Refunded'; // hoàn cọc
+      order.refund_status = 'Deposit Refunded';
       order.cancel_reason = cancel_reason;
-      order.payment_proof_url = payment_proof_url || null; // ảnh minh chứng hoàn tiền
+      order.payment_proof_url = payment_proof_url || null;
       order.cancelled_at = now;
       order.refund_time = now;
     }
 
     // ============================================
-    // 2️⃣ TRƯỜNG HỢP 2: ĐÃ DUYỆT → MẤT CỌC
+    // 2) APPROVED => REJECTED (mất cọc)
     // ============================================
-    else if (order.approval_status === 'Approved') {
+    else if (oldStatus === 'Approved') {
       order.approval_status = 'Rejected';
-      order.refund_status = 'Deposit Lost'; // mất cọc
+      order.refund_status = 'Deposit Lost';
       order.cancel_reason = cancel_reason;
       order.cancelled_at = now;
       order.refund_time = now;
@@ -591,30 +634,38 @@ export class OrderService {
       );
     }
 
-    // Cập nhật thông tin sửa
     order.updated_by = updated_by;
     order.updated_at = now;
 
     await order.save();
 
-    // 🟦 Update OrderDetails → Cancelled
+    // 🟡 Emit realtime đúng giá trị
+    this.orderGateway.emitOrderStatusChanged({
+      id,
+      from: oldStatus, // Pending Approval
+      to: 'Rejected', // Rejected
+    });
+
+    // update order details
     await this.orderDetailsService.updateStatusByOrder(id, 'Cancelled');
 
-    // 🔍 Lấy danh sách sản phẩm trong đơn
+    // restore stock
     const details = await this.orderDetailsService.findByOrder(id);
-
-    // ♻️ HOÀN STOCK CHO TỪNG SẢN PHẨM
     for (const d of details) {
-      const productId = d.product_id; // luôn là string
-      await this.productService.increaseStock(productId, d.quantity);
+      await this.productService.increaseStock(d.product_id, d.quantity);
     }
-
-    console.log('♻️ Stock restored for rejected order:', id);
 
     return {
       msg: 'Order rejected successfully',
       approval_status: order.approval_status,
       refund_status: order.refund_status,
     };
+  }
+
+  async countPending(): Promise<number> {
+    return this._orderModel.countDocuments({
+      approval_status: 'Pending Approval',
+      is_delete: false,
+    });
   }
 }

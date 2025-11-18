@@ -275,4 +275,10 @@ export class OrderService {
       throw error;
     }
   }
+
+  getPendingCount() {
+    return this.httpClient.get<{ count: number }>(
+      this.baseUrl + 'pending-count'
+    );
+  }
 }

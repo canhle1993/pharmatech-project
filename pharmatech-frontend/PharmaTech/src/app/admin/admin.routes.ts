@@ -15,7 +15,6 @@ import { QuoteComponent } from './pages/quote/quote.component';
 import { RecruitmentHistoryComponent } from './pages/career/recruitment-history/recruitment-history.component';
 import { OrderDetailsComponent } from './pages/order/order-details/order-details.component';
 import { ChatComponent } from './pages/support/chat/chat.component';
-import { ChatHistoryComponent } from './pages/support/chat-history/chat-history.component';
 import { AccountDetailsComponent } from './pages/account/accountdetails/accountdetails.component';
 import { CategoryDetailsComponent } from './pages/category/categorydetails/categorydetails.component';
 import { ProductAddComponent } from './pages/product/productAdd/productAdd.component';
@@ -86,7 +85,6 @@ export const adminRoutes: Routes = [
       { path: 'order/return-list', component: ReturnListComponent },
 
       { path: 'support/chat', component: ChatComponent },
-      { path: 'support/chat-history', component: ChatHistoryComponent },
     ],
   },
 ];

@@ -76,7 +76,7 @@
       [routerLinkActiveOptions]="{ exact: true }"
     >
       <a [routerLink]="['/admin/product-stock-management']" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-category"></i>
+        <i class="menu-icon tf-icons bx bx-box"></i>
         <div data-i18n="Product Stock Management">Stock Management</div>
       </a>
     </li>
@@ -90,6 +90,9 @@
       <a class="menu-link menu-toggle">
         <i class="menu-icon tf-icons bx bx-cart"></i>
         <div data-i18n="Order">Order</div>
+        <span *ngIf="orderCount > 0" class="badge bg-danger ms-auto">
+          {{ orderCount }}
+        </span>
       </a>
 
       <ul class="menu-sub">
@@ -249,6 +252,31 @@
       </ul>
     </li>
 
+    <li
+      class="menu-item"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <a [routerLink]="['/admin/quote']" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-message-rounded-dots"></i>
+        <div data-i18n="Quote">Quote</div>
+        <span *ngIf="unreadCount > 0" class="badge bg-danger ms-auto">{{
+          unreadCount
+        }}</span>
+      </a>
+    </li>
+
+    <li
+      class="menu-item"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <a [routerLink]="['/admin/support/chat']" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-support"></i>
+        <div data-i18n="Support">Support</div>
+      </a>
+    </li>
+
     <li class="menu-item" routerLinkActive="active">
       <a class="menu-link menu-toggle">
         <i class="menu-icon tf-icons bx bx-trash"></i>
@@ -281,45 +309,6 @@
         >
           <a [routerLink]="['/admin/recycle/product']" class="menu-link">
             <div data-i18n="Product">Product</div>
-          </a>
-        </li>
-      </ul>
-    </li>
-
-    <li
-      class="menu-item"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }"
-    >
-      <a [routerLink]="['/admin/quote']" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-message-rounded-dots"></i>
-        <div data-i18n="Quote">Quote</div>
-      </a>
-    </li>
-
-    <li class="menu-item" routerLinkActive="active">
-      <a class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-support"></i>
-        <div data-i18n="Support">Support</div>
-      </a>
-
-      <ul class="menu-sub">
-        <li
-          class="menu-item"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          <a [routerLink]="['/admin/support/chat']" class="menu-link">
-            <div data-i18n="Chat">Chat</div>
-          </a>
-        </li>
-        <li
-          class="menu-item"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          <a [routerLink]="['/admin/support/chat-history']" class="menu-link">
-            <div data-i18n="Chat history">Chat history</div>
           </a>
         </li>
       </ul>

@@ -1,5 +1,11 @@
 // header.component.ts
-import { AfterViewInit, Component, OnInit, Renderer2 } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnInit,
+  Renderer2,
+} from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AccountService } from '../../../services/account.service';
@@ -22,7 +28,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     private accountService: AccountService,
     private router: Router,
     private notifyService: NotificationService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private el: ElementRef
   ) {}
 
   ngOnInit(): void {
@@ -64,44 +71,29 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/auth/login']);
   }
   ngAfterViewInit(): void {
-    // --- CSS ---
-    const cssFiles = [
-      'assets/admin/vendor/fonts/boxicons.css',
-      'assets/admin/vendor/css/core.css',
-      'assets/admin/vendor/css/theme-default.css',
-      'assets/admin/css/demo.css',
-      'assets/admin/vendor/libs/perfect-scrollbar/perfect-scrollbar.css',
-    ];
-    cssFiles.forEach((href) => {
-      const link = this.renderer.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = href;
-      this.renderer.appendChild(document.head, link);
-    });
+    const dropdownToggle =
+      this.el.nativeElement.querySelector('.dropdown-user > a');
+    const dropdownMenu = this.el.nativeElement.querySelector(
+      '.dropdown-user .dropdown-menu'
+    );
 
-    const fontLink = this.renderer.createElement('link');
-    fontLink.rel = 'stylesheet';
-    fontLink.href =
-      'https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap';
-    this.renderer.appendChild(document.head, fontLink);
+    if (dropdownToggle && dropdownMenu) {
+      this.renderer.listen(dropdownToggle, 'click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
 
-    // --- JS ---
-    const jsFiles = [
-      'assets/admin/vendor/js/helpers.js',
-      'assets/admin/js/config.js',
-      'assets/admin/vendor/libs/jquery/jquery.js',
-      'assets/admin/vendor/libs/popper/popper.js',
-      'assets/admin/vendor/js/bootstrap.js',
-      'assets/admin/vendor/libs/perfect-scrollbar/perfect-scrollbar.js',
-      // 'assets/admin/vendor/js/menu.js',
-      'assets/admin/js/main.js',
-      'https://buttons.github.io/buttons.js',
-    ];
-    jsFiles.forEach((src) => {
-      const script = this.renderer.createElement('script');
-      script.src = src;
-      script.type = 'text/javascript';
-      this.renderer.appendChild(document.body, script);
-    });
+        // toggle show
+        if (dropdownMenu.classList.contains('show')) {
+          dropdownMenu.classList.remove('show');
+        } else {
+          dropdownMenu.classList.add('show');
+        }
+      });
+
+      // Click outside → close
+      this.renderer.listen('document', 'click', () => {
+        dropdownMenu.classList.remove('show');
+      });
+    }
   }
 }

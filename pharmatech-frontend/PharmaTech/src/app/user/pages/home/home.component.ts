@@ -41,6 +41,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   ) {}
 
   async ngOnInit() {
+    this.autoReloadOnce();
     const userId = localStorage.getItem('userId');
     if (userId) {
       // ✅ Load lại giỏ hàng từ DB để đồng bộ state (fix lỗi F5 mất state)
@@ -48,6 +49,16 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }
     await this.loadHomeCategories();
     await this.loadCareers(); // ✅ thêm gọi API career
+  }
+  private autoReloadOnce(): void {
+    const reloaded = sessionStorage.getItem('home-page-reloaded');
+    if (!reloaded) {
+      sessionStorage.setItem('home-page-reloaded', 'true');
+      console.log('🔄 Reloading home page once...');
+      window.location.reload();
+    } else {
+      sessionStorage.removeItem('home-page-reloaded');
+    }
   }
   async addToWishlist(product: any) {
     const userId = localStorage.getItem('userId');

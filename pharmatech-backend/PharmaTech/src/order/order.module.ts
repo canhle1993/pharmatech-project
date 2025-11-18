@@ -12,6 +12,7 @@ import { CartModule } from 'src/cart/cart.module'; // ✅ thêm dòng này
 import { MailModule } from 'src/mail/mail.module';
 import { AccountModule } from 'src/account/account.module';
 import { ProductModule } from 'src/product/product.module';
+import { OrderGateway } from './order.gateway';
 
 @Module({
   imports: [
@@ -28,7 +29,7 @@ import { ProductModule } from 'src/product/product.module';
     ProductModule,
   ],
   controllers: [OrderController],
-  providers: [OrderService],
-  exports: [OrderService], // ⚡ Export để module khác (như Payment) có thể dùng
+  providers: [OrderService, OrderGateway],
+  exports: [OrderService, OrderGateway], // ⚡ Export để module khác (như Payment) có thể dùng
 })
 export class OrderModule {}

@@ -11,6 +11,8 @@ import { ProductDTO } from './product.dto';
 import { plainToInstance } from 'class-transformer';
 import { ProductImage } from 'src/product-image/product-image.decorator';
 import { ProductCategoryService } from 'src/product-category/product-category.service';
+import { OrderDetails } from 'src/order-details/order-details.decorator';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class ProductService {
@@ -20,6 +22,8 @@ export class ProductService {
     @InjectModel(ProductImage.name)
     private _productImageModel: Model<ProductImage>,
     private readonly productCategoryService: ProductCategoryService,
+    @InjectModel(OrderDetails.name)
+    private orderDetailsModel: Model<OrderDetails>,
   ) {}
 
   /** 🔹 Lấy 1 sản phẩm (kèm ảnh phụ + categories) */
@@ -341,5 +345,125 @@ export class ProductService {
       .sort({ updated_at: -1 });
 
     return plainToInstance(ProductDTO, list, { excludeExtraneousValues: true });
+  }
+
+  async getTopSelling() {
+    const results = await this.orderDetailsModel.aggregate([
+      {
+        $match: {
+          status: 'Delivered',
+          is_delete: false,
+        },
+      },
+
+      // 👉 Convert product_id (string) → ObjectId
+      {
+        $addFields: {
+          productObjId: { $toObjectId: '$product_id' },
+        },
+      },
+
+      {
+        $group: {
+          _id: '$productObjId',
+          totalSold: { $sum: '$quantity' },
+        },
+      },
+
+      { $sort: { totalSold: -1 } },
+      { $limit: 3 },
+
+      {
+        $lookup: {
+          from: 'products',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'product',
+        },
+      },
+
+      { $unwind: '$product' },
+
+      {
+        $project: {
+          _id: 0,
+          product_id: '$_id',
+          name: '$product.name',
+          model: '$product.model',
+          photo: '$product.photo',
+          price: '$product.price',
+          totalSold: 1,
+        },
+      },
+    ]);
+
+    return results;
+  }
+
+  // ================================
+  // 🆕 Lấy 4 sản phẩm mới nhất
+  // ================================
+  async findNewest(limit = 4) {
+    return await this._productModel
+      .find({ is_delete: false })
+      .sort({ created_at: -1 })
+      .limit(limit)
+      .lean();
+  }
+
+  // ================================
+  // 🏆 Lấy sản phẩm bán chạy nhất (Top 1)
+  // ================================
+  async findTopOneSelling() {
+    const results = await this.orderDetailsModel.aggregate([
+      {
+        $match: {
+          status: 'Delivered',
+          is_delete: false,
+        },
+      },
+
+      // 👇 convert product_id (string) -> ObjectId GIỐNG getTopSelling
+      {
+        $addFields: {
+          productObjId: { $toObjectId: '$product_id' },
+        },
+      },
+
+      {
+        $group: {
+          _id: '$productObjId',
+          totalSold: { $sum: '$quantity' },
+        },
+      },
+
+      { $sort: { totalSold: -1 } },
+      { $limit: 1 }, // 👈 chỉ lấy 1 sản phẩm
+
+      {
+        $lookup: {
+          from: 'products', // 👈 đúng tên collection
+          localField: '_id',
+          foreignField: '_id',
+          as: 'product',
+        },
+      },
+
+      { $unwind: '$product' },
+
+      {
+        $project: {
+          _id: 0,
+          product_id: '$_id',
+          name: '$product.name',
+          model: '$product.model',
+          photo: '$product.photo',
+          price: '$product.price',
+          totalSold: 1,
+        },
+      },
+    ]);
+
+    return results[0] || null;
   }
 }

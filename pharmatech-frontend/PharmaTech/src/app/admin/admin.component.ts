@@ -10,6 +10,7 @@ import { AiGPTComponent } from './components/aiGPT/aiGPT.component';
 import { NgChartsModule } from 'ng2-charts';
 
 @Component({
+  standalone: true,
   templateUrl: './admin.component.html',
   imports: [
     RouterOutlet,
@@ -80,12 +81,12 @@ export class AdminComponent implements OnInit, AfterViewInit {
     const jsFiles = [
       'assets/admin/vendor/js/helpers.js',
       'assets/admin/js/config.js',
-      'assets/admin/vendor/libs/jquery/jquery.js',
-      'assets/admin/vendor/libs/popper/popper.js',
-      'assets/admin/vendor/js/bootstrap.js',
+      // 'assets/admin/vendor/libs/jquery/jquery.js',
+      // 'assets/admin/vendor/libs/popper/popper.js',
+      // 'assets/admin/vendor/js/bootstrap.js',
       'assets/admin/vendor/libs/perfect-scrollbar/perfect-scrollbar.js',
-      'assets/admin/vendor/js/menu.js',
-      'assets/admin/js/main.js',
+      // 'assets/admin/vendor/js/menu.js',
+      // 'assets/admin/js/main.js',
       'https://buttons.github.io/buttons.js',
     ];
     jsFiles.forEach((src) => {

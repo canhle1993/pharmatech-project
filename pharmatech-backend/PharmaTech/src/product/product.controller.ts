@@ -207,4 +207,37 @@ export class ProductController {
   async getProductsOutOfStock() {
     return this.productService.getProductsOutOfStock();
   }
+
+  // 📌 LẤY TOP 3 SẢN PHẨM BÁN CHẠY
+  @Get('top-selling')
+  async getTopSelling() {
+    try {
+      return await this.productService.getTopSelling();
+    } catch (error) {
+      throw new HttpException(
+        {
+          message: 'Failed to load top selling products',
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get('newest')
+  async getNewest() {
+    try {
+      return await this.productService.findNewest(4);
+    } catch (e) {
+      throw new HttpException(
+        { message: 'Failed to load newest products', error: e.message },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get('top-one')
+  async getTopOne() {
+    return await this.productService.findTopOneSelling();
+  }
 }

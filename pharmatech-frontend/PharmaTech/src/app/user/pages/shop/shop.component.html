@@ -211,140 +211,102 @@
               <h3 class="sidebars_widget__title">Popular products</h3>
               <ul class="sidebars_widget__product">
                 <!-- Single Product Start -->
-                <li class="single-product">
+                <li class="single-product" *ngFor="let p of topSelling">
                   <a
-                    [routerLink]="['/productDetails']"
+                    [routerLink]="['/productDetails', p.product_id]"
                     class="single-product_thumb"
                   >
                     <img
-                      src="assets/images/product/sidebar-1.png"
-                      alt="Sidebar-Image"
+                      [src]="
+                        p.photo
+                          ? imageBase + p.photo
+                          : 'assets/images/no-image.png'
+                      "
+                      alt="{{ p.name }}"
+                      style="
+                        width: 120px !important;
+                        height: 110px !important;
+                        max-width: 120px !important;
+                      "
                     />
                   </a>
                   <div class="single-product_content">
                     <a
-                      [routerLink]="['/productDetails']"
+                      [routerLink]="['/productDetails', p.product_id]"
                       class="single-product_content__title"
-                      >Brownie</a
+                      >{{ p.name }}</a
                     >
-                    <span class="single-product_content__price">$4.99</span>
+                    <span class="single-product_content__price"
+                      >${{ p.price }}</span
+                    >
                   </div>
                 </li>
-                <!-- Single Product End -->
-                <!-- Single Product Start -->
-                <li class="single-product">
-                  <a
-                    [routerLink]="['/productDetails']"
-                    class="single-product_thumb"
-                  >
-                    <img
-                      src="assets/images/product/sidebar-2.png"
-                      alt="Sidebar-Image"
-                    />
-                  </a>
-                  <div class="single-product_content">
-                    <a
-                      [routerLink]="['/productDetails']"
-                      class="single-product_content__title"
-                      >Red Velvet</a
-                    >
-                    <span class="single-product_content__price">$4.99</span>
-                  </div>
-                </li>
-                <!-- Single Product End -->
-                <!-- Single Product Start -->
-                <li class="single-product">
-                  <a
-                    [routerLink]="['/productDetails']"
-                    class="single-product_thumb"
-                  >
-                    <img
-                      src="assets/images/product/sidebar-3.png"
-                      alt="Sidebar-Image"
-                    />
-                  </a>
-                  <div class="single-product_content">
-                    <a
-                      [routerLink]="['/productDetails']"
-                      class="single-product_content__title"
-                      >Cream Muffin</a
-                    >
-                    <span class="single-product_content__price">$4.99</span>
-                  </div>
-                </li>
+
                 <!-- Single Product End -->
               </ul>
             </div>
             <!-- Popular Product Widget End -->
 
-            <!-- Instagram Widget Start -->
+            <!-- New Product Widget Start -->
             <div class="sidebars_widget">
-              <h3 class="sidebars_widget__title">Instagram</h3>
+              <h3 class="sidebars_widget__title">New Product</h3>
               <ul class="sidebars_widget__instagram">
-                <li>
-                  <a class="instagram-thumb" href="#">
+                <li *ngFor="let p of newestProducts">
+                  <a
+                    class="instagram-thumb"
+                    [routerLink]="['/productDetails', p._id || p.id]"
+                  >
                     <img
-                      src="assets/images/instagram/widget-insta-1.jpg"
-                      alt="Image"
+                      [src]="
+                        p.photo
+                          ? imageBase + p.photo
+                          : 'assets/images/no-image.png'
+                      "
+                      alt="{{ p.name }}"
                     />
-                    <i class="lastudioicon lastudioicon-b-instagram"></i>
-                  </a>
-                </li>
-                <li>
-                  <a class="instagram-thumb" href="#">
-                    <img
-                      src="assets/images/instagram/widget-insta-2.jpg"
-                      alt="Image"
-                    />
-                    <i class="lastudioicon lastudioicon-b-instagram"></i>
-                  </a>
-                </li>
-                <li>
-                  <a class="instagram-thumb" href="#">
-                    <img
-                      src="assets/images/instagram/widget-insta-3.jpg"
-                      alt="Image"
-                    />
-                    <i class="lastudioicon lastudioicon-b-instagram"></i>
-                  </a>
-                </li>
-                <li>
-                  <a class="instagram-thumb" href="#">
-                    <img
-                      src="assets/images/instagram/widget-insta-4.jpg"
-                      alt="Image"
-                    />
-                    <i class="lastudioicon lastudioicon-b-instagram"></i>
+                    <i class="lastudioicon lastudioicon-eye"></i>
                   </a>
                 </li>
               </ul>
             </div>
-            <!-- Instagram Widget End -->
+            <!-- New Product Widget End -->
 
             <!-- Tags Widget Start -->
             <div class="sidebars_widget">
               <h3 class="sidebars_widget__title">Tags</h3>
               <ul class="sidebars_widget__tags">
-                <li><a href="shop.html">Cake, </a></li>
-                <li><a href="shop.html">Cupcake, </a></li>
-                <li><a href="shop.html">Donut, </a></li>
-                <li><a href="shop.html">Muffin, </a></li>
-                <li><a href="shop.html">New, </a></li>
-                <li><a href="shop.html">Waffle</a></li>
+                <li *ngFor="let c of categories; let i = index">
+                  <a
+                    href="javascript:void(0)"
+                    (click)="onSelectCategory(c.id || c._id)"
+                    [class.active]="selectedCategoryId === (c.id || c._id)"
+                  >
+                    {{ c.name }}<span *ngIf="i < categories.length - 1">,</span>
+                  </a>
+                </li>
               </ul>
             </div>
             <!-- Tags Widget End -->
 
             <!-- Banner Widget Start -->
-            <div class="sidebars_widget">
-              <a href="shop.html" class="sidebars_widget__banner">
+            <div class="sidebars_widget" *ngIf="bestSeller">
+              <a
+                [routerLink]="['/productDetails', bestSeller.product_id]"
+                class="sidebars_widget__banner best-seller-thumb"
+              >
                 <img
-                  src="assets/images/banner/sidebarbanner.jpg"
-                  alt="banner-Image"
+                  [src]="
+                    bestSeller.photo
+                      ? imageBase + bestSeller.photo
+                      : 'assets/images/no-image.png'
+                  "
+                  alt="{{ bestSeller.name }}"
                 />
 
                 <div class="banner-content">
-                  <span class="banner-content_title">Check it now</span>
+                  <span class="banner-content_title">Best Seller</span>
+                  <h4 class="banner-product-name">{{ bestSeller.name }}</h4>
+                  <span class="banner-price">${{ bestSeller.price }}</span>
                 </div>
               </a>
             </div>

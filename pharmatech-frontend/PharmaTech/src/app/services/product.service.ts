@@ -180,4 +180,22 @@ export class ProductService {
       })
     );
   }
+
+  getTopSelling(): Promise<any[]> {
+    return lastValueFrom(
+      this.httpClient.get<any[]>(env.baseUrl + 'product/top-selling')
+    );
+  }
+
+  getNewestProducts(): Promise<any[]> {
+    return lastValueFrom(
+      this.httpClient.get<any[]>(env.baseUrl + 'product/newest')
+    );
+  }
+
+  getTopOneSelling(): Promise<any> {
+    return lastValueFrom(
+      this.httpClient.get<any>(env.baseUrl + 'product/top-one')
+    );
+  }
 }

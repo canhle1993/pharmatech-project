@@ -284,4 +284,10 @@ export class OrderController {
       );
     }
   }
+
+  @Get('pending-count')
+  async pendingCount() {
+    const count = await this.orderService.countPending();
+    return { count };
+  }
 }

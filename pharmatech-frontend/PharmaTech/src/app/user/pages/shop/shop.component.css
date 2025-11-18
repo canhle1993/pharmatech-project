@@ -1,0 +1,122 @@
+/* Khung ảnh sản phẩm mới */
+.sidebars_widget__instagram li .instagram-thumb {
+  display: block;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f5f5f5;
+  padding: 6px;
+  border: 1px solid #e0e0e0;
+  transition: all 0.25s ease;
+}
+
+.sidebars_widget__instagram li .instagram-thumb img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+/* Hover đẹp */
+.sidebars_widget__instagram li .instagram-thumb:hover {
+  border-color: #ff9861;
+  background: #fff0ed;
+}
+
+.sidebars_widget__instagram li .instagram-thumb:hover img {
+  transform: scale(1.05);
+}
+.best-seller-banner {
+  position: relative;
+  display: block;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Ảnh */
+.best-seller-banner img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  transition: transform 0.45s ease, filter 0.45s ease;
+}
+
+.best-seller-banner:hover img {
+  transform: scale(1.07);
+  filter: brightness(0.85);
+}
+
+/* Overlay đẹp – nằm giữa hình */
+.banner-content {
+  position: absolute;
+  inset: 0; /* top:0; right:0; bottom:0; left:0 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.45));
+
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  padding: 20px;
+  text-align: center;
+}
+
+.best-seller-banner:hover .banner-content {
+  opacity: 1;
+}
+
+/* Text đẹp */
+.banner-content_title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+
+.banner-product-name {
+  font-size: 15px;
+  color: #f2f2f2;
+  margin-bottom: 10px;
+  font-weight: 600;
+  padding: 0 10px;
+  line-height: 1.4;
+}
+
+.banner-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffce46; /* vàng cho nổi */
+}
+/* Khung ảnh Best Seller trong sidebar */
+/* Khung ảnh Best Seller trong sidebar */
+.best-seller-thumb {
+  display: block;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f5f5f5; /* nền sáng */
+  padding: 8px; /* tạo border đẹp */
+  border: 1px solid #e5e5e5; /* viền nhẹ */
+  transition: transform 0.35s ease, box-shadow 0.3s ease;
+}
+
+/* Ảnh bên trong */
+.best-seller-thumb img {
+  width: 100%;
+  border-radius: 8px;
+  transition: transform 0.35s ease;
+}
+
+/* Hover */
+.best-seller-thumb:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.best-seller-thumb:hover img {
+  transform: scale(1.05);
+}

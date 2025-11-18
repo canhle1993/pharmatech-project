@@ -1,6 +1,330 @@
+/* ==========================
+   ACCORDION STYLING (Native <details>)
+========================== */
+.accordion-section {
+  margin-bottom: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.accordion-header {
+  background: #f3f4f6;
+  color: #1f2937;
+  font-weight: 600;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  list-style: none;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.accordion-header::-webkit-details-marker {
+  display: none;
+}
+
+.accordion-header::before {
+  content: "▶";
+  display: inline-block;
+  margin-right: 0.75rem;
+  transition: transform 0.2s ease;
+  font-size: 0.8rem;
+}
+
+details[open] > .accordion-header::before {
+  transform: rotate(90deg);
+}
+
+details[open] > .accordion-header {
+  background: linear-gradient(90deg, #007bff, #00c6ff);
+  color: #ffffff;
+  border-bottom: 1px solid #007bff;
+}
+
+.accordion-header:hover {
+  background: #e5e7eb;
+}
+
+details[open] > .accordion-header:hover {
+  background: linear-gradient(90deg, #0069d9, #00aaff);
+}
+
+.accordion-content {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* ==========================
+   CONTAINER & HEADER
+========================== */
 .container {
   padding: 1.5rem;
   font-family: "Segoe UI", sans-serif;
   background-color: #f7f8fa;
   min-height: 100vh;
+}
+
+.job-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1e3a8a;
+  background: linear-gradient(90deg, #007bff, #00c6ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.5px;
+}
+
+.job-subtitle {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+/* ==========================
+   DIALOG FORM LAYOUT
+========================== */
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
+
+.form-group.full {
+  flex: 0 0 100%;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 5px;
+  font-size: 0.95rem;
+}
+
+.form-group input[type="text"],
+.form-group input[type="file"],
+.form-group input[type="color"],
+.form-group textarea {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+/* File input styling */
+.form-group input[type="file"] {
+  font-size: 0.9rem;
+  padding: 6px 10px;
+}
+
+/* Small helper text */
+.text-muted {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-top: 3px;
+}
+
+/* ==========================
+   IMAGE PREVIEW
+========================== */
+.banner-preview-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.preview-container {
+  margin-top: 0.75rem;
+}
+
+.preview-img,
+.preview-img-large {
+  border-radius: 6px;
+  border: 2px solid #e5e7eb;
+  object-fit: cover;
+}
+
+.preview-img {
+  max-height: 120px;
+  width: auto;
+}
+
+.preview-img-large {
+  max-height: 200px;
+  width: auto;
+}
+
+/* ==========================
+   BUTTONS
+========================== */
+:host ::ng-deep .p-button-primary {
+  background: linear-gradient(90deg, #007bff, #00c6ff);
+  border: none;
+  padding: 10px 20px;
+  font-weight: 600;
+}
+
+:host ::ng-deep .p-button-primary:hover {
+  background: linear-gradient(90deg, #0069d9, #00aaff);
+}
+
+:host ::ng-deep .p-button-sm {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+}
+
+:host ::ng-deep .p-button-text {
+  background: none;
+  border: none;
+}
+
+:host ::ng-deep .p-button-danger {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+:host ::ng-deep .p-button-danger:hover {
+  background: #b91c1c;
+}
+
+/* ==========================
+   CARD STYLING
+========================== */
+.card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-sm {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================
+   BRAND IMAGE GRID
+========================== */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.col-md-3 {
+  flex: 0 0 calc(25% - 1rem);
+  min-width: 150px;
+}
+
+.position-relative {
+  position: relative;
+}
+
+.position-absolute {
+  position: absolute;
+}
+
+.top-0 {
+  top: 0;
+}
+
+.end-0 {
+  right: 0;
+}
+
+.btn {
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  border: none;
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+}
+
+.btn-sm {
+  padding: 3px 8px;
+  font-size: 0.85rem;
+}
+
+.img-thumbnail {
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 4px;
+}
+
+/* ==========================
+   UTILITIES
+========================== */
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.flex {
+  display: flex;
+}
+
+.justify-content-between {
+  justify-content: space-between;
+}
+
+.justify-content-end {
+  justify-content: flex-end;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.d-block {
+  display: block;
+}
+
+.g-3 {
+  gap: 1rem;
 }

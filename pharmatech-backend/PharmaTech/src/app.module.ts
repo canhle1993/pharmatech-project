@@ -29,7 +29,8 @@ import { ApplicationModule } from './application/application.module';
 import { OcrModule } from './ocr/ocr.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { ReturnRequestModule } from './return-request/return-request.module';
-
+import { QuoteModule } from './quote/quote.module';
+import { BannerModule } from './banner/banner.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -91,6 +92,8 @@ import { ReturnRequestModule } from './return-request/return-request.module';
     OcrModule,
     AnalyticsModule,
     ReturnRequestModule,
+    QuoteModule,
+    BannerModule,
   ],
   controllers: [],
   providers: [],

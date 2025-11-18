@@ -20,3 +20,21 @@
     opacity: 0;
   }
 }
+/* Giúp dropdown nổi lên trên layout */
+.dropdown-menu {
+  position: absolute !important;
+  inset: auto auto auto auto !important;
+  right: 0 !important;
+  left: auto !important;
+
+  z-index: 9999 !important;
+
+  /* bắt buộc để không bị cắt */
+  transform: translate3d(0, 0, 0) !important;
+}
+
+.dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}

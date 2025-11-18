@@ -14,6 +14,7 @@ import { MessageService } from 'primeng/api';
 @Component({
   standalone: true,
   templateUrl: './shop.component.html',
+  styleUrls: ['./shop.component.css'],
   imports: [CommonModule, RouterLink, FormsModule, ToastModule],
   providers: [CategoryService, ProductService, MessageService],
 })
@@ -31,6 +32,10 @@ export class ShopComponent implements OnInit {
   itemsPerPage: number = 12; // mặc định
   totalPages: number = 1;
   pagedProducts: any[] = [];
+
+  topSelling: any[] = [];
+  newestProducts: any[] = [];
+  bestSeller: any = null;
 
   constructor(
     private renderer: Renderer2,
@@ -53,6 +58,10 @@ export class ShopComponent implements OnInit {
     await this.loadCategories();
     await this.loadProducts();
 
+    this.loadTopSelling();
+    this.loadNewest();
+    this.loadTopOne();
+
     // ✅ Nhận param từ header
     this.route.queryParams.subscribe((params) => {
       const categoryId = params['category'];
@@ -60,6 +69,17 @@ export class ShopComponent implements OnInit {
         this.onSelectCategory(categoryId);
       }
     });
+  }
+  async loadTopSelling() {
+    this.topSelling = await this.productService.getTopSelling();
+  }
+
+  async loadNewest() {
+    this.newestProducts = await this.productService.getNewestProducts();
+  }
+
+  async loadTopOne() {
+    this.bestSeller = await this.productService.getTopOneSelling();
   }
   async addToWishlist(product: any) {
     const userId = localStorage.getItem('userId');

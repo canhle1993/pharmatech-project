@@ -1,12 +1,12 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MailService } from './mail.service';
 import { MailController } from './mail.controller';
+import { QuoteModule } from 'src/quote/quote.module';
 
 @Module({
+  imports: [forwardRef(() => QuoteModule)],
   providers: [MailService],
   controllers: [MailController],
-  exports: [
-    MailService
-  ]
+  exports: [MailService],
 })
 export class MailModule {}
