@@ -37,6 +37,9 @@ export class ShopComponent implements OnInit {
   newestProducts: any[] = [];
   bestSeller: any = null;
 
+  priceMin: number = 0;
+  priceMax: number = 5000;
+
   constructor(
     private renderer: Renderer2,
     private categoryService: CategoryService,
@@ -80,6 +83,27 @@ export class ShopComponent implements OnInit {
 
   async loadTopOne() {
     this.bestSeller = await this.productService.getTopOneSelling();
+  }
+
+  // Khi kéo slider
+  onPriceChange() {
+    if (this.priceMin > this.priceMax) {
+      const temp = this.priceMin;
+      this.priceMin = this.priceMax;
+      this.priceMax = temp;
+    }
+  }
+
+  // Khi bấm nút Filter
+  applyPriceFilter() {
+    this.filteredProducts = this.products.filter((p: any) => {
+      const price = p.price || 0;
+      return price >= this.priceMin && price <= this.priceMax;
+    });
+
+    // Reset lại phân trang
+    this.currentPage = 1;
+    this.updatePagination();
   }
   async addToWishlist(product: any) {
     const userId = localStorage.getItem('userId');
@@ -239,13 +263,21 @@ export class ShopComponent implements OnInit {
     await addJs('assets/js/main.js');
   }
 
-  /** 🔄 Sort products by newest or oldest */
+  /** 🔄 Sort products by newest, oldest, price asc, price desc */
   onSortChange(event: any) {
     const value = event.target.value;
+
+    // ✨ Nếu chọn "Sort by" => reset về danh sách ban đầu
+    if (!value) {
+      this.filteredProducts = [...this.products]; // products gốc từ API
+      this.currentPage = 1;
+      this.updatePagination();
+      return;
+    }
     let sorted = [...this.filteredProducts];
 
     if (value === 'latest') {
-      // 🆕 Newest first (based on created_at or ObjectId timestamp)
+      // 🆕 Newest first
       sorted.sort((a: any, b: any) => {
         const aDate = new Date(a.created_at || a._id);
         const bDate = new Date(b.created_at || b._id);
@@ -257,6 +289,16 @@ export class ShopComponent implements OnInit {
         const aDate = new Date(a.created_at || a._id);
         const bDate = new Date(b.created_at || b._id);
         return aDate.getTime() - bDate.getTime();
+      });
+    } else if (value === 'price_lowest') {
+      // 💰 Price low → high
+      sorted.sort((a: any, b: any) => {
+        return (a.price || 0) - (b.price || 0);
+      });
+    } else if (value === 'price_highest') {
+      // 💰 Price high → low
+      sorted.sort((a: any, b: any) => {
+        return (b.price || 0) - (a.price || 0);
       });
     }
 

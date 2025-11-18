@@ -289,26 +289,11 @@
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: true }"
         >
-          <a [routerLink]="['/admin/recycle/user']" class="menu-link">
-            <div data-i18n="User">User</div>
-          </a>
-        </li>
-        <li
-          class="menu-item"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          <a [routerLink]="['/admin/recycle/category']" class="menu-link">
-            <div data-i18n="Category">Category</div>
-          </a>
-        </li>
-        <li
-          class="menu-item"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          <a [routerLink]="['/admin/recycle/product']" class="menu-link">
-            <div data-i18n="Product">Product</div>
+          <a
+            [routerLink]="['/admin/recycle/product-category']"
+            class="menu-link"
+          >
+            <div data-i18n="Recycle">Recycle</div>
           </a>
         </li>
       </ul>

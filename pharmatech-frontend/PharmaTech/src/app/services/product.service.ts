@@ -198,4 +198,27 @@ export class ProductService {
       this.httpClient.get<any>(env.baseUrl + 'product/top-one')
     );
   }
+
+  /** 🗑️ Lấy danh sách sản phẩm đã bị xóa mềm */
+  getDeleted(): Promise<any[]> {
+    return lastValueFrom(
+      this.httpClient.get<any[]>(env.baseUrl + 'product/deleted')
+    );
+  }
+
+  /** ♻️ Khôi phục sản phẩm đã xóa mềm */
+  restore(id: string, updated_by: string) {
+    return lastValueFrom(
+      this.httpClient.patch(env.baseUrl + 'product/restore/' + id, {
+        updated_by,
+      })
+    );
+  }
+
+  /** ❌ Xóa cứng (hard delete) — chỉ khi không có đơn hàng liên quan */
+  hardDelete(id: string) {
+    return lastValueFrom(
+      this.httpClient.delete(env.baseUrl + 'product/hard-delete/' + id)
+    );
+  }
 }

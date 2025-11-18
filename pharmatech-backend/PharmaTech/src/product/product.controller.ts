@@ -9,6 +9,8 @@ import {
   UseInterceptors,
   HttpException,
   HttpStatus,
+  Delete,
+  Patch,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductDTO } from './product.dto';
@@ -239,5 +241,23 @@ export class ProductController {
   @Get('top-one')
   async getTopOne() {
     return await this.productService.findTopOneSelling();
+  }
+
+  @Delete('hard-delete/:id')
+  async hardDelete(@Param('id') id: string) {
+    return this.productService.hardDelete(id);
+  }
+
+  @Patch('restore/:id')
+  async restoreProduct(
+    @Param('id') id: string,
+    @Body('updated_by') updated_by: string,
+  ) {
+    return this.productService.restore(id, updated_by);
+  }
+
+  @Get('deleted')
+  async getDeleted() {
+    return await this.productService.findDeleted();
   }
 }

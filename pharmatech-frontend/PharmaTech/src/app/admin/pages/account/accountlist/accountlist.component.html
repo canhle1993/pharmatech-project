@@ -151,14 +151,6 @@
 
             <button
               pButton
-              icon="pi pi-trash"
-              class="p-button-text p-button-danger"
-              title="Delete"
-              (click)="onSoftDelete(account.id, account.name)"
-            ></button>
-
-            <button
-              pButton
               class="p-button-sm lock-btn"
               [class.p-button-dangerr]="account.is_active"
               [class.p-button-success]="!account.is_active"

@@ -6,6 +6,7 @@ import {
   HttpException,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Put,
   UploadedFile,
@@ -186,5 +187,25 @@ export class CategoryController {
     @Body('updated_by') updated_by: string,
   ) {
     return await this.categoryService.delete(id, updated_by);
+  }
+
+  @Delete('hard-delete/:id')
+  async hardDelete(@Param('id') id: string) {
+    return this.categoryService.hardDelete(id);
+  }
+
+  // 🗑️ Danh sách category đã xóa mềm
+  @Get('deleted')
+  async getDeleted() {
+    return await this.categoryService.findDeleted();
+  }
+
+  // 🔄 Khôi phục category đã xóa mềm
+  @Patch('restore/:id')
+  async restore(
+    @Param('id') id: string,
+    @Body('updated_by') updated_by: string,
+  ) {
+    return this.categoryService.restore(id, updated_by);
   }
 }

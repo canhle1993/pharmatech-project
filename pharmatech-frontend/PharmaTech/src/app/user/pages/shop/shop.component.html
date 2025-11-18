@@ -42,6 +42,8 @@
                 <option value="">Sort by</option>
                 <option value="latest">Newest Products</option>
                 <option value="oldest">Oldest Products</option>
+                <option value="price_lowest">Price: Low → High</option>
+                <option value="price_highest">Price: High → Low</option>
               </select>
             </div>
 
@@ -192,18 +194,38 @@
             <!-- Price Filter Widget Start -->
             <div class="sidebars_widget">
               <h3 class="sidebars_widget__title">Price Filter</h3>
-              <div class="range-slider">
-                <input type="text" class="js-range-slider" value="" />
+
+              <!-- Range Slider -->
+              <div class="price-filter">
+                <input
+                  type="range"
+                  min="0"
+                  max="5000"
+                  [(ngModel)]="priceMin"
+                  (change)="onPriceChange()"
+                />
+
+                <input
+                  type="range"
+                  min="0"
+                  max="5000"
+                  [(ngModel)]="priceMax"
+                  (change)="onPriceChange()"
+                />
               </div>
+
               <div class="extra-controls">
-                <button class="extra-controls_btn">Filter</button>
+                <button class="extra-controls_btn" (click)="applyPriceFilter()">
+                  FILTER
+                </button>
+
                 <div class="extra-controls_filter">
-                  <label>Price: </label>
-                  <input type="text" class="js-input-from" value="0" /> -
-                  <input type="text" class="js-input-to" value="0" />
+                  <label>Price:</label>
+                  <span>{{ priceMin }}</span> - <span>{{ priceMax }}</span>
                 </div>
               </div>
             </div>
+
             <!-- Price Filter Widget End -->
 
             <!-- Popular Product Widget Start -->

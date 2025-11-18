@@ -8,9 +8,6 @@ import { AboutComponent } from './pages/about/about.component';
 import { ContactComponent } from './pages/contact/contact.component';
 import { BannerComponent } from './pages/banner/banner.component';
 
-import { RecycleAccountComponent } from './pages/recycle/recycle-account/recycle-account.component';
-import { RecycleCategoryComponent } from './pages/recycle/recycle-category/recycle-category.component';
-import { RecycleProductComponent } from './pages/recycle/recycle-product/recycle-product.component';
 import { QuoteComponent } from './pages/quote/quote.component';
 import { RecruitmentHistoryComponent } from './pages/career/recruitment-history/recruitment-history.component';
 import { OrderDetailsComponent } from './pages/order/order-details/order-details.component';
@@ -30,6 +27,7 @@ import { OrderHistoryComponent } from './pages/order/order-history/order-history
 import { ApplicationManagementComponent } from './pages/career/application-management/application-management.component';
 import { ProductStockManagementComponent } from './pages/product/product-stock-management/product-stock-management.component';
 import { ReturnListComponent } from './pages/order/return-list/return-list.component';
+import { RecycleComponent } from './pages/recycle/recycle-product-category/recycle.component';
 
 export const adminRoutes: Routes = [
   {
@@ -61,9 +59,8 @@ export const adminRoutes: Routes = [
       { path: 'settings/homecategory', component: HomeCategoryComponent },
       { path: 'settings/deposit', component: DepositSettingListComponent },
 
-      { path: 'recycle/user', component: RecycleAccountComponent },
-      { path: 'recycle/category', component: RecycleCategoryComponent },
-      { path: 'recycle/product', component: RecycleProductComponent },
+      { path: 'recycle/product-category', component: RecycleComponent },
+
       { path: 'quote', component: QuoteComponent },
 
       { path: 'career/job-posting', component: JobPostingComponent },

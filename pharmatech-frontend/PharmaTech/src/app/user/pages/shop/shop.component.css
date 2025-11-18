@@ -1,7 +1,6 @@
 /* Khung ảnh sản phẩm mới */
 .sidebars_widget__instagram li .instagram-thumb {
   display: block;
-  border-radius: 10px;
   overflow: hidden;
   background: #f5f5f5;
   padding: 6px;
@@ -119,4 +118,23 @@
 
 .best-seller-thumb:hover img {
   transform: scale(1.05);
+}
+
+.price-filter input[type="range"] {
+  width: 100%;
+  margin: 10px 0;
+}
+
+.extra-controls_btn {
+  padding: 10px 30px;
+  border: 2px solid black;
+  background: white;
+  cursor: pointer;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.extra-controls_filter {
+  margin-top: 10px;
+  font-size: 16px;
 }

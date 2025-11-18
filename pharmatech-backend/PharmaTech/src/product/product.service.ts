@@ -383,6 +383,12 @@ export class ProductService {
       },
 
       { $unwind: '$product' },
+      // 👇 CHỈ LẤY SẢN PHẨM CHƯA BỊ XÓA
+      {
+        $match: {
+          'product.is_delete': false,
+        },
+      },
 
       {
         $project: {
@@ -450,6 +456,12 @@ export class ProductService {
       },
 
       { $unwind: '$product' },
+      // 👇 filter product đã bị xóa
+      {
+        $match: {
+          'product.is_delete': false,
+        },
+      },
 
       {
         $project: {
@@ -465,5 +477,79 @@ export class ProductService {
     ]);
 
     return results[0] || null;
+  }
+
+  /** ❌ XÓA CỨNG — chỉ xóa khi KHÔNG nằm trong OrderDetails */
+  async hardDelete(id: string) {
+    // 1) Kiểm tra product có tồn tại không
+    const product = await this._productModel.findById(id);
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    // 2) Kiểm tra product này có xuất hiện trong OrderDetails không
+    const usedInOrders = await this.orderDetailsModel.countDocuments({
+      product_id: id,
+    });
+
+    if (usedInOrders > 0) {
+      throw new HttpException(
+        `Cannot delete: this product is used in ${usedInOrders} order(s).`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // 3) Không có đơn hàng → Xóa thật
+    await this._productModel.deleteOne({ _id: id });
+
+    return { msg: 'Product permanently deleted' };
+  }
+
+  /** ♻️ Restore product đã bị xóa mềm */
+  async restore(id: string, updated_by: string) {
+    const product = await this._productModel.findById(id);
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    // Nếu product chưa bị xóa mềm
+    if (product.is_delete === false) {
+      return { msg: 'Product is already active' };
+    }
+
+    // Khôi phục
+    product.is_delete = false;
+    product.is_active = true;
+    product.updated_at = new Date();
+    product.updated_by = updated_by || 'admin';
+
+    await product.save();
+
+    return { msg: 'Product restored successfully' };
+  }
+
+  /** 🗑️ Lấy danh sách sản phẩm đã xóa mềm */
+  /** 🗑️ Lấy danh sách sản phẩm đã xóa mềm */
+  async findDeleted() {
+    const products = await this._productModel
+      .find({ is_delete: true })
+      .sort({ updated_at: -1 })
+      .lean();
+
+    const result = [];
+    for (const p of products) {
+      const orderCount = await this.orderDetailsModel.countDocuments({
+        product_id: p._id,
+      });
+
+      result.push({
+        ...p,
+        photo: p.photo ? `${process.env.image_url}/${p.photo}` : null, // ⭐ FIX QUAN TRỌNG
+        hasLink: orderCount > 0,
+      });
+    }
+
+    return result;
   }
 }
