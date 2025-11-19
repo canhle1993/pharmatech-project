@@ -7,6 +7,14 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { AboutComponent } from './pages/about/about.component';
 import { ContactComponent } from './pages/contact/contact.component';
 import { BannerComponent } from './pages/banner/banner.component';
+import { ServiceConsultingComponent } from './pages/service-consulting/service-consulting.component';
+import { ServiceTechnicalSupportComponent } from './pages/service-technical-support/service-technical-support.component';
+import { ServiceEquipmentUpgradeComponent } from './pages/service-equipment-upgrade/service-equipment-upgrade.component';
+import { ServiceMaintenanceComponent } from './pages/service-maintenance/service-maintenance.component';
+import { PurchaseCustomerIntakeComponent } from './pages/purchase-customer-intake/purchase-customer-intake.component';
+import { PurchaseTechnicalConsultingComponent } from './pages/purchase-technical-consulting/purchase-technical-consulting.component';
+import { PurchaseUrsDevelopmentComponent } from './pages/purchase-urs-development/purchase-urs-development.component';
+import { PurchaseContractSigningComponent } from './pages/purchase-contract-signing/purchase-contract-signing.component';
 
 import { RecycleAccountComponent } from './pages/recycle/recycle-account/recycle-account.component';
 import { RecycleCategoryComponent } from './pages/recycle/recycle-category/recycle-category.component';
@@ -58,6 +66,19 @@ export const adminRoutes: Routes = [
       { path: 'about', component: AboutComponent },
       { path: 'contact', component: ContactComponent },
       { path: 'banner', component: BannerComponent },
+
+      // Service routes
+      { path: 'service/consulting', component: ServiceConsultingComponent },
+      { path: 'service/technical-support', component: ServiceTechnicalSupportComponent },
+      { path: 'service/equipment-upgrade', component: ServiceEquipmentUpgradeComponent },
+      { path: 'service/maintenance', component: ServiceMaintenanceComponent },
+
+      // Purchase routes
+      { path: 'purchase/customer-intake', component: PurchaseCustomerIntakeComponent },
+      { path: 'purchase/technical-consulting', component: PurchaseTechnicalConsultingComponent },
+      { path: 'purchase/urs-development', component: PurchaseUrsDevelopmentComponent },
+      { path: 'purchase/contract-signing', component: PurchaseContractSigningComponent },
+
       { path: 'settings/hotline', component: HotlineInfoComponent },
       { path: 'settings/homecategory', component: HomeCategoryComponent },
       { path: 'settings/deposit', component: DepositSettingListComponent },

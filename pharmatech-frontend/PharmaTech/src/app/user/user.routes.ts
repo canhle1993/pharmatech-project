@@ -13,6 +13,8 @@ import { WishlistComponent } from './pages/wishlist/wishlist.component';
 import { CheckoutComponent } from './pages/checkout/checkout.component';
 import { PaymentSuccessComponent } from './pages/payment-success/payment-success.component';
 import { PaymentCancelComponent } from './pages/payment-cancel/payment-cancel.component';
+import { ServicesComponent } from './pages/services/services.component';
+import { PurchaseComponent } from './pages/purchase/purchase.component';
 
 export const userRoutes: Routes = [
   {
@@ -26,6 +28,8 @@ export const userRoutes: Routes = [
       { path: 'shop', component: ShopComponent },
       { path: 'career', component: CareerComponent },
       { path: 'checkout', component: CheckoutComponent },
+      { path: 'services', component: ServicesComponent },
+      { path: 'purchase', component: PurchaseComponent },
       { path: 'careerDetails/:id', component: CareerDetailsComponent },
       { path: 'productDetails/:id', component: ProductDetailsComponent },
       { path: 'profile/:id', component: ProfileComponent },

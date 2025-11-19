@@ -2,10 +2,13 @@
 @import "@fortawesome/fontawesome-free/css/all.min.css";
 @import "swiper/swiper-bundle.css";
 
-/* css cho icons */
+/* PrimeNG Icons */
 @import "primeicons/primeicons.css";
+
+/* AOS Animation */
 @import "aos/dist/aos.css";
-/* css cho quill */
+
+/* Quill Editor */
 @import "quill/dist/quill.core.css";
 @import "quill/dist/quill.snow.css";
 @import "quill-better-table/dist/quill-better-table.css";

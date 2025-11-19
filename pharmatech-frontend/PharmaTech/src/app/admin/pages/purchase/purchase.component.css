@@ -1,0 +1,33 @@
+.section {
+  border-bottom: 1px solid #e9ecef;
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.card {
+  border: 1px solid #dee2e6;
+}
+
+.card-title {
+  color: #495057;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #495057;
+}
+
+.btn-outline-primary {
+  font-size: 0.875rem;
+}
+
+.btn-outline-danger {
+  font-size: 0.875rem;
+}
+
+.img-thumbnail {
+  max-width: 100%;
+  object-fit: cover;
+}

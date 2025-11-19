@@ -29,6 +29,8 @@ import { ApplicationModule } from './application/application.module';
 import { OcrModule } from './ocr/ocr.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { ReturnRequestModule } from './return-request/return-request.module';
+import { ServiceModule } from './service/service.module';
+import { PurchaseModule } from './purchase/purchase.module';
 
 @Module({
   imports: [
@@ -91,6 +93,8 @@ import { ReturnRequestModule } from './return-request/return-request.module';
     OcrModule,
     AnalyticsModule,
     ReturnRequestModule,
+    ServiceModule,
+    PurchaseModule,
   ],
   controllers: [],
   providers: [],

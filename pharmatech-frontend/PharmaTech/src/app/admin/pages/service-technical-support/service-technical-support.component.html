@@ -1,0 +1,75 @@
+﻿<div class="container mt-4">
+  <h1 class="mb-4">Technical Support Service Content</h1>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="bg-white p-4 rounded shadow-sm">
+
+    <!-- Banner Image -->
+    <div class="section mb-5">
+      <h3 class="mb-4">Banner Image</h3>
+      <div class="mb-4">
+        <label class="form-label">Banner Image (1920x720):</label>
+        <div class="d-flex gap-3 align-items-center">
+          <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event)">
+          <button type="button" class="btn btn-outline-secondary" *ngIf="selectedImage" (click)="clearImage()">Clear</button>
+        </div>
+        <small class="text-muted">Recommended size: 1920x720 pixels</small>
+
+        <!-- Image Preview -->
+        <div *ngIf="imagePreview || form.get('bannerImage')?.value" class="mt-3">
+          <img [src]="imagePreview || buildImageUrl(form.get('bannerImage')?.value)" class="img-fluid rounded" style="max-height: 200px; width: auto;" alt="Banner preview">
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Editor -->
+    <div class="section mb-5">
+      <h3 class="mb-4">Content</h3>
+      <p class="text-muted mb-3">
+        Create content for the Technical Support Service page.
+      </p>
+      <p-editor formControlName="content" [style]="{'height':'400px'}">
+        <ng-template pTemplate="header">
+          <span class="ql-formats">
+            <select class="ql-header">
+              <option value="1">Heading 1</option>
+              <option value="2">Heading 2</option>
+              <option value="3">Heading 3</option>
+              <option selected>Normal</option>
+            </select>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-bold" aria-label="Bold"></button>
+            <button class="ql-italic" aria-label="Italic"></button>
+            <button class="ql-underline" aria-label="Underline"></button>
+          </span>
+          <span class="ql-formats">
+            <select class="ql-color"></select>
+            <select class="ql-background"></select>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-list" value="ordered"></button>
+            <button class="ql-list" value="bullet"></button>
+            <select class="ql-align"></select>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-link"></button>
+            <button class="ql-image"></button>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-clean"></button>
+          </span>
+        </ng-template>
+      </p-editor>
+    </div>
+
+    <!-- Save Button -->
+    <div class="d-flex justify-content-end">
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="form.invalid || isUploading">
+        {{ isUploading ? 'Saving...' : 'Save Changes' }}
+      </button>
+    </div>
+  </form>
+</div>

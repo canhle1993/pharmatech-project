@@ -177,22 +177,38 @@
                   <ul>
                     <li class="mega-menu-item-title">Service</li>
                     <li>
-                      <a class="sub-item-link">
+                      <a
+                        class="sub-item-link"
+                        [routerLink]="['/services']"
+                        [queryParams]="{tab: 'consulting'}"
+                      >
                         <span>Consulting</span>
                       </a>
                     </li>
                     <li>
-                      <a class="sub-item-link">
+                      <a
+                        class="sub-item-link"
+                        [routerLink]="['/services']"
+                        [queryParams]="{tab: 'technical-support'}"
+                      >
                         <span>Technical Support</span>
                       </a>
                     </li>
                     <li>
-                      <a class="sub-item-link">
+                      <a
+                        class="sub-item-link"
+                        [routerLink]="['/services']"
+                        [queryParams]="{tab: 'equipment-upgrade'}"
+                      >
                         <span>Equipment Upgrade</span>
                       </a>
                     </li>
                     <li>
-                      <a class="sub-item-link">
+                      <a
+                        class="sub-item-link"
+                        [routerLink]="['/services']"
+                        [queryParams]="{tab: 'maintenance'}"
+                      >
                         <span>Maintenance</span>
                       </a>
                     </li>
@@ -202,22 +218,22 @@
                   <ul>
                     <li class="mega-menu-item-title">Purchase</li>
                     <li>
-                      <a class="sub-item-link">
+                      <a class="sub-item-link" [routerLink]="['/purchase']" [queryParams]="{tab: 'customer-intake'}">
                         <span>Customer Information Intake</span>
                       </a>
                     </li>
                     <li>
-                      <a class="sub-item-link">
+                      <a class="sub-item-link" [routerLink]="['/purchase']" [queryParams]="{tab: 'technical-consulting'}">
                         <span>Technical Equipment Consulting</span>
                       </a>
                     </li>
                     <li>
-                      <a class="sub-item-link">
+                      <a class="sub-item-link" [routerLink]="['/purchase']" [queryParams]="{tab: 'urs-development'}">
                         <span>URS Development</span>
                       </a>
                     </li>
                     <li>
-                      <a class="sub-item-link">
+                      <a class="sub-item-link" [routerLink]="['/purchase']" [queryParams]="{tab: 'contract-signing'}">
                         <span>Contract Signing</span>
                       </a>
                     </li>

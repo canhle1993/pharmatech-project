@@ -20,7 +20,9 @@ export class MenuComponent implements OnInit, AfterViewInit {
     const menuToggles = document.querySelectorAll('.menu-toggle');
 
     menuToggles.forEach((toggle: any) => {
-      this.renderer.listen(toggle, 'click', () => {
+      this.renderer.listen(toggle, 'click', (evt: Event) => {
+        // prevent default anchor navigation to keep toggle-only behavior
+        evt.preventDefault();
         const parent = toggle.parentElement;
 
         // Nếu đang mở thì đóng
