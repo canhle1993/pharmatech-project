@@ -9,7 +9,6 @@ import { ContactComponent } from './pages/contact/contact.component';
 import { BannerComponent } from './pages/banner/banner.component';
 
 import { QuoteComponent } from './pages/quote/quote.component';
-import { RecruitmentHistoryComponent } from './pages/career/recruitment-history/recruitment-history.component';
 import { OrderDetailsComponent } from './pages/order/order-details/order-details.component';
 import { ChatComponent } from './pages/support/chat/chat.component';
 import { AccountDetailsComponent } from './pages/account/accountdetails/accountdetails.component';
@@ -28,6 +27,7 @@ import { ApplicationManagementComponent } from './pages/career/application-manag
 import { ProductStockManagementComponent } from './pages/product/product-stock-management/product-stock-management.component';
 import { ReturnListComponent } from './pages/order/return-list/return-list.component';
 import { RecycleComponent } from './pages/recycle/recycle-product-category/recycle.component';
+import { DashboardAnalyticsComponent } from './pages/career/analytics/analytics-dashboard.component';
 
 export const adminRoutes: Routes = [
   {
@@ -72,8 +72,8 @@ export const adminRoutes: Routes = [
         component: ApplicationManagementComponent,
       },
       {
-        path: 'career/recruitment-history',
-        component: RecruitmentHistoryComponent,
+        path: 'career/analytics-dashboard',
+        component: DashboardAnalyticsComponent,
       },
 
       { path: 'order/order-list', component: OrderListComponent },

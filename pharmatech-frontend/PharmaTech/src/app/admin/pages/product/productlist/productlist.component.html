@@ -14,7 +14,7 @@
     <p-table
       #dt
       [value]="filteredProducts"
-      [globalFilterFields]="['name']"
+      [globalFilterFields]="['name', 'model']"
       dataKey="id"
       [rows]="4"
       [paginator]="true"
@@ -55,7 +55,7 @@
                 pInputText
                 type="text"
                 (input)="onGlobalFilter($event, dt)"
-                placeholder="Search by name"
+                placeholder="Search by name, model"
               />
             </p-iconfield>
           </div>
@@ -94,12 +94,14 @@
           <td>{{ product.model }}</td>
           <td>
             <ng-container *ngIf="product.categories?.length > 0; else noCat">
-              <span *ngFor="let c of product.categories; let last = last">
-                {{ c.name }}<span *ngIf="!last">, </span>
+              <span *ngFor="let c of product.categories" class="cat-badge">
+                {{ c.name }}
               </span>
             </ng-container>
+
             <ng-template #noCat>-</ng-template>
           </td>
+
           <td>{{ product.price | currency : "USD" }}</td>
           <td>{{ product.stock_quantity }}</td>
           <td>

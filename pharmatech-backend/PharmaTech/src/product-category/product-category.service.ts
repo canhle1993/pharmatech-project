@@ -102,4 +102,28 @@ export class ProductCategoryService {
       });
     }
   }
+
+  /** 🔹 Cập nhật toàn bộ products của 1 category */
+  async updateProductsOfCategory(
+    category_id: string,
+    productIds: string[],
+    updated_by: string,
+  ) {
+    // Xóa toàn bộ liên kết cũ
+    await this.pcModel.deleteMany({
+      category_id: new Types.ObjectId(category_id),
+    });
+
+    // Tạo liên kết mới
+    for (const pid of productIds) {
+      await this.pcModel.create({
+        product_id: new Types.ObjectId(pid),
+        category_id: new Types.ObjectId(category_id),
+        updated_by,
+        created_at: new Date(),
+      });
+    }
+
+    return { ok: true };
+  }
 }

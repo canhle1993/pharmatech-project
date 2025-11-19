@@ -29,10 +29,4 @@ export class AnalyticsController {
   getProductsByCategory() {
     return this.analyticsService.getProductsByCategory();
   }
-
-  // Bar chart: số job (career) theo tháng
-  @Get('careers/monthly')
-  getCareersMonthly() {
-    return this.analyticsService.getCareersMonthly();
-  }
 }

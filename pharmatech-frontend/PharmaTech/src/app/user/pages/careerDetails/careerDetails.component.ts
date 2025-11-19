@@ -7,10 +7,13 @@ import { RouterModule } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
 import { ApplicationService } from '../../../services/application.service';
 import { MessageService } from 'primeng/api';
+import { DialogModule } from 'primeng/dialog';
+import { Router } from '@angular/router';
+import { AccountService } from '../../../services/account.service';
 
 @Component({
   templateUrl: './careerDetails.component.html',
-  imports: [CommonModule, RouterModule, ToastModule],
+  imports: [CommonModule, RouterModule, ToastModule, DialogModule],
   providers: [DatePipe],
   styleUrls: ['./careerDetails.component.css'],
 })
@@ -22,6 +25,8 @@ export class CareerDetailsComponent implements OnInit, AfterViewInit {
   showMoreInfo = false;
   benefitsView: string[] = [];
   similarJobs: Career[] = [];
+  // Dialog resume missing
+  showResumeDialog = false;
 
   // 🔹 fallback benefits (phòng trường hợp backend chưa có)
   private benefitsFallback: string[] = [
@@ -41,7 +46,9 @@ export class CareerDetailsComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private careerService: CareerService,
     private appService: ApplicationService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private router: Router,
+    private accountService: AccountService
   ) {}
 
   async ngOnInit() {
@@ -59,6 +66,15 @@ export class CareerDetailsComponent implements OnInit, AfterViewInit {
         setTimeout(() => (this.loading = false), 100);
       }
     });
+  }
+
+  goToProfile() {
+    this.showResumeDialog = false;
+
+    const userId = localStorage.getItem('userId');
+    if (!userId) return;
+
+    this.router.navigate(['/profile', userId]);
   }
 
   /** 🧩 Dựng danh sách benefits đẹp */
@@ -85,13 +101,25 @@ export class CareerDetailsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  /** 🟢 When user clicks "Apply Now" */
-  /** 🟢 When user clicks "Apply Now" */
-  async applyJob() {
-    const userId = localStorage.getItem('userId');
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+  /** ✔ CHECK job expired OR inactive */
+  isExpired(): boolean {
+    if (!this.career) return false;
 
-    // 🔒 Kiểm tra đăng nhập
+    const now = new Date();
+    const expiredDate =
+      this.career.expiration_date &&
+      new Date(this.career.expiration_date).getTime() < now.getTime();
+
+    const inactive = this.career.is_active === false;
+
+    return expiredDate || inactive;
+  }
+  /** 🟢 When user clicks "Apply Now" */
+  /** 🟢 APPLY BUTTON LOGIC */
+  async applyJob() {
+    if (this.isExpired()) return;
+
+    const userId = localStorage.getItem('userId');
     if (!userId) {
       this.messageService.add({
         severity: 'warn',
@@ -101,43 +129,52 @@ export class CareerDetailsComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    if (!this.career?.id) return;
+    // ⭐ Load latest user
+    const freshUser = await this.accountService.findById(userId);
+    localStorage.setItem('user', JSON.stringify(freshUser));
 
-    // ⚠️ Kiểm tra bắt buộc có CV
-    if (!user.resume) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Incomplete profile',
-        detail:
-          'Please upload your resume (CV) in your profile before applying.',
-      });
+    // 1️⃣ CHECK DUPLICATE
+    try {
+      const check = await this.appService.checkDuplicate(
+        userId,
+        this.career?.id!
+      );
+
+      if (check.applied) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Already applied',
+          detail: `You already applied for "${this.career?.title}".`,
+        });
+        return;
+      }
+    } catch (err) {
+      console.error('❌ Duplicate check error:', err);
+    }
+
+    // 2️⃣ CHECK RESUME
+    if (!freshUser.resume) {
+      this.showResumeDialog = true;
       return;
     }
 
+    // 3️⃣ SUBMIT APPLICATION
     try {
       this.loading = true;
 
-      // 🧩 Chuẩn hóa payload
-      const payload = {
+      await this.appService.create({
         account_id: userId,
-        career_id: this.career.id,
-        resume: user.resume,
-        expected_salary: user.expected_salary ?? null,
-        available_from: user.available_from ?? null,
-        introduction: user.introduction ?? null,
-      };
-
-      console.log('📤 Applying job with payload:', payload);
-
-      const res = await this.appService.create(payload);
+        career_id: this.career?.id,
+        expected_salary: freshUser.expected_salary ?? null,
+        available_from: freshUser.available_from ?? null,
+      });
 
       this.messageService.add({
         severity: 'success',
         summary: 'Application submitted',
-        detail: `You have successfully applied for "${this.career.title}".`,
+        detail: `You have successfully applied for "${this.career?.title}".`,
       });
-    } catch (err: any) {
-      console.error('❌ Error applying job:', err);
+    } catch (err) {
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
@@ -213,5 +250,43 @@ export class CareerDetailsComponent implements OnInit, AfterViewInit {
       script.type = 'text/javascript';
       this.renderer.appendChild(document.body, script);
     });
+  }
+
+  async saveJob() {
+    const userId = localStorage.getItem('userId');
+
+    if (!userId) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Login required',
+        detail: 'Please login to save this job.',
+      });
+      return;
+    }
+
+    try {
+      await this.careerService.saveJob(userId, this.career?.id!);
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Saved',
+        detail: 'Job has been added to your saved list.',
+      });
+    } catch (err: any) {
+      // Duplicate
+      if (err?.error?.message === 'Job already saved') {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Already saved',
+          detail: 'You already saved this job.',
+        });
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Could not save job.',
+        });
+      }
+    }
   }
 }

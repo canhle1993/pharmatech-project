@@ -17,14 +17,42 @@ export class ApplicationService {
     );
   }
 
-  /** 🟢 Lấy toàn bộ danh sách hồ sơ ứng tuyển */
+  /** 🟢 Lấy danh sách ACTIVE */
   async findAll(): Promise<Application[]> {
     return await lastValueFrom(
       this.httpClient.get<Application[]>(env.baseUrl + 'application/find-all')
     );
   }
 
-  /** 🟢 Lấy danh sách ứng tuyển theo account */
+  /** 🟣 Lấy danh sách HISTORY */
+  async findHistory(): Promise<Application[]> {
+    return await lastValueFrom(
+      this.httpClient.get<Application[]>(env.baseUrl + 'application/history')
+    );
+  }
+
+  /** 🔄 Khôi phục hồ sơ (RESTORE) */
+  async restore(id: string) {
+    return await lastValueFrom(
+      this.httpClient.put(env.baseUrl + 'application/restore/' + id, {})
+    );
+  }
+
+  /** ☠️ Xóa vĩnh viễn */
+  async deletePermanent(id: string) {
+    return await lastValueFrom(
+      this.httpClient.delete(env.baseUrl + 'application/delete-permanent/' + id)
+    );
+  }
+
+  /** 🟡 Xóa mềm – Chuyển vào HISTORY */
+  async softDelete(id: string) {
+    return await lastValueFrom(
+      this.httpClient.delete(env.baseUrl + 'application/' + id)
+    );
+  }
+
+  /** 🟢 Lấy danh sách theo account */
   async findByAccount(account_id: string): Promise<Application[]> {
     return await lastValueFrom(
       this.httpClient.get<Application[]>(
@@ -33,7 +61,7 @@ export class ApplicationService {
     );
   }
 
-  /** 🟢 Lấy danh sách ứng tuyển theo career (job) */
+  /** 🟢 Lấy danh sách theo career */
   async findByCareer(career_id: string): Promise<Application[]> {
     return await lastValueFrom(
       this.httpClient.get<Application[]>(
@@ -42,12 +70,8 @@ export class ApplicationService {
     );
   }
 
-  /** 🟢 Cập nhật trạng thái hồ sơ (admin dùng) */
-  async updateStatus(
-    id: string,
-    status: string,
-    note?: string
-  ): Promise<Application> {
+  /** 🧠 Cập nhật trạng thái */
+  async updateStatus(id: string, status: string, note?: string) {
     return await lastValueFrom(
       this.httpClient.patch<Application>(
         env.baseUrl + 'application/update-status/' + id,
@@ -56,42 +80,48 @@ export class ApplicationService {
     );
   }
 
-  /** 🧑‍💼 SuperAdmin → Phân công admin phụ trách */
-  async assignAdmin(
-    id: string,
-    admin_id: string,
-    admin_name: string
-  ): Promise<Application> {
+  /** 🧑‍💼 Phân công admin */
+  async assignAdmin(id: string, admin_id: string, admin_name: string) {
     return await lastValueFrom(
       this.httpClient.patch<Application>(
         env.baseUrl + 'application/assign/' + id,
-        { admin_id, admin_name } // ✅ khớp với BE
+        { admin_id, admin_name }
       )
     );
   }
 
-  /** 📅 Admin → Lên lịch phỏng vấn */
+  /** ✉ Lấy template email */
+  async getEmailTemplate(id: string): Promise<string> {
+    const res = await lastValueFrom(
+      this.httpClient.get<{ template: string }>(
+        env.baseUrl + 'application/generate-template/' + id
+      )
+    );
+    return res.template;
+  }
+
+  /** 📅 Lên lịch phỏng vấn */
   async scheduleInterview(
     id: string,
-    interview_date: string,
-    interview_location: string,
-    interview_note?: string
-  ): Promise<Application> {
+    date: string,
+    location: string,
+    email_content: string
+  ) {
     return await lastValueFrom(
       this.httpClient.patch<Application>(
         env.baseUrl + 'application/schedule/' + id,
-        { interview_date, interview_location, interview_note }
+        { date, location, email_content }
       )
     );
   }
 
-  /** ✅ Admin → Cập nhật kết quả phỏng vấn */
+  /** 🟪 Update hired result */
   async updateResult(
     id: string,
     result: string,
     hired_department?: string,
     hired_start_date?: string
-  ): Promise<Application> {
+  ) {
     return await lastValueFrom(
       this.httpClient.patch<Application>(
         env.baseUrl + 'application/result/' + id,
@@ -100,17 +130,84 @@ export class ApplicationService {
     );
   }
 
-  /** 🗑️ Xóa hồ sơ ứng tuyển */
-  async delete(id: string): Promise<void> {
+  /** Admin list (ÔN GIỮ NGUYÊN) */
+  async findAllAdmins() {
     return await lastValueFrom(
-      this.httpClient.delete<void>(env.baseUrl + 'application/delete/' + id)
+      this.httpClient.get<any[]>(env.baseUrl + 'account/find-by-role/admin')
     );
   }
 
-  /** 🧾 Lấy danh sách admin (role = 'admin') */
-  async findAllAdmins(): Promise<any[]> {
+  // ===============================
+  // 🟩 PASS
+  // ===============================
+  async markAsPass(
+    id: string,
+    start_work_date: string,
+    location: string,
+    email_content: string
+  ) {
     return await lastValueFrom(
-      this.httpClient.get<any[]>(env.baseUrl + 'account/find-by-role/admin')
+      this.httpClient.patch<Application>(
+        env.baseUrl + 'application/mark-pass/' + id,
+        {
+          start_work_date,
+          location,
+          email_content,
+        }
+      )
+    );
+  }
+
+  async getPassEmailTemplate(id: string): Promise<string> {
+    const res = await lastValueFrom(
+      this.httpClient.get<{ template: string }>(
+        env.baseUrl + 'application/generate-pass-template/' + id
+      )
+    );
+    return res.template;
+  }
+
+  /** ============================
+   * 🟥 REJECT
+   ============================ */
+  async markAsReject(
+    id: string,
+    reason: string,
+    email_content: string,
+    rejected_by: string
+  ) {
+    return await lastValueFrom(
+      this.httpClient.patch<Application>(
+        env.baseUrl + 'application/mark-reject/' + id,
+        {
+          reason,
+          email_content,
+          rejected_by,
+        }
+      )
+    );
+  }
+
+  async getRejectEmailTemplate(id: string): Promise<string> {
+    const res = await lastValueFrom(
+      this.httpClient.get<{ template: string }>(
+        env.baseUrl + 'application/generate-reject-template/' + id
+      )
+    );
+    return res.template;
+  }
+
+  async checkDuplicate(user_id: string, career_id: string) {
+    return await lastValueFrom(
+      this.httpClient.get<{ applied: boolean }>(
+        `${env.baseUrl}application/check-duplicate`,
+        {
+          params: {
+            user_id,
+            career_id,
+          },
+        }
+      )
     );
   }
 }

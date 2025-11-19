@@ -24,18 +24,13 @@ export class ApplicationDTO {
   @Expose()
   career_id: string;
 
-  @Transform(({ obj }) =>
-    obj?.resume ? `${getImageUrl()}${obj.resume}` : null,
-  )
-  @Expose()
-  resume?: string | null;
-
   @Expose() cover_letter?: string;
   @Expose() portfolio?: string;
   @Expose() expected_salary?: number;
   @Expose() available_from?: Date;
   @Expose() status?: string;
-  @Expose() note?: string;
+
+  @Expose() is_active?: boolean;
 
   /** 🧩 SuperAdmin assignment */
   @Expose() assigned_admin_id?: string;
@@ -66,6 +61,45 @@ export class ApplicationDTO {
   @Expose() hired_department?: string;
   @Expose() email_sent?: boolean;
 
+  /** 🟩 PASS Info */
+  @Transform(({ obj }) =>
+    obj?.pass_date ? moment(obj.pass_date).format('DD/MM/YYYY HH:mm') : null,
+  )
+  @Expose()
+  pass_date?: string | null;
+
+  @Transform(({ obj }) =>
+    obj?.start_work_date
+      ? moment(obj.start_work_date).format('DD/MM/YYYY HH:mm')
+      : null,
+  )
+  @Expose()
+  start_work_date?: string | null;
+
+  @Expose()
+  pass_location?: string;
+
+  @Expose()
+  pass_email_content?: string;
+
+  /** 🟥 REJECT Info */
+  @Transform(({ obj }) =>
+    obj?.reject_date
+      ? moment(obj.reject_date).format('DD/MM/YYYY HH:mm')
+      : null,
+  )
+  @Expose()
+  reject_date?: string | null;
+
+  @Expose()
+  reject_reason?: string;
+
+  @Expose()
+  reject_email_content?: string;
+
+  @Expose()
+  rejected_by?: string;
+
   /** 🕒 Timestamp */
   @Transform(({ obj }) =>
     obj?.created_at ? moment(obj.created_at).format('DD/MM/YYYY HH:mm') : null,
@@ -91,10 +125,6 @@ export class CreateApplicationDto {
   @IsNotEmpty()
   @IsString()
   career_id: string;
-
-  @IsOptional()
-  @IsString()
-  resume?: string;
 
   @IsOptional()
   @IsString()

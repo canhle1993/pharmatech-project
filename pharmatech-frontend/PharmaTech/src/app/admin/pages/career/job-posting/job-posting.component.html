@@ -32,7 +32,14 @@
 <!-- Bảng danh sách -->
 <div class="card shadow-sm p-4">
   <div class="flex justify-content-end align-items-center mb-3">
-    <button pButton label="Add New" icon="pi pi-plus" class="p-button-sm p-button-primary" (click)="openAdd()"></button>
+
+    <!-- 🔵 Toggle History -->
+    <button pButton class="p-button-sm p-button-secondary mr-2" icon="pi pi-history"
+      [label]="viewMode === 'active' ? 'History' : 'Back'" (click)="toggleHistory()"></button>
+
+    <button *ngIf="viewMode === 'active'" pButton label="Add New" icon="pi pi-plus" class="p-button-sm p-button-primary"
+      (click)="openAdd()"></button>
+
   </div>
 
   <p-table #dt [value]="careers" [paginator]="true" [rows]="5" [loading]="loading" sortMode="single"
@@ -40,6 +47,7 @@
     [tableStyle]="{ 'min-width': '75rem' }">
     <!-- 🔍 Search toàn bảng -->
     <ng-template pTemplate="caption">
+      <!-- Search bar -->
       <div class="flex justify-content-between align-items-center mb-3">
         <p-iconfield iconPosition="left" class="ml-auto">
           <p-inputicon>
@@ -49,7 +57,15 @@
             placeholder="Search jobs..." class="p-inputtext-sm w-18rem" />
         </p-iconfield>
       </div>
+
+      <div *ngIf="viewMode === 'history'" class="history-banner">
+        <i class="pi pi-info-circle"></i>
+        Showing deleted / expired job posts
+      </div>
+
+
     </ng-template>
+
 
     <!-- Header -->
     <ng-template pTemplate="header">
@@ -91,13 +107,35 @@
         <td>{{ job.posted_by }}</td>
         <td>{{ job.created_at | date: 'short' }}</td>
         <td class="text-center">
-          <button pButton icon="pi pi-eye" class="p-button-rounded p-button-text p-button-info p-button-sm"
-            (click)="openDetail(job)" title="Details"></button>
-          <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-success p-button-sm"
-            (click)="openEdit(job)"></button>
-          <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger p-button-sm"
-            (click)="deleteJob(job)"></button>
+
+          <!-- 🟢 ACTIVE MODE (View – Edit – Delete) -->
+          <ng-container *ngIf="viewMode === 'active'">
+            <button pButton icon="pi pi-eye" class="p-button-rounded p-button-text p-button-info p-button-sm"
+              (click)="openDetail(job)" title="Details">
+            </button>
+
+            <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-success p-button-sm"
+              (click)="openEdit(job)">
+            </button>
+
+            <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger p-button-sm"
+              (click)="deleteJob(job)">
+            </button>
+          </ng-container>
+
+          <!-- 🔴 HISTORY MODE (Restore – Delete Permanently) -->
+          <ng-container *ngIf="viewMode === 'history'">
+            <button pButton icon="pi pi-replay" class="p-button-rounded p-button-text p-button-success p-button-sm"
+              (click)="restore(job)" title="Restore">
+            </button>
+
+            <button pButton icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger p-button-sm"
+              (click)="deletePermanent(job)" title="Delete Permanently">
+            </button>
+          </ng-container>
+
         </td>
+
       </tr>
     </ng-template>
   </p-table>

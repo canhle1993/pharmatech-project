@@ -209,3 +209,16 @@
   object-fit: cover;
   border: 1px solid #ddd;
 }
+
+.recycle-photo {
+  border-radius: 6px;
+  object-fit: cover;
+  width: 60px;
+  height: 60px;
+  border: 1px solid #ddd;
+  transition: transform 0.2s ease;
+}
+
+.recycle-photo:hover {
+  transform: scale(1.1);
+}

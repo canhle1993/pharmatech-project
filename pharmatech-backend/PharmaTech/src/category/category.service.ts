@@ -22,27 +22,38 @@ export class CategoryService {
 
   /** 🔹 Lấy 1 category (kèm danh sách products thuộc category đó) */
   async findById(id: string): Promise<CategoryDTO | null> {
-    // ✅ Tìm category theo ID
     const category = await this.categoryModel.findById(id).lean();
     if (!category) return null;
 
-    // ✅ Populate danh sách sản phẩm thuộc category này
+    const ProductCategoryModel = (this.categoryModel.db.models as any)[
+      'ProductCategory'
+    ];
     const ProductModel = (this.categoryModel.db.models as any)['Product'];
-    const products = await ProductModel.find({
-      category_ids: { $in: [id] },
-      is_delete: false,
-    })
-      .select('_id name model introduce price photo')
-      .lean();
 
-    // ✅ Convert sang DTO
+    // 🔹 Lấy các liên kết product-category
+    const links = await ProductCategoryModel.find({ category_id: id }).lean();
+
+    let products = [];
+    let productIds = [];
+
+    if (links.length > 0) {
+      productIds = links.map((l: any) => l.product_id.toString());
+
+      products = await ProductModel.find({
+        _id: { $in: productIds },
+        is_delete: false,
+      })
+        .select('_id name model introduce price photo')
+        .lean();
+    }
+
+    // 🔹 Convert sang DTO
     const dto = plainToInstance(CategoryDTO, category, {
       excludeExtraneousValues: true,
     });
 
-    // ✅ Gán danh sách products vào DTO
     (dto as any).products = products.map((p: any) => ({
-      id: p._id,
+      id: p._id.toString(),
       name: p.name,
       model: p.model,
       introduce: p.introduce,
@@ -50,8 +61,7 @@ export class CategoryService {
       photo: p.photo,
     }));
 
-    // ✅ Gán thêm mảng id sản phẩm (để Angular tick MultiSelect)
-    (dto as any).product_ids = products.map((p: any) => p._id.toString());
+    (dto as any).product_ids = productIds;
 
     return dto;
   }

@@ -287,6 +287,7 @@
         <!-- Select product -->
         <div class="field">
           <label for="editProduct">Select Product</label>
+
           <p-multiSelect
             [options]="products"
             optionLabel="name"
@@ -295,7 +296,27 @@
             [filter]="true"
             [appendTo]="'body'"
             placeholder="Choose one or more products"
-          ></p-multiSelect>
+          >
+            <!-- Item trong dropdown -->
+            <ng-template let-item pTemplate="item">
+              <div>
+                <strong>{{ item.name }}</strong>
+                <div style="font-size: 11px; color: #777">
+                  ID: {{ item.id }}
+                </div>
+              </div>
+            </ng-template>
+
+            <!-- Khi chọn 1 product -->
+            <ng-template let-item pTemplate="selectedItem">
+              {{ item.name }}
+            </ng-template>
+
+            <!-- Khi chọn nhiều product -->
+            <ng-template pTemplate="selectedItems">
+              {{ editForm.value.product_id?.length || 0 }} items selected
+            </ng-template>
+          </p-multiSelect>
         </div>
       </div>
 

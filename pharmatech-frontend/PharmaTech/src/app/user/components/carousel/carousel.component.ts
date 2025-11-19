@@ -1,10 +1,12 @@
 import { AfterViewInit, Component, OnInit, Renderer2 } from '@angular/core';
 import { BannerService, Banner } from '../../../services/banner.service';
 import { firstValueFrom } from 'rxjs';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-carousel',
   templateUrl: './carousel.component.html',
+  imports: [RouterLink],
 })
 export class CarouselComponent implements OnInit, AfterViewInit {
   bannerData: Banner | null = null;

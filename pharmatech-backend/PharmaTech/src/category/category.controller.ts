@@ -156,7 +156,7 @@ export class CategoryController {
           );
         }
 
-        await this.productCategoryService.updateCategoryProducts(
+        await this.productCategoryService.updateProductsOfCategory(
           categoryId,
           productIds,
           categoryDTO.updated_by || 'admin',

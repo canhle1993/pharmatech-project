@@ -27,35 +27,91 @@ export class ProductService {
   ) {}
 
   /** 🔹 Lấy 1 sản phẩm (kèm ảnh phụ + categories) */
-  async findById(id: string): Promise<ProductDTO | null> {
-    const product = await this._productModel
-      .findById(id)
-      .populate({
-        path: 'category_ids',
-        model: 'Category',
-        select: '_id name',
-      })
-      .exec();
+  // async findById(id: string): Promise<ProductDTO | null> {
+  //   const product = await this._productModel
+  //     .findById(id)
+  //     .populate({
+  //       path: 'category_ids',
+  //       model: 'Category',
+  //       select: '_id name',
+  //     })
+  //     .exec();
 
+  //   if (!product) return null;
+
+  //   const images = await this._productImageModel
+  //     .find({ product_id: id })
+  //     .sort({ updated_at: -1, created_at: -1 })
+  //     .exec();
+
+  //   const dto = plainToInstance(ProductDTO, product.toObject(), {
+  //     excludeExtraneousValues: true,
+  //   });
+
+  //   (dto as any).gallery = images.map((img) => img.url);
+  //   (dto as any).categories = (product as any).category_ids.map((c: any) => ({
+  //     id: c._id,
+  //     name: c.name,
+  //   }));
+  //   (dto as any).category_ids = (product as any).category_ids.map((c: any) =>
+  //     c._id.toString(),
+  //   );
+
+  //   return dto;
+  // }
+
+  /** 🔹 Lấy 1 sản phẩm (kèm ảnh phụ + categories) */
+  async findById(id: string): Promise<ProductDTO | null> {
+    const product = await this._productModel.findById(id).lean(); // ⚡ dùng lean() cho dễ xử lý
     if (!product) return null;
 
+    // ======================
+    // ⭐ LOAD IMAGES
+    // ======================
     const images = await this._productImageModel
       .find({ product_id: id })
       .sort({ updated_at: -1, created_at: -1 })
-      .exec();
+      .lean();
 
-    const dto = plainToInstance(ProductDTO, product.toObject(), {
+    // ======================
+    // ⭐ LOAD CATEGORIES TỪ BẢNG TRUNG GIAN (giống findAll)
+    // ======================
+    const ProductCategoryModel = (this._productModel.db.models as any)[
+      'ProductCategory'
+    ];
+    const CategoryModel = (this._productModel.db.models as any)['Category'];
+
+    const links = await ProductCategoryModel.find({ product_id: id }).lean();
+
+    let categories = [];
+    let category_ids = [];
+
+    if (links.length > 0) {
+      category_ids = links.map((l: any) => l.category_id?.toString());
+
+      const cats = await CategoryModel.find({
+        _id: { $in: category_ids },
+        is_delete: false,
+      })
+        .select('_id name')
+        .lean();
+
+      categories = cats.map((c: any) => ({
+        id: c._id.toString(),
+        name: c.name,
+      }));
+    }
+
+    // ======================
+    // ⭐ BUILD DTO
+    // ======================
+    const dto = plainToInstance(ProductDTO, product, {
       excludeExtraneousValues: true,
     });
 
     (dto as any).gallery = images.map((img) => img.url);
-    (dto as any).categories = (product as any).category_ids.map((c: any) => ({
-      id: c._id,
-      name: c.name,
-    }));
-    (dto as any).category_ids = (product as any).category_ids.map((c: any) =>
-      c._id.toString(),
-    );
+    (dto as any).categories = categories; // ⭐ ĐÃ SỬA — GIỜ ĐÚNG 2 CATEGORY
+    (dto as any).category_ids = category_ids;
 
     return dto;
   }

@@ -54,15 +54,11 @@
       <div>
         <label>Category:</label>
         <ng-container *ngIf="product.categories?.length > 0; else noCat">
-          <p>
-            <span *ngFor="let c of product.categories; let last = last">
-              {{ c.name }}<span *ngIf="!last">, </span>
-            </span>
-          </p>
+          <span *ngFor="let c of product.categories; let last = last">
+            {{ c.name }}<span *ngIf="!last">, </span>
+          </span>
         </ng-container>
-        <ng-template #noCat>
-          <p class="text-muted">No category assigned.</p>
-        </ng-template>
+        <ng-template #noCat>-</ng-template>
       </div>
 
       <div>

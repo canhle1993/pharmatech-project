@@ -9,6 +9,11 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ProductService } from '../../../../services/product.service';
 import { CategoryService } from '../../../../services/category.service';
+import { InputTextModule } from 'primeng/inputtext';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-recycle',
@@ -23,6 +28,10 @@ import { CategoryService } from '../../../../services/category.service';
     ToastModule,
     ConfirmDialogModule,
     ProgressSpinnerModule,
+    InputTextModule,
+    IconFieldModule,
+    InputIconModule,
+    FormsModule,
   ],
   providers: [MessageService, ConfirmationService],
 })
@@ -39,11 +48,17 @@ export class RecycleComponent implements OnInit {
   deletedProducts: any[] = [];
   deletedCategories: any[] = [];
 
+  searchText: string = '';
+
+  filteredProducts: any[] = [];
+  filteredCategories: any[] = [];
+
   constructor(
     private productService: ProductService,
     private categoryService: CategoryService,
     private message: MessageService,
-    private confirmService: ConfirmationService
+    private confirmService: ConfirmationService,
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -61,6 +76,10 @@ export class RecycleComponent implements OnInit {
 
       this.deletedProducts = prodRes ?? [];
       this.deletedCategories = catRes ?? [];
+
+      // ⭐ GÁN DỮ LIỆU BAN ĐẦU CHO FILTER ⭐
+      this.filteredProducts = [...this.deletedProducts];
+      this.filteredCategories = [...this.deletedCategories];
     } catch (err) {
       console.error(err);
       this.message.add({
@@ -103,6 +122,20 @@ export class RecycleComponent implements OnInit {
         }
       },
     });
+  }
+
+  onSearchChange() {
+    const keyword = this.searchText.toLowerCase().trim();
+
+    // Filter Products
+    this.filteredProducts = this.deletedProducts.filter((item) =>
+      item.name.toLowerCase().includes(keyword)
+    );
+
+    // Filter Categories
+    this.filteredCategories = this.deletedCategories.filter((item) =>
+      item.name.toLowerCase().includes(keyword)
+    );
   }
 
   /** 🔄 Restore Category (có confirm) */

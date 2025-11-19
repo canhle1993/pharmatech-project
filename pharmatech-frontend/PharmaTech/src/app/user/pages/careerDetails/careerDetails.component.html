@@ -44,14 +44,28 @@
         </div>
 
         <div class="d-flex gap-2 mt-3">
+          <!-- Nếu job hết hạn -->
           <button
+            *ngIf="isExpired()"
+            class="btn btn-danger rounded-pill px-4"
+            disabled
+          >
+            EXPIRED
+          </button>
+
+          <!-- Nếu job còn hạn -->
+          <button
+            *ngIf="!isExpired()"
             class="btn btn-primary rounded-pill px-4"
             (click)="applyJob()"
           >
             Apply Now
           </button>
 
-          <button class="btn btn-outline-dark rounded-pill px-4">
+          <button
+            class="btn btn-outline-dark rounded-pill px-4"
+            (click)="saveJob()"
+          >
             Save Job
           </button>
         </div>
@@ -482,3 +496,25 @@
   <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
   <p>Loading job details...</p>
 </div>
+
+<p-dialog
+  header="Resume Required"
+  [(visible)]="showResumeDialog"
+  [modal]="true"
+  [closable]="false"
+  [style]="{ width: '420px' }"
+>
+  <p class="mb-4">
+    Your profile does not contain a resume (CV). Please upload your resume
+    before applying.
+  </p>
+
+  <div class="dialog-actions">
+    <button class="btn-primary-custom" (click)="goToProfile()">
+      Go to Profile
+    </button>
+    <button class="btn-secondary-custom" (click)="showResumeDialog = false">
+      Cancel
+    </button>
+  </div>
+</p-dialog>

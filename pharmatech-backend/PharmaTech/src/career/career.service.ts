@@ -100,7 +100,7 @@ export class CareerService {
   /** 📋 Lấy danh sách job */
   async findAll(): Promise<CareerDTO[]> {
     const careers = await this.careerModel
-      .find({ is_active: true })
+      .find()
       .sort({ created_at: -1 })
       .lean();
 
@@ -146,6 +146,10 @@ export class CareerService {
 
   /** 🧭 Gợi ý các job tương tự */
   async findSimilarById(id: string): Promise<CareerDTO[]> {
+    if (!id || id === 'undefined') {
+      return []; // hoặc throw new BadRequestException('Invalid career id');
+    }
+
     const current = (await this.careerModel.findById(id).lean()) as any;
     if (!current) throw new NotFoundException('Career not found');
 
@@ -168,5 +172,51 @@ export class CareerService {
     return plainToInstance(CareerDTO, results, {
       excludeExtraneousValues: true,
     });
+  }
+
+  /** 🟡 Lấy danh sách job đã bị tắt (History) */
+  async findHistory(): Promise<CareerDTO[]> {
+    const careers = await this.careerModel
+      .find({ is_active: false })
+      .sort({ updated_at: -1 })
+      .lean();
+
+    return plainToInstance(CareerDTO, careers, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  /** ♻️ Khôi phục job */
+  async restore(id: string): Promise<CareerDTO> {
+    const career = await this.careerModel.findById(id);
+    if (!career) throw new NotFoundException('Career not found');
+
+    career.is_active = true;
+    career.updated_at = new Date();
+
+    const updated = await career.save();
+
+    return plainToInstance(CareerDTO, updated.toObject(), {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  /** 🔥 Xóa vĩnh viễn (không thể phục hồi) */
+  async deletePermanent(id: string): Promise<boolean> {
+    const result = await this.careerModel.deleteOne({ _id: id });
+    return result.deletedCount > 0;
+  }
+
+  /** ⏳ Auto chuyển bài hết hạn sang lịch sử */
+  async autoExpire() {
+    await this.careerModel.updateMany(
+      {
+        expiration_date: { $lte: new Date() },
+        is_active: true,
+      },
+      {
+        $set: { is_active: false, updated_at: new Date() },
+      },
+    );
   }
 }

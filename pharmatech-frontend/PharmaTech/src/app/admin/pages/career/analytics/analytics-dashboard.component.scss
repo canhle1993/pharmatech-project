@@ -1,0 +1,226 @@
+.analytics-container {
+  padding: 24px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+
+  /* ============================
+        PAGE HEADER (NEW)
+  ============================ */
+  /* ==========================================
+      PREMIUM DASHBOARD TITLE EFFECT
+========================================== */
+
+  .page-header {
+    width: 100%;
+    text-align: center;
+    padding: 10px 0 20px 0;
+    margin-bottom: 16px;
+    position: relative;
+
+    h2 {
+      font-size: 40px;
+      font-weight: 900;
+      margin: 0;
+      letter-spacing: 1.5px;
+
+      /* Gradient text */
+      background: linear-gradient(90deg, #ff3d3d, #ff7a7a, #ff9e9e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+
+      /* Entrance + pulse */
+      animation: fadeDown 0.8s ease both, pulseGlow 2.8s infinite ease-in-out;
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      font-size: 17px;
+      color: #777;
+      font-weight: 500;
+      animation: fadeUp 1s ease both;
+    }
+
+    /* Underline animated */
+    .underline {
+      width: 120px;
+      height: 4px;
+      margin: 14px auto 0 auto;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #ff7a7a, #ff3d3d, #ff7a7a);
+      background-size: 200% 100%;
+      animation: underlineMove 3s linear infinite;
+    }
+  }
+
+  /* Smooth drop animation */
+  @keyframes fadeDown {
+    0% {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.92);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Smooth rise animation */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Glow pulse */
+  @keyframes pulseGlow {
+    0% {
+      text-shadow: 0 0 0px rgba(255, 61, 61, 0);
+    }
+    50% {
+      text-shadow: 0 0 12px rgba(255, 61, 61, 0.45);
+    }
+    100% {
+      text-shadow: 0 0 0px rgba(255, 61, 61, 0);
+    }
+  }
+
+  /* Underline moving gradient effect */
+  @keyframes underlineMove {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 200% 50%;
+    }
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ============================
+        OVERVIEW CARDS
+  ============================ */
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+
+    .overview-card {
+      padding: 20px;
+      border-radius: 14px;
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(200, 200, 200, 0.2);
+      transition: all 0.25s ease;
+
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+      }
+
+      h6 {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #666;
+        text-transform: uppercase;
+      }
+
+      h2 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #ff3d3d;
+        margin: 0;
+      }
+    }
+  }
+
+  /* ============================
+        CHART GRID + CARDS
+  ============================ */
+  .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 24px;
+
+    .chart-card {
+      padding: 20px;
+      border-radius: 14px;
+      background: #ffffff;
+      border: 1px solid rgba(200, 200, 200, 0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      min-height: 360px;
+
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+      }
+
+      .chart-title {
+        margin-bottom: 18px;
+        font-size: 16px;
+        font-weight: 700;
+        color: #333;
+      }
+
+      /* PRIME NG CHART FIX */
+      p-chart {
+        flex: 1;
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Canvas fix để tránh co layout */
+      canvas {
+        width: 100% !important;
+        height: 100% !important;
+      }
+    }
+  }
+
+  /* ============================
+        RESPONSIVE
+  ============================ */
+  @media (max-width: 768px) {
+    padding: 16px;
+
+    .page-header h2 {
+      font-size: 28px;
+    }
+
+    .chart-card {
+      min-height: 300px;
+    }
+  }
+}

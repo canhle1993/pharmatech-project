@@ -12,6 +12,24 @@
   ></p-progressSpinner>
 
   <div class="card" *ngIf="!loading">
+    <!-- 🔍 Search bar -->
+    <div
+      class="toolbar flex justify-content-end mb-3"
+      style="margin: 20px !important"
+    >
+      <p-iconfield iconPosition="left">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input
+          pInputText
+          type="text"
+          placeholder="Search by name"
+          [(ngModel)]="searchText"
+          (input)="onSearchChange()"
+          style="width: 350px"
+        />
+      </p-iconfield>
+    </div>
+
     <p-tabs [(value)]="activeTab">
       <p-tablist>
         @for (tab of tabs; track tab.value) {
@@ -25,10 +43,11 @@
         <!-- ================= PRODUCT TAB ================= -->
         <p-tabpanel value="product">
           <p-table
-            [value]="deletedProducts"
+            [value]="filteredProducts"
             dataKey="_id"
             [paginator]="true"
-            [rows]="6"
+            [rows]="4"
+            [rowsPerPageOptions]="[4, 10, 20]"
             [responsiveLayout]="'scroll'"
             showGridlines
             class="order-table"
@@ -38,7 +57,12 @@
                 <th>Photo</th>
                 <th>Name</th>
                 <th>Model</th>
-                <th>Price</th>
+                <th pSortableColumn="price">
+                  Price <p-sortIcon field="price"></p-sortIcon>
+                </th>
+                <th pSortableColumn="created_at">
+                  Created At <p-sortIcon field="created_at"></p-sortIcon>
+                </th>
                 <th>Updated By</th>
                 <th>Action</th>
               </tr>
@@ -57,6 +81,7 @@
                 <td>{{ p.name }}</td>
                 <td>{{ p.model || "—" }}</td>
                 <td>${{ p.price }}</td>
+                <td>{{ p.created_at | date : "medium" }}</td>
                 <td>{{ p.updated_by || "—" }}</td>
 
                 <td class="actions">
@@ -87,10 +112,11 @@
         <!-- ================= CATEGORY TAB ================= -->
         <p-tabpanel value="category">
           <p-table
-            [value]="deletedCategories"
+            [value]="filteredCategories"
             dataKey="_id"
+            [rows]="4"
+            [rowsPerPageOptions]="[4, 10, 20]"
             [paginator]="true"
-            [rows]="6"
             [responsiveLayout]="'scroll'"
             showGridlines
             class="order-table"
@@ -100,6 +126,9 @@
                 <th>Photo</th>
                 <th>Name</th>
                 <th>Description</th>
+                <th pSortableColumn="created_at">
+                  Created At <p-sortIcon field="created_at"></p-sortIcon>
+                </th>
                 <th>Updated By</th>
                 <th>Action</th>
               </tr>
@@ -116,6 +145,7 @@
                 </td>
                 <td>{{ c.name }}</td>
                 <td>{{ c.description || "—" }}</td>
+                <td>{{ c.created_at | date : "medium" }}</td>
                 <td>{{ c.updated_by || "—" }}</td>
 
                 <td class="actions">

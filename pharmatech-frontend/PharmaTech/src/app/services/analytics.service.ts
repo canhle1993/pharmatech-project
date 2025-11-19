@@ -1,32 +1,57 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
+import { env } from '../enviroments/enviroment';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AnalyticsService {
-  private api = 'http://localhost:3000/api/analytics';
+export class ApplicationAnalyticsService {
+  private baseUrl = env.baseUrl + 'career-analytics/';
 
-  constructor(private http: HttpClient) {}
+  constructor(private httpClient: HttpClient) {}
 
-  getOverviewCards(): Observable<any> {
-    return this.http.get(`${this.api}/overview`);
+  /** 🔹 1) Tổng quan dashboard */
+  async getOverview(): Promise<any> {
+    return await lastValueFrom(this.httpClient.get(this.baseUrl + 'overview'));
   }
 
-  getRevenueMonthly(): Observable<any> {
-    return this.http.get(`${this.api}/orders/monthly`);
+  /** 🔹 2) Thống kê theo trạng thái (pending/interview/passed/rejected) */
+  async getStatusStats(): Promise<any> {
+    return await lastValueFrom(this.httpClient.get(this.baseUrl + 'by-status'));
   }
 
-  getOrdersByStatus(): Observable<any> {
-    return this.http.get(`${this.api}/orders/status`);
+  /** 🔹 3) Thống kê theo độ tuổi (age_range) */
+  async getAgeRangeStats(): Promise<any> {
+    return await lastValueFrom(
+      this.httpClient.get(this.baseUrl + 'by-age-range')
+    );
   }
 
-  getProductsByCategory(): Observable<any> {
-    return this.http.get(`${this.api}/products/by-category`);
+  /** 🔹 4) Line chart — số lượng apply theo ngày */
+  async getDailyApplications(from?: string, to?: string): Promise<any> {
+    const query = `daily-applications${
+      from || to ? `?from=${from}&to=${to}` : ''
+    }`;
+    return await lastValueFrom(this.httpClient.get(this.baseUrl + query));
   }
 
-  getCareerByDepartment(): Observable<any> {
-    return this.http.get(`${this.api}/careers/monthly`);
+  /** 🔹 5) Top kỹ năng */
+  async getTopSkills(limit = 10): Promise<any> {
+    return await lastValueFrom(
+      this.httpClient.get(this.baseUrl + 'top-skills?limit=' + limit)
+    );
+  }
+
+  /** 🔹 6) Funnel: pending → assigned → interview → passed → rejected */
+  async getResultStats(): Promise<any> {
+    return await lastValueFrom(this.httpClient.get(this.baseUrl + 'funnel'));
+  }
+
+  /** 🔹 7) Group by department (tuỳ bạn dùng hoặc không) */
+  async getDepartmentStats(): Promise<any> {
+    return await lastValueFrom(
+      this.httpClient.get(this.baseUrl + 'by-department')
+    );
   }
 }

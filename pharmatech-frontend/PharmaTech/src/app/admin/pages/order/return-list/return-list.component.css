@@ -65,3 +65,51 @@
   justify-content: center;
   align-items: center;
 }
+
+.order-table ::ng-deep .p-datatable-thead > tr > th {
+  background: #3b82f6;
+  color: #fff;
+  text-align: center;
+  font-weight: 600;
+  padding: 0.75rem;
+}
+
+.order-table ::ng-deep .p-datatable-tbody > tr > td {
+  text-align: center;
+  padding: 0.75rem;
+  vertical-align: middle;
+  color: #444;
+}
+.order-table ::ng-deep .p-datatable-tbody > tr:hover {
+  background-color: #eef2ff;
+  transition: background 0.2s ease-in-out;
+}
+
+.order-table {
+  overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+  .order-container {
+    padding: 1rem;
+  }
+  .page-title {
+    font-size: 1.4rem;
+  }
+}
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.card ::ng-deep .p-datatable-caption {
+  margin-bottom: 1rem;
+}

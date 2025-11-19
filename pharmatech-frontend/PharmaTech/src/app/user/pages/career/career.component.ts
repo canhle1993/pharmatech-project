@@ -1,10 +1,4 @@
-import {
-  Component,
-  OnInit,
-  AfterViewInit,
-  Renderer2,
-  HostListener,
-} from '@angular/core';
+import { Component, OnInit, AfterViewInit, Renderer2 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CareerService } from '../../../services/career.service';
@@ -15,7 +9,7 @@ import { Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 
-declare var Swiper: any; // dùng thư viện swiper có sẵn trong assets
+declare var Swiper: any;
 
 @Component({
   standalone: true,
@@ -40,13 +34,22 @@ export class CareerComponent implements OnInit, AfterViewInit {
     await this.loadCareers();
   }
 
-  /** 🔹 Gọi API lấy danh sách job */
+  /** 🔹 Load tất cả career từ BE */
   async loadCareers() {
     try {
       const res = await this.careerService.findAll();
       this.careers = res as Career[];
 
-      // ✅ Gom nhóm theo field
+      /** ================================
+       *  🎯 Sort: Active trước – Expired/Inactive sau
+       *  ================================ */
+      this.careers.sort((a, b) => {
+        const aIsExpired = this.isExpired(a) ? 1 : 0;
+        const bIsExpired = this.isExpired(b) ? 1 : 0;
+        return aIsExpired - bIsExpired; // expired = 1 → xuống cuối
+      });
+
+      /** 📌 Gom nhóm Field */
       const map: Record<string, number> = {};
       this.careers.forEach((job) => {
         (job.field || []).forEach((f) => {
@@ -59,13 +62,11 @@ export class CareerComponent implements OnInit, AfterViewInit {
         total: map[name],
       }));
 
-      // mặc định hiển thị tất cả
       this.filteredCareers = [...this.careers];
     } catch (err) {
       console.error('❌ Lỗi load career:', err);
     } finally {
       this.loading = false;
-      // khởi tạo swiper sau khi load xong
       setTimeout(() => this.initSwiper(), 200);
     }
   }
@@ -78,18 +79,17 @@ export class CareerComponent implements OnInit, AfterViewInit {
       : [...this.careers];
   }
 
-  /** 🧭 Khởi tạo swiper */
+  /** 🧭 Swiper */
   private initSwiper() {
     new Swiper('.field-swiper', {
       modules: [Navigation],
       slidesPerView: 5,
       spaceBetween: 25,
-      grabCursor: true, // kéo bằng chuột
+      grabCursor: true,
       navigation: {
         nextEl: '.swiper-button-next',
         prevEl: '.swiper-button-prev',
       },
-
       autoplay: {
         delay: 4000,
         disableOnInteraction: false,
@@ -103,15 +103,15 @@ export class CareerComponent implements OnInit, AfterViewInit {
     });
   }
 
-  /** 🧩 Load CSS + JS vendor */
+  /** 🧩 Vendor CSS + JS */
   ngAfterViewInit() {
-    // Khởi tạo AOS
     AOS.init({
       duration: 800,
       offset: -500,
       once: true,
       easing: 'ease-out-cubic',
     });
+
     const cssFiles = [
       'assets/css/vendor/bootstrap.min.css',
       'assets/css/vendor/lastudioicons.css',
@@ -127,23 +127,26 @@ export class CareerComponent implements OnInit, AfterViewInit {
     });
 
     const jsFiles = [
-      'assets/js/vendor/modernizr-3.11.7.min.js',
-      'assets/js/vendor/jquery-migrate-3.3.2.min.js',
-      'assets/js/countdown.min.js',
-      'assets/js/ajax.js',
-      'assets/js/jquery.validate.min.js',
-      'assets/js/vendor/jquery-3.6.0.min.js',
       'assets/js/vendor/bootstrap.bundle.min.js',
       'assets/js/swiper-bundle.min.js',
-      'assets/js/ion.rangeSlider.min.js',
-      'assets/js/lightgallery.min.js',
-      'assets/js/jquery.magnific-popup.min.js',
-      'assets/js/main.js',
     ];
     jsFiles.forEach((src) => {
       const script = this.renderer.createElement('script');
       script.src = src;
       this.renderer.appendChild(document.body, script);
     });
+  }
+
+  /** 📌 Kiểm tra job hết hạn hoặc inactive */
+  isExpired(job: Career): boolean {
+    const now = new Date();
+
+    const isDateExpired =
+      job.expiration_date &&
+      new Date(job.expiration_date).getTime() < now.getTime();
+
+    const isInactive = job.is_active === false;
+
+    return isDateExpired || isInactive;
   }
 }

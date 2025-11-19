@@ -418,3 +418,38 @@ app-root,
 :host ::ng-deep .field-slider-sticky.sticky-active {
   position: fixed !important;
 }
+/* 🔸 Banner bị xám + tối khi hết hạn hoặc inactive */
+.blog-post-two.expired img {
+  filter: grayscale(100%) brightness(0.6);
+  opacity: 0.55;
+}
+
+/* 🔸 Disable hover */
+.blog-post-two.expired:hover img {
+  transform: none !important;
+  opacity: 0.55 !important;
+}
+
+/* 🔺 Ribbon EXPIRED */
+.expired-badge {
+  position: absolute;
+  top: 18px;
+  right: -40px;
+  transform: rotate(45deg);
+  background: #ff3b30;
+  color: #fff;
+  padding: 6px 40px;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  z-index: 15;
+  pointer-events: none;
+  opacity: 0.95;
+}
+
+/* Đảm bảo overlay không bị che */
+.blog-post-two_thumb {
+  position: relative;
+  overflow: hidden;
+}

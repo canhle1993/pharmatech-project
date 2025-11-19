@@ -12,18 +12,42 @@ export class OcrService {
     const imageUrl = `data:image/jpeg;base64,${base64}`;
 
     const result = await this.client.chat.completions.create({
-      model: 'deepseek-ai/DeepSeek-OCR:novita',
+      model: 'zai-org/GLM-4.5V:novita',
       messages: [
         {
           role: 'user',
           content: [
             {
               type: 'text',
-              text: 'Extract transfer information clearly.',
+              text: `
+              You are an OCR extractor for Vietnamese bank transfer receipts.
+              Return the result STRICTLY in JSON only, no explanation.
+
+              JSON format:
+              {
+                "amount": "",
+                "time": "",
+                "ref": "",
+                "sender": "",
+                "receiver": "",
+                "raw_text": ""
+              }
+
+              - amount: số tiền giao dịch
+              - time: thời gian giao dịch
+              - ref: mã giao dịch
+              - sender: người gửi
+              - receiver: người thụ hưởng
+              - raw_text: toàn bộ text OCR được
+
+              Không được suy đoán. Nếu không thấy giá trị → để rỗng.
+            `,
             },
             {
               type: 'image_url',
-              image_url: { url: imageUrl },
+              image_url: {
+                url: imageUrl,
+              },
             },
           ],
         },
@@ -32,9 +56,18 @@ export class OcrService {
 
     const raw = result.choices?.[0]?.message?.content || '';
 
+    let json: any = null;
+
+    try {
+      json = JSON.parse(raw);
+    } catch (e) {
+      console.log('❌ JSON parse failed, raw text:', raw);
+    }
+
     return {
       raw,
-      formatted: this.formatResult(raw),
+      json,
+      formatted: json ?? this.formatResult(raw),
     };
   }
 

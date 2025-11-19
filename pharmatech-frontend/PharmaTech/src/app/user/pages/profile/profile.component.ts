@@ -12,6 +12,8 @@ import { Account } from '../../../entities/account.entity';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 import { DatePickerModule } from 'primeng/datepicker';
+import { SavedJob } from '../../../entities/saved-job.entity';
+import { CareerService } from '../../../services/career.service';
 
 @Component({
   selector: 'app-profile',
@@ -38,7 +40,11 @@ export class ProfileComponent implements OnInit {
   selectedResume?: File;
   showOrderSuccess = false;
 
-  /** ✅ Giới hạn ngày sinh */
+  /** Tabs */
+  activeTab: 'info' | 'saved' = 'info';
+  savedJobs: SavedJob[] = [];
+
+  /** Ngày sinh min/max */
   minDate = new Date(1950, 0, 1);
   maxDate = new Date(); // hôm nay
 
@@ -113,7 +119,8 @@ export class ProfileComponent implements OnInit {
     private profileService: ProfileService,
     private messageService: MessageService,
     private route: ActivatedRoute, // 👈 thêm
-    private router: Router
+    private router: Router,
+    private careerService: CareerService // ⭐ Dùng CareerService
   ) {}
 
   /** =================== Lifecycle =================== */
@@ -159,6 +166,9 @@ export class ProfileComponent implements OnInit {
         skillsList: this.skillsList,
         languageList: this.languageList,
       });
+
+      // ⭐ Load saved jobs
+      await this.loadSavedJobs(id);
     } catch (err) {
       console.error('❌ Error loading profile:', err);
       this.messageService.add({
@@ -171,7 +181,23 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  /** =================== Actions =================== */
+  // ======================================================
+  //  ⭐ LOAD SAVED JOBS
+  // ======================================================
+  async loadSavedJobs(userId: string) {
+    try {
+      this.savedJobs = await this.careerService.getSavedJobs(userId);
+      console.log('🔥 SAVED JOBS RETURNED FROM API:', this.savedJobs);
+
+      console.log('💾 Saved jobs:', this.savedJobs);
+    } catch (err) {
+      console.error('❌ Failed to load saved jobs:', err);
+    }
+  }
+
+  // ======================================================
+  //  EDIT PROFILE
+  // ======================================================
   toggleEdit() {
     this.isEditing = !this.isEditing;
   }
@@ -226,12 +252,14 @@ export class ProfileComponent implements OnInit {
       console.log('📦 Payload gửi lên BE:', payload);
 
       if (updated) {
-        // ✅ Cập nhật lại localStorage để applyJob đọc dữ liệu mới nhất
-        localStorage.setItem('currentUser', JSON.stringify(updated));
-        localStorage.setItem('userId', updated._id);
+        const freshAccount = await this.accountService.findById(
+          this.account._id || this.account.id
+        );
 
-        // ✅ Normalize lại dữ liệu vừa cập nhật để hiển thị đẹp
-        this.account = this.profileService.normalizeAccountData(updated, {
+        localStorage.setItem('user', JSON.stringify(freshAccount));
+        localStorage.setItem('userId', freshAccount.id || freshAccount._id);
+
+        this.account = this.profileService.normalizeAccountData(freshAccount, {
           fieldList: this.fieldList,
           skillsList: this.skillsList,
           languageList: this.languageList,
@@ -259,30 +287,30 @@ export class ProfileComponent implements OnInit {
 
   /** =================== Filters for AutoComplete =================== */
   filterGender(event: any) {
-    const query = event.query.toLowerCase();
+    const q = event.query.toLowerCase();
     this.filteredGenders = this.genderList.filter((g) =>
-      g.toLowerCase().includes(query)
+      g.toLowerCase().includes(q)
     );
   }
 
   filterWorkType(event: any) {
-    const query = event.query.toLowerCase();
+    const q = event.query.toLowerCase();
     this.filteredWorkTypes = this.workTypeList.filter((t) =>
-      t.toLowerCase().includes(query)
+      t.toLowerCase().includes(q)
     );
   }
 
   filterEducationLevel(event: any) {
-    const query = event.query.toLowerCase();
+    const q = event.query.toLowerCase();
     this.filteredEducationLevels = this.educationList.filter((e) =>
-      e.toLowerCase().includes(query)
+      e.toLowerCase().includes(q)
     );
   }
 
   filterArea(event: any) {
-    const query = event.query.toLowerCase();
+    const q = event.query.toLowerCase();
     this.filteredAreas = this.areaList.filter((a) =>
-      a.toLowerCase().includes(query)
+      a.toLowerCase().includes(q)
     );
   }
 

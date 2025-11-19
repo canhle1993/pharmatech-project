@@ -5,7 +5,6 @@ import { AnalyticsController } from './analytics.controller';
 import { Product, ProductSchema } from 'src/product/product.decorator';
 import { Category, CategorySchema } from 'src/category/category.decorator';
 import { Order, OrderSchema } from 'src/order/order.decorator';
-import { Career, CareerSchema } from 'src/career/career.decorator';
 
 @Module({
   imports: [
@@ -13,7 +12,6 @@ import { Career, CareerSchema } from 'src/career/career.decorator';
       { name: Product.name, schema: ProductSchema },
       { name: Category.name, schema: CategorySchema },
       { name: Order.name, schema: OrderSchema },
-      { name: Career.name, schema: CareerSchema },
     ]),
   ],
   controllers: [AnalyticsController],

@@ -452,3 +452,28 @@
 .detail-container {
   animation: fadeInDetail 0.4s ease;
 }
+
+.mr-2 {
+  margin-right: 8px;
+}
+/* ===== History Banner (center highlight) ===== */
+.history-banner {
+  width: 100%;
+  text-align: center;
+  background: rgba(239, 68, 68, 0.08); /* red-500 with opacity */
+  color: #dc2626; /* red-600 */
+  padding: 12px 0;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 8px;
+  margin: 10px 0 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.history-banner .pi {
+  font-size: 1rem;
+}

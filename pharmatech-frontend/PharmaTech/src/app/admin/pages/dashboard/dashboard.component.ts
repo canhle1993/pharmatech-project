@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AnalyticsService } from '../../../services/analytics.service';
+import { AnalyticsMainService } from '../../../services/analytics-main.service';
 import { NgChartsModule } from 'ng2-charts';
 import { CommonModule } from '@angular/common';
 
@@ -55,7 +55,7 @@ export class DashboardComponent implements OnInit {
     plugins: { legend: { display: true } },
   };
 
-  constructor(private analytics: AnalyticsService) {}
+  constructor(private analyticsMain: AnalyticsMainService) {}
 
   ngOnInit(): void {
     console.log('🏁 Dashboard init');
@@ -68,7 +68,7 @@ export class DashboardComponent implements OnInit {
   }
 
   loadOverview() {
-    this.analytics.getOverviewCards().subscribe((res) => {
+    this.analyticsMain.getOverviewCards().subscribe((res) => {
       console.log('📌 Overview API =>', res);
 
       this.overview = [
@@ -81,7 +81,7 @@ export class DashboardComponent implements OnInit {
   }
 
   loadRevenue() {
-    this.analytics.getRevenueMonthly().subscribe((data) => {
+    this.analyticsMain.getRevenueMonthly().subscribe((data) => {
       this.revenueData = {
         labels: data.map((x: any) => `Month ${x.month}`),
         datasets: [
@@ -97,7 +97,7 @@ export class DashboardComponent implements OnInit {
   }
 
   loadOrderStatus() {
-    this.analytics.getOrdersByStatus().subscribe((data) => {
+    this.analyticsMain.getOrdersByStatus().subscribe((data) => {
       this.orderStatusData = {
         labels: data.map((x: any) => x.status),
         datasets: [
@@ -111,7 +111,7 @@ export class DashboardComponent implements OnInit {
   }
 
   loadProductsByCategory() {
-    this.analytics.getProductsByCategory().subscribe((data) => {
+    this.analyticsMain.getProductsByCategory().subscribe((data) => {
       this.productCategoryData = {
         labels: data.map((x: any) => x.category_name),
         datasets: [
@@ -126,7 +126,7 @@ export class DashboardComponent implements OnInit {
   }
 
   loadCareerByDepartment() {
-    this.analytics.getCareerByDepartment().subscribe((data) => {
+    this.analyticsMain.getCareerByDepartment().subscribe((data) => {
       const filtered = data.filter((d) => d.count > 0);
 
       this.careerDeptData = {

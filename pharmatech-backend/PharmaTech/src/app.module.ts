@@ -31,6 +31,8 @@ import { AnalyticsModule } from './analytics/analytics.module';
 import { ReturnRequestModule } from './return-request/return-request.module';
 import { QuoteModule } from './quote/quote.module';
 import { BannerModule } from './banner/banner.module';
+import { SaveJobModule } from './savejob/savejob.module';
+import { CareerAnalyticsModule } from './career-analytics/analytics.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -94,6 +96,8 @@ import { BannerModule } from './banner/banner.module';
     ReturnRequestModule,
     QuoteModule,
     BannerModule,
+    CareerAnalyticsModule,
+    SaveJobModule,
   ],
   controllers: [],
   providers: [],

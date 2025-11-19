@@ -105,7 +105,7 @@
             [attr.data-aos]="'fade-up'"
             [attr.data-aos-delay]="i * 100"
           >
-            <div class="blog-post-two">
+            <div class="blog-post-two" [class.expired]="isExpired(job)">
               <!-- Thumbnail -->
               <a
                 [routerLink]="['/careerDetails', job.id]"
@@ -119,6 +119,10 @@
                   "
                   [alt]="job.title"
                 />
+
+                <!-- ⭐ EXPPIRED overlay -->
+                <div class="expired-badge" *ngIf="isExpired(job)">EXPIRED</div>
+
                 <span class="blog-post-two_format">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -165,8 +169,8 @@
                     {{ job.experience || "No experience required" }}
                   </li>
                   <li>
-                    <i class="las la-clock"></i>
-                    Expire: {{ job.expiration_date | date : "MMM dd, yyyy" }}
+                    <i class="las la-clock"></i> Expire:
+                    {{ job.expiration_date | date : "MMM dd, yyyy" }}
                   </li>
                 </ul>
 

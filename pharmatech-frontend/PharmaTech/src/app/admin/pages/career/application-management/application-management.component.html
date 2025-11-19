@@ -6,20 +6,64 @@
     <h2>Application Management</h2>
   </div>
 
+  <div class="table-header between mb-2">
+    <!-- 🔴 Hiển thị khi đang xem HISTORY -->
+    <div *ngIf="viewMode === 'history'" class="history-banner">
+      <i class="pi pi-info-circle"></i>
+      Showing deleted / archived applications
+    </div>
+
+
+    <button pButton class="p-button-sm history-btn" icon="pi pi-history"
+      [label]="viewMode === 'active' ? 'History' : 'Back'" (click)="toggleHistory()">
+    </button>
+
+  </div>
+
+
   <!-- ====== TABLE ====== -->
   <p-table [value]="applications" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5, 10, 20]"
-    responsiveLayout="scroll" [rowHover]="true" styleClass="app-table">
+    responsiveLayout="scroll" [rowHover]="true" styleClass="app-table" sortMode="multiple">
     <ng-template pTemplate="header">
       <tr>
-        <th>Candidate Info</th>
-        <th>Job Applied</th>
-        <th class="col-money">Expected Salary</th>
-        <th class="col-status">Status</th>
-        <th class="col-admin">Assigned Admin</th>
-        <th class="col-date">Applied Date</th>
-        <th class="col-actions">Actions</th>
+
+        <th pSortableColumn="account.name">
+          Candidate Info
+          <p-sortIcon field="account.name"></p-sortIcon>
+        </th>
+
+        <th pSortableColumn="career.title">
+          Job Applied
+          <p-sortIcon field="career.title"></p-sortIcon>
+        </th>
+
+        <th pSortableColumn="expected_salary" class="col-money">
+          Expected Salary
+          <p-sortIcon field="expected_salary"></p-sortIcon>
+        </th>
+
+        <th pSortableColumn="status" class="col-status">
+          Status
+          <p-sortIcon field="status"></p-sortIcon>
+        </th>
+
+        <th pSortableColumn="assigned_admin_name" class="col-admin">
+          Assigned Admin
+          <p-sortIcon field="assigned_admin_name"></p-sortIcon>
+        </th>
+
+        <th pSortableColumn="created_at" class="col-date">
+          Applied Date
+          <p-sortIcon field="created_at"></p-sortIcon>
+        </th>
+
+        <th class="col-actions">
+          Actions
+        </th>
+
       </tr>
     </ng-template>
+
 
 
     <ng-template pTemplate="body" let-row let-i="rowIndex">
@@ -101,36 +145,63 @@
 
         <!-- Actions -->
         <td class="col-actions text-center">
-          <!-- View -->
-          <button pButton type="button" icon="pi pi-eye" class="p-button-rounded p-button-info action-btn"
-            pTooltip="View details" tooltipPosition="top" (click)="openViewDialog(row)"></button>
 
-          <!-- Assign Admin -->
-          <button *ngIf="row?.status?.toLowerCase() !== 'hired' && row?.status?.toLowerCase() !== 'assigned'" pButton
-            type="button" icon="pi pi-user-edit" class="p-button-rounded p-button-secondary action-btn"
-            pTooltip="Assign Admin" tooltipPosition="top" (click)="openAssignDialog(row)">
+          <!-- 👁 View luôn luôn có -->
+          <button pButton type="button" icon="pi pi-eye" class="p-button-rounded p-button-info action-btn"
+            pTooltip="View details" tooltipPosition="top" (click)="openViewDialog(row)">
           </button>
 
+          <!-- ================= ACTIVE MODE ================= -->
+          <ng-container *ngIf="viewMode === 'active'; else historyActions">
 
-          <!-- Schedule Interview -->
-          <button *ngIf="row?.status !== 'hired'" pButton type="button" icon="pi pi-calendar"
-            class="p-button-rounded p-button-warning action-btn" pTooltip="Schedule Interview" tooltipPosition="top"
-            (click)="openInterviewDialog(row)"></button>
+            <!-- Assign Admin -->
+            <button *ngIf="!['hired','assigned','interview','passed','rejected']
+      .includes(row?.status?.toLowerCase())" pButton type="button" icon="pi pi-user-edit"
+              class="p-button-rounded p-button-secondary action-btn" pTooltip="Assign Admin" tooltipPosition="top"
+              (click)="openAssignDialog(row)">
+            </button>
 
-          <!-- Mark Passed -->
-          <button *ngIf="row?.status !== 'hired'" pButton type="button" icon="pi pi-check"
-            class="p-button-rounded p-button-success action-btn" pTooltip="Mark as Passed" tooltipPosition="top"
-            (click)="openResultDialog(row, true)"></button>
+            <!-- Schedule Interview -->
+            <button *ngIf="!['hired','interview','passed','rejected']
+      .includes(row?.status?.toLowerCase())" pButton type="button" icon="pi pi-calendar"
+              class="p-button-rounded p-button-warning action-btn" pTooltip="Schedule Interview" tooltipPosition="top"
+              (click)="openInterviewDialog(row)">
+            </button>
 
-          <!-- Mark Failed -->
-          <button *ngIf="row?.status !== 'hired'" pButton type="button" icon="pi pi-times"
-            class="p-button-rounded p-button-danger action-btn" pTooltip="Mark as Failed" tooltipPosition="top"
-            (click)="openResultDialog(row, false)"></button>
+            <!-- Mark as Passed -->
+            <button *ngIf="!['passed','hired','rejected'].includes(row?.status?.toLowerCase())" pButton type="button"
+              icon="pi pi-check" class="p-button-rounded p-button-success action-btn" pTooltip="Mark as Passed"
+              tooltipPosition="top" (click)="openPassDialog(row)">
+            </button>
 
-          <!-- Delete -->
-          <button pButton type="button" icon="pi pi-trash" class="p-button-rounded p-button-danger action-btn"
-            pTooltip="Delete" tooltipPosition="top" (click)="deleteApplication(row)"></button>
+            <!-- Mark as Rejected -->
+            <button *ngIf="!['passed','hired','rejected'].includes(row?.status?.toLowerCase())" pButton type="button"
+              icon="pi pi-times" class="p-button-rounded p-button-danger action-btn" pTooltip="Mark as Rejected"
+              tooltipPosition="top" (click)="openRejectDialog(row)">
+            </button>
+
+            <!-- Delete (soft delete) -->
+            <button pButton type="button" icon="pi pi-trash" class="p-button-rounded p-button-danger action-btn"
+              pTooltip="Delete" tooltipPosition="top" (click)="deleteApplication(row)">
+            </button>
+
+          </ng-container>
+
+          <!-- ================= HISTORY MODE ================= -->
+          <ng-template #historyActions>
+            <!-- Restore -->
+            <button pButton type="button" icon="pi pi-refresh" class="p-button-rounded p-button-success action-btn"
+              pTooltip="Restore" tooltipPosition="top" (click)="restoreApplication(row)">
+            </button>
+
+            <!-- Permanent Delete -->
+            <button pButton type="button" icon="pi pi-times" class="p-button-rounded p-button-danger action-btn"
+              pTooltip="Delete Forever" tooltipPosition="top" (click)="deletePermanent(row)">
+            </button>
+          </ng-template>
+
         </td>
+
       </tr>
     </ng-template>
 
@@ -154,43 +225,61 @@
 
 <!-- ========== DIALOGS ========== -->
 
+
 <!-- 🗓️ Schedule Interview -->
 <p-dialog header="Schedule Interview" [(visible)]="showInterviewDialog" [modal]="true" [closable]="true"
-  [focusOnShow]="false" [focusTrap]="false" (pOnHide)="onDialogHide()" [style]="{ width: '800px', maxWidth: '95vw' }">
+  [focusOnShow]="false" [focusTrap]="false" (pOnHide)="onDialogHide()" [style]="{ width: '820px', maxWidth: '95vw' }">
+
   <div class="form-container">
+
+    <!-- Date & Time -->
     <div class="field">
       <label for="interviewDate">
-        <i class="pi pi-calendar" style="color:#2563eb"></i> Date & Time
+        <i class="pi pi-calendar" style="color:#2563eb"></i>
+        Date & Time
       </label>
-      <p-datepicker id="interviewDate" [(ngModel)]="interviewData.date" [showTime]="true" hourFormat="24"
-        dateFormat="yy-mm-dd" [showIcon]="true" appendTo="body" inputClass="w-full p-inputtext"></p-datepicker>
+
+      <p-datepicker id="interviewDate" [(ngModel)]="interviewData.date" (ngModelChange)="updateEmailPreview()"
+        [showTime]="true" hourFormat="24" dateFormat="yy-mm-dd" [showIcon]="true" appendTo="body"
+        inputClass="w-full p-inputtext">
+      </p-datepicker>
     </div>
 
+    <!-- Location -->
     <div class="field">
       <label for="location">
         <i class="pi pi-map-marker" style="color:#2563eb"></i>
         Location / Meeting Link
       </label>
-      <input id="location" pInputText [(ngModel)]="interviewData.location"
-        placeholder="Office address or online link" />
+      <input id="location" pInputText [(ngModel)]="interviewData.location" (ngModelChange)="updateEmailPreview()"
+        placeholder="Office address or online meeting link..." />
     </div>
 
+    <!-- Email Editor -->
     <div class="field">
-      <label for="note">
-        <i class="pi pi-pencil" style="color:#2563eb"></i> Notes
+      <label for="emailEditor">
+        <i class="pi pi-envelope" style="color:#2563eb"></i>
+        Interview Email Content
       </label>
-      <p-editor [(ngModel)]="interviewData.note" appendTo="body" [style]="{ height: '200px' }"
-        placeholder="Additional details (optional)"></p-editor>
+
+      <p-editor id="emailEditor" [(ngModel)]="emailHtml" appendTo="body" [style]="{ height: '260px' }"
+        placeholder="Edit email content before sending to candidate...">
+      </p-editor>
     </div>
   </div>
 
   <ng-template pTemplate="footer">
     <button pButton label="Cancel" icon="pi pi-times" class="p-button-text"
       (click)="showInterviewDialog = false"></button>
-    <button pButton label="Save" icon="pi pi-check" class="p-button-success"
-      (click)="confirmScheduleInterview()"></button>
+
+    <button pButton label="Send Email & Save" icon="pi pi-check" class="p-button-success"
+      (click)="confirmScheduleInterview()">
+    </button>
   </ng-template>
+
 </p-dialog>
+
+
 
 
 <!-- 🧩 Assign Admin -->
@@ -203,14 +292,16 @@
       </label>
 
       <!-- ✅ p-autoComplete -->
-      <p-autoComplete inputId="adminSelect" [(ngModel)]="assignAdminData.admin" [suggestions]="filteredAdmins"
-        (completeMethod)="searchAdmins($event)" [dropdown]="true" [forceSelection]="true" optionLabel="label"
-        [appendTo]="'body'" placeholder="Type name or email" class="w-full">
-        <!-- item dropdown -->
+      <p-autoComplete [(ngModel)]="assignAdminData.admin" [suggestions]="filteredAdmins"
+        (completeMethod)="searchAdmins($event)" field="label" [dropdown]="true" [forceSelection]="true" appendTo="body"
+        placeholder="Type name or email" class="w-full">
+
+        <!-- Item trong dropdown -->
         <ng-template let-opt pTemplate="item">
           <div class="flex items-center gap-2">
             <img *ngIf="opt.photo" [src]="opt.photo" width="26" height="26"
-              style="border-radius:50%;object-fit:cover" />
+              style="border-radius:50%; object-fit:cover;" />
+
             <div class="flex flex-column">
               <span class="font-medium">{{ opt.name }}</span>
               <small class="text-muted">{{ opt.email }}</small>
@@ -218,11 +309,13 @@
           </div>
         </ng-template>
 
-        <!-- item đã chọn (input chip) -->
+        <!-- Item Selected -->
         <ng-template let-opt pTemplate="selectedItem">
           <span>{{ opt.label }}</span>
         </ng-template>
+
       </p-autoComplete>
+
     </div>
   </div>
 
@@ -234,90 +327,234 @@
 
 
 
-<!-- ✅ Update Result -->
-<p-dialog header="Update Result" [(visible)]="showResultDialog" [modal]="true" [closable]="true" [focusOnShow]="false"
-  [focusTrap]="false" (pOnHide)="onDialogHide()" [style]="{ width: '640px', maxWidth: '95vw' }">
+<!-- ✅  PASS DIALOG -->
+<p-dialog header="Mark as Passed" [(visible)]="showPassDialog" [modal]="true" [closable]="true" [focusOnShow]="false"
+  [focusTrap]="false" (pOnHide)="onDialogHide()" [style]="{ width: '820px', maxWidth: '95vw' }">
   <div class="form-container">
+
+    <!-- Start Work Date -->
     <div class="field">
-      <label for="resultStatus">
-        <i class="pi pi-flag" style="color:#2563eb"></i> Result
+      <label>
+        <i class="pi pi-calendar" style="color:#16a34a"></i>
+        Start Working Date
       </label>
-      <select id="resultStatus" class="p-inputtext" [(ngModel)]="resultData.status">
-        <option value="pass">Pass</option>
-        <option value="fail">Fail</option>
-      </select>
+
+      <p-datepicker [(ngModel)]="passData.start_work_date" (ngModelChange)="updatePassPreview()" [showIcon]="true"
+        dateFormat="yy-mm-dd" appendTo="body" inputClass="w-full p-inputtext">
+      </p-datepicker>
     </div>
 
-    <div class="field" *ngIf="resultData.status === 'pass'">
-      <label for="department">
-        <i class="pi pi-sitemap" style="color:#2563eb"></i> Department
-      </label>
-      <input id="department" pInputText [(ngModel)]="resultData.hired_department" placeholder="Department to join" />
-    </div>
-
-    <div class="field" *ngIf="resultData.status === 'pass'">
-      <label for="startDate">
-        <i class="pi pi-calendar" style="color:#2563eb"></i> Start Date
-      </label>
-      <p-datepicker id="startDate" [(ngModel)]="resultData.hired_start_date" dateFormat="yy-mm-dd" [showIcon]="true"
-        appendTo="body" inputClass="w-full p-inputtext"></p-datepicker>
-    </div>
-
+    <!-- Work Location -->
     <div class="field">
-      <label for="resultNote">
-        <i class="pi pi-pencil" style="color:#2563eb"></i> Note (optional)
+      <label>
+        <i class="pi pi-map-marker" style="color:#16a34a"></i>
+        Work Location
       </label>
-      <textarea id="resultNote" class="p-inputtextarea" rows="3" [(ngModel)]="resultData.note"
-        placeholder="Short note or reason"></textarea>
+
+      <input pInputText [(ngModel)]="passData.location" (ngModelChange)="updatePassPreview()"
+        placeholder="Office / Branch / Worksite..." />
+    </div>
+
+    <!-- Email Content -->
+    <div class="field">
+      <label>
+        <i class="pi pi-envelope" style="color:#16a34a"></i>
+        Offer Email Content
+      </label>
+
+      <p-editor [(ngModel)]="passData.email_content" appendTo="body" [style]="{ height: '260px' }"></p-editor>
     </div>
   </div>
 
   <ng-template pTemplate="footer">
-    <button pButton label="Cancel" icon="pi pi-times" class="p-button-text" (click)="showResultDialog = false"></button>
-    <button pButton label="Update" icon="pi pi-check" class="p-button-success" (click)="confirmUpdateResult()"></button>
+    <button pButton label="Cancel" icon="pi pi-times" class="p-button-text" (click)="showPassDialog = false"></button>
+
+    <button pButton label="Send Email & Confirm Pass" icon="pi pi-check" class="p-button-success"
+      (click)="confirmMarkAsPass()"></button>
   </ng-template>
 </p-dialog>
+
+
+
+<!-- ✅  PASS DIALOG -->
+
+
+<p-dialog header="Mark as Rejected" [(visible)]="showRejectDialog" [modal]="true" [closable]="true"
+  [focusOnShow]="false" [focusTrap]="false" (pOnHide)="onDialogHide()" [style]="{ width: '820px', maxWidth: '95vw' }">
+  <div class="form-container">
+
+    <!-- Reason -->
+    <div class="field">
+      <label>
+        <i class="pi pi-flag" style="color:#dc2626"></i>
+        Reason (optional)
+      </label>
+
+      <input pInputText [(ngModel)]="rejectData.reason" (ngModelChange)="updateRejectPreview()"
+        placeholder="Short reason (optional)..." />
+    </div>
+
+    <!-- Rejected By -->
+    <div class="field">
+      <label>
+        <i class="pi pi-user" style="color:#dc2626"></i>
+        Rejected By
+      </label>
+
+      <input pInputText [(ngModel)]="rejectData.rejected_by" placeholder="HR name..." />
+    </div>
+
+    <!-- Email Content -->
+    <div class="field">
+      <label>
+        <i class="pi pi-envelope" style="color:#dc2626"></i>
+        Rejection Email Content
+      </label>
+
+      <p-editor [(ngModel)]="rejectData.email_content" appendTo="body" [style]="{ height: '260px' }"></p-editor>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancel" icon="pi pi-times" class="p-button-text" (click)="showRejectDialog = false"></button>
+
+    <button pButton label="Send Email & Reject" icon="pi pi-check" class="p-button-danger"
+      (click)="confirmMarkAsReject()"></button>
+  </ng-template>
+</p-dialog>
+
+
 
 <!-- 👁️ Application Details -->
 <p-dialog header="Application Details" [(visible)]="showViewDialog" [modal]="true" [closable]="true"
   [focusOnShow]="false" [focusTrap]="false" (pOnHide)="onDialogHide()" [style]="{ width: '860px', maxWidth: '95vw' }">
   <div class="details-grid">
     <div class="details-left">
+
+      <!-- Avatar + Basic Info -->
       <div class="candidate-head">
         <img class="avatar-lg" [src]="viewing?.account?.photo || 'assets/images/users/default-avatar.png'"
           alt="avatar" />
+
         <div>
           <h3 class="name">{{ viewing?.account?.name || 'Unknown' }}</h3>
+
           <div class="muted">
             <i class="pi pi-envelope"></i> {{ viewing?.account?.email || '—' }}
           </div>
+
           <div class="muted">
-            <i class="pi pi-map-marker"></i>
-            {{ viewing?.account?.preferred_area || '—' }}
+            <i class="pi pi-phone"></i> {{ viewing?.account?.phone || '—' }}
+          </div>
+
+          <div class="muted">
+            <i class="pi pi-map-marker"></i> {{ viewing?.account?.address || '—' }}
           </div>
         </div>
       </div>
 
-      <div class="meta-row">
-        <b>Field:</b> {{ viewing?.account?.field?.join(', ') || '—' }}
+
+
+
+
+      <!-- Skills -->
+      <div class="section-block" *ngIf="viewing?.account?.skills?.length">
+        <div class="section-title"><i class="pi pi-star"></i> Skills</div>
+        <div class="section-content">
+          {{ viewing?.account?.skills?.join(', ') }}
+        </div>
       </div>
-      <div class="meta-row">
-        <b>Skills:</b> {{ viewing?.account?.skills?.join(', ') || '—' }}
+
+      <!-- Languages -->
+      <div class="section-block" *ngIf="viewing?.account?.languages?.length">
+        <div class="section-title"><i class="pi pi-globe"></i> Languages</div>
+        <div class="section-content">
+          {{ viewing?.account?.languages?.join(', ') }}
+        </div>
       </div>
-      <div class="meta-row">
-        <b>Expected salary:</b>
-        {{
-        (viewing?.account?.expected_salary ?? viewing?.expected_salary ?? 0)
-        | currency : 'USD' : 'symbol' : '1.0-0'
-        }}
+
+      <!-- Field -->
+      <div class="section-block" *ngIf="viewing?.account?.field?.length">
+        <div class="section-title"><i class="pi pi-briefcase"></i> Field</div>
+        <div class="section-content">
+          {{ viewing?.account?.field?.join(', ') }}
+        </div>
       </div>
+
+
+      <!-- Expected Salary + Job Type + Available From -->
+      <div class="section-block">
+        <div class="section-title"><i class="pi pi-dollar"></i> Job Preferences</div>
+
+        <div class="section-content">
+          <b>Expected salary:</b>
+          {{
+          viewing?.account?.expected_salary
+          | currency : 'USD' : 'symbol' : '1.0-0'
+          }}
+        </div>
+
+        <div class="section-content" *ngIf="viewing?.account?.job_type">
+          <b>Job type:</b> {{ viewing?.account?.job_type }}
+        </div>
+
+        <div class="section-content" *ngIf="viewing?.account?.available_from">
+          <b>Available from:</b> {{ viewing?.account?.available_from | date:'MMM d, y' }}
+        </div>
+      </div>
+
+
+      <!-- Education -->
+      <div class="section-block" *ngIf="viewing?.account?.education">
+        <div class="section-title"><i class="pi pi-book"></i> Education</div>
+
+        <div class="section-content"><b>Level:</b> {{ viewing?.account?.education?.education_level || '—' }}</div>
+        <div class="section-content"><b>Major:</b> {{ viewing?.account?.education?.major || '—' }}</div>
+        <div class="section-content"><b>School:</b> {{ viewing?.account?.education?.school_name || '—' }}</div>
+        <div class="section-content"><b>Graduation:</b> {{ viewing?.account?.education?.graduation_year || '—' }}</div>
+      </div>
+
+
+      <!-- Experience -->
+      <div class="section-block" *ngIf="viewing?.account?.experience">
+        <div class="section-title"><i class="pi pi-briefcase"></i> Experience</div>
+
+        <div class="section-content"><b>Company:</b> {{ viewing?.account?.experience?.company_name || '—' }}</div>
+        <div class="section-content"><b>Job Title:</b> {{ viewing?.account?.experience?.job_title || '—' }}</div>
+        <div class="section-content"><b>Years:</b> {{ viewing?.account?.experience?.working_years || '—' }}</div>
+        <div class="section-content"><b>Responsibilities:</b> {{ viewing?.account?.experience?.responsibilities || '—'
+          }}</div>
+      </div>
+
+
+      <!-- Application info -->
+      <div class="section-block">
+        <div class="section-title"><i class="pi pi-info-circle"></i> Application</div>
+
+        <div class="section-content"><b>Applied For:</b> {{ viewing?.career?.title }}</div>
+        <div class="section-content"><b>Location:</b> {{ viewing?.career?.location }}</div>
+        <div class="section-content">
+          <b>Status:</b>
+          <span class="badge" [ngClass]="'badge-' + getBadgeSeverity(viewing?.status)">
+            {{ viewing?.status }}
+          </span>
+        </div>
+        <div class="section-content">
+          <b>Applied Date:</b> {{ viewing?.created_at | date:'MMM d, y, h:mm a' }}
+        </div>
+      </div>
+
     </div>
 
+
     <div class="details-right">
+
+      <!-- JOB INFO GIỮ NGUYÊN Ở TRÊN -->
       <div class="job-title">
         <i class="pi pi-briefcase"></i>
         {{ viewing?.career?.title || '—' }}
       </div>
+
       <div class="muted">
         <i class="pi pi-map-marker"></i> {{ viewing?.career?.location || '—' }}
       </div>
@@ -326,18 +563,33 @@
         <span class="badge" [ngClass]="'badge-' + getBadgeSeverity(viewing?.status || 'pending')">
           {{ viewing?.status || 'pending' }}
         </span>
-        <small class="muted">
-          · {{ viewing?.created_at | date: 'MMM d, y, h:mm a' }}
-        </small>
+        <small class="muted">· {{ viewing?.created_at | date: 'MMM d, y, h:mm a' }}</small>
       </div>
 
-      <div class="note-box" *ngIf="viewing?.note">
-        <div class="note-head">
-          <i class="pi pi-file-edit"></i> Note
+      <!-- ===== RESUME THUMBNAIL BLOCK ===== -->
+      <div class="resume-box" *ngIf="resumeUrl">
+        <div class="resume-title">
+          <i class="pi pi-file"></i> Resume
         </div>
-        <div [innerHTML]="viewing?.note"></div>
+
+        <!-- Trường hợp hình ảnh -->
+        <img *ngIf="isImageResume" class="resume-thumb" [src]="resumeUrl" alt="resume"
+          (click)="openResumeFullscreen()" />
+
+        <!-- Trường hợp PDF -->
+        <div *ngIf="isPdfResume" class="pdf-thumb" (click)="openResumeFullscreen()">
+          <i class="pi pi-file-pdf pdf-icon"></i>
+          <p>View PDF</p>
+        </div>
+      </div>
+
+      <!-- Introduction -->
+      <div class="section-block" *ngIf="viewing?.account?.introduction">
+        <div class="section-title"><i class="pi pi-user"></i> Introduction</div>
+        <div class="section-content">{{ viewing?.account?.introduction }}</div>
       </div>
     </div>
+
   </div>
 
   <ng-template pTemplate="footer">
@@ -347,3 +599,30 @@
 
 <!-- 🗑️ Confirm Delete -->
 <p-confirmDialog></p-confirmDialog>
+
+
+<!-- FULLSCREEN RESUME VIEWER -->
+<p-dialog [(visible)]="showResumeFullscreen" [modal]="true" [closable]="true"
+  [style]="{ width: '95vw', height: '95vh' }">
+
+  <!-- Hình ảnh -->
+  <img *ngIf="isImageResume" [src]="resumeUrl" class="resume-full" />
+
+  <!-- PDF Viewer -->
+  <iframe *ngIf="isPdfResume" [src]="resumeSafeUrl" class="resume-full"></iframe>
+
+
+</p-dialog>
+
+
+
+
+
+
+<!-- 🌙 GLOBAL OVERLAY LOADING -->
+<div class="global-loading" *ngIf="loading">
+  <div class="loader-box">
+    <i class="pi pi-spin pi-spinner loader-icon"></i>
+    <p>Processing...</p>
+  </div>
+</div>

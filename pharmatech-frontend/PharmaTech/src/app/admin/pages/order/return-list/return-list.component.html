@@ -35,7 +35,7 @@
         <input
           pInputText
           type="text"
-          placeholder="Search by order code or replacement"
+          placeholder="Search by name"
           [(ngModel)]="searchText"
           (input)="onSearchChange()"
           style="width: 550px"
@@ -70,6 +70,7 @@
             [rowsPerPageOptions]="[4, 10, 20]"
             responsiveLayout="scroll"
             showGridlines
+            class="order-table"
           >
             <ng-template pTemplate="header">
               <tr>
@@ -143,6 +144,7 @@
             [rowsPerPageOptions]="[4, 10, 20]"
             responsiveLayout="scroll"
             showGridlines
+            class="order-table"
           >
             <ng-template pTemplate="header">
               <tr>
@@ -205,7 +207,7 @@
   [(visible)]="showAddDialog"
   header="Create Return Request"
   [modal]="true"
-  [style]="{ width: '650px' }"
+  [style]="{ width: '650px', maxHeight: '100%', top: '0px' }"
 >
   <div class="dialog-body">
     <!-- Select Order -->
@@ -244,6 +246,8 @@
           <span class="item-label">
             {{ item.product_name }} ({{ item.product_model }}) - Ordered:
             {{ item.quantity }}
+            <br />
+            <div style="font-size: 11px; color: #777">ID: {{ item.id }}</div>
           </span>
         </div>
 
@@ -274,7 +278,13 @@
         defaultLabel="-- Select Replacement Product --"
       >
         <ng-template let-item pTemplate="item">
-          {{ item.name }} ({{ item.model }})
+          <div>
+            <strong>{{ item.name }} ({{ item.model }})</strong>
+            <div style="color: green; font-size: 12px">
+              Stock: {{ item.stock }}
+            </div>
+            <div style="font-size: 11px; color: #777">ID: {{ item.id }}</div>
+          </div>
         </ng-template>
       </p-multiSelect>
     </div>
