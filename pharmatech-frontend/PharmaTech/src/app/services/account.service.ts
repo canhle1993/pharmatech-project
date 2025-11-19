@@ -152,7 +152,9 @@ export class AccountService {
   }
   async findByEmail(email: string) {
     return lastValueFrom(
-      this.httpClient.get(env.baseUrl + 'account/find-by-email/' + email)
+      this.httpClient.get(
+        env.baseUrl + 'account/find-by-email/' + encodeURIComponent(email)
+      )
     );
   }
 }

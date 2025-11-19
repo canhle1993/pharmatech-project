@@ -373,3 +373,43 @@
   pointer-events: none;
   filter: blur(2px);
 }
+
+/* Layout button */
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Primary button */
+.btn-primary-custom {
+  background: #b87b4c;
+  border: 1px solid #b87b4c;
+  color: #fff;
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-primary-custom:hover {
+  background: #965f34;
+}
+
+/* Secondary button */
+.btn-secondary-custom {
+  background: #e6e6e6;
+  border: 1px solid #ccc;
+  color: #333;
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-secondary-custom:hover {
+  background: #d5d5d5;
+}

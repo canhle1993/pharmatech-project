@@ -69,6 +69,7 @@
   <div class="container">
     <div class="row">
       <div class="col-12 section-padding-04">
+
         <!-- Loading -->
         <div *ngIf="loading" class="text-center py-5">
           <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
@@ -78,13 +79,22 @@
         <!-- Job List -->
         <div class="row row-cols-sm-2 row-cols-md-2 row-cols-lg-3 gx-lg-5 gx-xxl-12"
           *ngIf="!loading && filteredCareers.length > 0">
+
           <div class="cols" *ngFor="let job of filteredCareers; let i = index" [attr.data-aos]="'fade-up'"
             [attr.data-aos-delay]="i * 100">
-            <div class="blog-post-two">
+
+            <div class="blog-post-two" [class.expired]="isExpired(job)">
+
               <!-- Thumbnail -->
               <a [routerLink]="['/careerDetails', job.id]" class="blog-post-two_thumb">
-                <img [src]="job.banner && job.banner !== '' ? job.banner : 'assets/images/blog/blog-grid-01.jpg'"
-                  [alt]="job.title" />
+
+                <img [src]="job.banner && job.banner !== ''
+                        ? job.banner
+                        : 'assets/images/blog/blog-grid-01.jpg'" [alt]="job.title" />
+
+                <!-- ⭐ EXPPIRED overlay -->
+                <div class="expired-badge" *ngIf="isExpired(job)">EXPIRED</div>
+
                 <span class="blog-post-two_format">
                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor"
                     class="bi bi-briefcase" viewBox="0 0 16 16">
@@ -107,22 +117,10 @@
                 </h3>
 
                 <ul class="job-info">
-                  <li>
-                    <i class="las la-map-marker-alt"></i>
-                    {{ job.location || 'N/A' }}
-                  </li>
-                  <li>
-                    <i class="las la-briefcase"></i>
-                    {{ job.level || 'All levels' }}
-                  </li>
-                  <li>
-                    <i class="las la-user-clock"></i>
-                    {{ job.experience || 'No experience required' }}
-                  </li>
-                  <li>
-                    <i class="las la-clock"></i>
-                    Expire: {{ job.expiration_date | date: 'MMM dd, yyyy' }}
-                  </li>
+                  <li><i class="las la-map-marker-alt"></i> {{ job.location || 'N/A' }}</li>
+                  <li><i class="las la-briefcase"></i> {{ job.level || 'All levels' }}</li>
+                  <li><i class="las la-user-clock"></i> {{ job.experience || 'No experience required' }}</li>
+                  <li><i class="las la-clock"></i> Expire: {{ job.expiration_date | date: 'MMM dd, yyyy' }}</li>
                 </ul>
 
                 <p class="salary">
@@ -142,6 +140,7 @@
               </div>
             </div>
           </div>
+
         </div>
 
         <!-- Empty -->

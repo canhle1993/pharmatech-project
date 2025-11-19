@@ -10,14 +10,12 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 export class Application extends Document {
   // 🔗 Liên kết
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Account', required: true })
-  account_id: string;
+  account_id: any;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Career', required: true })
-  career_id: string;
+  career_id: any;
 
   // 📄 Thông tin hồ sơ nộp
-  @Prop()
-  resume?: string;
 
   @Prop()
   cover_letter?: string;
@@ -34,6 +32,10 @@ export class Application extends Document {
   // 🧠 Trạng thái xử lý
   @Prop({ default: 'pending' })
   status: string; // pending | assigned | interview | hired | rejected
+
+  // 🗑️ Soft delete flag
+  @Prop({ type: Boolean, default: true })
+  is_active: boolean;
 
   @Prop()
   reviewed_date?: Date;
@@ -74,6 +76,32 @@ export class Application extends Document {
 
   @Prop({ type: String })
   hired_department?: string;
+
+  // 🟩 PASS fields
+  @Prop({ type: Date })
+  pass_date?: Date;
+
+  @Prop({ type: Date })
+  start_work_date?: Date;
+
+  @Prop({ type: String })
+  pass_location?: string;
+
+  @Prop({ type: String })
+  pass_email_content?: string;
+
+  // 🟥 REJECT fields
+  @Prop({ type: Date })
+  reject_date?: Date;
+
+  @Prop({ type: String })
+  reject_reason?: string;
+
+  @Prop({ type: String })
+  reject_email_content?: string;
+
+  @Prop({ type: String })
+  rejected_by?: string;
 
   // Thời gian tạo / cập nhật
   @Prop()

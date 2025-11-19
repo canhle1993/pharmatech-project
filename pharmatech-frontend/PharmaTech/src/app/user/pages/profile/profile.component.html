@@ -5,7 +5,6 @@
       <div class="d-flex align-items-center gap-3">
         <img [src]="account?.photo || 'assets/images/no-image.jpg'" class="profile-avatar border" alt="avatar" />
 
-
         <div>
           <h5 class="fw-bold mb-1">{{ account.name }}</h5>
           <p class="text-muted small mb-1">{{ account.email }}</p>
@@ -31,8 +30,26 @@
       </div>
     </div>
 
+    <!-- Tabs -->
+    <ul class="nav nav-tabs profile-tabs px-4">
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="activeTab === 'info'" (click)="activeTab = 'info'">
+          Profile Info
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="activeTab === 'saved'" (click)="activeTab = 'saved'">
+          Saved Jobs
+        </a>
+      </li>
+    </ul>
+
+
+
+
     <!-- Body -->
-    <div class="card-body p-4">
+    <div class="card-body p-4" *ngIf="activeTab === 'info'">
       <form (ngSubmit)="saveChanges()" #formRef="ngForm">
         <!-- Section: Basic Info -->
         <div class="section">
@@ -70,16 +87,8 @@
                 Age: {{ account?.['age'] }} years
               </div>
             </div>
-
-
-
-
           </div>
-
-
         </div>
-
-
         <!-- Section: Job Preference -->
         <div class="section">
           <h6 class="section-title">
@@ -167,19 +176,29 @@
           <h6 class="section-title">
             <i class="bx bx-file me-2"></i> Resume
           </h6>
-          <div>
+
+          <div class="resume-btn-wrapper">
             <ng-container *ngIf="!isEditing; else uploadTpl">
-              <a *ngIf="account.resume" [href]="account.resume" target="_blank" class="btn btn-outline-primary btn-sm">
+
+              <!-- Nếu có resume -->
+              <a *ngIf="account.resume" [href]="account.resume" target="_blank" class="resume-btn">
                 <i class="bx bx-download"></i> View Resume
               </a>
-              <span *ngIf="!account.resume" class="text-muted small ms-2">No resume uploaded.</span>
+
+              <!-- Nếu không có resume -->
+              <span *ngIf="!account.resume" class="text-muted small">
+                No resume uploaded.
+              </span>
+
             </ng-container>
 
+            <!-- Upload khi đang Edit -->
             <ng-template #uploadTpl>
               <input type="file" accept=".pdf" (change)="onResumeSelected($event)" />
             </ng-template>
           </div>
         </div>
+
 
         <!-- Section: Introduction -->
         <div class="section">
@@ -197,6 +216,46 @@
         </div>
       </form>
     </div>
+
+    <!-- ================= SAVED JOBS TAB ================= -->
+    <div *ngIf="activeTab === 'saved'" class="p-3">
+
+      <div class="saved-job-title-wrapper text-center">
+        <h2 class="saved-job-title">
+          <i class='bx bx-bookmark-heart saved-icon'></i>
+          Saved Jobs
+        </h2>
+      </div>
+
+
+      <p *ngIf="savedJobs.length === 0" class="text-muted">
+        You haven't saved any jobs yet.
+      </p>
+
+      <!-- LIST OF SAVED JOB CARDS -->
+      <a class="saved-job-card d-flex align-items-center p-3 mb-3 text-decoration-none" *ngFor="let item of savedJobs"
+        [routerLink]="['/careerDetails', item.job_id?.id]">
+
+        <img class="saved-job-thumb" [src]="item.job_id?.banner || 'assets/images/jobs/default-job.jpg'"
+          alt="job banner">
+
+        <div class="saved-job-info ms-3">
+          <h6 class="job-title">{{ item.job_id?.title }}</h6>
+          <p class="job-meta">{{ item.job_id?.department }}</p>
+          <p class="job-location">{{ item.job_id?.location }}</p>
+        </div>
+
+      </a>
+
+
+
+
+
+    </div>
+
+
+
+
   </div>
 </div>
 

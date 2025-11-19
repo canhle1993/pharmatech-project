@@ -8,9 +8,12 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { MessageService } from 'primeng/api';
 import { AccountService } from '../../../services/account.service';
 import { ProfileService } from '../../../services/profile.service';
+import { CareerService } from '../../../services/career.service'; // ⭐ Thêm dòng này
 import { Account } from '../../../entities/account.entity';
 
 import { DatePickerModule } from 'primeng/datepicker';
+import { SavedJob } from '../../../entities/saved-job.entity';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -23,6 +26,7 @@ import { DatePickerModule } from 'primeng/datepicker';
     MultiSelectModule,
     AutoCompleteModule,
     DatePickerModule,
+    RouterModule,
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
@@ -35,11 +39,15 @@ export class ProfileComponent implements OnInit {
   selectedPhoto?: File;
   selectedResume?: File;
 
-  /** ✅ Giới hạn ngày sinh */
-  minDate = new Date(1950, 0, 1);
-  maxDate = new Date(); // hôm nay
+  /** Tabs */
+  activeTab: 'info' | 'saved' = 'info';
+  savedJobs: SavedJob[] = [];
 
-  /** =================== Dropdown data =================== */
+  /** Ngày sinh min/max */
+  minDate = new Date(1950, 0, 1);
+  maxDate = new Date();
+
+  /** Dropdown data */
   genderList = ['Any', 'Male', 'Female', 'Other'];
   workTypeList = ['Full-time', 'Part-time', 'Remote', 'Hybrid'];
   educationList = ['High School', 'College', 'Bachelor', 'Master', 'PhD'];
@@ -99,7 +107,7 @@ export class ProfileComponent implements OnInit {
     { name: 'Other' },
   ];
 
-  /** =================== Filtered options =================== */
+  /** Filter options */
   filteredGenders: string[] = [];
   filteredWorkTypes: string[] = [];
   filteredEducationLevels: string[] = [];
@@ -108,23 +116,36 @@ export class ProfileComponent implements OnInit {
   constructor(
     private accountService: AccountService,
     private profileService: ProfileService,
-    private messageService: MessageService
+    private careerService: CareerService, // ⭐ Dùng CareerService
+    private messageService: MessageService,
+    private router: Router
   ) {}
 
-  /** =================== Lifecycle =================== */
+  // ======================================================
+  //  ⭐ INIT PROFILE + LOAD SAVED JOBS
+  // ======================================================
   async ngOnInit() {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
     const id = currentUser?.id || currentUser?._id;
-    if (!id) return;
+
+    if (!id) {
+      console.error('❌ No user ID found in localStorage');
+      return;
+    }
 
     this.loading = true;
+
     try {
       const result = await this.accountService.findById(id);
+
       this.account = this.profileService.normalizeAccountData(result, {
         fieldList: this.fieldList,
         skillsList: this.skillsList,
         languageList: this.languageList,
       });
+
+      // ⭐ Load saved jobs
+      await this.loadSavedJobs(id);
     } catch (err) {
       console.error('❌ Error loading profile:', err);
       this.messageService.add({
@@ -137,7 +158,23 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  /** =================== Actions =================== */
+  // ======================================================
+  //  ⭐ LOAD SAVED JOBS
+  // ======================================================
+  async loadSavedJobs(userId: string) {
+    try {
+      this.savedJobs = await this.careerService.getSavedJobs(userId);
+      console.log('🔥 SAVED JOBS RETURNED FROM API:', this.savedJobs);
+
+      console.log('💾 Saved jobs:', this.savedJobs);
+    } catch (err) {
+      console.error('❌ Failed to load saved jobs:', err);
+    }
+  }
+
+  // ======================================================
+  //  EDIT PROFILE
+  // ======================================================
   toggleEdit() {
     this.isEditing = !this.isEditing;
   }
@@ -160,19 +197,19 @@ export class ProfileComponent implements OnInit {
     this.selectedResume = file;
   }
 
+  // Save profile
   async saveChanges() {
     if (!this.account) return;
 
     this.loading = true;
+
     try {
-      // Upload file
       this.account = await this.profileService.uploadFiles(
         this.account,
         this.selectedPhoto,
         this.selectedResume
       );
 
-      // Validate
       const errorMsg = this.profileService.validateProfile(this.account);
       if (errorMsg) {
         this.messageService.add({
@@ -183,20 +220,22 @@ export class ProfileComponent implements OnInit {
         return;
       }
 
-      // Build payload
       const payload = this.profileService.buildPayload(this.account);
+
       const updated = await this.profileService.saveProfile(
         this.account,
         payload
       );
-      console.log('📦 Payload gửi lên BE:', payload);
 
       if (updated) {
-        // ✅ Cập nhật lại localStorage để applyJob đọc dữ liệu mới nhất
-        localStorage.setItem('user', JSON.stringify(updated));
+        const freshAccount = await this.accountService.findById(
+          this.account._id || this.account.id
+        );
 
-        // ✅ Normalize lại dữ liệu vừa cập nhật để hiển thị đẹp
-        this.account = this.profileService.normalizeAccountData(updated, {
+        localStorage.setItem('user', JSON.stringify(freshAccount));
+        localStorage.setItem('userId', freshAccount.id || freshAccount._id);
+
+        this.account = this.profileService.normalizeAccountData(freshAccount, {
           fieldList: this.fieldList,
           skillsList: this.skillsList,
           languageList: this.languageList,
@@ -222,32 +261,34 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  /** =================== Filters for AutoComplete =================== */
+  // ======================================================
+  // FILTERS
+  // ======================================================
   filterGender(event: any) {
-    const query = event.query.toLowerCase();
+    const q = event.query.toLowerCase();
     this.filteredGenders = this.genderList.filter((g) =>
-      g.toLowerCase().includes(query)
+      g.toLowerCase().includes(q)
     );
   }
 
   filterWorkType(event: any) {
-    const query = event.query.toLowerCase();
+    const q = event.query.toLowerCase();
     this.filteredWorkTypes = this.workTypeList.filter((t) =>
-      t.toLowerCase().includes(query)
+      t.toLowerCase().includes(q)
     );
   }
 
   filterEducationLevel(event: any) {
-    const query = event.query.toLowerCase();
+    const q = event.query.toLowerCase();
     this.filteredEducationLevels = this.educationList.filter((e) =>
-      e.toLowerCase().includes(query)
+      e.toLowerCase().includes(q)
     );
   }
 
   filterArea(event: any) {
-    const query = event.query.toLowerCase();
+    const q = event.query.toLowerCase();
     this.filteredAreas = this.areaList.filter((a) =>
-      a.toLowerCase().includes(query)
+      a.toLowerCase().includes(q)
     );
   }
 
@@ -256,6 +297,7 @@ export class ProfileComponent implements OnInit {
 
     const today = new Date();
     let age = today.getFullYear() - date.getFullYear();
+
     const monthDiff = today.getMonth() - date.getMonth();
     if (
       monthDiff < 0 ||
@@ -264,6 +306,6 @@ export class ProfileComponent implements OnInit {
       age--;
     }
 
-    (this.account as any).age = age; // ✅ chỉ gán để hiển thị FE
+    (this.account as any).age = age;
   }
 }

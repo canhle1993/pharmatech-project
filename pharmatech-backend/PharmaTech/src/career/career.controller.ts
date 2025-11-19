@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -27,7 +28,7 @@ export class CareerController {
   constructor(private readonly careerService: CareerService) {}
 
   /** =======================================
-   * 🟢 CREATE NEW JOB
+   *  🟢 CREATE
    * ======================================= */
   @Post()
   @UseInterceptors(
@@ -42,9 +43,6 @@ export class CareerController {
     }),
   )
   async create(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
-    console.log('📦 [CREATE] Raw body received from FE:', body);
-
-    // 🧹 Chuẩn hóa dữ liệu
     const raw = {
       ...body,
       banner: file?.filename || undefined,
@@ -54,38 +52,26 @@ export class CareerController {
       expiration_date: body?.expiration_date || undefined,
     };
 
-    // 🧽 Loại bỏ field rỗng
     Object.keys(raw).forEach((k) => {
-      const v = (raw as any)[k];
-      if (v === undefined || v === '') delete (raw as any)[k];
+      if (raw[k] === '' || raw[k] === undefined) delete raw[k];
     });
 
-    console.log('📦 [CREATE] Parsed raw before DTO:', raw);
-
-    // 🧩 Validate DTO
     const dto = plainToInstance(CreateCareerDto, raw, {
       enableImplicitConversion: true,
     });
-    const errors = validateSync(dto, {
-      whitelist: true,
-      forbidUnknownValues: true,
-    });
-    if (errors.length) {
+
+    const errors = validateSync(dto, { whitelist: true });
+    if (errors.length)
       throw new BadRequestException(
         errors.map((e) => Object.values(e.constraints ?? {})).flat(),
       );
-    }
 
-    // ✅ Tạo job và tự động gửi mail đến user liên quan
     const created = await this.careerService.create(dto);
-    return {
-      msg: 'Job created successfully and notifications sent.',
-      data: created,
-    };
+    return { msg: 'Job created', data: created };
   }
 
   /** =======================================
-   * 🟡 UPDATE JOB
+   *  🟡 UPDATE
    * ======================================= */
   @Put(':id')
   @UseInterceptors(
@@ -104,70 +90,84 @@ export class CareerController {
     @UploadedFile() file: Express.Multer.File,
     @Body() body: any,
   ) {
-    console.log('📦 [UPDATE] Raw body received:', body);
+    const raw = { ...body, banner: file?.filename || undefined };
 
-    const raw = {
-      ...body,
-      banner: file?.filename || undefined,
-    };
-
-    // 🧽 Loại field rỗng
     Object.keys(raw).forEach((k) => {
-      const v = (raw as any)[k];
-      if (v === undefined || v === '') delete (raw as any)[k];
+      if (raw[k] === '' || raw[k] === undefined) delete raw[k];
     });
 
     const dto = plainToInstance(UpdateCareerDto, raw, {
       enableImplicitConversion: true,
     });
 
-    const errors = validateSync(dto, {
-      whitelist: true,
-      forbidUnknownValues: true,
-    });
-    if (errors.length) {
+    const errors = validateSync(dto, { whitelist: true });
+    if (errors.length)
       throw new BadRequestException(
         errors.map((e) => Object.values(e.constraints ?? {})).flat(),
       );
-    }
 
     const updated = await this.careerService.update(id, dto);
-    return { msg: 'Job updated successfully', data: updated };
+    return { msg: 'Job updated', data: updated };
   }
 
   /** =======================================
-   * 🔵 GET ALL JOBS
+   *  🔵 GET ALL ACTIVE
    * ======================================= */
   @Get()
   async findAll() {
-    // ❌ Không cần transform thêm lần nữa
+    await this.careerService.autoExpire(); // ⭐ tự động expire trước khi trả data
     return await this.careerService.findAll();
   }
 
   /** =======================================
-   * 🟣 GET JOB BY ID
+   *  🟣 HISTORY (inactive jobs)
    * ======================================= */
-  @Get(':id')
-  async findById(@Param('id') id: string) {
-    // ❌ Không cần transform lại
-    return await this.careerService.findById(id);
+  @Get('history')
+  async history() {
+    return await this.careerService.findHistory();
   }
 
   /** =======================================
-   * 🧭 GET SIMILAR JOBS
+   *  🔄 RESTORE
+   * ======================================= */
+  @Put('restore/:id')
+  async restore(@Param('id') id: string) {
+    return await this.careerService.restore(id);
+  }
+
+  /** =======================================
+   *  ☠️ DELETE PERMANENT
+   * ======================================= */
+  @Delete('delete-permanent/:id')
+  async deletePermanent(@Param('id') id: string) {
+    const ok = await this.careerService.deletePermanent(id);
+    if (!ok) throw new NotFoundException('Career not found');
+    return { message: 'Career permanently deleted' };
+  }
+
+  /** =======================================
+   *  🧭 SIMILAR JOBS
    * ======================================= */
   @Get('similar/:id')
-  async getSimilar(@Param('id') id: string): Promise<CareerDTO[]> {
+  async getSimilar(@Param('id') id: string) {
     return await this.careerService.findSimilarById(id);
   }
 
   /** =======================================
-   * 🔴 SOFT DELETE JOB
+   *  🗑️ SOFT DELETE
    * ======================================= */
   @Delete(':id')
   async delete(@Param('id') id: string) {
     const ok = await this.careerService.delete(id);
     if (!ok) throw new BadRequestException('Soft delete failed');
-    return { msg: 'Job marked as inactive successfully' };
+    return { msg: 'Job inactive' };
+  }
+
+  /** =======================================
+   *  🔍 GET BY ID
+   * ======================================= */
+  @Get(':id')
+  async findById(@Param('id') id: string) {
+    return await this.careerService.findById(id);
   }
 }

@@ -18,6 +18,8 @@ import { HotlineModule } from './hotline/hotline.module';
 import { ChatModule } from './chat/chat.module';
 import { ApplicationModule } from './application/application.module';
 import { AuthModule } from './auth/auth.module';
+import { CareerAnalyticsModule } from './career-analytics/analytics.module';
+import { SaveJobModule } from './savejob/savejob.module';
 
 @Module({
   imports: [
@@ -69,6 +71,8 @@ import { AuthModule } from './auth/auth.module';
     ChatModule,
     ApplicationModule,
     AuthModule,
+    CareerAnalyticsModule,
+    SaveJobModule,
   ],
   controllers: [],
   providers: [],

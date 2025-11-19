@@ -17,7 +17,7 @@ import { EditorModule } from 'primeng/editor';
 import { DatePickerModule } from 'primeng/datepicker';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
-
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 
@@ -55,19 +55,20 @@ export class ApplicationManagementComponent implements OnInit {
   showInterviewDialog = false;
   // === Dialog flags & data ===
   showViewDialog = false;
-  showResultDialog = false;
+  // ====== PASS / REJECT DIALOGS ======
+  showPassDialog = false;
+  showRejectDialog = false;
   viewing: Application | null = null;
-  resultData: {
-    status: 'pass' | 'fail';
-    hired_department?: string;
-    hired_start_date?: any;
-    note?: string;
-  } = { status: 'pass' };
 
   selectedApp: Application | null = null;
   filteredAdmins: any[] = []; // ✅ Dữ liệu gợi ý lọc khi nhập
   assignAdminData = { admin: null as any }; // ✅ Chọn admin trực tiếp
   interviewData = { date: '', location: '', note: '' };
+
+  emailHtmlOriginal = '';
+  emailHtml = '';
+
+  viewMode: 'active' | 'history' = 'active';
 
   /** Các trạng thái xử lý của hồ sơ */
   statusOptions = [
@@ -79,10 +80,29 @@ export class ApplicationManagementComponent implements OnInit {
   ];
   filteredStatus: string[] = [];
 
+  passData = {
+    start_work_date: '',
+    location: '',
+    email_content: '',
+  };
+
+  rejectData = {
+    reason: '',
+    rejected_by: '',
+    email_content: '',
+  };
+
+  resumeUrl: string | null = null;
+  isImageResume = false;
+  isPdfResume = false;
+  showResumeFullscreen = false;
+  resumeSafeUrl: SafeResourceUrl | null = null;
+
   constructor(
     private appService: ApplicationService,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private sanitizer: DomSanitizer
   ) {}
 
   /** 🟢 Khi khởi tạo component → lấy toàn bộ danh sách ứng tuyển */
@@ -95,27 +115,166 @@ export class ApplicationManagementComponent implements OnInit {
     ]);
   }
 
+  toggleHistory() {
+    if (this.viewMode === 'active') {
+      this.viewMode = 'history';
+      this.loadHistory();
+    } else {
+      this.viewMode = 'active';
+      this.loadApplications();
+    }
+  }
+
+  async loadHistory() {
+    try {
+      this.loading = true;
+      const result = await this.appService.findHistory();
+
+      this.applications = result.map((item: any) => {
+        const acc = item.account || item.account_id || {};
+
+        return {
+          ...item,
+          account: {
+            ...acc,
+            photo: acc.photo
+              ? acc.photo.startsWith('http')
+                ? acc.photo
+                : `http://localhost:3000/upload/${acc.photo}`
+              : 'assets/images/users/default-avatar.png',
+          },
+          career: item.career || item.career_id,
+        };
+      });
+    } catch (err) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to load history list.',
+      });
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  async restoreApplication(app: Application) {
+    this.confirmationService.confirm({
+      header: 'Restore Application',
+      message: 'Are you sure you want to restore this application?',
+      icon: 'pi pi-refresh',
+      acceptLabel: 'Restore',
+      rejectLabel: 'Cancel',
+      acceptButtonStyleClass: 'p-button-success',
+      rejectButtonStyleClass: 'p-button-text',
+
+      accept: async () => {
+        try {
+          this.loading = true;
+          await this.appService.restore(app.id!);
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Restored',
+            detail: 'Application restored successfully.',
+          });
+
+          await this.loadHistory();
+        } catch {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to restore application.',
+          });
+        } finally {
+          this.loading = false;
+        }
+      },
+    });
+  }
+
+  async deletePermanent(app: Application) {
+    this.confirmationService.confirm({
+      header: 'Delete Permanently',
+      message: 'This action cannot be undone. Delete permanently?',
+      icon: 'pi pi-times-circle',
+      acceptLabel: 'Delete',
+      rejectLabel: 'Cancel',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-text',
+
+      accept: async () => {
+        try {
+          this.loading = true;
+          await this.appService.deletePermanent(app.id!);
+
+          this.messageService.add({
+            severity: 'info',
+            summary: 'Deleted',
+            detail: 'Application permanently deleted.',
+          });
+
+          await this.loadHistory();
+        } catch {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Delete permanent failed.',
+          });
+        } finally {
+          this.loading = false;
+        }
+      },
+    });
+  }
+
   /** 🟢 Load danh sách ứng viên */
-  /** 🟢 Load danh sách ứng viên */
+
   async loadApplications() {
     try {
       this.loading = true;
       const result = await this.appService.findAll();
 
-      // 🧠 Chuẩn hóa dữ liệu hiển thị (giữ nguyên toàn bộ field, không mất assigned_admin_name)
-      this.applications = result.map((item: any) => ({
-        ...item, // ⚡ Giữ lại tất cả field gốc như assigned_admin_name, assigned_admin_id, status, v.v.
-        account: {
-          ...item.account_id,
-          photo: item.account_id?.photo
-            ? item.account_id.photo.startsWith('http')
-              ? item.account_id.photo
-              : `http://localhost:3000/upload/${item.account_id.photo}`
-            : 'assets/images/users/default-avatar.png',
-        },
-        career: item.career_id,
-      }));
-    } catch (err: any) {
+      this.applications = result.map((item: any) => {
+        const acc = item.account || item.account_id || {};
+
+        // ⭐ FIX DATE HERE: Convert dd/MM/YYYY HH:mm → Date()
+        const createdAt = item.created_at
+          ? this.parseDate(item.created_at)
+          : null;
+
+        const updatedAt = item.updated_at
+          ? this.parseDate(item.updated_at)
+          : null;
+
+        return {
+          ...item,
+          created_at: createdAt, // ⭐ trả về Date object
+          updated_at: updatedAt,
+          account: {
+            ...acc,
+            photo: acc.photo
+              ? acc.photo.startsWith('http')
+                ? acc.photo
+                : `http://localhost:3000/upload/${acc.photo}`
+              : 'assets/images/users/default-avatar.png',
+
+            resume: acc.resume
+              ? acc.resume.startsWith('http')
+                ? acc.resume
+                : `http://localhost:3000/upload/${acc.resume}`
+              : null,
+
+            skills: Array.isArray(acc.skills) ? acc.skills : [],
+            field: Array.isArray(acc.field) ? acc.field : [],
+            languages: Array.isArray(acc.languages) ? acc.languages : [],
+            education: acc.education ?? {},
+            experience: acc.experience ?? {},
+            introduction: acc.introduction ?? '',
+          },
+          career: item.career || item.career_id,
+        };
+      });
+    } catch (err) {
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
@@ -124,6 +283,16 @@ export class ApplicationManagementComponent implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+
+  parseDate(str: string): Date | null {
+    // str dạng "16/11/2025 11:02"
+    const parts = str.split(/[\s/:]/);
+    if (parts.length < 5) return null;
+
+    const [day, month, year, hour, minute] = parts.map(Number);
+
+    return new Date(year, month - 1, day, hour, minute);
   }
 
   /** 🧭 Admin → Lên lịch phỏng vấn */
@@ -163,7 +332,7 @@ export class ApplicationManagementComponent implements OnInit {
     }
   }
 
-  /** 🗑️ Xóa hồ sơ */
+  /** 🟡 Xóa mềm – chuyển vào HISTORY */
   async deleteApplication(app: Application) {
     this.confirmationService.confirm({
       header: 'Delete Application',
@@ -173,15 +342,21 @@ export class ApplicationManagementComponent implements OnInit {
       rejectLabel: 'Cancel',
       acceptButtonStyleClass: 'p-button-danger',
       rejectButtonStyleClass: 'p-button-text',
+
       accept: async () => {
         try {
           this.loading = true;
-          await this.appService.delete(app.id!);
+
+          // ⛳ GỌI HÀM MỚI – softDelete(id)
+          await this.appService.softDelete(app.id!);
+
+          // Xóa khỏi FE list
           this.applications = this.applications.filter((a) => a.id !== app.id);
+
           this.messageService.add({
             severity: 'success',
             summary: 'Deleted',
-            detail: 'Application deleted successfully',
+            detail: 'Application moved to history',
           });
         } catch (err) {
           this.messageService.add({
@@ -236,9 +411,25 @@ export class ApplicationManagementComponent implements OnInit {
   }
 
   /** 🧭 Admin → Mở dialog lên lịch phỏng vấn */
-  openInterviewDialog(app: Application) {
+  async openInterviewDialog(app: Application) {
     this.selectedApp = app;
     this.interviewData = { date: '', location: '', note: '' };
+
+    try {
+      // gọi template gốc từ BE
+      this.emailHtmlOriginal = await this.appService.getEmailTemplate(app.id!);
+    } catch {
+      this.emailHtmlOriginal = `
+        <p>Dear {{candidate_name}},</p>
+        <p>We would like to invite you to an interview.</p>
+        <p><b>Time:</b> {{interview_time}}</p>
+        <p><b>Location:</b> {{interview_location}}</p>
+      `;
+    }
+
+    // tạo email realtime ban đầu
+    this.updateEmailPreview();
+
     this.showInterviewDialog = true;
   }
 
@@ -286,7 +477,14 @@ export class ApplicationManagementComponent implements OnInit {
 
   /** ✅ Thực hiện lưu lịch phỏng vấn */
   async confirmScheduleInterview() {
-    if (!this.interviewData.date || !this.interviewData.location) return;
+    if (!this.interviewData.date || !this.interviewData.location) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Missing info',
+        detail: 'Please fill date & location.',
+      });
+      return;
+    }
 
     try {
       this.loading = true;
@@ -294,23 +492,17 @@ export class ApplicationManagementComponent implements OnInit {
         this.selectedApp!.id!,
         this.interviewData.date,
         this.interviewData.location,
-        this.interviewData.note
+        this.emailHtml // FE gửi email HTML đã preview
       );
 
       this.messageService.add({
         severity: 'success',
-        summary: 'Scheduled',
-        detail: 'Interview scheduled successfully!',
+        summary: 'Success',
+        detail: 'Interview scheduled!',
       });
 
       this.showInterviewDialog = false;
       await this.loadApplications();
-    } catch (err) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Failed to schedule interview.',
-      });
     } finally {
       this.loading = false;
     }
@@ -319,98 +511,223 @@ export class ApplicationManagementComponent implements OnInit {
   openViewDialog(app: Application) {
     this.viewing = app;
     this.showViewDialog = true;
-  }
 
-  // Gọi dialog Update Result thay vì prompt()
-  openResultDialog(app: Application, passed: boolean) {
-    this.selectedApp = app;
-    this.resultData = {
-      status: passed ? 'pass' : 'fail',
-      hired_department: '',
-      hired_start_date: '',
-      note: '',
-    };
-    this.showResultDialog = true;
-  }
+    // ⭐ LẤY RESUME TỪ ACCOUNT
+    const file = app.account?.resume;
 
-  // Thay vì gọi updateResult(row, true/false) trực tiếp từ nút,
-  // bạn gọi openResultDialog(row, true/false) trong HTML (nếu muốn).
-  // Còn nếu bạn giữ nút cũ thì dùng confirmUpdateResult() bên dưới.
-
-  async confirmUpdateResult() {
-    if (!this.selectedApp) return;
-    try {
-      this.loading = true;
-      await this.appService.updateResult(
-        this.selectedApp.id!,
-        this.resultData.status === 'pass' ? 'pass' : 'fail',
-        this.resultData.hired_department,
-        this.resultData.hired_start_date
-      );
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Result updated',
-        detail:
-          this.resultData.status === 'pass'
-            ? 'Candidate passed interview!'
-            : 'Candidate failed interview.',
-      });
-      this.showResultDialog = false;
-      await this.loadApplications();
-    } catch (err) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Failed to update result.',
-      });
-    } finally {
-      this.loading = false;
+    if (!file) {
+      this.resumeUrl = null;
+      this.resumeSafeUrl = null;
+      this.isPdfResume = false;
+      this.isImageResume = false;
+      return;
     }
+
+    // ⭐ GÁN RESUME URL
+    this.resumeUrl = file;
+
+    // ⭐ TẠO SANITIZED URL CHO PDF
+    this.resumeSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(file);
+
+    // ⭐ XÁC ĐỊNH LOẠI FILE
+    this.isImageResume = /\.(jpg|jpeg|png|gif|bmp)$/i.test(file);
+    this.isPdfResume = /\.pdf$/i.test(file);
+  }
+
+  openResumeFullscreen() {
+    this.showResumeFullscreen = true;
   }
 
   onDialogHide() {
     this.selectedApp = null;
-    this.assignAdminData = { admin: null };
+    this.emailHtml = '';
+    this.emailHtmlOriginal = '';
     this.interviewData = { date: '', location: '', note: '' };
-    this.resultData = { status: 'pass' };
-    this.viewing = null;
   }
 
   /** 🟢 Lấy danh sách account có role 'admin' */
   async loadAdmins() {
     try {
       const result = await this.appService.findAllAdmins();
-      console.log('✅ API findAllAdmins result:', result);
-      this.admins = (result || []).map((a: any) => {
-        const id = a.id ?? a._id ?? a.accountId;
-        const name = a.full_name ?? a.FullName ?? a.name ?? 'Unknown';
-        const email = a.email ?? a.Email ?? '';
-        const photoRaw = a.photo ?? a.Photo ?? '';
-        const photo = photoRaw
-          ? photoRaw.startsWith('http')
-            ? photoRaw
-            : `http://localhost:3000/upload/${photoRaw}`
-          : undefined;
+
+      console.log('🔥 RAW ADMIN LIST:', result);
+
+      this.admins = result.map((a: any) => {
+        const name =
+          a.full_name ||
+          a.name ||
+          a.username ||
+          a.email?.split('@')[0] ||
+          'Unknown';
+
         return {
-          id,
-          name,
-          email,
-          photo,
-          label: email ? `${name} (${email})` : name,
+          id: a._id,
+          name: name,
+          email: a.email || '',
+          photo: a.photo
+            ? a.photo.startsWith('http')
+              ? a.photo
+              : `http://localhost:3000/upload/${a.photo}`
+            : undefined,
+          label: `${name} (${a.email})`,
         };
       });
-    } catch (error) {
-      console.error('❌ Load admins failed:', error);
+    } catch (err) {
+      console.error('❌ Load admins failed:', err);
     }
   }
 
   /** 🔍 Lọc gợi ý admin khi gõ */
   searchAdmins(event: any) {
-    const query = (event.query || '').toLowerCase();
-    this.filteredAdmins = this.admins.filter(
-      (a) =>
-        a.name.toLowerCase().includes(query) ||
-        (a.email ?? '').toLowerCase().includes(query)
-    );
+    const q = (event.query || '').toLowerCase();
+
+    this.filteredAdmins = this.admins.filter((a) => {
+      const name = (a.name || '').toLowerCase();
+      const email = (a.email || '').toLowerCase();
+      return name.includes(q) || email.includes(q);
+    });
+  }
+
+  updateEmailPreview() {
+    this.emailHtml = this.emailHtmlOriginal
+      .replace('{{candidate_name}}', this.selectedApp?.account?.name || '')
+      .replace('{{job_title}}', this.selectedApp?.career?.title || '')
+      .replace('{{interview_time}}', this.interviewData.date || '—')
+      .replace('{{interview_location}}', this.interviewData.location || '—');
+  }
+
+  async openPassDialog(app: Application) {
+    this.selectedApp = app;
+
+    this.passData = {
+      start_work_date: '',
+      location: '',
+      email_content: '',
+    };
+
+    try {
+      this.emailHtmlOriginal = await this.appService.getPassEmailTemplate(
+        app.id!
+      );
+    } catch {
+      this.emailHtmlOriginal = `
+      <p>Dear {{candidate_name}},</p>
+      <p>Congratulations! You passed the interview for <b>{{job_title}}</b>.</p>
+      <p>Start date: <b>{{start_work_date}}</b></p>
+      <p>Location: <b>{{location}}</b></p>
+    `;
+    }
+
+    this.updatePassPreview();
+    this.showPassDialog = true;
+  }
+
+  updatePassPreview() {
+    this.passData.email_content = this.emailHtmlOriginal
+      .replace('{{candidate_name}}', this.selectedApp?.account?.name || '')
+      .replace('{{job_title}}', this.selectedApp?.career?.title || '')
+      .replace('{{start_work_date}}', this.passData.start_work_date || '—')
+      .replace('{{location}}', this.passData.location || '—');
+  }
+
+  async confirmMarkAsPass() {
+    if (!this.passData.start_work_date || !this.passData.location) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Missing info',
+        detail: 'Start date & location are required!',
+      });
+      return;
+    }
+
+    try {
+      this.loading = true;
+
+      await this.appService.markAsPass(
+        this.selectedApp!.id!,
+        this.passData.start_work_date,
+        this.passData.location,
+        this.passData.email_content
+      );
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Passed',
+        detail: 'Candidate marked as PASS and email sent.',
+      });
+
+      this.showPassDialog = false;
+      await this.loadApplications();
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  async openRejectDialog(app: Application) {
+    this.selectedApp = app;
+
+    this.rejectData = {
+      reason: '',
+      rejected_by: '',
+      email_content: '',
+    };
+
+    try {
+      this.emailHtmlOriginal = await this.appService.getRejectEmailTemplate(
+        app.id!
+      );
+    } catch {
+      this.emailHtmlOriginal = `
+      <p>Dear {{candidate_name}},</p>
+      <p>Thank you for your interest in <b>{{job_title}}</b>.</p>
+      <p>After careful consideration, we regret to inform you that we will not move forward.</p>
+      <p><b>Reason:</b> {{reason}}</p>
+      <p><b>Reviewed by:</b> {{rejected_by}}</p>
+    `;
+    }
+
+    this.updateRejectPreview();
+    this.showRejectDialog = true;
+  }
+
+  updateRejectPreview() {
+    this.rejectData.email_content = this.emailHtmlOriginal
+      .replace('{{candidate_name}}', this.selectedApp?.account?.name || '')
+      .replace('{{job_title}}', this.selectedApp?.career?.title || '')
+      .replace('{{reason}}', this.rejectData.reason || '—')
+      .replace('{{rejected_by}}', this.rejectData.rejected_by || '—');
+  }
+
+  async confirmMarkAsReject() {
+    if (!this.rejectData.reason) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Missing info',
+        detail: 'Reason is required!',
+      });
+      return;
+    }
+
+    try {
+      this.loading = true;
+
+      await this.appService.markAsReject(
+        this.selectedApp!.id!,
+        this.rejectData.reason,
+        this.rejectData.email_content,
+        this.rejectData.rejected_by
+      );
+
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Rejected',
+        detail: 'Candidate marked as REJECTED and email sent.',
+      });
+
+      this.showRejectDialog = false;
+      await this.loadApplications();
+    } finally {
+      this.loading = false;
+    }
   }
 }

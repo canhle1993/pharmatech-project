@@ -40,9 +40,6 @@ export class ProfileService {
       { key: 'phone', label: 'Phone number' },
       { key: 'address', label: 'Address' },
       { key: 'dob', label: 'Date of birth' },
-      { key: 'preferred_area', label: 'Preferred area' },
-      { key: 'job_type', label: 'Job type' },
-      { key: 'expected_salary', label: 'Expected salary' },
     ];
 
     for (const f of requiredFields) {
@@ -101,10 +98,13 @@ export class ProfileService {
         account.photo
       }`;
     }
-    if (account.resume && !account.resume.startsWith('http')) {
-      account.resume = `${env.baseUrl.replace('/api/', '')}upload/${
-        account.resume
-      }`;
+    if (account.resume) {
+      // Nếu đã là full URL → giữ nguyên
+      if (!account.resume.startsWith('http')) {
+        account.resume = `${env.baseUrl.replace('/api/', '')}/upload/${
+          account.resume
+        }`;
+      }
     }
 
     // ✅ Chuyển chuỗi ngày sinh (dob) → Date object cho p-datepicker
@@ -136,26 +136,17 @@ export class ProfileService {
   ): Promise<Account> {
     const updated = { ...account };
 
+    // Upload photo
     if (photo) {
-      console.log('📤 Uploading photo:', photo);
       const upload = await this.accountService.uploadPhoto(photo);
-      console.log('✅ Upload success:', upload);
-      updated.photo = `${env.baseUrl.replace('/api/', '')}/upload/${
-        upload.filename
-      }`;
+      updated.photo = upload.filename;
     }
 
+    // Upload resume
     if (resume) {
       const upload = await this.accountService.uploadResume(resume);
-      updated.resume = `${env.baseUrl.replace('/api/', '')}upload/${
-        upload.filename
-      }`;
+      updated.resume = upload.filename;
     }
-
-    // ✅ Đảm bảo dữ liệu không null
-    updated.name = account.name?.trim() || '';
-    updated.email = account.email?.trim() || '';
-    updated.phone = account.phone?.trim() || '';
 
     return updated;
   }
@@ -165,21 +156,24 @@ export class ProfileService {
   // ========================================================
   /** ✅ Chuẩn hóa dữ liệu gửi lên backend */
   buildPayload(account: Account) {
-    // clone object
     const payload = {
       ...account,
+
       photo: account.photo
         ? account.photo.startsWith('data:')
-          ? undefined // nếu là base64 thì bỏ qua (đã upload xong rồi)
-          : account.photo.split('/upload/').pop() // lấy filename nếu có /upload/
+          ? undefined
+          : account.photo.replace(/^.*\/upload\//, '') // luôn lấy filename
         : undefined,
-      resume: account.resume?.split('/upload/')[1],
+
+      resume: account.resume
+        ? account.resume.replace(/^.*\/upload\//, '')
+        : undefined,
+
       field: account.field?.map((f: any) => f.name ?? f),
       skills: account.skills?.map((s: any) => s.name ?? s),
       languages: account.languages?.map((l: any) => l.name ?? l),
     };
 
-    // 🔹 Xóa _id nếu có trong education / experience
     if (payload.education && (payload.education as any)._id) {
       delete (payload.education as any)._id;
     }

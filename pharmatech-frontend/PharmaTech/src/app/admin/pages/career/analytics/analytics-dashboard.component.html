@@ -1,0 +1,85 @@
+<div class="analytics-container">
+
+  <!-- 🔥 TITLE -->
+  <div class="page-header fancy-title glow-title">
+    <h2>Application Dashboard</h2>
+    <p class="subtitle">Real-time analytics & insights</p>
+    <div class="underline"></div>
+  </div>
+
+
+
+  <!-- =======================
+       🔵 OVERVIEW CARDS
+  ======================== -->
+  <div class="overview-grid">
+
+    <div class="overview-card">
+      <h6>Total Applications</h6>
+      <h2>{{ overview?.total || 0 }}</h2>
+    </div>
+
+    <div class="overview-card">
+      <h6>Pending</h6>
+      <h2>{{ overview?.pending || 0 }}</h2>
+    </div>
+
+    <div class="overview-card">
+      <h6>Interview</h6>
+      <h2>{{ overview?.interview || 0 }}</h2>
+    </div>
+
+    <div class="overview-card">
+      <h6>Passed</h6>
+      <h2>{{ overview?.pass || 0 }}</h2>
+    </div>
+
+    <div class="overview-card">
+      <h6>Rejected</h6>
+      <h2>{{ overview?.fail || 0 }}</h2>
+    </div>
+
+  </div>
+
+  <!-- =======================
+        📊 MAIN CHARTS
+  ======================== -->
+  <div class="chart-grid">
+
+    <!-- 1. DAILY APPLICATIONS (LINE CHART) -->
+    <div class="chart-card">
+      <h5 class="chart-title">Daily Applications</h5>
+      <p-chart type="line" *ngIf="dailyChart" [data]="dailyChart" [options]="lineOptions">
+      </p-chart>
+    </div>
+
+    <!-- 2. Gender Distribution -->
+    <div class="chart-card">
+      <h5 class="chart-title">Gender Distribution</h5>
+      <p-chart type="pie" *ngIf="genderChart" [data]="genderChart">
+      </p-chart>
+    </div>
+
+    <!-- 3. Age Range -->
+    <div class="chart-card">
+      <h5 class="chart-title">Age Range</h5>
+      <p-chart type="doughnut" *ngIf="ageChart" [data]="ageChart">
+      </p-chart>
+    </div>
+
+    <!-- 4. Top Skills -->
+    <div class="chart-card">
+      <h5 class="chart-title">Top Skills</h5>
+      <p-chart type="bar" *ngIf="skillsChart" [data]="skillsChart" [options]="barOptions">
+      </p-chart>
+    </div>
+
+    <!-- 5. Application Results -->
+    <div class="chart-card">
+      <h5 class="chart-title">Application Results</h5>
+      <p-chart type="polarArea" *ngIf="resultChart" [data]="resultChart">
+      </p-chart>
+    </div>
+
+  </div>
+</div>

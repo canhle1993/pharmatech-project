@@ -9,6 +9,8 @@ import {
   Param,
   Patch,
   Post,
+  Put,
+  Query,
 } from '@nestjs/common';
 import { ApplicationService } from './application.service';
 import { CreateApplicationDto } from './application.dto';
@@ -40,6 +42,34 @@ export class ApplicationController {
     return this.appService.findAll();
   }
 
+  /** 🟣 GET HISTORY (INACTIVE) */
+  @Get('history')
+  async history() {
+    return this.appService.findHistory();
+  }
+
+  /** 🔄 RESTORE APPLICATION */
+  @Put('restore/:id')
+  async restore(@Param('id') id: string) {
+    const ok = await this.appService.restore(id);
+    if (!ok) throw new HttpException('Restore failed', HttpStatus.BAD_REQUEST);
+
+    return { msg: 'Application restored successfully' };
+  }
+
+  /** ☠️ DELETE PERMANENT */
+  @Delete('delete-permanent/:id')
+  async deletePermanent(@Param('id') id: string) {
+    const ok = await this.appService.deletePermanent(id);
+    if (!ok)
+      throw new HttpException(
+        'Delete permanent failed',
+        HttpStatus.BAD_REQUEST,
+      );
+
+    return { msg: 'Application permanently deleted' };
+  }
+
   /** 🟢 Lấy danh sách ứng tuyển của 1 user */
   @Get('find-by-account/:account_id')
   async findByAccount(@Param('account_id') account_id: string) {
@@ -50,6 +80,23 @@ export class ApplicationController {
   @Get('find-by-career/:career_id')
   async findByCareer(@Param('career_id') career_id: string) {
     return this.appService.findByCareer(career_id);
+  }
+
+  /** 🔍 CHECK duplicated application */
+  @Get('check-duplicate')
+  async checkDuplicate(
+    @Query('user_id') user_id: string,
+    @Query('career_id') career_id: string,
+  ) {
+    if (!user_id || !career_id) {
+      throw new HttpException(
+        'Missing user_id or career_id',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const applied = await this.appService.checkDuplicate(user_id, career_id);
+    return { applied };
   }
 
   /** 🟢 Cập nhật trạng thái hồ sơ */
@@ -64,8 +111,6 @@ export class ApplicationController {
   }
 
   /** 🟣 SuperAdmin phân công Admin */
-  //   @UseGuards(JwtAuthGuard)
-  //   @Roles('superadmin')
   @Patch('assign/:id')
   async assignAdmin(
     @Param('id') id: string,
@@ -76,18 +121,45 @@ export class ApplicationController {
     return { msg: 'Admin assigned successfully', data: app };
   }
 
+  /** ✨ NEW: Generate default email template */
+  @Get('generate-template/:id')
+  async generateTemplate(@Param('id') id: string) {
+    const html = await this.appService.generateEmailTemplate(id);
+    return { template: html };
+  }
+
+  /** ✨ Generate PASS Email Template */
+  @Get('generate-pass-template/:id')
+  async generatePassTemplate(@Param('id') id: string) {
+    const html = await this.appService.generatePassTemplate(id);
+    return { template: html };
+  }
+
+  /** ✨ Generate REJECT Email Template */
+  @Get('generate-reject-template/:id')
+  async generateRejectTemplate(@Param('id') id: string) {
+    const html = await this.appService.generateRejectTemplate(id);
+    return { template: html };
+  }
+
   /** 🟣 Admin lên lịch phỏng vấn */
-  @UseGuards(JwtAuthGuard)
-  @Roles('admin', 'superadmin')
+  // @UseGuards(JwtAuthGuard)
+  // @Roles('admin', 'superadmin')
   @Patch('schedule/:id')
   async scheduleInterview(
     @Param('id') id: string,
     @Body('date') date: Date,
     @Body('location') location: string,
+    @Body('email_content') email_content: string, // 🔥 ADD THIS
   ) {
+    if (!email_content) {
+      throw new HttpException('Missing email content', HttpStatus.BAD_REQUEST);
+    }
+
     const app = await this.appService.scheduleInterview(id, {
       date,
       location,
+      email_content,
     });
 
     return { msg: 'Interview scheduled successfully', data: app };
@@ -111,12 +183,58 @@ export class ApplicationController {
     return { msg: 'Interview result updated', data: app };
   }
 
-  /** 🟢 Xóa hồ sơ */
-  @Delete('delete/:id')
+  /** 🟩 Mark as PASS */
+  @Patch('mark-pass/:id')
+  async markPass(
+    @Param('id') id: string,
+    @Body('start_work_date') start_work_date: Date,
+    @Body('location') location: string,
+    @Body('email_content') email_content: string,
+  ) {
+    if (!email_content?.trim()) {
+      throw new HttpException('Missing email content', HttpStatus.BAD_REQUEST);
+    }
+
+    const app = await this.appService.markAsPass(id, {
+      start_work_date,
+      location,
+      email_content,
+    });
+
+    return { msg: 'Candidate marked as PASS', data: app };
+  }
+
+  /** 🟥 Mark as REJECT */
+  @Patch('mark-reject/:id')
+  async markReject(
+    @Param('id') id: string,
+    @Body('reason') reason: string,
+    @Body('email_content') email_content: string,
+    @Body('rejected_by') rejected_by: string,
+  ) {
+    if (!email_content?.trim()) {
+      throw new HttpException(
+        'Reject email content is required',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const app = await this.appService.markAsReject(id, {
+      reason,
+      email_content,
+      rejected_by,
+    });
+
+    return { msg: 'Candidate marked as REJECTED', data: app };
+  }
+
+  /** 🟡 SOFT DELETE → MOVE TO HISTORY */
+  @Delete(':id')
   async delete(@Param('id') id: string) {
     const success = await this.appService.delete(id);
     if (!success)
       throw new HttpException('Delete failed', HttpStatus.BAD_REQUEST);
-    return { msg: 'Application deleted successfully' };
+
+    return { msg: 'Application moved to history' };
   }
 }

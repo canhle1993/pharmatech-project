@@ -13,7 +13,7 @@ import { RecycleProductComponent } from './pages/recycle/recycle-product/recycle
 import { QuoteComponent } from './pages/quote/quote.component';
 import { JobPostingComponent } from './pages/career/job-posting/job-posting.component';
 
-import { RecruitmentHistoryComponent } from './pages/career/recruitment-history/recruitment-history.component';
+import { DashboardAnalyticsComponent } from './pages/career/analytics/analytics-dashboard.component';
 import { OrderListComponent } from './pages/order/order-list/order-list.component';
 import { OrderDetailsComponent } from './pages/order/order-details/order-details.component';
 import { ChatComponent } from './pages/support/chat/chat.component';
@@ -64,8 +64,8 @@ export const adminRoutes: Routes = [
         component: ApplicationManagementComponent,
       },
       {
-        path: 'career/recruitment-history',
-        component: RecruitmentHistoryComponent,
+        path: 'career/analytics-dashboard',
+        component: DashboardAnalyticsComponent,
       },
       { path: 'order/order-list', component: OrderListComponent },
       { path: 'order/order-details', component: OrderDetailsComponent },
