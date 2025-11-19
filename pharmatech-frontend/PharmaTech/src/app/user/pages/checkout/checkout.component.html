@@ -1,0 +1,269 @@
+<!-- Breadcrumb Section Start -->
+<div class="breadcrumb" data-bg-image="assets/images/bg/vbvb.png">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="breadcrumb_content">
+          <h1 class="breadcrumb_title">Checkout</h1>
+          <ul class="breadcrumb_list">
+            <li><a href="index.html">Home</a></li>
+            <li>Checkout</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Breadcrumb Section End -->
+
+<!-- Product Section Start -->
+<div class="shop-product-section section section-padding-03">
+  <div class="container custom-container">
+    <form [formGroup]="billingForm" class="checkout-form">
+      <div class="row g-8">
+        <div class="col-lg-7">
+          <!-- Billing Address -->
+          <div id="billing-form">
+            <h4 class="mb-4">Billing Address</h4>
+            <div class="row row-cols-sm-2 row-cols-1 g-4">
+              <div class="col">
+                <label>Contact Name*</label>
+                <input
+                  class="form-field"
+                  type="text"
+                  formControlName="name"
+                  placeholder="Your full name"
+                />
+                <small
+                  *ngIf="
+                    billingForm.get('name')?.invalid &&
+                    billingForm.get('name')?.touched
+                  "
+                  class="text-danger"
+                  >Name is required.</small
+                >
+              </div>
+
+              <div class="col">
+                <label>Contact Email*</label>
+                <input
+                  class="form-field"
+                  type="email"
+                  formControlName="email"
+                  placeholder="your@email.com"
+                />
+                <small
+                  *ngIf="
+                    billingForm.get('email')?.invalid &&
+                    billingForm.get('email')?.touched
+                  "
+                  class="text-danger"
+                  >Valid email is required.</small
+                >
+              </div>
+              <div class="col">
+                <label>Contact Phone*</label>
+                <input
+                  class="form-field"
+                  type="text"
+                  formControlName="phone"
+                  placeholder="e.g. 0987654321"
+                />
+                <small
+                  *ngIf="
+                    billingForm.get('phone')?.invalid &&
+                    billingForm.get('phone')?.touched
+                  "
+                  class="text-danger"
+                  >Phone must be 10–11 digits.</small
+                >
+              </div>
+              <!-- Province -->
+              <div class="col-sm-6">
+                <label>Province*</label>
+                <div class="select-wrapper">
+                  <select
+                    class="form-field"
+                    formControlName="province"
+                    (change)="onProvinceChange($event)"
+                  >
+                    <option value="">Select Province</option>
+                    <option *ngFor="let p of provinces" [value]="p.code">
+                      {{ p.name }}
+                    </option>
+                  </select>
+                </div>
+
+                <small
+                  *ngIf="
+                    billingForm.get('province')?.invalid &&
+                    billingForm.get('province')?.touched
+                  "
+                  class="text-danger"
+                  >Province is required.</small
+                >
+              </div>
+
+              <!-- District -->
+              <div class="col-sm-6">
+                <label>District*</label>
+                <div class="select-wrapper">
+                  <select
+                    class="form-field"
+                    formControlName="district"
+                    (change)="onDistrictChange($event)"
+                  >
+                    <option value="">Select District</option>
+                    <option *ngFor="let d of districts" [value]="d.code">
+                      {{ d.name }}
+                    </option>
+                  </select>
+                </div>
+
+                <small
+                  *ngIf="
+                    billingForm.get('district')?.invalid &&
+                    billingForm.get('district')?.touched
+                  "
+                  class="text-danger"
+                  >District is required.</small
+                >
+              </div>
+
+              <!-- Ward -->
+              <div class="col-sm-6">
+                <label>Ward*</label>
+                <div class="select-wrapper">
+                  <select class="form-field" formControlName="ward">
+                    <option value="">Select Ward</option>
+                    <option *ngFor="let w of wards" [value]="w.name">
+                      {{ w.name }}
+                    </option>
+                  </select>
+                </div>
+
+                <small
+                  *ngIf="
+                    billingForm.get('ward')?.invalid &&
+                    billingForm.get('ward')?.touched
+                  "
+                  class="text-danger"
+                  >Ward is required.</small
+                >
+              </div>
+
+              <!-- Address Detail -->
+              <div class="col-sm-12">
+                <label>Address Detail*</label>
+                <input
+                  class="form-field"
+                  type="text"
+                  formControlName="address_detail"
+                  placeholder="Street, house number..."
+                />
+                <small
+                  *ngIf="
+                    billingForm.get('address_detail')?.invalid &&
+                    billingForm.get('address_detail')?.touched
+                  "
+                  class="text-danger"
+                  >Address detail is required.</small
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-5">
+          <!-- Checkout Summary Start -->
+          <div class="checkout-box">
+            <h4 class="mb-4">Cart Total</h4>
+
+            <table class="checkout-summary-table table table-borderless">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let c of carts">
+                  <td>{{ c.productName }}</td>
+                  <td>{{ c.total_price | currency : "USD" : "symbol" }}</td>
+                </tr>
+                <tr>
+                  <td class="border-top">Sub Total</td>
+                  <td class="border-top">
+                    {{ totalAmount | currency : "USD" : "symbol" }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border-top">Deposit ({{ depositPercent }}%)</td>
+                  <td class="border-top">
+                    {{ depositAmount | currency : "USD" : "symbol" }}
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th class="border-top text-success">💰 Pay Now (Deposit)</th>
+                  <th class="border-top text-success">
+                    {{ depositAmount | currency : "USD" : "symbol" }}
+                  </th>
+                </tr>
+                <tr>
+                  <td>Remaining After Delivery</td>
+                  <td>{{ remainingAmount | currency : "USD" : "symbol" }}</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p
+              *ngIf="depositPercent === 10"
+              class="text-muted small mt-2 text-center"
+            >
+              Default deposit rate <strong>10%</strong> applied (no admin
+              setting found).
+            </p>
+          </div>
+          <!-- Checkout Summary End -->
+
+          <!-- Payment Method Start -->
+          <div class="checkout-box">
+            <h4 class="mb-4">Stripe Payment</h4>
+
+            <div class="checkout-payment-method">
+              <div class="single-method form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="accept_terms"
+                  formControlName="accept_terms"
+                />
+                <label class="form-check-label" for="accept_terms"
+                  >I’ve read and accept the terms &amp; conditions</label
+                >
+              </div>
+            </div>
+
+            <button
+              class="btn btn-dark btn-primary-hover rounded-0 mt-6"
+              type="button"
+              (click)="placeOrder()"
+              [disabled]="billingForm.invalid"
+            >
+              Pay Now with Stripe
+            </button>
+            <p class="mt-2 text-muted small text-center">
+              You will be redirected to Stripe to pay your
+              <strong>{{ depositPercent }}%</strong> deposit of
+              <strong>{{ depositAmount | currency : "USD" : "symbol" }}</strong
+              >.
+            </p>
+          </div>
+          <!-- Payment Method End -->
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- Product Section End -->

@@ -88,4 +88,27 @@ export class CategoryService {
       )
     );
   }
+
+  /** 🔥 Xóa cứng category (chỉ xóa khi không có product liên kết) */
+  hardDelete(id: string) {
+    return lastValueFrom(
+      this.httpClient.delete(env.baseUrl + 'category/hard-delete/' + id)
+    );
+  }
+
+  /** 🗑️ Lấy danh sách category đã xóa mềm */
+  getDeleted(): Promise<any[]> {
+    return lastValueFrom(
+      this.httpClient.get<any[]>(env.baseUrl + 'category/deleted')
+    );
+  }
+
+  /** 🔄 Khôi phục category đã xóa mềm */
+  restore(id: string, updated_by: string) {
+    return lastValueFrom(
+      this.httpClient.patch(env.baseUrl + 'category/restore/' + id, {
+        updated_by,
+      })
+    );
+  }
 }

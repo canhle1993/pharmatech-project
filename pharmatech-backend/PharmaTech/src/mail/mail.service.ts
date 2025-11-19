@@ -81,4 +81,34 @@ export class MailService {
       return false;
     }
   }
+
+  async sendContactForm(
+    firstName: string,
+    lastName: string,
+    email: string,
+    message: string,
+  ): Promise<boolean> {
+    try {
+      await this.mailerService.sendMail({
+        from: email,
+        to: 'aplevancanh1993@gmail.com',
+        subject: `New Contact Form Submission from ${firstName} ${lastName}`,
+
+        // 👉 Dùng template
+        template: 'Contact-confirmation',
+
+        // 👉 Truyền dữ liệu vô file HBS
+        context: {
+          firstName,
+          lastName,
+          email,
+          message,
+        },
+      });
+
+      return true;
+    } catch (ex) {
+      return false;
+    }
+  }
 }

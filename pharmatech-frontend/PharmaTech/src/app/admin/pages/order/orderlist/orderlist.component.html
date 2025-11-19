@@ -1,0 +1,630 @@
+<div class="order-container">
+  <h4 class="fw-bold py-3 mb-4">
+    <span class="text-muted fw-light">Order /</span> Order Management
+  </h4>
+
+  <!-- ✅ Toast & Confirm Dialog -->
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+
+  <!-- ✅ Spinner khi loading -->
+  <p-progressSpinner
+    *ngIf="loading"
+    styleClass="loading-spinner"
+  ></p-progressSpinner>
+
+  <!-- ✅ Tabs hiển thị danh sách -->
+  <div class="card" *ngIf="!loading">
+    <!-- ✅ Thanh tìm kiếm chung (🆕 CODE MỚI) -->
+    <div class="toolbar flex justify-content-end mb-3" *ngIf="!loading">
+      <p-iconfield iconPosition="left">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input
+          pInputText
+          type="text"
+          placeholder="Search by order code or name"
+          [(ngModel)]="searchText"
+          (input)="onSearchChange()"
+          style="width: 550px"
+        />
+      </p-iconfield>
+    </div>
+    <p-tabs [(value)]="activeTab">
+      <!-- Danh sách tab -->
+      <p-tablist>
+        @for (tab of tabs; track tab.value) {
+        <p-tab [value]="tab.value">
+          {{ tab.title }}
+          <span class="count-badge"
+            >({{ getOrdersByTab(tab.value).length }})</span
+          >
+        </p-tab>
+        }
+      </p-tablist>
+
+      <!-- Nội dung từng tab -->
+      <p-tabpanels>
+        @for (tab of tabs; track tab.value) {
+        <p-tabpanel [value]="tab.value">
+          <!-- 🟩 TAB 1: Pending Approval -->
+          <ng-container *ngIf="tab.value === 'Pending Approval'">
+            <p-table
+              [value]="getFilteredOrders(tab.value)"
+              dataKey="id"
+              [rows]="4"
+              [paginator]="true"
+              [rowsPerPageOptions]="[4, 10, 20]"
+              [responsiveLayout]="'scroll'"
+              showGridlines
+              [loading]="loading"
+              [showCurrentPageReport]="true"
+              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+              class="order-table"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Order code</th>
+                  <th>Customer</th>
+                  <th>Total</th>
+                  <th>Deposit</th>
+                  <th>Remaining</th>
+                  <th>Deposit status</th>
+                  <th pSortableColumn="created_at">
+                    Created
+                    <p-sortIcon field="created_at"></p-sortIcon>
+                  </th>
+                  <th>Action</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-order>
+                <tr>
+                  <td>{{ order.id }}</td>
+                  <td>{{ order.contact_name }}</td>
+                  <td>{{ order.formattedTotal }}</td>
+                  <td>{{ order.formattedDeposit }}</td>
+                  <td>{{ order.formattedRemaining }}</td>
+                  <!-- <td>
+                    <p-tag
+                      [value]="order.approvalLabel"
+                      [severity]="getBadgeSeverity(order.approval_status)"
+                    ></p-tag>
+                  </td> -->
+                  <td>
+                    <p-tag
+                      [value]="order.approval_status"
+                      [severity]="getApprovalBadge(order.approval_status)"
+                    ></p-tag>
+                  </td>
+                  <td>
+                    {{ order.created_at }}
+                  </td>
+
+                  <td class="actions">
+                    <button
+                      pButton
+                      icon="pi pi-search"
+                      class="p-button-text p-button-info"
+                      title="View"
+                      (click)="onView(order)"
+                    ></button>
+
+                    <!-- 🟢 Nút duyệt / từ chối -->
+                    <button
+                      pButton
+                      icon="pi pi-check"
+                      class="p-button-text p-button-success"
+                      title="Approve"
+                      (click)="onApprove(order)"
+                    ></button>
+
+                    <button
+                      pButton
+                      icon="pi pi-times"
+                      class="p-button-text p-button-danger"
+                      title="Reject"
+                      (click)="onReject(order)"
+                    ></button>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </ng-container>
+
+          <!-- 🟨 TAB 2: Approved -->
+          <ng-container *ngIf="tab.value === 'Approved'">
+            <p-table
+              [value]="getFilteredOrders(tab.value)"
+              dataKey="id"
+              [rows]="4"
+              [paginator]="true"
+              [rowsPerPageOptions]="[4, 10, 20]"
+              [responsiveLayout]="'scroll'"
+              showGridlines
+              [loading]="loading"
+              [showCurrentPageReport]="true"
+              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+              class="order-table"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Order code</th>
+                  <th>Customer</th>
+                  <th>Total</th>
+                  <th>Deposit</th>
+                  <th>Overall Status</th>
+                  <!-- 🆕 Cột trạng thái tổng thể -->
+                  <th pSortableColumn="created_at">
+                    Created
+                    <p-sortIcon field="created_at"></p-sortIcon>
+                  </th>
+                  <th>Action</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-order>
+                <tr>
+                  <td>{{ order.id }}</td>
+                  <td>{{ order.contact_name }}</td>
+                  <td>{{ order.formattedTotal }}</td>
+                  <td>{{ order.formattedDeposit }}</td>
+                  <td>
+                    <p-tag
+                      [value]="order.status"
+                      [severity]="getOrderStatusBadge(order.status)"
+                    ></p-tag>
+                  </td>
+                  <td>{{ order.created_at }}</td>
+                  <td>
+                    <button
+                      pButton
+                      icon="pi pi-search"
+                      class="p-button-text p-button-info"
+                      (click)="onView(order)"
+                      title="View Details"
+                    ></button>
+
+                    <!-- 🟡 Nút cập nhật trạng thái tổng thể -->
+                    <button
+                      pButton
+                      icon="pi pi-check"
+                      class="p-button-text p-button-success"
+                      title="Update Order Status"
+                      (click)="onUpdateStatus(order)"
+                    ></button>
+
+                    <button
+                      pButton
+                      icon="pi pi-times"
+                      class="p-button-text p-button-danger"
+                      title="Reject"
+                      (click)="onReject(order)"
+                    ></button>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </ng-container>
+
+          <!-- 🟦 TAB 3: Paid in Full -->
+          <ng-container *ngIf="tab.value === 'PaidFull'">
+            <p-table
+              [value]="getFilteredOrders(tab.value)"
+              dataKey="id"
+              [rows]="4"
+              [paginator]="true"
+              [rowsPerPageOptions]="[4, 10, 20]"
+              [responsiveLayout]="'scroll'"
+              showGridlines
+              [loading]="loading"
+              [showCurrentPageReport]="true"
+              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+              class="order-table"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Order code</th>
+                  <th>Customer</th>
+                  <th>Total</th>
+                  <th>Remaining Method</th>
+
+                  <th pSortableColumn="remaining_payment_date">
+                    Remaining Date
+                    <p-sortIcon field="remaining_payment_date"></p-sortIcon>
+                  </th>
+                  <th>Note</th>
+                  <th>Proof</th>
+                  <th>OCR Result</th>
+                  <th>Overall Status</th>
+                  <th>Action</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-order>
+                <tr>
+                  <td>{{ order.id }}</td>
+                  <td>{{ order.contact_name }}</td>
+                  <td>{{ order.formattedTotal }}</td>
+
+                  <!-- Remaining Method -->
+                  <td>{{ order.remaining_payment_method || "—" }}</td>
+
+                  <!-- Remaining Payment Date -->
+                  <td>{{ order.remaining_payment_date || "—" }}</td>
+
+                  <!-- Customer Note -->
+                  <td>{{ order.remaining_payment_note || "—" }}</td>
+
+                  <!-- Payment Proof -->
+                  <td>
+                    <img
+                      *ngIf="order.payment_proof_url"
+                      [src]="order.payment_proof_url"
+                      alt="proof"
+                      class="proof-thumb"
+                      (click)="openImagePreview(order.payment_proof_url)"
+                    />
+                    <span *ngIf="!order.payment_proof_url">—</span>
+                  </td>
+
+                  <!-- 🆕 OCR Result -->
+                  <td>
+                    <button
+                      class="btn btn-sm btn-primary"
+                      (click)="runOCR(order)"
+                    >
+                      Scan OCR
+                    </button>
+
+                    <!-- Loading -->
+                    <div *ngIf="ocrLoading">Scanning...</div>
+
+                    <!-- Kết quả -->
+                    <div
+                      *ngIf="ocrMap[order.id] && !ocrLoadingMap[order.id]"
+                      class="ocr-result-box"
+                    >
+                      <div><b>Amount:</b> {{ ocrMap[order.id].amount }}</div>
+                      <div><b>Time:</b> {{ ocrMap[order.id].time }}</div>
+                      <div><b>Ref:</b> {{ ocrMap[order.id].ref }}</div>
+                      <div><b>Sender:</b> {{ ocrMap[order.id].sender }}</div>
+                      <div>
+                        <b>Receiver:</b> {{ ocrMap[order.id].receiver }}
+                      </div>
+                    </div>
+
+                    <div *ngIf="ocrLoadingMap[order.id]">Scanning...</div>
+                  </td>
+
+                  <!-- Overall Order Status -->
+                  <td>
+                    <p-tag
+                      [value]="order.status"
+                      [severity]="getOrderStatusBadge(order.status)"
+                    ></p-tag>
+                  </td>
+
+                  <td>
+                    <button
+                      pButton
+                      icon="pi pi-search"
+                      class="p-button-text p-button-info"
+                      (click)="onView(order)"
+                      title="View Details"
+                    ></button>
+
+                    <button
+                      pButton
+                      icon="pi pi-check-square"
+                      class="p-button-text p-button-success"
+                      title="Mark as Completed"
+                      (click)="onCompleted(order)"
+                    ></button>
+                  </td>
+                </tr>
+              </ng-template>
+
+              <!-- Empty Message -->
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="10" class="text-center">No orders found.</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </ng-container>
+
+          <!-- 🟥 TAB 4: Rejected -->
+          <ng-container *ngIf="tab.value === 'Rejected'">
+            <p-table
+              [value]="getFilteredOrders(tab.value)"
+              dataKey="id"
+              [rows]="4"
+              [paginator]="true"
+              [rowsPerPageOptions]="[4, 10, 20]"
+              [responsiveLayout]="'scroll'"
+              showGridlines
+              [loading]="loading"
+              [showCurrentPageReport]="true"
+              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+              class="order-table"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Order code</th>
+                  <th>Customer</th>
+                  <th>Rejected Reason</th>
+                  <th>Refund Status</th>
+                  <th>Proof</th>
+                  <th>OCR Result</th>
+                  <th pSortableColumn="created_at">
+                    Created
+                    <p-sortIcon field="created_at"></p-sortIcon>
+                  </th>
+                  <th>Action</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-order>
+                <tr>
+                  <td>{{ order.id }}</td>
+                  <td>{{ order.contact_name }}</td>
+                  <td>{{ order.cancel_reason || "—" }}</td>
+                  <td>
+                    {{ order.refund_status || "—" }}
+                    <!-- Payment Proof -->
+                  </td>
+
+                  <td>
+                    <img
+                      *ngIf="order.payment_proof_url"
+                      [src]="order.payment_proof_url"
+                      alt="proof"
+                      class="proof-thumb"
+                      (click)="openImagePreview(order.payment_proof_url)"
+                    />
+                    <span *ngIf="!order.payment_proof_url">—</span>
+                  </td>
+                  <!-- 🆕 OCR Result -->
+                  <td>
+                    <button
+                      class="btn btn-sm btn-primary"
+                      (click)="runOCR(order)"
+                    >
+                      Scan OCR
+                    </button>
+
+                    <!-- Loading -->
+                    <div *ngIf="ocrLoading">Scanning...</div>
+
+                    <!-- Kết quả -->
+                    <div
+                      *ngIf="ocrMap[order.id] && !ocrLoadingMap[order.id]"
+                      class="ocr-result-box"
+                    >
+                      <div><b>Amount:</b> {{ ocrMap[order.id].amount }}</div>
+                      <div><b>Time:</b> {{ ocrMap[order.id].time }}</div>
+                      <div><b>Ref:</b> {{ ocrMap[order.id].ref }}</div>
+                      <div><b>Sender:</b> {{ ocrMap[order.id].sender }}</div>
+                      <div>
+                        <b>Receiver:</b> {{ ocrMap[order.id].receiver }}
+                      </div>
+                    </div>
+
+                    <div *ngIf="ocrLoadingMap[order.id]">Scanning...</div>
+                  </td>
+                  <td>{{ order.created_at }}</td>
+                  <td>
+                    <button
+                      pButton
+                      icon="pi pi-search"
+                      class="p-button-text p-button-info"
+                      title="View"
+                      (click)="onView(order)"
+                    ></button>
+                  </td>
+                </tr>
+              </ng-template>
+              <!-- Empty Message -->
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="9" class="text-center">No orders found.</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </ng-container>
+        </p-tabpanel>
+        }
+      </p-tabpanels>
+    </p-tabs>
+  </div>
+</div>
+
+<!-- 🧾 DIALOG: UPDATE PAYMENT INFO (Tab 2) -->
+<p-dialog
+  header="Update Remaining Payment"
+  [(visible)]="showPaymentDialog"
+  [modal]="true"
+  [style]="{ width: '620px' }"
+  [closable]="true"
+>
+  <div class="dialog-body">
+    <!-- Remaining Payment Method -->
+    <div class="form-group">
+      <label>Remaining payment method</label>
+      <input
+        pInputText
+        placeholder="e.g. Bank Transfer, Cash"
+        [(ngModel)]="paymentData.remaining_payment_method"
+      />
+    </div>
+
+    <!-- Payment Note -->
+    <div class="form-group">
+      <label>Payment note</label>
+      <textarea
+        pInputTextarea
+        rows="3"
+        placeholder="Optional note"
+        [(ngModel)]="paymentData.remaining_payment_note"
+      ></textarea>
+    </div>
+
+    <!-- Upload Proof -->
+    <div class="form-group">
+      <label>Upload payment proof</label>
+
+      <p-fileUpload
+        name="file"
+        customUpload="true"
+        chooseLabel="Choose Image"
+        uploadLabel="Upload"
+        cancelLabel="Cancel"
+        accept="image/*"
+        maxFileSize="5000000"
+        (uploadHandler)="onUploadProof($event)"
+      ></p-fileUpload>
+
+      <!-- Preview -->
+      <div *ngIf="paymentData.payment_proof_url" class="preview-box">
+        <small>Upload success ✓ Preview:</small><br />
+        <img [src]="paymentData.payment_proof_url" alt="proof" />
+      </div>
+    </div>
+
+    <!-- Footer Buttons -->
+    <div class="dialog-footer">
+      <button
+        pButton
+        class="p-button-text p-button-danger"
+        label="Cancel"
+        (click)="showPaymentDialog = false"
+      ></button>
+
+      <button
+        pButton
+        class="p-button-success"
+        label="Confirm Paid in Full"
+        [disabled]="!paymentData.payment_proof_url"
+        (click)="confirmUpdatePayment()"
+      ></button>
+    </div>
+  </div>
+</p-dialog>
+
+<!-- 🔍 IMAGE PREVIEW DIALOG -->
+<p-dialog
+  [(visible)]="showImagePreview"
+  [modal]="true"
+  [style]="{ width: '80vw' }"
+  [contentStyle]="{ 'text-align': 'center' }"
+  [breakpoints]="{ '960px': '95vw', '640px': '100vw' }"
+  header="Payment Proof"
+  [closable]="true"
+>
+  <img
+    [src]="previewImageUrl"
+    style="max-width: 100%; max-height: 80vh; border-radius: 6px"
+  />
+</p-dialog>
+
+<!-- 🟥 DIALOG: REJECT PENDING APPROVAL (Refund Deposit) -->
+<p-dialog
+  header="Reject Order (Refund Deposit)"
+  [(visible)]="showRejectPendingDialog"
+  [modal]="true"
+  [style]="{ width: '620px' }"
+  [closable]="true"
+>
+  <div class="dialog-body">
+    <!-- Cancel Reason -->
+    <div class="form-group">
+      <label>Cancel reason</label>
+      <textarea
+        pInputTextarea
+        rows="3"
+        placeholder="Enter cancel reason"
+        [(ngModel)]="rejectData.cancel_reason"
+      ></textarea>
+    </div>
+
+    <!-- Upload Refund Proof -->
+    <div class="form-group">
+      <label>Upload refund proof (transfer slip)</label>
+
+      <p-fileUpload
+        name="file"
+        customUpload="true"
+        chooseLabel="Choose Image"
+        uploadLabel="Upload"
+        cancelLabel="Cancel"
+        accept="image/*"
+        maxFileSize="5000000"
+        (uploadHandler)="onUploadRejectProof($event)"
+      ></p-fileUpload>
+
+      <!-- Preview -->
+      <div *ngIf="rejectData.payment_proof_url" class="preview-box">
+        <small>Upload success ✓ Preview:</small><br />
+        <img [src]="rejectData.payment_proof_url" alt="proof" />
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="dialog-footer">
+      <button
+        pButton
+        class="p-button-text p-button-danger"
+        label="Cancel"
+        (click)="showRejectPendingDialog = false"
+      ></button>
+
+      <button
+        pButton
+        class="p-button-warning"
+        label="Confirm Reject"
+        [disabled]="!rejectData.cancel_reason || !rejectData.payment_proof_url"
+        (click)="submitRejectPending()"
+      ></button>
+    </div>
+  </div>
+</p-dialog>
+
+<!-- 🟥 DIALOG: REJECT APPROVED (Deposit Lost) -->
+<p-dialog
+  header="Reject Order (Deposit Lost)"
+  [(visible)]="showRejectApprovedDialog"
+  [modal]="true"
+  [style]="{ width: '620px' }"
+  [closable]="true"
+>
+  <div class="dialog-body">
+    <!-- Cancel Reason -->
+    <div class="form-group">
+      <label>Cancel reason</label>
+      <textarea
+        pInputTextarea
+        rows="3"
+        placeholder="Enter cancel reason"
+        [(ngModel)]="rejectData.cancel_reason"
+      ></textarea>
+    </div>
+
+    <!-- Footer -->
+    <div class="dialog-footer">
+      <button
+        pButton
+        class="p-button-text p-button-danger"
+        label="Cancel"
+        (click)="showRejectApprovedDialog = false"
+      ></button>
+
+      <button
+        pButton
+        class="p-button-warning"
+        label="Confirm Reject"
+        [disabled]="!rejectData.cancel_reason"
+        (click)="submitRejectApproved()"
+      ></button>
+    </div>
+  </div>
+</p-dialog>

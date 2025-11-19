@@ -1,5 +1,6 @@
 import {
   ApplicationConfig,
+  importProvidersFrom, // 🧩 Thêm dòng này
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection,
 } from '@angular/core';
@@ -21,6 +22,9 @@ import {
 } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
 
+// 🧩 Import QuillModule
+import { QuillModule } from 'ngx-quill';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
@@ -37,5 +41,8 @@ export const appConfig: ApplicationConfig = {
         preset: Aura,
       },
     }),
+
+    // ✅ Đăng ký QuillModule toàn cục
+    importProvidersFrom(QuillModule.forRoot()),
   ],
 };

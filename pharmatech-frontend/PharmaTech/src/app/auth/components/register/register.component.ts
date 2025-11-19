@@ -50,6 +50,12 @@ export class RegisterComponent {
   showOtpButton = false;
   showPassword = false;
 
+  countdown: number = 300; // 5 phút = 300 giây
+  countdownText: string = '05:00';
+  timer: any = null;
+  otpExpired = false;
+  otpExpiredAt!: Date;
+
   constructor(
     private fb: FormBuilder,
     private accountService: AccountService,
@@ -125,6 +131,50 @@ export class RegisterComponent {
     });
   }
 
+  startCountdown() {
+    if (!this.otpExpiredAt) return;
+
+    this.otpExpired = false;
+
+    if (this.timer) clearInterval(this.timer);
+
+    this.timer = setInterval(() => {
+      const now = Date.now();
+      const exp = new Date(this.otpExpiredAt).getTime();
+      const diff = exp - now;
+
+      if (diff <= 0) {
+        clearInterval(this.timer);
+        this.countdownText = '00:00';
+        this.otpExpired = true;
+        this.visible = false;
+
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'OTP Expired',
+          detail: 'Your OTP has expired. Please request a new one.',
+        });
+
+        return;
+      }
+
+      const mins = Math.floor(diff / 60000);
+      const secs = Math.floor((diff % 60000) / 1000);
+
+      this.countdownText = `${mins.toString().padStart(2, '0')}:${secs
+        .toString()
+        .padStart(2, '0')}`;
+    }, 1000);
+  }
+
+  updateCountdownText() {
+    const m = Math.floor(this.countdown / 60);
+    const s = this.countdown % 60;
+    this.countdownText = `${m.toString().padStart(2, '0')}:${s
+      .toString()
+      .padStart(2, '0')}`;
+  }
+
   onInputFocus(e: FocusEvent) {
     const group = (e.target as HTMLElement).closest(
       '.neu-input'
@@ -193,8 +243,10 @@ export class RegisterComponent {
         detail: res.msg || 'Account created, please verify OTP',
       });
 
+      this.otpExpiredAt = new Date(res.otpExpiredAt);
       this.visible = true;
       this.showOtpButton = true;
+      this.startCountdown();
     } catch (err: any) {
       this.messageService.add({
         severity: 'error',

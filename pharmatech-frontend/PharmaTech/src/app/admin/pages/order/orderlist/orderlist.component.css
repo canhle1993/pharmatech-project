@@ -1,0 +1,200 @@
+/* ======== Layout ======== */
+.order-container {
+  padding: 1rem 1.5rem;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f7f8fa;
+  min-height: 100vh;
+}
+
+.error-msg {
+  color: #e63946;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+/* ===============================
+   📊 Bảng dữ liệu PrimeNG
+================================= */
+.order-table ::ng-deep .p-datatable-thead > tr > th {
+  background: #3b82f6;
+  color: #fff;
+  text-align: center;
+  font-weight: 600;
+  padding: 0.75rem;
+}
+
+.order-table ::ng-deep .p-datatable-tbody > tr > td {
+  text-align: center;
+  padding: 0.75rem;
+  vertical-align: middle;
+  color: #444;
+}
+.order-table ::ng-deep .p-datatable-tbody > tr:hover {
+  background-color: #eef2ff;
+  transition: background 0.2s ease-in-out;
+}
+
+.order-table {
+  overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+  .order-container {
+    padding: 1rem;
+  }
+  .page-title {
+    font-size: 1.4rem;
+  }
+}
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.card ::ng-deep .p-datatable-caption {
+  margin-bottom: 1rem;
+}
+
+/* ======== Loading Spinner ======== */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3rem;
+}
+
+/* ======== Table ======== */
+
+/* ======== Tag color overrides (optional) ======== */
+:host ::ng-deep .p-tag-success {
+  background-color: #4caf50 !important;
+  color: #fff !important;
+}
+:host ::ng-deep .p-tag-warning {
+  background-color: #ffb300 !important;
+  color: #fff !important;
+}
+:host ::ng-deep .p-tag-danger {
+  background-color: #f44336 !important;
+  color: #fff !important;
+}
+:host ::ng-deep .p-tag-info {
+  background-color: #2196f3 !important;
+  color: #fff !important;
+}
+
+/* ======== Empty message ======== */
+.text-center {
+  text-align: center;
+  color: #999;
+  padding: 1rem;
+}
+/* ================================
+   Dialog Container 
+=================================*/
+.dialog-body {
+  padding: 1.5rem;
+}
+
+/* ================================
+   Form Groups
+=================================*/
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+/* Input + Textarea styling */
+.form-group input[pInputText],
+.form-group textarea[pInputTextarea] {
+  width: 100%;
+  border-radius: 6px;
+  padding: 0.55rem 0.75rem;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* ================================
+   File Upload
+=================================*/
+.p-fileupload {
+  width: 100%;
+}
+
+/* Button bar inside file upload */
+.p-fileupload-buttonbar {
+  padding: 0.5rem !important;
+  gap: 6px;
+}
+
+.p-fileupload-content {
+  padding: 0.5rem 0.8rem !important;
+}
+
+/* ================================
+   Preview Box
+=================================*/
+.preview-box {
+  margin-top: 1rem;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #f7f7f7;
+  text-align: center;
+}
+
+.preview-box img {
+  max-width: 240px;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+/* ================================
+   Footer Buttons
+=================================*/
+.dialog-footer {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+.proof-thumb {
+  width: 70px;
+  height: 70px;
+  cursor: zoom-in;
+  border-radius: 6px;
+  transition: transform 0.2s ease;
+}
+
+.proof-thumb:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+.ocr-result-box {
+  padding: 8px;
+  background: #f3f3f3;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-top: 5px;
+  line-height: 1.4;
+}
+
+.proof-img {
+  width: 80px;
+  border-radius: 4px;
+  cursor: pointer;
+}

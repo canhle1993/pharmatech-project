@@ -7,25 +7,27 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { AboutComponent } from './pages/about/about.component';
 import { ContactComponent } from './pages/contact/contact.component';
 import { BannerComponent } from './pages/banner/banner.component';
-import { RecycleAccountComponent } from './pages/recycle/recycle-account/recycle-account.component';
-import { RecycleCategoryComponent } from './pages/recycle/recycle-category/recycle-category.component';
-import { RecycleProductComponent } from './pages/recycle/recycle-product/recycle-product.component';
-import { QuoteComponent } from './pages/quote/quote.component';
-import { JobPostingComponent } from './pages/career/job-posting/job-posting.component';
 
-import { DashboardAnalyticsComponent } from './pages/career/analytics/analytics-dashboard.component';
-import { OrderListComponent } from './pages/order/order-list/order-list.component';
+import { QuoteComponent } from './pages/quote/quote.component';
 import { OrderDetailsComponent } from './pages/order/order-details/order-details.component';
 import { ChatComponent } from './pages/support/chat/chat.component';
-import { ChatHistoryComponent } from './pages/support/chat-history/chat-history.component';
 import { AccountDetailsComponent } from './pages/account/accountdetails/accountdetails.component';
 import { CategoryDetailsComponent } from './pages/category/categorydetails/categorydetails.component';
 import { ProductAddComponent } from './pages/product/productAdd/productAdd.component';
 import { ProductDetailsComponent } from './pages/product/productDetails/productDetails.component';
 import { HotlineInfoComponent } from './pages/settings/HotlineInfo/HotlineInfo.component';
 import { ProductEditComponent } from './pages/product/productEdit/productEdit.component';
+import { HomeCategoryComponent } from './pages/settings/homeCategory/homeCategory.component';
 import { JobFormComponent } from './pages/career/job-posting/job-form/job-form.component';
+import { JobPostingComponent } from './pages/career/job-posting/job-posting.component';
+import { DepositSettingListComponent } from './pages/settings/depositSettingList/depositSettingList.component';
+import { OrderListComponent } from './pages/order/orderlist/orderlist.component';
+import { OrderHistoryComponent } from './pages/order/order-history/order-history.component';
 import { ApplicationManagementComponent } from './pages/career/application-management/application-management.component';
+import { ProductStockManagementComponent } from './pages/product/product-stock-management/product-stock-management.component';
+import { ReturnListComponent } from './pages/order/return-list/return-list.component';
+import { RecycleComponent } from './pages/recycle/recycle-product-category/recycle.component';
+import { DashboardAnalyticsComponent } from './pages/career/analytics/analytics-dashboard.component';
 
 export const adminRoutes: Routes = [
   {
@@ -41,6 +43,11 @@ export const adminRoutes: Routes = [
       { path: 'product-add', component: ProductAddComponent },
       { path: 'product-details/:id', component: ProductDetailsComponent },
       { path: 'product-edit/:id', component: ProductEditComponent },
+      { path: 'product-add', component: ProductAddComponent },
+      {
+        path: 'product-stock-management',
+        component: ProductStockManagementComponent,
+      },
 
       { path: 'category-list', component: CategoryListComponent },
       { path: 'category-details/:id', component: CategoryDetailsComponent },
@@ -49,10 +56,11 @@ export const adminRoutes: Routes = [
       { path: 'contact', component: ContactComponent },
       { path: 'banner', component: BannerComponent },
       { path: 'settings/hotline', component: HotlineInfoComponent },
+      { path: 'settings/homecategory', component: HomeCategoryComponent },
+      { path: 'settings/deposit', component: DepositSettingListComponent },
 
-      { path: 'recycle/user', component: RecycleAccountComponent },
-      { path: 'recycle/category', component: RecycleCategoryComponent },
-      { path: 'recycle/product', component: RecycleProductComponent },
+      { path: 'recycle/product-category', component: RecycleComponent },
+
       { path: 'quote', component: QuoteComponent },
 
       { path: 'career/job-posting', component: JobPostingComponent },
@@ -67,10 +75,13 @@ export const adminRoutes: Routes = [
         path: 'career/analytics-dashboard',
         component: DashboardAnalyticsComponent,
       },
+
       { path: 'order/order-list', component: OrderListComponent },
-      { path: 'order/order-details', component: OrderDetailsComponent },
+      { path: 'order/order-history', component: OrderHistoryComponent },
+      { path: 'order/order-details/:id', component: OrderDetailsComponent },
+      { path: 'order/return-list', component: ReturnListComponent },
+
       { path: 'support/chat', component: ChatComponent },
-      { path: 'support/chat-history', component: ChatHistoryComponent },
     ],
   },
 ];

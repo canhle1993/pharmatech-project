@@ -83,18 +83,47 @@ export class ProductCategoryService {
   }
   /** 🔹 Cập nhật danh sách product của 1 category */
   async updateCategoryProducts(
-    categoryId: string,
+    product_id: string,
+    categoryIds: string[],
+    updated_by: string,
+  ) {
+    // 1️⃣ Xóa tất cả liên kết cũ của sản phẩm này
+    await this.pcModel.deleteMany({
+      product_id: new Types.ObjectId(product_id),
+    });
+
+    // 2️⃣ Tạo lại các liên kết mới (product_id -> category_id)
+    for (const cid of categoryIds) {
+      await this.pcModel.create({
+        product_id: new Types.ObjectId(product_id),
+        category_id: new Types.ObjectId(cid),
+        updated_by,
+        created_at: new Date(),
+      });
+    }
+  }
+
+  /** 🔹 Cập nhật toàn bộ products của 1 category */
+  async updateProductsOfCategory(
+    category_id: string,
     productIds: string[],
     updated_by: string,
   ) {
-    // Xóa tất cả liên kết cũ
+    // Xóa toàn bộ liên kết cũ
     await this.pcModel.deleteMany({
-      category_id: new Types.ObjectId(categoryId),
+      category_id: new Types.ObjectId(category_id),
     });
 
-    // Tạo lại các liên kết mới
-    await Promise.all(
-      productIds.map((pid) => this.add(pid, categoryId, updated_by)),
-    );
+    // Tạo liên kết mới
+    for (const pid of productIds) {
+      await this.pcModel.create({
+        product_id: new Types.ObjectId(pid),
+        category_id: new Types.ObjectId(category_id),
+        updated_by,
+        created_at: new Date(),
+      });
+    }
+
+    return { ok: true };
   }
 }

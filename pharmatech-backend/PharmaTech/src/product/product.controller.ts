@@ -9,6 +9,8 @@ import {
   UseInterceptors,
   HttpException,
   HttpStatus,
+  Delete,
+  Patch,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductDTO } from './product.dto';
@@ -61,12 +63,16 @@ export class ProductController {
       const dto: ProductDTO = {
         name: body.name,
         model: body.model,
-        manufacturer: body.manufacturer,
+        introduce: body.introduce,
         description: body.description,
         specification: body.specification,
         price: body.price ? Number(body.price) : 0,
         updated_by: body.updated_by || 'admin',
         photo: file ? file.filename : null,
+
+        /** ✅ Thêm quản lý tồn kho */
+        stock_quantity: body.stock_quantity ? Number(body.stock_quantity) : 0,
+        stock_status: body.stock_status || 'in_stock',
 
         /** ✅ parse category_ids (nếu frontend gửi chuỗi JSON) */
         category_ids:
@@ -87,7 +93,7 @@ export class ProductController {
     }
   }
 
-  /** ✅ Cập nhật Product (có thể đổi category_ids và ảnh mới) */
+  /** ✅ Cập nhật Product (có thể đổi category_ids, ảnh và tồn kho) */
   @Put('update')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -107,12 +113,16 @@ export class ProductController {
         id: body.id,
         name: body.name,
         model: body.model,
-        manufacturer: body.manufacturer,
+        introduce: body.introduce,
         description: body.description,
         specification: body.specification,
         price: body.price ? Number(body.price) : 0,
         updated_by: body.updated_by || 'admin',
         photo: file ? file.filename : null,
+
+        /** ✅ Thêm quản lý tồn kho */
+        stock_quantity: body.stock_quantity ? Number(body.stock_quantity) : 0,
+        stock_status: body.stock_status || 'in_stock',
 
         /** ✅ parse category_ids khi update */
         category_ids:
@@ -145,5 +155,109 @@ export class ProductController {
   @Get('find-active')
   async findActive() {
     return this.productService.findActive();
+  }
+
+  /** 📉 Giảm tồn kho sản phẩm */
+  @Put('reduce-stock/:id')
+  async reduceStock(
+    @Param('id') id: string,
+    @Body('quantity') quantity: number,
+  ) {
+    if (!quantity || quantity <= 0) {
+      throw new HttpException('Invalid quantity', HttpStatus.BAD_REQUEST);
+    }
+
+    return await this.productService.reduceStock(id, quantity);
+  }
+
+  @Put('increase-stock/:id')
+  async increaseStock(
+    @Param('id') id: string,
+    @Body('quantity') quantity: number,
+  ) {
+    if (!quantity || quantity <= 0) {
+      throw new HttpException('Invalid quantity', HttpStatus.BAD_REQUEST);
+    }
+
+    return await this.productService.increaseStock(id, quantity);
+  }
+
+  /** 🟩 Cập nhật tồn kho: thêm số lượng mới */
+  @Put('update-stock/:id')
+  async updateStock(
+    @Param('id') id: string,
+    @Body('added_quantity') added_quantity: number,
+    @Body('updated_by') updated_by: string,
+  ) {
+    if (!added_quantity || added_quantity <= 0) {
+      throw new HttpException('Invalid added quantity', HttpStatus.BAD_REQUEST);
+    }
+
+    return await this.productService.updateStock(
+      id,
+      added_quantity,
+      updated_by || 'admin',
+    );
+  }
+
+  @Get('stock/in-stock')
+  async getProductsInStock() {
+    return this.productService.getProductsInStock();
+  }
+
+  @Get('stock/out-of-stock')
+  async getProductsOutOfStock() {
+    return this.productService.getProductsOutOfStock();
+  }
+
+  // 📌 LẤY TOP 3 SẢN PHẨM BÁN CHẠY
+  @Get('top-selling')
+  async getTopSelling() {
+    try {
+      return await this.productService.getTopSelling();
+    } catch (error) {
+      throw new HttpException(
+        {
+          message: 'Failed to load top selling products',
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get('newest')
+  async getNewest() {
+    try {
+      return await this.productService.findNewest(4);
+    } catch (e) {
+      throw new HttpException(
+        { message: 'Failed to load newest products', error: e.message },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get('top-one')
+  async getTopOne() {
+    return await this.productService.findTopOneSelling();
+  }
+
+  @Delete('hard-delete/:id')
+  async hardDelete(@Param('id') id: string) {
+    return this.productService.hardDelete(id);
+  }
+
+  @Patch('restore/:id')
+  async restoreProduct(
+    @Param('id') id: string,
+    @Body('updated_by') updated_by: string,
+  ) {
+    return this.productService.restore(id, updated_by);
+  }
+
+  @Get('deleted')
+  async getDeleted() {
+    return await this.productService.findDeleted();
   }
 }

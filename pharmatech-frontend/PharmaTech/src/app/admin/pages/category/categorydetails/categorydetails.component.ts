@@ -1,16 +1,24 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CategoryService } from '../../../../services/category.service';
 import { env } from '../../../../enviroments/enviroment';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-category-details',
   standalone: true,
-  imports: [CommonModule, TableModule, CardModule, ProgressSpinnerModule],
+  imports: [
+    CommonModule,
+    TableModule,
+    CardModule,
+    ProgressSpinnerModule,
+    ButtonModule,
+    RouterLink,
+  ],
   templateUrl: './categorydetails.component.html',
   styleUrls: ['./categorydetails.component.css'],
 })

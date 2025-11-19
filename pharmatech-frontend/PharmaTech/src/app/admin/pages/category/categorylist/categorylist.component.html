@@ -30,7 +30,10 @@
           <th>Category Name</th>
           <th>Description</th>
           <th>Updated By</th>
-          <th>Updated At</th>
+          <th pSortableColumn="updated_at">
+            Updated At
+            <p-sortIcon field="updated_at"></p-sortIcon>
+          </th>
           <th>Action</th>
         </tr>
       </ng-template>
@@ -42,7 +45,12 @@
               class="category-photo" />
           </td>
           <td>{{ cat.name }}</td>
-          <td>{{ cat.description || "-" }}</td>
+          <td>
+            {{
+            cat.description?.split(" ").slice(0, 10).join(" ") +
+            (cat.description?.split(" ").length > 10 ? "..." : "")
+            }}
+          </td>
           <td>{{ cat.updated_by || "-" }}</td>
           <td>{{ cat.updated_at || "-" }}</td>
           <td>
@@ -72,6 +80,21 @@
         <div class="field">
           <label for="name">Category Name</label>
           <input pInputText id="name" formControlName="name" placeholder="Enter category name" required />
+          <!-- ❗ Lỗi bắt buộc nhập -->
+          <small class="p-error" *ngIf="
+              editForm.get('name')?.touched &&
+              editForm.get('name')?.hasError('required')
+            ">
+            Name is required.
+          </small>
+
+          <!-- ❗ Lỗi trùng tên -->
+          <small class="p-error" *ngIf="
+              editForm.get('name')?.touched &&
+              editForm.get('name')?.hasError('duplicate')
+            ">
+            Category name already exists.
+          </small>
         </div>
 
         <!-- Description -->
@@ -119,6 +142,19 @@
         <div class="field">
           <label for="editName">Category Name</label>
           <input pInputText id="editName" formControlName="name" placeholder="Enter category name" required />
+          <small class="p-error" *ngIf="
+              addForm.get('name')?.touched &&
+              addForm.get('name')?.hasError('required')
+            ">
+            Name is required.
+          </small>
+
+          <small class="p-error" *ngIf="
+              addForm.get('name')?.touched &&
+              addForm.get('name')?.hasError('duplicate')
+            ">
+            Category name already exists.
+          </small>
         </div>
 
         <!-- Description -->
@@ -131,8 +167,29 @@
         <!-- Select product -->
         <div class="field">
           <label for="editProduct">Select Product</label>
+
           <p-multiSelect [options]="products" optionLabel="name" optionValue="id" formControlName="product_id"
-            [filter]="true" [appendTo]="'body'" placeholder="Choose one or more products"></p-multiSelect>
+            [filter]="true" [appendTo]="'body'" placeholder="Choose one or more products">
+            <!-- Item trong dropdown -->
+            <ng-template let-item pTemplate="item">
+              <div>
+                <strong>{{ item.name }}</strong>
+                <div style="font-size: 11px; color: #777">
+                  ID: {{ item.id }}
+                </div>
+              </div>
+            </ng-template>
+
+            <!-- Khi chọn 1 product -->
+            <ng-template let-item pTemplate="selectedItem">
+              {{ item.name }}
+            </ng-template>
+
+            <!-- Khi chọn nhiều product -->
+            <ng-template pTemplate="selectedItems">
+              {{ editForm.value.product_id?.length || 0 }} items selected
+            </ng-template>
+          </p-multiSelect>
         </div>
       </div>
 

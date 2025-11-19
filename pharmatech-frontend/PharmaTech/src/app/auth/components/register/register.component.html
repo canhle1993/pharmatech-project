@@ -6,15 +6,8 @@
     <div class="login-header">
       <div class="neu-icon">
         <div class="icon-inner">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path
-              d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8 8.009 8.009 0 0 1-8 8Z"
-            />
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8 8.009 8.009 0 0 1-8 8Z" />
             <path d="M12 6v6l4 2" />
           </svg>
         </div>
@@ -24,51 +17,26 @@
     </div>
 
     <!-- Form -->
-    <form
-      class="login-form"
-      [formGroup]="registerForm"
-      (ngSubmit)="save()"
-      novalidate
-    >
+    <form class="login-form" [formGroup]="registerForm" (ngSubmit)="save()" novalidate>
       <!-- Full Name -->
-      <div
-        class="form-group"
-        [class.error]="
+      <div class="form-group" [class.error]="
           registerForm.get('name')?.invalid && registerForm.get('name')?.touched
-        "
-      >
+        ">
         <div class="input-group neu-input">
-          <input
-            id="fullname"
-            type="text"
-            formControlName="name"
-            autocomplete="off"
-            autocapitalize="off"
-            spellcheck="false"
-            placeholder=" "
-            (focus)="onInputFocus($event)"
-            (blur)="onInputBlur($event)"
-          />
+          <input id="fullname" type="text" formControlName="name" autocomplete="off" autocapitalize="off"
+            spellcheck="false" placeholder=" " (focus)="onInputFocus($event)" (blur)="onInputBlur($event)" />
           <label for="fullname">Full Name</label>
           <div class="input-icon">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="7" r="4" />
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
             </svg>
           </div>
         </div>
-        <small
-          class="error-message"
-          [class.show]="
+        <small class="error-message" [class.show]="
             registerForm.get('name')?.invalid &&
             registerForm.get('name')?.touched
-          "
-        >
+          ">
           Name must be at least 3 characters
         </small>
       </div>
@@ -76,80 +44,43 @@
       <!-- Username suggestion -->
       <ul *ngIf="suggestions.length > 0" class="suggestions-list">
         <li class="suggestion-title">Available usernames:</li>
-        <li
-          *ngFor="let s of suggestions"
-          (click)="selectSuggestion(s)"
-          class="suggestion-item"
-        >
+        <li *ngFor="let s of suggestions" (click)="selectSuggestion(s)" class="suggestion-item">
           {{ s }}
         </li>
       </ul>
 
       <!-- Username -->
-      <div
-        class="form-group"
-        [class.error]="
+      <div class="form-group" [class.error]="
           registerForm.get('username')?.invalid &&
           registerForm.get('username')?.touched
-        "
-      >
+        ">
         <div class="input-group neu-input">
-          <input
-            id="username"
-            type="text"
-            formControlName="username"
-            autocomplete="off"
-            placeholder=" "
-            (focus)="suggestions = []"
-          />
+          <input id="username" type="text" formControlName="username" autocomplete="off" placeholder=" "
+            (focus)="suggestions = []" />
           <label for="username">Username</label>
           <div class="input-icon">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M4 4h16v16H4z" />
               <path d="M8 9h8M8 15h6" />
             </svg>
           </div>
         </div>
-        <small
-          *ngIf="usernameStatus"
-          [style.color]="usernameStatus.includes('available') ? 'green' : 'red'"
-        >
+        <small *ngIf="usernameStatus" [style.color]="usernameStatus.includes('available') ? 'green' : 'red'">
           {{ usernameStatus }}
         </small>
       </div>
 
       <!-- Email -->
-      <div
-        class="form-group"
-        [class.error]="
+      <div class="form-group" [class.error]="
           registerForm.get('email')?.invalid &&
           registerForm.get('email')?.touched
-        "
-      >
+        ">
         <div class="input-group neu-input">
-          <input
-            id="email"
-            type="email"
-            formControlName="email"
-            autocomplete="off"
-            placeholder=" "
-          />
+          <input id="email" type="email" formControlName="email" autocomplete="off" placeholder=" " />
           <label for="email">Email</label>
           <div class="input-icon">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
-              />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
               <polyline points="22,6 12,13 2,6" />
             </svg>
           </div>
@@ -157,141 +88,79 @@
       </div>
 
       <!-- Phone -->
-      <div
-        class="form-group"
-        [class.error]="
+      <div class="form-group" [class.error]="
           registerForm.get('phone')?.invalid &&
           registerForm.get('phone')?.touched
-        "
-      >
+        ">
         <div class="input-group neu-input">
-          <input
-            id="phone"
-            type="text"
-            formControlName="phone"
-            autocomplete="off"
-            placeholder=" "
-          />
+          <input id="phone" type="text" formControlName="phone" autocomplete="off" placeholder=" " />
           <label for="phone">Phone</label>
           <div class="input-icon">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path
-                d="M22 16.92V21a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 8.63 19.86 19.86 0 0 1 0 0.18 2 2 0 0 1 2 0h4.09a2 2 0 0 1 2 1.72c.12.81.29 1.6.5 2.36a2 2 0 0 1-.45 1.95l-1.27 1.27a16 16 0 0 0 7.09 7.09l1.27-1.27a2 2 0 0 1 1.95-.45c.76.21 1.55.38 2.36.5A2 2 0 0 1 22 16.92z"
-              />
+                d="M22 16.92V21a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 8.63 19.86 19.86 0 0 1 0 0.18 2 2 0 0 1 2 0h4.09a2 2 0 0 1 2 1.72c.12.81.29 1.6.5 2.36a2 2 0 0 1-.45 1.95l-1.27 1.27a16 16 0 0 0 7.09 7.09l1.27-1.27a2 2 0 0 1 1.95-.45c.76.21 1.55.38 2.36.5A2 2 0 0 1 22 16.92z" />
             </svg>
           </div>
         </div>
       </div>
 
       <!-- Password -->
-      <div
-        class="form-group"
-        [class.error]="
+      <div class="form-group" [class.error]="
           registerForm.get('password')?.invalid &&
           registerForm.get('password')?.touched
-        "
-      >
+        ">
         <div class="input-group neu-input password-group">
-          <input
-            [type]="showPassword ? 'text' : 'password'"
-            id="password"
-            formControlName="password"
-            autocomplete="new-password"
-            autocorrect="off"
-            autocapitalize="off"
-            spellcheck="false"
-            placeholder=" "
-          />
+          <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
+            autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder=" " />
           <label for="password">Password</label>
           <div class="input-icon">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
               <path d="M7 11V7a5 5 0 0110 0v4" />
             </svg>
           </div>
-          <button
-            type="button"
-            class="password-toggle neu-toggle"
-            (click)="showPassword = !showPassword"
-            [class.show-password]="showPassword"
-          >
-            <svg
-              class="eye-open"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
+          <button type="button" class="password-toggle neu-toggle" (click)="showPassword = !showPassword"
+            [class.show-password]="showPassword">
+            <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
               <circle cx="12" cy="12" r="3" />
             </svg>
-            <svg
-              class="eye-closed"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
+            <svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path
-                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
-              />
+                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
               <line x1="1" y1="1" x2="23" y2="23" />
             </svg>
           </button>
         </div>
-        <small
-          class="error-message"
-          [class.show]="
+        <small class="error-message" [class.show]="
             registerForm.get('password')?.invalid &&
             registerForm.get('password')?.touched
-          "
-        >
+          ">
           Password must include uppercase, lowercase, number, special character
           (min 8 chars)
         </small>
       </div>
 
       <!-- Confirm Password -->
-      <div
-        class="form-group"
-        [class.error]="registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched"
-      >
+      <div class="form-group"
+        [class.error]="registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched">
         <div class="input-group neu-input">
-          <input
-            type="password"
-            id="confirmPassword"
-            formControlName="confirmPassword"
-            autocomplete="new-password"
-            placeholder=" "
-          />
+          <input type="password" id="confirmPassword" formControlName="confirmPassword" autocomplete="new-password"
+            placeholder=" " />
           <label for="confirmPassword">Confirm Password</label>
         </div>
-        <small
-          class="error-message"
-          [class.show]="registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched"
-        >
+        <small class="error-message"
+          [class.show]="registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched">
           Passwords do not match
         </small>
       </div>
 
       <!-- Submit -->
-      <button
-        type="submit"
-        class="neu-button"
-        [disabled]="registerForm.invalid"
-      >
+      <button type="submit" class="neu-button" [disabled]="registerForm.invalid">
         <span class="btn-text">Register</span>
-        <div class="btn-loader"><div class="neu-spinner"></div></div>
+        <div class="btn-loader">
+          <div class="neu-spinner"></div>
+        </div>
       </button>
 
       <!-- Back -->
@@ -300,44 +169,31 @@
       </div>
     </form>
     <!-- 🔹 Nút hiện lại OTP -->
-    <button
-      *ngIf="showOtpButton"
-      pButton
-      label="Enter OTP again"
-      class="neu-button"
-      style="
+    <button *ngIf="showOtpButton" pButton label="Enter OTP again" class="neu-button" style="
         margin-top: 8px;
         display: block;
         margin-left: auto;
         margin-right: auto;
-      "
-      (click)="visible = true"
-    ></button>
+      " (click)="visible = true"></button>
   </div>
 </div>
 <!-- OTP Dialog -->
-<p-dialog
-  header="Enter OTP"
-  [(visible)]="visible"
-  [modal]="true"
-  [style]="{ width: '25rem' }"
->
-  <div style="text-align: center">
+<p-dialog header="Enter OTP" [(visible)]="visible" [modal]="true" [style]="{ width: '25rem' }"
+  (onShow)="startCountdown()">
+  <div style="text-align: center; margin-bottom: 30px">
+    <b>OTP expires in:</b>
+    <div style="font-size: 20px; margin-top: 4px; color: #d9534f">
+      {{ countdownText }}
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-left: 90px; margin-bottom: 40px">
     <p-inputotp [(ngModel)]="otp"></p-inputotp>
   </div>
+
   <div style="text-align: right; margin-top: 1rem">
-    <button
-      pButton
-      label="Confirm"
-      class="p-button-primary"
-      (click)="verify()"
-    ></button>
-    <button
-      pButton
-      label="Cancel"
-      class="p-button-secondary"
-      style="margin-left: 8px"
-      (click)="visible = false"
-    ></button>
+    <button pButton label="Confirm" class="p-button-primary" (click)="verify()" [disabled]="otpExpired"></button>
+    <button pButton label="Cancel" class="p-button-secondary" style="margin-left: 8px"
+      (click)="visible = false"></button>
   </div>
 </p-dialog>

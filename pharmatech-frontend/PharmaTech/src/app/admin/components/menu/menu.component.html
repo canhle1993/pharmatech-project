@@ -46,80 +46,44 @@
       </a>
     </li>
 
-    <!-- Pages -->
-
-    <li class="menu-header small text-uppercase">
-      <span class="menu-header-text">Pages</span>
-    </li>
-    <li class="menu-item" routerLinkActive="active">
-      <a class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-file"></i>
-        <div data-i18n="Pages">Pages</div>
-      </a>
-
-      <ul class="menu-sub">
-        <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <a [routerLink]="['/admin/about']" class="menu-link">
-            <div data-i18n="About us">About</div>
-          </a>
-        </li>
-        <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <a [routerLink]="['/admin/contact']" class="menu-link">
-            <div data-i18n="Contact us">Contact</div>
-          </a>
-        </li>
-        <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <a [routerLink]="['/admin/banner']" class="menu-link">
-            <div data-i18n="Banner us">Banner</div>
-          </a>
-        </li>
-      </ul>
-    </li>
-    <li class="menu-item" routerLinkActive="active">
-      <a class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-cog"></i>
-        <div data-i18n="Settings">Settings</div>
-      </a>
-
-      <ul class="menu-sub">
-        <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <a [routerLink]="['/admin/settings/hotline']" class="menu-link">
-            <div data-i18n="Hotline Info">Hotline Info</div>
-          </a>
-        </li>
-      </ul>
-    </li>
-
-    <li class="menu-item" routerLinkActive="active">
-      <a class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-trash"></i>
-        <div data-i18n="Recycle Bin">Recycle Bin</div>
-      </a>
-
-      <ul class="menu-sub">
-        <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <a [routerLink]="['/admin/recycle/user']" class="menu-link">
-            <div data-i18n="User">User</div>
-          </a>
-        </li>
-        <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <a [routerLink]="['/admin/recycle/category']" class="menu-link">
-            <div data-i18n="Category">Category</div>
-          </a>
-        </li>
-        <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <a [routerLink]="['/admin/recycle/product']" class="menu-link">
-            <div data-i18n="Product">Product</div>
-          </a>
-        </li>
-      </ul>
-    </li>
-
     <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-      <a [routerLink]="['/admin/quote']" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-message-rounded-dots"></i>
-        <div data-i18n="Quote">Quote</div>
+      <a [routerLink]="['/admin/product-stock-management']" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-box"></i>
+        <div data-i18n="Product Stock Management">Stock Management</div>
       </a>
+    </li>
+
+    <!-- Order -->
+    <li class="menu-header small text-uppercase">
+      <span class="menu-header-text">Order</span>
+    </li>
+
+    <li class="menu-item" routerLinkActive="active">
+      <a class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-cart"></i>
+        <div data-i18n="Order">Order</div>
+        <span *ngIf="orderCount > 0" class="badge bg-danger ms-auto">
+          {{ orderCount }}
+        </span>
+      </a>
+
+      <ul class="menu-sub">
+        <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a [routerLink]="['/admin/order/order-list']" class="menu-link">
+            <div data-i18n="Order list">Order Management</div>
+          </a>
+        </li>
+        <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a [routerLink]="['/admin/order/order-history']" class="menu-link">
+            <div data-i18n="Order history">Order History</div>
+          </a>
+        </li>
+        <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a [routerLink]="['/admin/order/return-list']" class="menu-link">
+            <div data-i18n="Return list">Return Management</div>
+          </a>
+        </li>
+      </ul>
     </li>
 
     <!-- Career -->
@@ -179,24 +143,28 @@
       </ul>
     </li>
 
-    <li class="menu-item" routerLinkActive="active">
-      <a class="menu-link menu-toggle">
+    <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <a [routerLink]="['/admin/quote']" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-message-rounded-dots"></i>
+        <div data-i18n="Quote">Quote</div>
+        <span *ngIf="unreadCount > 0" class="badge bg-danger ms-auto">{{
+          unreadCount
+          }}</span>
+      </a>
+    </li>
+
+    <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <a [routerLink]="['/admin/support/chat']" class="menu-link">
         <i class="menu-icon tf-icons bx bx-support"></i>
         <div data-i18n="Support">Support</div>
       </a>
+    </li>
 
-      <ul class="menu-sub">
-        <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <a [routerLink]="['/admin/support/chat']" class="menu-link">
-            <div data-i18n="Chat">Chat</div>
-          </a>
-        </li>
-        <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <a [routerLink]="['/admin/support/chat-history']" class="menu-link">
-            <div data-i18n="Chat history">Chat history</div>
-          </a>
-        </li>
-      </ul>
+    <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <a class="menu-link" [routerLink]="['/admin/recycle/product-category']">
+        <i class="menu-icon tf-icons bx bx-trash"></i>
+        <div data-i18n="Recycle Bin">Recycle Bin</div>
+      </a>
     </li>
   </ul>
 </aside>

@@ -98,13 +98,10 @@ export class ProfileService {
         account.photo
       }`;
     }
-    if (account.resume) {
-      // Nếu đã là full URL → giữ nguyên
-      if (!account.resume.startsWith('http')) {
-        account.resume = `${env.baseUrl.replace('/api/', '')}/upload/${
-          account.resume
-        }`;
-      }
+    if (account.resume && !account.resume.startsWith('http')) {
+      account.resume = `${env.baseUrl.replace('/api/', '')}upload/${
+        account.resume
+      }`;
     }
 
     // ✅ Chuyển chuỗi ngày sinh (dob) → Date object cho p-datepicker
@@ -136,17 +133,26 @@ export class ProfileService {
   ): Promise<Account> {
     const updated = { ...account };
 
-    // Upload photo
     if (photo) {
+      console.log('📤 Uploading photo:', photo);
       const upload = await this.accountService.uploadPhoto(photo);
-      updated.photo = upload.filename;
+      console.log('✅ Upload success:', upload);
+      updated.photo = `${env.baseUrl.replace('/api/', '')}/upload/${
+        upload.filename
+      }`;
     }
 
-    // Upload resume
     if (resume) {
       const upload = await this.accountService.uploadResume(resume);
-      updated.resume = upload.filename;
+      updated.resume = `${env.baseUrl.replace('/api/', '')}upload/${
+        upload.filename
+      }`;
     }
+
+    // ✅ Đảm bảo dữ liệu không null
+    updated.name = account.name?.trim() || '';
+    updated.email = account.email?.trim() || '';
+    updated.phone = account.phone?.trim() || '';
 
     return updated;
   }
@@ -156,24 +162,21 @@ export class ProfileService {
   // ========================================================
   /** ✅ Chuẩn hóa dữ liệu gửi lên backend */
   buildPayload(account: Account) {
+    // clone object
     const payload = {
       ...account,
-
       photo: account.photo
         ? account.photo.startsWith('data:')
-          ? undefined
-          : account.photo.replace(/^.*\/upload\//, '') // luôn lấy filename
+          ? undefined // nếu là base64 thì bỏ qua (đã upload xong rồi)
+          : account.photo.split('/upload/').pop() // lấy filename nếu có /upload/
         : undefined,
-
-      resume: account.resume
-        ? account.resume.replace(/^.*\/upload\//, '')
-        : undefined,
-
+      resume: account.resume?.split('/upload/')[1],
       field: account.field?.map((f: any) => f.name ?? f),
       skills: account.skills?.map((s: any) => s.name ?? s),
       languages: account.languages?.map((l: any) => l.name ?? l),
     };
 
+    // 🔹 Xóa _id nếu có trong education / experience
     if (payload.education && (payload.education as any)._id) {
       delete (payload.education as any)._id;
     }
@@ -189,13 +192,29 @@ export class ProfileService {
   // ========================================================
   async saveProfile(account: Account, payload: any): Promise<Account | null> {
     try {
-      const updated = await this.accountService.update(account.id!, payload);
-      const merged = { ...account, ...updated.data };
+      // 🟢 Luôn dùng id chuẩn
+      const userId = account._id || account.id;
+      if (!userId) {
+        throw new Error('Missing userId in account!');
+      }
 
-      // ✅ Lưu lại vào localStorage
-      localStorage.setItem('user', JSON.stringify(merged));
+      // 🟢 Gửi update lên backend
+      const updated = await this.accountService.update(userId, payload);
 
-      // ✅ Toast hiển thị tại component cha (Profile)
+      // 🟢 Backend chỉ trả về phần "data" (không chứa _id)
+      //    nên phải merge chính xác:
+      const merged: any = {
+        ...account, // giữ nguyên _id
+        ...updated.data, // gộp các field update
+        _id: userId, // đảm bảo tồn tại
+        id: userId, // FE dùng id cũng ok
+      };
+
+      // 🟢 Lưu lại localStorage
+      localStorage.setItem('currentUser', JSON.stringify(merged));
+      localStorage.setItem('userId', userId);
+
+      // 🟢 Thông báo
       this.messageService.add({
         severity: 'success',
         summary: 'Profile Updated',

@@ -1,0 +1,57 @@
+<html>
+  <head>
+    <meta charset='UTF-8' />
+    <title>Order Confirmation</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.5;
+        color: #333;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #f7f7f7;
+        padding: 20px;
+        border-radius: 8px;
+      }
+      .header {
+        background: #4caf50;
+        color: #fff;
+        padding: 10px;
+        border-radius: 5px 5px 0 0;
+      }
+      .footer {
+        margin-top: 20px;
+        font-size: 13px;
+        color: #777;
+        text-align: center;
+      }
+      .highlight {
+        color: #4caf50;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <div class='header'><h2>🎉 Order Confirmation</h2></div>
+      <p>Dear <b>{{name}}</b>,</p>
+      <p>Thank you for your order! Your payment via
+        <b>{{payment_method}}</b>
+        was successful.</p>
+
+      <h3>🧾 Order Details</h3>
+      <p><b>Order ID:</b> {{order_id}}</p>
+      <p><b>Total Amount:</b> ${{total_amount}}</p>
+      <p><b>Deposit Paid:</b> ${{deposit_amount}} ({{deposit_percent}}%)</p>
+      <p><b>Remaining Payment:</b> ${{remaining_payment_amount}}</p>
+
+      <p>We will contact you soon to confirm and process your order.</p>
+
+      <p class='footer'>
+        — PharmaTech Team —
+      </p>
+    </div>
+  </body>
+</html>

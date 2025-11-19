@@ -55,6 +55,9 @@ export class AboutService {
   }
 
   uploadImage(formData: FormData): Observable<{ url: string }> {
-    return this.http.post<{ url: string }>(`${this.apiUrl}/api/account/upload`, formData);
+    return this.http.post<{ url: string }>(
+      `${this.apiUrl}/api/account/upload`,
+      formData
+    );
   }
 }

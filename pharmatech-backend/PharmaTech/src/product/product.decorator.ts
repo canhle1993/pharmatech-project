@@ -12,7 +12,7 @@ export class Product {
   @Prop({ required: true, unique: true })
   name: string; // Tên sản phẩm
 
-  @Prop({ type: String })
+  @Prop({ required: true, unique: true })
   model?: string; // Mã model (VD: TDP-5, DHF-2Head,...)
 
   @Prop()
@@ -25,7 +25,7 @@ export class Product {
   price?: number; // Giá
 
   @Prop()
-  manufacturer?: string; // Nhà sản xuất
+  introduce?: string; // Nhà sản xuất
 
   @Prop()
   photo?: string; // Ảnh chính
@@ -33,6 +33,17 @@ export class Product {
   /** ✅ Liên kết nhiều category (tùy chọn, để populate nhanh) */
   @Prop({ type: [MongooseSchema.Types.ObjectId], ref: 'Category', default: [] })
   category_ids?: string[];
+
+  /** 🏷️ Quản lý tồn kho */
+  @Prop({ type: Number, default: 0 })
+  stock_quantity?: number; // Số lượng hàng trong kho
+
+  @Prop({
+    type: String,
+    default: 'in_stock',
+    enum: ['in_stock', 'out_of_stock', 'preorder'],
+  })
+  stock_status?: string; // Trạng thái tồn kho (còn hàng / hết hàng / đặt trước)
 
   @Prop({ default: true })
   is_active: boolean; // Hiển thị hay không

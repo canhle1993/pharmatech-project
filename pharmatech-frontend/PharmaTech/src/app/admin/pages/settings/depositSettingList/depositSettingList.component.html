@@ -1,0 +1,252 @@
+<div class="deposit-container">
+  <h2 class="page-title">Deposit Setting</h2>
+
+  <!-- ✅ Toast thông báo -->
+  <p-toast></p-toast>
+
+  <!-- ✅ Loading spinner -->
+  <p-progressSpinner
+    *ngIf="loading"
+    styleClass="loading-spinner"
+  ></p-progressSpinner>
+
+  <!-- ✅ Table hiển thị danh sách -->
+  <div class="card" *ngIf="!loading">
+    <p-table
+      #dt
+      [value]="filteredDepositSettings"
+      dataKey="id"
+      [rows]="5"
+      [paginator]="true"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      [globalFilterFields]="['min_total', 'max_total', 'percent']"
+      showGridlines
+      [responsiveLayout]="'scroll'"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      class="deposit-table"
+    >
+      <!-- ✅ Toolbar -->
+      <ng-template pTemplate="caption">
+        <div class="p-datatable-caption">
+          <div class="toolbar-actions">
+            <button
+              pButton
+              icon="pi pi-plus"
+              label="Add"
+              class="p-button-sm p-button-info"
+              (click)="openCreateDialog()"
+            ></button>
+          </div>
+
+          <div class="filter-group">
+            <!-- 🔹 Dropdown sort by status -->
+            <p-floatLabel
+              [ngClass]="{ 'w-full': true, 'md:w-56': true }"
+              style="margin-right: 1rem"
+            >
+              <p-select
+                class="w-full"
+                [options]="statusFilterOptions"
+                optionLabel="label"
+                optionValue="value"
+                [(ngModel)]="selectedStatus"
+                placeholder="Filter by Status"
+                (ngModelChange)="applyFilterByStatus()"
+              ></p-select>
+            </p-floatLabel>
+
+            <!-- 🔹 Search -->
+            <p-iconfield iconPosition="left" class="search-field">
+              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+              <input
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal($event.target.value, 'contains')"
+                placeholder="Search by amount or percent"
+              />
+            </p-iconfield>
+          </div>
+        </div>
+      </ng-template>
+
+      <!-- ✅ Header -->
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="min_total">
+            Min Total
+            <p-sortIcon field="min_total" />
+          </th>
+          <th pSortableColumn="max_total">
+            Max Total
+            <p-sortIcon field="max_total" />
+          </th>
+          <th pSortableColumn="percent">
+            Deposit Percent
+            <p-sortIcon field="percent" />
+          </th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </ng-template>
+
+      <!-- ✅ Body -->
+      <ng-template pTemplate="body" let-setting>
+        <tr>
+          <td>{{ setting.min_total | number }}</td>
+          <td>{{ setting.max_total | number }}</td>
+          <td>{{ setting.percent }}%</td>
+          <td>
+            <span
+              class="status-badge"
+              [class.active]="setting.is_active"
+              [class.inactive]="!setting.is_active"
+            >
+              {{ setting.is_active ? "Active" : "Inactive" }}
+            </span>
+          </td>
+          <td>
+            <button
+              pButton
+              icon="pi pi-pencil"
+              class="p-button-text p-button-warning"
+              title="Edit"
+              (click)="openEditDialog(setting)"
+            ></button>
+            <button
+              pButton
+              icon="pi pi-trash"
+              class="p-button-text p-button-danger"
+              title="Delete"
+              (click)="onDelete(setting)"
+            ></button>
+          </td>
+        </tr>
+      </ng-template>
+
+      <!-- ✅ Empty message -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="text-center">No deposit settings found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <p-confirmDialog></p-confirmDialog>
+</div>
+
+<!-- ✅ Dialog Add / Edit -->
+<p-dialog
+  [header]="isEditMode ? 'Edit Deposit Setting' : 'Add Deposit Setting'"
+  [(visible)]="dialogVisible"
+  [modal]="true"
+  [style]="{ width: '30rem', 'max-height': '95vh' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form
+    [formGroup]="depositForm"
+    class="p-fluid dialog-form"
+    (ngSubmit)="saveDepositSetting()"
+  >
+    <!-- Min Total -->
+    <div class="form-field">
+      <label for="min_total">Min Total</label>
+      <input
+        pInputText
+        type="number"
+        id="min_total"
+        formControlName="min_total"
+        placeholder="Enter minimum total"
+      />
+      <small
+        *ngIf="
+          depositForm.get('min_total')?.invalid &&
+          depositForm.get('min_total')?.touched
+        "
+        class="p-error"
+      >
+        Please enter a valid number.
+      </small>
+    </div>
+
+    <!-- Max Total -->
+    <div class="form-field">
+      <label for="max_total">Max Total</label>
+      <input
+        pInputText
+        type="number"
+        id="max_total"
+        formControlName="max_total"
+        placeholder="Enter maximum total"
+      />
+      <small
+        *ngIf="
+          depositForm.get('max_total')?.invalid &&
+          depositForm.get('max_total')?.touched
+        "
+        class="p-error"
+      >
+        Please enter a valid number.
+      </small>
+    </div>
+
+    <!-- Deposit Percent -->
+    <div class="form-field">
+      <label for="percent">Deposit Percent (%)</label>
+      <input
+        pInputText
+        type="number"
+        id="percent"
+        formControlName="percent"
+        placeholder="Enter deposit percent"
+      />
+      <small
+        *ngIf="
+          depositForm.get('percent')?.invalid &&
+          depositForm.get('percent')?.touched
+        "
+        class="p-error"
+      >
+        Percent must be between 1 and 100.
+      </small>
+    </div>
+
+    <!-- Status -->
+    <div class="form-field">
+      <label for="is_active">Status</label>
+      <p-select
+        id="is_active"
+        [options]="statusOptions"
+        optionLabel="label"
+        optionValue="value"
+        formControlName="is_active"
+        [filter]="true"
+        [appendTo]="'body'"
+        placeholder="Select status"
+      ></p-select>
+    </div>
+  </form>
+
+  <!-- ✅ Footer -->
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      label="Cancel"
+      icon="pi pi-times"
+      class="p-button-text"
+      type="button"
+      (click)="dialogVisible = false"
+    ></button>
+    <button
+      pButton
+      label="Save"
+      icon="pi pi-check"
+      class="p-button-success"
+      type="button"
+      [disabled]="depositForm.invalid"
+      (click)="saveDepositSetting()"
+    ></button>
+  </ng-template>
+</p-dialog>

@@ -155,3 +155,20 @@
     max-width: 100%;
   }
 }
+.cat-badge {
+  display: inline-block;
+  background: #e3f2fd;
+  color: #1565c0;
+  border: 1px solid #90caf9;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  margin-right: 6px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+
+.cat-badge:hover {
+  background: #bbdefb;
+  cursor: default;
+}

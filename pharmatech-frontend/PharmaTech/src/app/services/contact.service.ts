@@ -38,4 +38,13 @@ export class ContactService {
     formData.append('folder', folder);
     return this.http.post(`${this.apiUrl}/api/account/upload`, formData);
   }
+
+  sendContactMessage(data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    message: string;
+  }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/api/mail/contact`, data);
+  }
 }

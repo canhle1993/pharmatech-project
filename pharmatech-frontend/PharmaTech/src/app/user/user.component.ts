@@ -14,6 +14,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { CarouselComponent } from './components/carousel/carousel.component';
 import { ChatbotComponent } from './components/chatbot/chatbot.component';
+import { ZaloComponent } from './components/zalo/zalo.component.';
 
 @Component({
   selector: 'app-user',
@@ -28,6 +29,7 @@ import { ChatbotComponent } from './components/chatbot/chatbot.component';
     FooterComponent,
     CarouselComponent,
     ChatbotComponent,
+    ZaloComponent,
   ],
 })
 export class UserComponent implements OnInit {
@@ -98,5 +100,4 @@ export class UserComponent implements OnInit {
     await addJs('assets/js/jquery.magnific-popup.min.js');
     await addJs('assets/js/main.js');
   }
-
 }

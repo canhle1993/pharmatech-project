@@ -1,322 +1,345 @@
 <div class="container mt-4">
-  <h1 class="mb-4">About Us</h1>
+  <!-- Header -->
+  <div class="job-header text-center mb-4">
+    <h2 class="job-title">
+      <i class="pi pi-info-circle"></i> About Management
+    </h2>
+    <p class="job-subtitle">
+      Edit the About page content, images and section titles
+    </p>
+  </div>
 
-  <form [formGroup]="aboutForm" (ngSubmit)="onSubmit()" class="bg-white p-4 rounded shadow-sm">
-    <!-- Basic Information -->
-    <div class="section mb-5">
-      <h3 class="mb-4">Basic Information</h3>
+  <div class="card shadow-sm p-4">
+    <form [formGroup]="aboutForm" (ngSubmit)="onSubmit()" class="dialog-form">
+      <!-- Basic Information -->
+      <details class="accordion-section" open>
+        <summary class="accordion-header">Basic Information</summary>
+        <div class="accordion-content">
+          <div class="form-group full">
+            <label>Main Content</label>
+            <p-editor formControlName="content" [style]="{ height: '200px' }"
+              placeholder="Enter main about us content here..."></p-editor>
+          </div>
 
-      <!-- Content Editor -->
-      <div class="mb-4">
-        <label class="form-label">Main Content:</label>
-        <textarea formControlName="content" rows="5" class="form-control"
-          placeholder="Enter main about us content here..."></textarea>
-      </div>
-
-      <!-- Banner Image Upload -->
-      <div class="mb-4">
-        <label class="form-label">Banner Image (1920x720):</label>
-        <div class="d-flex gap-3 align-items-center">
-          <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event, 'banner')"
-            #bannerInput>
-          <button type="button" class="btn btn-outline-secondary" *ngIf="selectedImages['banner']"
-            (click)="clearImage('banner')">
-            Clear
-          </button>
-        </div>
-        <small class="text-muted">Recommended size: 1920x720 pixels</small>
-
-        <!-- Image Preview -->
-        <div *ngIf="selectedImages['banner'] || aboutForm.get('bannerImage')?.value" class="mt-3">
-          <img [src]="imagePreviews['banner'] || buildImageUrl(aboutForm.get('bannerImage')?.value)"
-            class="img-fluid rounded" style="max-height: 200px; width: auto;" alt="Banner preview">
-        </div>
-      </div>
-    </div>
-
-    <!-- Team Members -->
-    <div class="section mb-5">
-      <h3 class="d-flex justify-content-between align-items-center mb-4">
-        Team Members
-        <button type="button" class="btn btn-outline-primary" (click)="addTeamMember()">
-          Add Member
-        </button>
-      </h3>
-
-      <div formArrayName="team">
-        <div *ngFor="let member of teamMembers.controls; let i=index" [formGroupName]="i" class="card mb-3">
-          <div class="card-body">
-            <div class="d-flex justify-content-between mb-3">
-              <h5 class="card-title mb-0">Team Member #{{i + 1}}</h5>
-              <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeTeamMember(i)">Remove</button>
-            </div>
-
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Name:</label>
-                <input type="text" formControlName="name" class="form-control">
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Position:</label>
-                <input type="text" formControlName="position" class="form-control">
+          <div class="form-group full">
+            <label>Banner Image</label>
+            <div class="banner-preview-wrapper">
+              <input type="file" accept="image/*" (change)="onFileSelected($event, 'banner')" />
+              <button type="button" pButton label="Clear" class="p-button-text p-button-sm mt-2"
+                *ngIf="selectedImages['banner']" (click)="clearImage('banner')"></button>
+              <small class="text-muted d-block">Recommended: 1920x720 px</small>
+              <div *ngIf="
+                  selectedImages['banner'] ||
+                  aboutForm.get('bannerImage')?.value
+                " class="preview-container mt-2">
+                <img [src]="
+                    imagePreviews['banner'] ||
+                    buildImageUrl(aboutForm.get('bannerImage')?.value)
+                  " alt="Banner Preview" class="preview-img-large" />
               </div>
             </div>
+          </div>
+        </div>
+      </details>
 
-            <div class="mb-3">
-              <label class="form-label">Profile Image:</label>
-              <div class="d-flex gap-3 align-items-center">
-                <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event, 'team', i)">
-                <button type="button" class="btn btn-outline-secondary" *ngIf="selectedImages['team' + i]"
-                  (click)="clearImage('team' + i)">
-                  Clear
+      <!-- Intro Section -->
+      <details class="accordion-section">
+        <summary class="accordion-header">Intro Section</summary>
+        <div class="accordion-content" formGroupName="intro">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Subtitle</label>
+              <input pInputText formControlName="subtitle" placeholder="e.g., We Are Bakerfresh" />
+            </div>
+            <div class="form-group">
+              <label>Title</label>
+              <input pInputText formControlName="title" placeholder="e.g., we love cake" />
+            </div>
+          </div>
+
+          <div class="form-group full">
+            <label>Paragraph 1</label>
+            <p-editor formControlName="paragraph1" [style]="{ height: '150px' }"
+              placeholder="Enter first paragraph..."></p-editor>
+          </div>
+          <div class="form-group full">
+            <label>Paragraph 2</label>
+            <p-editor formControlName="paragraph2" [style]="{ height: '150px' }"
+              placeholder="Enter second paragraph..."></p-editor>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Signature Image</label>
+              <input type="file" accept="image/*" (change)="onFileSelected($event, 'introSignature')" />
+              <small class="text-muted d-block">Recommended: 200x80 px</small>
+              <div *ngIf="
+                  imagePreviews['introSignature'] ||
+                  aboutForm.get('intro.signatureImage')?.value
+                " class="preview-container mt-2">
+                <img [src]="
+                    imagePreviews['introSignature'] ||
+                    buildImageUrl(aboutForm.get('intro.signatureImage')?.value)
+                  " alt="Signature" class="preview-img" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Main Image</label>
+              <input type="file" accept="image/*" (change)="onFileSelected($event, 'introImage')" />
+              <small class="text-muted d-block">Recommended: 570x670 px</small>
+              <div *ngIf="
+                  imagePreviews['introImage'] ||
+                  aboutForm.get('intro.image')?.value
+                " class="preview-container mt-2">
+                <img [src]="
+                    imagePreviews['introImage'] ||
+                    buildImageUrl(aboutForm.get('intro.image')?.value)
+                  " alt="Intro image" class="preview-img" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- CTA Section -->
+      <details class="accordion-section">
+        <summary class="accordion-header">Call to Action</summary>
+        <div class="accordion-content" formGroupName="cta">
+          <div class="form-group full">
+            <label>YouTube Video URL</label>
+            <input pInputText formControlName="videoUrl" placeholder="https://www.youtube.com/watch?v=..." />
+            <small class="text-muted d-block">Formats: youtube.com/watch?v=ID, youtu.be/ID,
+              youtube.com/embed/ID</small>
+          </div>
+          <div class="form-group full">
+            <label>Background Image</label>
+            <input type="file" accept="image/*" (change)="onFileSelected($event, 'ctaBg')" />
+            <small class="text-muted d-block">Recommended: 1920x600 px</small>
+            <div *ngIf="
+                imagePreviews['ctaBg'] ||
+                aboutForm.get('cta.backgroundImage')?.value
+              " class="preview-container mt-2">
+              <img [src]="
+                  imagePreviews['ctaBg'] ||
+                  buildImageUrl(aboutForm.get('cta.backgroundImage')?.value)
+                " alt="CTA background" class="preview-img" />
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- Open Section -->
+      <details class="accordion-section">
+        <summary class="accordion-header">We Are Open</summary>
+        <div class="accordion-content" formGroupName="open">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Subtitle</label>
+              <input pInputText formControlName="subtitle" placeholder="e.g., Bakerfresh Time" />
+            </div>
+            <div class="form-group">
+              <label>Title</label>
+              <input pInputText formControlName="title" placeholder="e.g., we are open" />
+            </div>
+          </div>
+          <div class="form-group full">
+            <label>Description</label>
+            <p-editor formControlName="text" [style]="{ height: '150px' }"
+              placeholder="Enter description..."></p-editor>
+          </div>
+          <div class="form-group full">
+            <label>Image</label>
+            <input type="file" accept="image/*" (change)="onFileSelected($event, 'openImage')" />
+            <small class="text-muted d-block">Recommended: 370x450 px</small>
+            <div *ngIf="
+                imagePreviews['openImage'] || aboutForm.get('open.image')?.value
+              " class="preview-container mt-2">
+              <img [src]="
+                  imagePreviews['openImage'] ||
+                  buildImageUrl(aboutForm.get('open.image')?.value)
+                " alt="Open section image" class="preview-img" />
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- Schedule -->
+      <details class="accordion-section">
+        <summary class="accordion-header">Opening Schedule</summary>
+        <div class="accordion-content">
+          <div class="form-row" formGroupName="schedule">
+            <div class="form-group">
+              <label>Mon - Fri</label>
+              <input pInputText formControlName="monFri" placeholder="e.g., 9:00 am - 9:00 pm" />
+            </div>
+            <div class="form-group">
+              <label>Sat - Sun</label>
+              <input pInputText formControlName="satSun" placeholder="e.g., 10:00 am - 10:00 pm" />
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- Team Section -->
+      <details class="accordion-section">
+        <summary class="accordion-header">Team Members</summary>
+        <div class="accordion-content">
+          <div class="mb-2">
+            <button type="button" pButton icon="pi pi-plus" label="Add Member" class="p-button-sm p-button-primary"
+              (click)="addTeamMember()"></button>
+          </div>
+          <div formArrayName="team">
+            <div *ngFor="let member of teamMembers.controls; let i = index" [formGroupName]="i" class="card mb-3 p-3">
+              <div class="flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Member #{{ i + 1 }}</h5>
+                <button type="button" pButton icon="pi pi-trash" class="p-button-text p-button-danger p-button-sm"
+                  (click)="removeTeamMember(i)"></button>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Name</label>
+                  <input pInputText formControlName="name" />
+                </div>
+                <div class="form-group">
+                  <label>Position</label>
+                  <input pInputText formControlName="position" />
+                </div>
+              </div>
+              <div class="form-group full">
+                <label>Profile Image</label>
+                <input type="file" accept="image/*" (change)="onFileSelected($event, 'team', i)" />
+                <small class="text-muted d-block">Recommended: 370x450 px</small>
+                <div *ngIf="
+                    selectedImages['team' + i] || member.get('image')?.value
+                  " class="preview-container mt-2">
+                  <img [src]="
+                      imagePreviews['team' + i] ||
+                      buildImageUrl(member.get('image')?.value)
+                    " alt="Team member" class="preview-img" />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Facebook</label>
+                  <input pInputText formControlName="facebook" placeholder="Facebook URL" />
+                </div>
+                <div class="form-group">
+                  <label>Zalo</label>
+                  <input pInputText formControlName="zalo" placeholder="Zalo phone or URL" />
+                </div>
+                <div class="form-group">
+                  <label>LinkedIn</label>
+                  <input pInputText formControlName="linkedin" placeholder="LinkedIn URL" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- Testimonials -->
+      <details class="accordion-section">
+        <summary class="accordion-header">Testimonials</summary>
+        <div class="accordion-content">
+          <div class="mb-2">
+            <button type="button" pButton icon="pi pi-plus" label="Add Testimonial" class="p-button-sm p-button-primary"
+              (click)="addTestimonial()"></button>
+          </div>
+          <div formArrayName="testimonials">
+            <div *ngFor="let testimonial of testimonials.controls; let i = index" [formGroupName]="i"
+              class="card mb-3 p-3">
+              <div class="flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Testimonial #{{ i + 1 }}</h5>
+                <button type="button" pButton icon="pi pi-trash" class="p-button-text p-button-danger p-button-sm"
+                  (click)="removeTestimonial(i)"></button>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Name</label>
+                  <input pInputText formControlName="name" />
+                </div>
+                <div class="form-group">
+                  <label>Position</label>
+                  <input pInputText formControlName="position" />
+                </div>
+              </div>
+              <div class="form-group full">
+                <label>Content</label>
+                <p-editor formControlName="content" [style]="{ height: '150px' }"
+                  placeholder="Enter testimonial..."></p-editor>
+              </div>
+              <div class="form-group full">
+                <label>Profile Image</label>
+                <input type="file" accept="image/*" (change)="onFileSelected($event, 'testimonial', i)" />
+                <small class="text-muted d-block">Recommended: 100x100 px</small>
+                <div *ngIf="
+                    selectedImages['testimonial' + i] ||
+                    testimonial.get('image')?.value
+                  " class="preview-container mt-2">
+                  <img [src]="
+                      imagePreviews['testimonial' + i] ||
+                      buildImageUrl(testimonial.get('image')?.value)
+                    " alt="Testimonial" class="preview-img" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- Brand Images -->
+      <details class="accordion-section">
+        <summary class="accordion-header">Brand Images / Partner Logos</summary>
+        <div class="accordion-content">
+          <div class="form-group full">
+            <label>Upload Logos</label>
+            <input type="file" accept="image/*" multiple (change)="onMultipleFilesSelected($event, 'brands')" />
+            <small class="text-muted d-block">Recommended: 300x300 px (PNG with transparent background)</small>
+          </div>
+          <div class="row g-3" formArrayName="brandImages">
+            <div *ngFor="let image of brandImages.controls; let i = index" class="col-md-3">
+              <div class="position-relative">
+                <img [src]="buildImageUrl(image.value)" class="img-thumbnail" alt="Brand logo"
+                  style="max-height: 100px; object-fit: contain; width: 100%" />
+                <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0"
+                  (click)="removeBrandImage(i)">
+                  ×
                 </button>
               </div>
-              <small class="text-muted">Recommended size: 370x450 pixels (portrait orientation)</small>
-              <!-- Image Preview -->
-              <div *ngIf="selectedImages['team' + i] || member.get('image')?.value" class="mt-2">
-                <img [src]="imagePreviews['team' + i] || buildImageUrl(member.get('image')?.value)"
-                  class="img-thumbnail" style="height: 100px; width: auto;" alt="Team member preview">
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-4 mb-3">
-                <label class="form-label">Facebook:</label>
-                <input type="text" formControlName="facebook" class="form-control" placeholder="Facebook URL">
-              </div>
-              <div class="col-md-4 mb-3">
-                <label class="form-label">Zalo:</label>
-                <input type="text" formControlName="zalo" class="form-control" placeholder="Zalo phone number or URL">
-              </div>
-              <div class="col-md-4 mb-3">
-                <label class="form-label">LinkedIn:</label>
-                <input type="text" formControlName="linkedin" class="form-control" placeholder="LinkedIn URL">
-              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </details>
 
-    <!-- Testimonials -->
-    <div class="section mb-5">
-      <h3 class="d-flex justify-content-between align-items-center mb-4">
-        Testimonials
-        <button type="button" class="btn btn-outline-primary" (click)="addTestimonial()">
-          Add Testimonial
+      <!-- Section Titles -->
+      <details class="accordion-section">
+        <summary class="accordion-header">Section Titles & Styling</summary>
+        <div class="accordion-content">
+          <div class="form-row">
+            <div class="form-group" formGroupName="teamSection">
+              <label>Team Title</label>
+              <input pInputText formControlName="title" placeholder="e.g., Our Chef" />
+            </div>
+            <div class="form-group" formGroupName="testimonialsSection">
+              <label>Testimonials Title</label>
+              <input pInputText formControlName="title" placeholder="e.g., Customers Review" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group" formGroupName="testimonialsSection">
+              <label>Testimonials Background</label>
+              <input type="color" formControlName="bgColor" style="height: 48px; width: 100%" />
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- Actions -->
+      <div class="flex justify-content-end mt-4">
+        <button pButton type="submit" class="p-button-primary" [disabled]="aboutForm.invalid || isUploading">
+          {{ isUploading ? "Saving..." : "Save Changes" }}
         </button>
-      </h3>
-
-      <div formArrayName="testimonials">
-        <div *ngFor="let testimonial of testimonials.controls; let i=index" [formGroupName]="i" class="card mb-3">
-          <div class="card-body">
-            <div class="d-flex justify-content-between mb-3">
-              <h5 class="card-title mb-0">Testimonial #{{i + 1}}</h5>
-              <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeTestimonial(i)">Remove</button>
-            </div>
-
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Name:</label>
-                <input type="text" formControlName="name" class="form-control">
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Position:</label>
-                <input type="text" formControlName="position" class="form-control">
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Content:</label>
-              <textarea formControlName="content" rows="3" class="form-control"></textarea>
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Profile Image:</label>
-              <div class="d-flex gap-3 align-items-center">
-                <input type="file" class="form-control" accept="image/*"
-                  (change)="onFileSelected($event, 'testimonial', i)">
-                <button type="button" class="btn btn-outline-secondary" *ngIf="selectedImages['testimonial' + i]"
-                  (click)="clearImage('testimonial' + i)">
-                  Clear
-                </button>
-              </div>
-              <small class="text-muted">Recommended size: 100x100 pixels (square, for circular avatar display)</small>
-              <!-- Image Preview -->
-              <div *ngIf="selectedImages['testimonial' + i] || testimonial.get('image')?.value" class="mt-2">
-                <img [src]="imagePreviews['testimonial' + i] || buildImageUrl(testimonial.get('image')?.value)"
-                  class="img-thumbnail" style="height: 100px; width: auto;" alt="Testimonial preview">
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
-
-    <!-- Brand Images -->
-    <div class="section mb-5">
-      <h3 class="mb-4">Brand Images / Partner Logos</h3>
-      <div class="mb-3">
-        <label class="form-label">Upload Brand Logos (Max 300x300px):</label>
-        <input type="file" class="form-control" accept="image/*" multiple
-          (change)="onMultipleFilesSelected($event, 'brands')" #brandInput>
-        <small class="text-muted">Maximum size: 300x300 pixels. PNG format with transparent background works
-          best.</small>
-      </div>
-
-      <!-- Brand Images Preview -->
-      <div class="row g-3" formArrayName="brandImages">
-        <div *ngFor="let image of brandImages.controls; let i=index" class="col-md-3">
-          <div class="position-relative">
-            <img [src]="buildImageUrl(image.value)" class="img-thumbnail" alt="Brand logo"
-              style="max-height: 100px; object-fit: contain;">
-            <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0"
-              (click)="removeBrandImage(i)">
-              ×
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Intro Section -->
-    <div class="section mb-5" formGroupName="intro">
-      <h3 class="mb-4">Intro Section (About Content)</h3>
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Subtitle:</label>
-          <input type="text" formControlName="subtitle" class="form-control" placeholder="e.g., We Are Bakerfresh">
-        </div>
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Title:</label>
-          <input type="text" formControlName="title" class="form-control" placeholder="e.g., we love cake">
-        </div>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Paragraph 1:</label>
-        <textarea formControlName="paragraph1" rows="3" class="form-control"></textarea>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Paragraph 2:</label>
-        <textarea formControlName="paragraph2" rows="3" class="form-control"></textarea>
-      </div>
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Signature Image:</label>
-          <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event, 'introSignature')">
-          <small class="text-muted">Recommended size: 200x80 pixels (signature or logo)</small>
-          <div *ngIf="imagePreviews['introSignature'] || aboutForm.get('intro.signatureImage')?.value" class="mt-2">
-            <img [src]="imagePreviews['introSignature'] || buildImageUrl(aboutForm.get('intro.signatureImage')?.value)"
-              class="img-thumbnail" style="height: 80px;" alt="Signature">
-          </div>
-        </div>
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Main Image:</label>
-          <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event, 'introImage')">
-          <small class="text-muted">Recommended size: 570x670 pixels</small>
-          <div *ngIf="imagePreviews['introImage'] || aboutForm.get('intro.image')?.value" class="mt-2">
-            <img [src]="imagePreviews['introImage'] || buildImageUrl(aboutForm.get('intro.image')?.value)"
-              class="img-thumbnail" style="height: 100px;" alt="Intro image">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CTA (Call to Action) Section -->
-    <div class="section mb-5" formGroupName="cta">
-      <h3 class="mb-4">Call to Action Section (Video Background)</h3>
-      <div class="mb-3">
-        <label class="form-label">YouTube Video URL:</label>
-        <input type="text" formControlName="videoUrl" class="form-control"
-          placeholder="https://www.youtube.com/watch?v=...">
-        <small class="text-muted">
-          Accepted formats:
-          <br>• https://www.youtube.com/watch?v=VIDEO_ID
-          <br>• https://youtu.be/VIDEO_ID
-          <br>• https://www.youtube.com/embed/VIDEO_ID
-        </small>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Background Image:</label>
-        <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event, 'ctaBg')">
-        <small class="text-muted">Recommended size: 1920x600 pixels. This image will be displayed behind the video
-          section.</small>
-        <div *ngIf="imagePreviews['ctaBg'] || aboutForm.get('cta.backgroundImage')?.value" class="mt-2">
-          <img [src]="imagePreviews['ctaBg'] || buildImageUrl(aboutForm.get('cta.backgroundImage')?.value)"
-            class="img-thumbnail" style="height: 100px;" alt="CTA background">
-        </div>
-      </div>
-    </div>
-
-    <!-- Open Section -->
-    <div class="section mb-5" formGroupName="open">
-      <h3 class="mb-4">We Are Open Section</h3>
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Subtitle:</label>
-          <input type="text" formControlName="subtitle" class="form-control" placeholder="e.g., Bakerfresh Time">
-        </div>
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Title:</label>
-          <input type="text" formControlName="title" class="form-control" placeholder="e.g., we are open">
-        </div>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Description:</label>
-        <textarea formControlName="text" rows="3" class="form-control"></textarea>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Image:</label>
-        <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event, 'openImage')">
-        <small class="text-muted">Recommended size: 370x450 pixels</small>
-        <div *ngIf="imagePreviews['openImage'] || aboutForm.get('open.image')?.value" class="mt-2">
-          <img [src]="imagePreviews['openImage'] || buildImageUrl(aboutForm.get('open.image')?.value)"
-            class="img-thumbnail" style="height: 100px;" alt="Open section image">
-        </div>
-      </div>
-    </div>
-
-    <!-- Schedule -->
-    <div class="section mb-5" formGroupName="schedule">
-      <h3 class="mb-4">Opening Schedule</h3>
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Monday - Friday:</label>
-          <input type="text" formControlName="monFri" class="form-control" placeholder="e.g., 9:00 am - 9:00 pm">
-        </div>
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Saturday - Sunday:</label>
-          <input type="text" formControlName="satSun" class="form-control" placeholder="e.g., 10:00 am - 10:00 pm">
-        </div>
-      </div>
-    </div>
-
-    <!-- Section Titles -->
-    <div class="section mb-5">
-      <h3 class="mb-4">Section Titles</h3>
-      <div class="row">
-        <div class="col-md-6 mb-3" formGroupName="teamSection">
-          <label class="form-label">Team Section Title:</label>
-          <input type="text" formControlName="title" class="form-control" placeholder="e.g., Our Chef">
-        </div>
-        <div class="col-md-6 mb-3" formGroupName="testimonialsSection">
-          <label class="form-label">Testimonials Section Title:</label>
-          <input type="text" formControlName="title" class="form-control" placeholder="e.g., Customers Review">
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-6 mb-3" formGroupName="testimonialsSection">
-          <label class="form-label">Testimonials Background Color:</label>
-          <input type="color" formControlName="bgColor" class="form-control" style="height: 50px;">
-        </div>
-      </div>
-    </div>
-
-    <!-- Save Button -->
-    <div class="d-flex justify-content-end">
-      <button type="submit" class="btn btn-primary" [disabled]="aboutForm.invalid || isUploading">
-        {{ isUploading ? 'Saving...' : 'Save Changes' }}
-      </button>
-    </div>
-  </form>
+    </form>
+  </div>
 </div>

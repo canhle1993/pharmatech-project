@@ -1,0 +1,141 @@
+<div class="order-history-container">
+  <h4 class="fw-bold py-3 mb-4">
+    <span class="text-muted fw-light">Order /</span> Order History
+  </h4>
+
+  <!-- Loading -->
+  <p-progressSpinner
+    *ngIf="loading"
+    styleClass="loading-spinner"
+  ></p-progressSpinner>
+
+  <div class="card" *ngIf="!loading">
+    <!-- ✅ Thanh tìm kiếm -->
+    <div class="toolbar flex justify-content-end mb-3">
+      <p-iconfield iconPosition="left">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input
+          pInputText
+          type="text"
+          placeholder="Search by order code or customer name"
+          [(ngModel)]="searchText"
+          (input)="onSearchChange()"
+          style="width: 350px"
+        />
+      </p-iconfield>
+    </div>
+    <p-table
+      [value]="filteredOrders"
+      dataKey="id"
+      [paginator]="true"
+      [rows]="4"
+      [rowsPerPageOptions]="[4, 10, 20]"
+      [responsiveLayout]="'scroll'"
+      showGridlines
+      class="order-table"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Order Code</th>
+          <th>Customer</th>
+          <th pSortableColumn="formattedTotal">
+            Total
+            <p-sortIcon field="formattedTotal"></p-sortIcon>
+          </th>
+          <th>Deposit</th>
+          <th>Note</th>
+          <th>Proof</th>
+          <th>OCR Result</th>
+          <th pSortableColumn="updated_at">
+            Completed At
+            <p-sortIcon field="updated_at"></p-sortIcon>
+          </th>
+          <th>Action</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-order>
+        <tr>
+          <td>{{ order.id }}</td>
+          <td>{{ order.contact_name }}</td>
+          <td>{{ order.formattedTotal }}</td>
+          <td>{{ order.formattedDeposit }}</td>
+          <td>{{ order.remaining_payment_note || "—" }}</td>
+
+          <!-- 📸 Proof -->
+          <td>
+            <img
+              *ngIf="order.payment_proof_url"
+              [src]="order.payment_proof_url"
+              class="proof-thumb"
+              (click)="openImage(order.payment_proof_url)"
+            />
+            <span *ngIf="!order.payment_proof_url">—</span>
+          </td>
+          <!-- 🆕 OCR Result -->
+          <td>
+            <button class="btn btn-sm btn-primary" (click)="runOCR(order)">
+              Scan OCR
+            </button>
+
+            <!-- Loading -->
+            <div *ngIf="ocrLoading">Scanning...</div>
+
+            <!-- Kết quả -->
+            <div
+              *ngIf="ocrMap[order.id] && !ocrLoadingMap[order.id]"
+              class="ocr-result-box"
+            >
+              <div><b>Amount:</b> {{ ocrMap[order.id].amount }}</div>
+              <div><b>Time:</b> {{ ocrMap[order.id].time }}</div>
+              <div><b>Ref:</b> {{ ocrMap[order.id].ref }}</div>
+              <div><b>Sender:</b> {{ ocrMap[order.id].sender }}</div>
+              <div><b>Receiver:</b> {{ ocrMap[order.id].receiver }}</div>
+            </div>
+
+            <div *ngIf="ocrLoadingMap[order.id]">Scanning...</div>
+          </td>
+
+          <td>{{ order.updated_at }}</td>
+
+          <!-- 🔍 Action -->
+          <td>
+            <button
+              pButton
+              icon="pi pi-search"
+              class="p-button-text p-button-info"
+              title="View Details"
+              (click)="onView(order)"
+            ></button>
+          </td>
+        </tr>
+      </ng-template>
+
+      <!-- Empty -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="text-center py-4">
+            No completed orders found.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- 🔍 Full Image Dialog -->
+  <p-dialog
+    [(visible)]="showImageDialog"
+    [modal]="true"
+    [style]="{ width: '80vw' }"
+    [contentStyle]="{ 'text-align': 'center' }"
+    [breakpoints]="{ '960px': '95vw', '640px': '100vw' }"
+    [closable]="true"
+  >
+    <img
+      [src]="selectedImage"
+      style="max-width: 100%; max-height: 80vh; border-radius: 6px"
+    />
+  </p-dialog>
+</div>

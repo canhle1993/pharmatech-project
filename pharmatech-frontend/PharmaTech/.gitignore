@@ -67,5 +67,13 @@ pnpm-debug.log*
 # ============================
 # 💻 OS / System Files
 # ============================
+
+# Angular env
+src/app/enviroments/enviroment.ts
+src/app/enviroments/enviroment.prod.ts
+
+environment*.ts
+*.env
+
 .DS_Store
 Thumbs.db

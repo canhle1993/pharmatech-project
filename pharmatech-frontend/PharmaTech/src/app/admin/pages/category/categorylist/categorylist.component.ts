@@ -66,6 +66,8 @@ export class CategoryListComponent implements OnInit {
   editPreview?: string;
   selectedCategory?: any;
 
+  existingCategories: Category[] = [];
+
   constructor(
     private categoryService: CategoryService,
     private productService: ProductService,
@@ -77,6 +79,11 @@ export class CategoryListComponent implements OnInit {
   ngOnInit() {
     this.loadCategories();
     this.loadProducts();
+
+    // ⚡ Lấy tất cả categories để check duplicate
+    this.categoryService.findAll().then((res: any) => {
+      this.existingCategories = res || [];
+    });
 
     this.addForm = this.fb.group({
       name: ['', Validators.required],
@@ -143,19 +150,24 @@ export class CategoryListComponent implements OnInit {
     this.editDialog = true;
     this.editPreview = cat.photo || 'assets/images/no-image.jpg';
 
-    // 🔹 Gọi lại API lấy chi tiết Category (có danh sách product)
+    // 🔹 Load chi tiết category từ API
     this.categoryService.findById(cat.id).then((res: any) => {
       const productIds = Array.isArray(res.product_ids)
         ? res.product_ids
         : (res.products || []).map((p: any) => p.id || p._id);
 
-      // ✅ Patch form đầy đủ
+      // 🟢 Patch form
       this.editForm.patchValue({
         id: res.id,
         name: res.name,
         description: res.description,
         product_id: productIds,
       });
+
+      // 🟢 Remove current category from duplicate checking list (CHUẨN)
+      this.existingCategories = this.existingCategories.filter(
+        (c) => (c.id || c._id) !== res.id
+      );
     });
   }
 
@@ -166,11 +178,29 @@ export class CategoryListComponent implements OnInit {
   async onCreateCategory() {
     if (this.addForm.invalid) return;
 
+    const name = (this.addForm.value.name || '').trim().toLowerCase();
+
+    // ❗ Check trùng name
+    const exists = this.existingCategories.some(
+      (c) => c.name.trim().toLowerCase() === name
+    );
+
+    if (exists) {
+      this.addForm.get('name')?.setErrors({ duplicate: true });
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Duplicate name',
+        detail: 'Category name already exists. Please use another name.',
+      });
+      return;
+    }
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
     // ✅ Chuyển về mảng product_ids
     const categoryData = {
       name: this.addForm.value.name,
       description: this.addForm.value.description,
-      updated_by: 'admin',
+      updated_by: currentUser?.name || 'admin',
       product_ids: Array.isArray(this.addForm.value.product_id)
         ? this.addForm.value.product_id
         : [this.addForm.value.product_id], // luôn là mảng
@@ -210,11 +240,29 @@ export class CategoryListComponent implements OnInit {
     if (this.editForm.invalid) return;
 
     const formValue = this.editForm.value;
+    const name = (formValue.name || '').trim().toLowerCase();
+
+    // ❗ Check duplicate name
+    const exists = this.existingCategories.some(
+      (c) => c.name.trim().toLowerCase() === name
+    );
+
+    if (exists) {
+      this.editForm.get('name')?.setErrors({ duplicate: true });
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Duplicate name',
+        detail: 'Category name already exists.',
+      });
+      return;
+    }
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
     const categoryData = {
       id: formValue.id,
       name: formValue.name,
       description: formValue.description,
-      updated_by: 'admin',
+      updated_by: currentUser?.name || 'admin',
       product_ids: formValue.product_id,
     };
 

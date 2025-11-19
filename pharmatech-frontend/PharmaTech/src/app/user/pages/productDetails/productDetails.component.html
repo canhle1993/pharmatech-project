@@ -1,5 +1,5 @@
 <!-- Breadcrumb Section Start -->
-<div class="breadcrumb" data-bg-image="assets/images/bg/breadcrumb-bg.jpg">
+<div class="breadcrumb" data-bg-image="assets/images/bg/Pharma-Natural.jpg">
   <div class="container">
     <div class="row">
       <div class="col-12">
@@ -15,88 +15,44 @@
   </div>
 </div>
 <!-- Breadcrumb Section End -->
+<p-toast position="top-left"></p-toast>
 
 <!-- Single Product Section Start -->
-<div class="section section-margin-top section-padding-03">
+<div class="section section-margin-top section-padding-03" *ngIf="!loading; else loadingTpl">
   <div class="container">
     <div class="row">
       <div class="col-lg-6 offset-lg-0 col-md-10 offset-md-1">
         <!-- Product Details Image Start -->
         <div class="product-details-img d-flex overflow-hidden flex-row">
-          <!-- Single Product Image Start -->
-          <div class="single-product-vertical-tab swiper-container order-2">
-            <div class="swiper-wrapper popup-gallery" id="popup-gallery">
-              <a class="swiper-slide h-auto" href="assets/images/product/product-7-1.png">
-                <img class="w-100" src="assets/images/product/product-7-1.png" alt="Product" />
-              </a>
-              <a class="swiper-slide h-auto" href="assets/images/product/product-7-2.png">
-                <img class="w-100" src="assets/images/product/product-7-2.png" alt="Product" />
-              </a>
-              <a class="swiper-slide h-auto" href="assets/images/product/product-7-3.png">
-                <img class="w-100" src="assets/images/product/product-7-3.png" alt="Product" />
-              </a>
-              <a class="swiper-slide h-auto" href="assets/images/product/product-7-4.png">
-                <img class="w-100" src="assets/images/product/product-7-4.png" alt="Product" />
-              </a>
-              <a class="swiper-slide h-auto" href="assets/images/product/product-7-5.png">
-                <img class="w-100" src="assets/images/product/product-7-5.png" alt="Product" />
-              </a>
-              <a class="swiper-slide h-auto" href="assets/images/product/product-7-6.png">
-                <img class="w-100" src="assets/images/product/product-7-6.png" alt="Product" />
-              </a>
+          <!-- ✅ Main Image Swiper -->
+          <div id="main-swiper" class="single-product-vertical-tab swiper order-2">
+            <div class="swiper-wrapper popup-gallery">
+              <div class="swiper-slide h-auto">
+                <img class="w-100" [src]="product?.photo || 'assets/images/no-image.jpg'" alt="Main Image"
+                  style="height: 450px !important" />
+              </div>
+
+              <div class="swiper-slide h-auto" *ngFor="let img of product?.gallery">
+                <img class="w-100" [src]="img" alt="Gallery" style="height: 450px !important" />
+              </div>
             </div>
 
-            <!-- Swiper Pagination Start -->
-            <!-- <div class="swiper-pagination d-none"></div> -->
-            <!-- Swiper Pagination End -->
+            <!-- ✅ Navigation -->
 
-            <!-- Next Previous Button Start -->
-            <div class="swiper-button-vertical-next swiper-button-next">
-              <i class="lastudioicon-arrow-right"></i>
-            </div>
-            <div class="swiper-button-vertical-prev swiper-button-prev">
-              <i class="lastudioicon-arrow-left"></i>
-            </div>
-            <!-- Next Previous Button End -->
+            <div class="swiper-button-vertical-next swiper-button-next"></div>
+            <div class="swiper-button-vertical-prev swiper-button-prev"></div>
           </div>
-          <!-- Single Product Image End -->
 
-          <!-- Single Product Thumb Start -->
-          <div class="product-thumb-vertical overflow-hidden swiper-container order-1">
+          <!-- ✅ Thumbnail Swiper -->
+          <div id="thumb-swiper" class="product-thumb-vertical swiper overflow-hidden order-1">
             <div class="swiper-wrapper">
-              <div class="swiper-slide">
-                <img src="assets/images/product/product-tab-1.png" alt="Product" />
-              </div>
-              <div class="swiper-slide">
-                <img src="assets/images/product/product-tab-2.png" alt="Product" />
-              </div>
-              <div class="swiper-slide">
-                <img src="assets/images/product/product-tab-3.png" alt="Product" />
-              </div>
-              <div class="swiper-slide">
-                <img src="assets/images/product/product-tab-4.png" alt="Product" />
-              </div>
-              <div class="swiper-slide">
-                <img src="assets/images/product/product-tab-5.png" alt="Product" />
-              </div>
-              <div class="swiper-slide">
-                <img src="assets/images/product/product-tab-6.png" alt="Product" />
+              <div class="swiper-slide" *ngFor="let img of product?.gallery">
+                <img [src]="img" alt="Thumb" />
               </div>
             </div>
-
-            <!-- Swiper Pagination Start -->
-            <!-- <div class="swiper-pagination d-none"></div> -->
-            <!-- Swiper Pagination End -->
-
-            <!-- Next Previous Button Start -->
-            <!--
-                                <div class="swiper-button-vertical-next  swiper-button-next"><i class="lastudioicon-right-arrow"></i></div>
-                                <div class="swiper-button-vertical-prev swiper-button-prev"><i class="lastudioicon-left-arrow"></i></div>
-                            -->
-            <!-- Next Previous Button End -->
           </div>
-          <!-- Single Product Thumb End -->
         </div>
+
         <!-- Product Details Image End -->
       </div>
       <div class="col-lg-6">
@@ -104,28 +60,17 @@
         <div class="product-summery position-relative">
           <!-- Product Head Start -->
           <div class="product-head mb-3">
-            <!-- Price Start -->
-            <span class="product-head-price">$4.99</span>
-            <!-- Price End -->
-
-            <!-- Rating Start -->
-            <div class="review-rating">
-              <span class="review-rating-bg">
-                <span class="review-rating-active" style="width: 90%"></span>
-              </span>
-              <a href="#/" class="review-rating-text">(1 Review)</a>
-            </div>
-            <!-- Rating End -->
+            <h2 class="product-head-title">{{ product?.name }}</h2>
           </div>
+          <!-- Price Start -->
+          <span class="product-head-price" style="color: rgb(81, 137, 227)">{{
+            product?.price | currency : "USD" : "symbol" : "1.2-2"
+            }}</span>
+          <!-- Price End -->
           <!-- Product Head End -->
 
           <!-- Description Start -->
-          <p class="desc-content">
-            Aliqua id fugiat nostrud irure ex duis ea quis id quis ad et. Sunt
-            qui esse pariatur duis deserunt mollit dolore cillum minim tempor
-            enim. Elit aute irure tempor cupidatat incididunt sint deserunt ut
-            voluptate aute id deserunt nisi.
-          </p>
+          <p class="desc-content">{{ product.introduce }}</p>
           <!-- Description End -->
 
           <!-- Product Quantity, Cart Button, Wishlist and Compare Start -->
@@ -141,8 +86,8 @@
               <!-- Cart Button Start -->
               <div class="cart-btn">
                 <div class="add-to_cart">
-                  <a class="btn btn-dark btn-hover-primary" href="#/" data-bs-toggle="modal"
-                    data-bs-target="#modalCart">Add to cart</a>
+                  <a class="btn btn-dark btn-hover-primary" href="javascript:void(0)" (click)="addToCart(product)">Add
+                    to cart</a>
                 </div>
               </div>
               <!-- Cart Button End -->
@@ -150,10 +95,8 @@
             <li>
               <!-- Action Button Start -->
               <div class="actions">
-                <a href="#/" title="Wishlist" class="action compare" data-bs-toggle="modal"
-                  data-bs-target="#modalWishlist"><i class="lastudioicon-heart-2"></i></a>
-                <a href="#/" title="Compare" class="action wishlist" data-bs-toggle="modal"
-                  data-bs-target="#modalCompare"><i class="lastudioicon-ic_compare_arrows_24px"></i></a>
+                <a href="javascript:void(0)" (click)="addToWishlist(product)" title="Wishlist" class="action compare"><i
+                    class="lastudioicon-heart-2"></i></a>
               </div>
               <!-- Action Button End -->
             </li>
@@ -163,20 +106,38 @@
           <!-- Product Meta Start -->
           <ul class="product-meta">
             <li class="product-meta-wrapper">
-              <span class="product-meta-name">SKU:</span>
-              <span class="product-meta-detail">REF. LA-199</span>
+              <span class="product-meta-name">Model:</span>
+              <span class="product-meta-detail">{{
+                product?.model || "-"
+                }}</span>
             </li>
             <li class="product-meta-wrapper">
-              <span class="product-meta-name">category:</span>
+              <span class="product-meta-name">Category:</span>
               <span class="product-meta-detail">
-                <a href="#">Cake, </a>
-                <a href="#">New</a>
+                <ng-container *ngIf="product?.categories?.length; else noCat">
+                  <a *ngFor="let c of product.categories; let last = last">
+                    {{ c.name }}<span *ngIf="!last">, </span>
+                  </a>
+                </ng-container>
+                <ng-template #noCat>No category</ng-template>
               </span>
             </li>
             <li class="product-meta-wrapper">
-              <span class="product-meta-name">Tags:</span>
-              <span class="product-meta-detail">
-                <a href="#">Cake 1</a>
+              <span class="product-meta-name">Stock Status:</span>
+              <span class="product-meta-detail" [ngClass]="{
+                  'text-success': product?.stock_status === 'in_stock',
+                  'text-danger': product?.stock_status === 'out_of_stock',
+                  'text-warning': product?.stock_status === 'preorder'
+                }">
+                {{
+                product?.stock_status === "in_stock"
+                ? "In Stock"
+                : product?.stock_status === "out_of_stock"
+                ? "Out of Stock"
+                : product?.stock_status === "preorder"
+                ? "Pre-order"
+                : "Unknown"
+                }}
               </span>
             </li>
           </ul>
@@ -205,45 +166,33 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" id="review-tab" data-bs-toggle="tab" href="#connect-4" role="tab"
-              aria-selected="false">Additional information</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#connect-2" role="tab"
-              aria-selected="false">Reviews (1)</a>
+              aria-selected="false">Specification
+            </a>
           </li>
         </ul>
         <div class="tab-content mb-text" id="myTabContent">
           <div class="tab-pane fade show active" id="connect-1" role="tabpanel" aria-labelledby="home-tab">
             <div class="product-desc-row">
               <div class="product-desc-img">
-                <img src="assets/images/product/product-tab.jpg" alt="Image" />
+                <img class="w-100" [src]="product?.photo || 'assets/images/no-image.jpg'" alt="Main Image" />
               </div>
               <div class="product-desc-content">
-                <h5 class="product-desc-title">We Love Cake</h5>
-                <p class="product-desc-text">
-                  Aliquam pulvinar vestibulum blandit. Donec sed nisl libero.
-                  Fusce dignissim luctus sem eu dapibus. Pellentesque vulputate
-                  quam a quam volutpat, sed ullamcorper erat commodo. Vestibulum
-                  sit amet ipsum vitae mauris mattis vulputate lacinia nec
-                  neque. Aenean quis consectetur nisi, ac interdum elit
-                </p>
+                <h5 class="product-desc-title">
+                  Features of {{ product?.name }} Machine
+                </h5>
+
+                <p [innerHTML]="
+                    product?.description || 'No description available.'
+                  "></p>
               </div>
             </div>
           </div>
-          <div class="tab-pane fade" id="connect-4" role="tabpanel" aria-labelledby="review-tab">
+          <div class="tab-pane fade" id="connect-4" role="tabpanel" aria-labelledby="review-tab"
+            style="margin-left: 55px !important">
             <div class="size-tab table-responsive-lg">
-              <table class="table border mb-0">
-                <tbody>
-                  <tr>
-                    <td class="cun-name"><span>Color</span></td>
-                    <td>Blue, Gray, Green, Red, Yellow</td>
-                  </tr>
-                  <tr>
-                    <td class="cun-name"><span>Size</span></td>
-                    <td>Large, Medium, Small</td>
-                  </tr>
-                </tbody>
-              </table>
+              <p [innerHTML]="
+                  product?.specification || 'No specification available.'
+                "></p>
             </div>
           </div>
           <div class="tab-pane fade" id="connect-2" role="tabpanel" aria-labelledby="profile-tab">
@@ -370,10 +319,6 @@
                     <a class="shadow-1 labtn-icon-wishlist" href="#" data-bs-tooltip="tooltip" data-bs-placement="top"
                       title="Add to wishlist" data-bs-toggle="modal" data-bs-target="#modalWishlist"></a>
                   </li>
-                  <li class="product-item__meta-action">
-                    <a class="shadow-1 labtn-icon-compare" href="#" data-bs-tooltip="tooltip" data-bs-placement="top"
-                      title="Add to compare" data-bs-toggle="modal" data-bs-target="#modalCompare"></a>
-                  </li>
                 </ul>
               </div>
               <div class="product-item__content pt-5">
@@ -400,10 +345,6 @@
                   <li class="product-item__meta-action">
                     <a class="shadow-1 labtn-icon-wishlist" href="#" data-bs-tooltip="tooltip" data-bs-placement="top"
                       title="Add to wishlist" data-bs-toggle="modal" data-bs-target="#modalWishlist"></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a class="shadow-1 labtn-icon-compare" href="#" data-bs-tooltip="tooltip" data-bs-placement="top"
-                      title="Add to compare" data-bs-toggle="modal" data-bs-target="#modalCompare"></a>
                   </li>
                 </ul>
               </div>
@@ -432,10 +373,6 @@
                     <a class="shadow-1 labtn-icon-wishlist" href="#" data-bs-tooltip="tooltip" data-bs-placement="top"
                       title="Add to wishlist" data-bs-toggle="modal" data-bs-target="#modalWishlist"></a>
                   </li>
-                  <li class="product-item__meta-action">
-                    <a class="shadow-1 labtn-icon-compare" href="#" data-bs-tooltip="tooltip" data-bs-placement="top"
-                      title="Add to compare" data-bs-toggle="modal" data-bs-target="#modalCompare"></a>
-                  </li>
                 </ul>
               </div>
               <div class="product-item__content pt-5">
@@ -462,10 +399,6 @@
                   <li class="product-item__meta-action">
                     <a class="shadow-1 labtn-icon-wishlist" href="#" data-bs-tooltip="tooltip" data-bs-placement="top"
                       title="Add to wishlist" data-bs-toggle="modal" data-bs-target="#modalWishlist"></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a class="shadow-1 labtn-icon-compare" href="#" data-bs-tooltip="tooltip" data-bs-placement="top"
-                      title="Add to compare" data-bs-toggle="modal" data-bs-target="#modalCompare"></a>
                   </li>
                 </ul>
               </div>
@@ -494,10 +427,6 @@
                     <a class="shadow-1 labtn-icon-wishlist" href="#" data-bs-tooltip="tooltip" data-bs-placement="top"
                       title="Add to wishlist" data-bs-toggle="modal" data-bs-target="#modalWishlist"></a>
                   </li>
-                  <li class="product-item__meta-action">
-                    <a class="shadow-1 labtn-icon-compare" href="#" data-bs-tooltip="tooltip" data-bs-placement="top"
-                      title="Add to compare" data-bs-toggle="modal" data-bs-target="#modalCompare"></a>
-                  </li>
                 </ul>
               </div>
               <div class="product-item__content pt-5">
@@ -524,10 +453,15 @@
 </div>
 <!-- Product Section End -->
 
-<div class="quickview-product-modal modal fade" id="modalCart">
+<!-- <div class="quickview-product-modal modal fade" id="modalCart">
   <div class="modal-dialog modal-dialog-centered mw-100">
     <div class="custom-content">
-      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="modal"
+        aria-label="Close"
+      >
         <i class="lastudioicon lastudioicon-e-remove"></i>
       </button>
       <div class="modal-body">
@@ -540,7 +474,12 @@
 <div class="quickview-product-modal modal fade" id="modalWishlist">
   <div class="modal-dialog modal-dialog-centered mw-100">
     <div class="custom-content">
-      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="modal"
+        aria-label="Close"
+      >
         <i class="lastudioicon lastudioicon-e-remove"></i>
       </button>
       <div class="modal-body">
@@ -548,7 +487,7 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 
 <div class="quickview-product-modal modal fade" id="modalCompare">
   <div class="modal-dialog modal-dialog-centered mw-100">
@@ -562,3 +501,9 @@
     </div>
   </div>
 </div>
+<!-- ✅ Loading Template -->
+<ng-template #loadingTpl>
+  <div class="text-center py-5">
+    <p-progressSpinner></p-progressSpinner>
+  </div>
+</ng-template>

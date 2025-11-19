@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -6,9 +6,14 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+
 import { ProductService } from '../../../../services/product.service';
 import { CategoryService } from '../../../../services/category.service';
 import { Product } from '../../../../entities/product.entity';
+import { EditorModule } from 'primeng/editor';
+
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { InputTextModule } from 'primeng/inputtext';
@@ -16,9 +21,14 @@ import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { Router, RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { EditorModule } from 'primeng/editor';
+
+// 🧩 Thêm Quill
+import { QuillModule } from 'ngx-quill';
+import Quill from 'quill';
+import QuillBetterTable from 'quill-better-table';
+
+// 🔹 Đăng ký module bảng
+Quill.register({ 'modules/better-table': QuillBetterTable }, true);
 
 @Component({
   selector: 'app-product-add',
@@ -26,18 +36,20 @@ import { EditorModule } from 'primeng/editor';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
+    RouterLink,
     ToastModule,
     InputTextModule,
     TextareaModule,
     ButtonModule,
     MultiSelectModule,
     InputNumberModule,
-    RouterLink,
-    FormsModule,
-    EditorModule,
+    QuillModule,
+    EditorModule, // ✅ thêm dòng này
   ],
   templateUrl: './productAdd.component.html',
   styleUrls: ['./productAdd.component.css'],
+
   providers: [MessageService],
 })
 export class ProductAddComponent implements OnInit {
@@ -49,26 +61,29 @@ export class ProductAddComponent implements OnInit {
   categories: any[] = [];
   loading = false;
 
+  existingProducts: Product[] = [];
+
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
     private categoryService: CategoryService,
     private messageService: MessageService,
-    private router: Router // ✅ thêm router
+    private router: Router
   ) {}
 
   async ngOnInit() {
     this.addForm = this.fb.group({
       name: ['', Validators.required],
       model: [''],
-      manufacturer: [''],
+      introduce: [''],
       description: [''],
-      specification: [''],
+      specification: [''], // dùng Quill editor cho trường này
       price: [0, [Validators.min(0)]],
       category_ids: [[]],
+      stock_quantity: [0, [Validators.min(0)]],
     });
 
-    // 🔹 Load danh sách category để chọn
+    // 🔹 Load danh sách category
     try {
       const res: any = await this.categoryService.findAll();
       this.categories = res.map((c: any) => ({
@@ -78,7 +93,45 @@ export class ProductAddComponent implements OnInit {
     } catch (error) {
       console.error('❌ Load categories failed:', error);
     }
+
+    // 🔹 Load tất cả product để kiểm tra trùng name/model
+    try {
+      const productsRes: any = await this.productService.findAll();
+      this.existingProducts = productsRes || [];
+    } catch (error) {
+      console.error('❌ Load products failed (for duplicate check):', error);
+    }
   }
+
+  // ⚙️ Cấu hình Quill (có Table)
+  editorModules = {
+    toolbar: {
+      container: [
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        ['link', 'clean'],
+        ['table'], // ✅ nút Table thật
+      ],
+      handlers: {
+        table: function (this: any) {
+          const tableModule = this.quill.getModule('better-table');
+          if (tableModule) tableModule.insertTable(3, 3);
+        },
+      },
+    },
+    'better-table': {
+      operationMenu: {
+        items: {
+          insertColumnRight: true,
+          insertColumnLeft: true,
+          insertRowUp: true,
+          insertRowDown: true,
+          deleteColumn: true,
+          deleteRow: true,
+        },
+      },
+    },
+  };
 
   /** 📸 Ảnh chính */
   onMainFileSelected(event: any) {
@@ -110,20 +163,62 @@ export class ProductAddComponent implements OnInit {
     if (this.addForm.invalid) return;
     this.loading = true;
 
+    const formValue = this.addForm.value;
+    const name = (formValue.name || '').trim();
+    const model = (formValue.model || '').trim();
+
+    // 🔍 Check trùng name (case-insensitive)
+    const nameExists = this.existingProducts.some(
+      (p) => p.name && p.name.trim().toLowerCase() === name.toLowerCase()
+    );
+
+    if (nameExists) {
+      this.addForm.get('name')?.setErrors({ duplicate: true });
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Duplicate name',
+        detail: 'Product name already exists. Please choose another name.',
+      });
+      this.loading = false;
+      return;
+    }
+
+    // 🔍 Check trùng model (nếu có nhập)
+    if (model) {
+      const modelExists = this.existingProducts.some(
+        (p) => p.model && p.model.trim().toLowerCase() === model.toLowerCase()
+      );
+
+      if (modelExists) {
+        this.addForm.get('model')?.setErrors({ duplicate: true });
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Duplicate model',
+          detail: 'Product model already exists. Please choose another model.',
+        });
+        this.loading = false;
+        return;
+      }
+    }
+
+    const stock_status =
+      formValue.stock_quantity && formValue.stock_quantity > 0
+        ? 'in_stock'
+        : 'out_of_stock';
+
     const product: Product = {
-      ...this.addForm.value,
+      ...formValue,
+      stock_status,
       updated_by: 'admin',
     };
 
     try {
-      // 1️⃣ Tạo product
       const created: any = await this.productService.create(
         product,
         this.mainFile
       );
       const newProductId = created?.data?._id || created?._id;
 
-      // 2️⃣ Upload gallery
       if (newProductId && this.galleryFiles.length > 0) {
         await this.productService.uploadGallery(
           newProductId,
@@ -131,17 +226,14 @@ export class ProductAddComponent implements OnInit {
         );
       }
 
-      // ✅ Thông báo
       this.messageService.add({
         severity: 'success',
         summary: 'Success',
         detail: 'Product created successfully!',
       });
 
-      // ✅ Reset form
       this.onCancel();
 
-      // ✅ Đợi 1.5s rồi chuyển sang product-list
       setTimeout(() => {
         this.router.navigate(['/admin/product-list']);
       }, 1500);
@@ -159,7 +251,10 @@ export class ProductAddComponent implements OnInit {
 
   /** ❌ Reset form */
   onCancel() {
-    this.addForm.reset();
+    this.addForm.reset({
+      price: 0,
+      stock_quantity: 0,
+    });
     this.mainFile = undefined;
     this.galleryFiles = [];
     this.mainPreview = null;

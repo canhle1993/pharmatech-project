@@ -1,11 +1,15 @@
+/* Font Awesome */
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+@import "swiper/swiper-bundle.css";
+
 /* css cho icons */
 @import "primeicons/primeicons.css";
-
 @import "aos/dist/aos.css";
-
 /* css cho quill */
 @import "quill/dist/quill.core.css";
 @import "quill/dist/quill.snow.css";
+@import "quill-better-table/dist/quill-better-table.css";
+
 /* ✅ Success toast màu xanh lá rõ hơn */
 ::ng-deep .p-toast-message-success {
   background-color: #81f4ab !important;

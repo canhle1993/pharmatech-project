@@ -22,6 +22,14 @@ import { EditorModule } from 'primeng/editor';
 import { FormsModule } from '@angular/forms';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
+// 🧩 Thêm Quill
+import { QuillModule } from 'ngx-quill';
+import Quill from 'quill';
+import QuillBetterTable from 'quill-better-table';
+
+// 🔹 Đăng ký module bảng
+Quill.register({ 'modules/better-table': QuillBetterTable }, true);
+
 @Component({
   selector: 'app-product-edit',
   standalone: true,
@@ -39,6 +47,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     InputNumberModule,
     EditorModule,
     ProgressSpinnerModule,
+    QuillModule,
   ],
   providers: [MessageService],
 })
@@ -52,6 +61,8 @@ export class ProductEditComponent implements OnInit {
   galleryPreviews: string[] = [];
   loading = true;
   imageBase = env.imageUrl;
+
+  existingProducts: Product[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -70,11 +81,13 @@ export class ProductEditComponent implements OnInit {
     this.editForm = this.fb.group({
       name: ['', Validators.required],
       model: [''],
-      manufacturer: [''],
+      introduce: [''],
       price: [0, [Validators.min(0)]],
       category_ids: [[]],
       specification: [''],
       description: [''],
+      /** ✅ Thêm field tồn kho (nhập số lượng) */
+      stock_quantity: [0, [Validators.min(0)]],
     });
 
     try {
@@ -85,31 +98,42 @@ export class ProductEditComponent implements OnInit {
         name: c.name,
       }));
 
+      // ============================================================
+      // 2️⃣ LOAD TOÀN BỘ PRODUCT (để kiểm tra trùng name/model)
+      // ============================================================
+      try {
+        const allProducts: any = await this.productService.findAll();
+        this.existingProducts = allProducts || [];
+      } catch (err) {
+        console.error('❌ Load existing products failed:', err);
+      }
+
       // 🔹 Load product
       const res: any = await this.productService.findById(id);
       this.product = res;
 
-      // ✅ Chuẩn hóa category IDs đúng kiểu string
+      // 🔥 Remove current product from duplicate checking list
+      this.existingProducts = this.existingProducts.filter(
+        (p) => (p.id || p._id) !== (this.product.id || this.product._id)
+      );
+
+      // ✅ Chuẩn hóa category IDs
       const selectedCategories = Array.isArray(this.product.category_ids)
         ? this.product.category_ids.map((c: any) =>
             typeof c === 'object' ? c._id || c.id || c : c
           )
         : [];
 
-      // 🧩 Debug log
-      console.log('🟦 categories:', this.categories);
-      console.log('🟨 product.category_ids:', this.product.category_ids);
-      console.log('🟩 selectedCategories:', selectedCategories);
-
       // ✅ Gán form
       this.editForm.patchValue({
         name: this.product.name,
         model: this.product.model,
-        manufacturer: this.product.manufacturer,
+        introduce: this.product.introduce,
         price: this.product.price,
         specification: this.product.specification,
         description: this.product.description,
-        category_ids: selectedCategories, // 🔥 phải là mảng string id
+        category_ids: selectedCategories,
+        stock_quantity: this.product.stock_quantity || 0, // ✅ load sẵn tồn kho
       });
 
       // ✅ Hiển thị ảnh chính
@@ -136,6 +160,35 @@ export class ProductEditComponent implements OnInit {
       this.loading = false;
     }
   }
+  // ⚙️ Cấu hình Quill (có Table)
+  editorModules = {
+    toolbar: {
+      container: [
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        ['link', 'clean'],
+        ['table'], // ✅ nút Table thật
+      ],
+      handlers: {
+        table: function (this: any) {
+          const tableModule = this.quill.getModule('better-table');
+          if (tableModule) tableModule.insertTable(3, 3);
+        },
+      },
+    },
+    'better-table': {
+      operationMenu: {
+        items: {
+          insertColumnRight: true,
+          insertColumnLeft: true,
+          insertRowUp: true,
+          insertRowDown: true,
+          deleteColumn: true,
+          deleteRow: true,
+        },
+      },
+    },
+  };
 
   /** 📸 Ảnh chính */
   onMainFileSelected(event: any) {
@@ -167,10 +220,56 @@ export class ProductEditComponent implements OnInit {
     if (this.editForm.invalid) return;
     this.loading = true;
 
+    // ✅ Tự tính trạng thái tồn kho (frontend hỗ trợ logic)
+    const formValue = this.editForm.value;
+    const name = (formValue.name || '').trim();
+    const model = (formValue.model || '').trim();
+
+    // ⭐ Kiểm tra trùng name
+    const nameExists = this.existingProducts.some(
+      (p) => p.name && p.name.trim().toLowerCase() === name.toLowerCase()
+    );
+
+    if (nameExists) {
+      this.editForm.get('name')?.setErrors({ duplicate: true });
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Duplicate name',
+        detail: 'Product name already exists. Please choose another name.',
+      });
+      this.loading = false;
+      return;
+    }
+
+    // ⭐ Kiểm tra trùng model (nếu có nhập)
+    if (model) {
+      const modelExists = this.existingProducts.some(
+        (p) => p.model && p.model.trim().toLowerCase() === model.toLowerCase()
+      );
+
+      if (modelExists) {
+        this.editForm.get('model')?.setErrors({ duplicate: true });
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Duplicate model',
+          detail: 'Product model already exists. Please choose another model.',
+        });
+        this.loading = false;
+        return;
+      }
+    }
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+    const stock_status =
+      formValue.stock_quantity && formValue.stock_quantity > 0
+        ? 'in_stock'
+        : 'out_of_stock';
+
     const productData: Product = {
-      ...this.editForm.value,
+      ...formValue,
       id: this.product.id || this.product._id,
-      updated_by: 'admin',
+      stock_status, // tự động tính
+      updated_by: currentUser?.name || 'admin',
     };
 
     try {

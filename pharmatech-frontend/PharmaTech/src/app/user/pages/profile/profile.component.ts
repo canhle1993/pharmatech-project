@@ -8,12 +8,12 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { MessageService } from 'primeng/api';
 import { AccountService } from '../../../services/account.service';
 import { ProfileService } from '../../../services/profile.service';
-import { CareerService } from '../../../services/career.service'; // ⭐ Thêm dòng này
 import { Account } from '../../../entities/account.entity';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 import { DatePickerModule } from 'primeng/datepicker';
 import { SavedJob } from '../../../entities/saved-job.entity';
-import { Router, RouterModule } from '@angular/router';
+import { CareerService } from '../../../services/career.service';
 
 @Component({
   selector: 'app-profile',
@@ -38,6 +38,7 @@ export class ProfileComponent implements OnInit {
   isEditing = false;
   selectedPhoto?: File;
   selectedResume?: File;
+  showOrderSuccess = false;
 
   /** Tabs */
   activeTab: 'info' | 'saved' = 'info';
@@ -45,9 +46,9 @@ export class ProfileComponent implements OnInit {
 
   /** Ngày sinh min/max */
   minDate = new Date(1950, 0, 1);
-  maxDate = new Date();
+  maxDate = new Date(); // hôm nay
 
-  /** Dropdown data */
+  /** =================== Dropdown data =================== */
   genderList = ['Any', 'Male', 'Female', 'Other'];
   workTypeList = ['Full-time', 'Part-time', 'Remote', 'Hybrid'];
   educationList = ['High School', 'College', 'Bachelor', 'Master', 'PhD'];
@@ -107,7 +108,7 @@ export class ProfileComponent implements OnInit {
     { name: 'Other' },
   ];
 
-  /** Filter options */
+  /** =================== Filtered options =================== */
   filteredGenders: string[] = [];
   filteredWorkTypes: string[] = [];
   filteredEducationLevels: string[] = [];
@@ -116,28 +117,50 @@ export class ProfileComponent implements OnInit {
   constructor(
     private accountService: AccountService,
     private profileService: ProfileService,
-    private careerService: CareerService, // ⭐ Dùng CareerService
     private messageService: MessageService,
-    private router: Router
+    private route: ActivatedRoute, // 👈 thêm
+    private router: Router,
+    private careerService: CareerService // ⭐ Dùng CareerService
   ) {}
 
-  // ======================================================
-  //  ⭐ INIT PROFILE + LOAD SAVED JOBS
-  // ======================================================
+  /** =================== Lifecycle =================== */
   async ngOnInit() {
-    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-    const id = currentUser?.id || currentUser?._id;
+    const id = localStorage.getItem('userId');
 
-    if (!id) {
-      console.error('❌ No user ID found in localStorage');
+    console.log('🔍 Loaded profile userId:', id);
+
+    if (!id || id.length !== 24) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Invalid User',
+        detail: 'Cannot load user profile.',
+      });
       return;
     }
+
+    // 👇 ĐỌC query param orderSuccess
+    this.route.queryParamMap.subscribe((params) => {
+      const status = params.get('orderSuccess');
+      if (status === '1') {
+        this.showOrderSuccess = true;
+
+        // Optional: xoá param khỏi URL cho sạch
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { orderSuccess: null },
+          queryParamsHandling: 'merge',
+          replaceUrl: true,
+        });
+
+        // Optional: tự tắt sau 5 giây
+        setTimeout(() => (this.showOrderSuccess = false), 5000);
+      }
+    });
 
     this.loading = true;
 
     try {
       const result = await this.accountService.findById(id);
-
       this.account = this.profileService.normalizeAccountData(result, {
         fieldList: this.fieldList,
         skillsList: this.skillsList,
@@ -197,19 +220,19 @@ export class ProfileComponent implements OnInit {
     this.selectedResume = file;
   }
 
-  // Save profile
   async saveChanges() {
     if (!this.account) return;
 
     this.loading = true;
-
     try {
+      // Upload file
       this.account = await this.profileService.uploadFiles(
         this.account,
         this.selectedPhoto,
         this.selectedResume
       );
 
+      // Validate
       const errorMsg = this.profileService.validateProfile(this.account);
       if (errorMsg) {
         this.messageService.add({
@@ -220,12 +243,13 @@ export class ProfileComponent implements OnInit {
         return;
       }
 
+      // Build payload
       const payload = this.profileService.buildPayload(this.account);
-
       const updated = await this.profileService.saveProfile(
         this.account,
         payload
       );
+      console.log('📦 Payload gửi lên BE:', payload);
 
       if (updated) {
         const freshAccount = await this.accountService.findById(
@@ -261,9 +285,7 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  // ======================================================
-  // FILTERS
-  // ======================================================
+  /** =================== Filters for AutoComplete =================== */
   filterGender(event: any) {
     const q = event.query.toLowerCase();
     this.filteredGenders = this.genderList.filter((g) =>
@@ -297,7 +319,6 @@ export class ProfileComponent implements OnInit {
 
     const today = new Date();
     let age = today.getFullYear() - date.getFullYear();
-
     const monthDiff = today.getMonth() - date.getMonth();
     if (
       monthDiff < 0 ||
@@ -306,6 +327,176 @@ export class ProfileComponent implements OnInit {
       age--;
     }
 
-    (this.account as any).age = age;
+    (this.account as any).age = age; // ✅ chỉ gán để hiển thị FE
+  }
+
+  /* ===========================
+    🚀 AVATAR GENERATOR (HF FLUX)
+   =========================== */
+
+  // Hiển thị loading carousel
+  isGenerating = false;
+  carouselImages = [
+    'https://picsum.photos/id/1015/80/80',
+    'https://picsum.photos/id/1025/80/80',
+    'https://picsum.photos/id/1035/80/80',
+    'https://picsum.photos/id/1041/80/80',
+    'https://picsum.photos/id/1050/80/80',
+  ];
+  carouselIndex = 0;
+  carouselTimer: any = null;
+
+  // Ảnh tạo xong
+  generatedAvatar: string | null = null;
+
+  // Prompt từ textarea
+  avatarPrompt: string = '';
+
+  // HuggingFace Token của anh
+  HF_TOKEN = ''; // đổi lại nếu cần
+
+  // ===============================
+  // 🎡 Start Carousel
+  // ===============================
+  startCarousel() {
+    this.carouselIndex = 0;
+    if (this.carouselTimer) clearInterval(this.carouselTimer);
+
+    this.carouselTimer = setInterval(() => {
+      this.carouselIndex =
+        (this.carouselIndex + 1) % this.carouselImages.length;
+    }, 900);
+  }
+
+  // ===============================
+  // 🛑 Stop Carousel
+  // ===============================
+  stopCarousel() {
+    if (this.carouselTimer) clearInterval(this.carouselTimer);
+    this.carouselTimer = null;
+    this.isGenerating = false;
+  }
+
+  // ===============================
+  // 📌 CALL HF API — generate avatar
+  // ===============================
+  async generateAvatar() {
+    if (!this.avatarPrompt.trim()) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Missing prompt',
+        detail: 'Please enter a short description for your avatar.',
+      });
+      return;
+    }
+
+    this.isGenerating = true;
+    this.generatedAvatar = null;
+    this.startCarousel();
+
+    try {
+      const response = await fetch(
+        'https://router.huggingface.co/nebius/v1/images/generations',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${this.HF_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'black-forest-labs/flux-dev',
+            prompt: this.avatarPrompt,
+            response_format: 'b64_json',
+          }),
+        }
+      );
+
+      const result = await response.json();
+      const b64 = result?.b64_json || result?.data?.[0]?.b64_json;
+
+      if (!b64) throw new Error('No base64 returned from model');
+
+      this.generatedAvatar = 'data:image/png;base64,' + b64;
+
+      // ✔ HIỂN THỊ LÊN PROFILE CHO USER XEM TRƯỚC
+      if (this.account) {
+        this.account.photo = this.generatedAvatar;
+      }
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Avatar generated',
+        detail: 'Preview updated — click Save to upload.',
+      });
+    } catch (err) {
+      console.error(err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Generation failed',
+        detail: 'Cannot generate avatar.',
+      });
+    } finally {
+      this.stopCarousel();
+    }
+  }
+
+  /* ===========================
+    💾 SAVE GENERATED AVATAR
+   =========================== */
+
+  async saveGeneratedAvatar() {
+    if (!this.generatedAvatar || !this.account) {
+      return;
+    }
+
+    try {
+      this.loading = true;
+
+      // 🔥 BƯỚC 1 — Convert Base64 → File
+      const file = await this.base64ToFile(
+        this.generatedAvatar,
+        'avatar_ai.png'
+      );
+
+      // 🔥 BƯỚC 2 — Gọi service upload như upload avatar thường
+      const updated = await this.profileService.uploadFiles(
+        this.account,
+        file,
+        null
+      );
+
+      // 🔥 BƯỚC 3 — Lưu vào DB
+      const payload = this.profileService.buildPayload(updated);
+      const saved = await this.profileService.saveProfile(updated, payload);
+
+      if (saved) {
+        this.account.photo = saved.photo;
+        localStorage.setItem('currentUser', JSON.stringify(saved));
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Avatar Saved',
+          detail: 'Your AI-generated avatar has been updated successfully!',
+        });
+
+        this.generatedAvatar = null; // Ẩn nút Save
+      }
+    } catch (err) {
+      console.error('❌ Save avatar error:', err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to save avatar.',
+      });
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  /* Utility: Convert base64 → File */
+  base64ToFile(base64: string, filename: string): Promise<File> {
+    return fetch(base64)
+      .then((res) => res.blob())
+      .then((blob) => new File([blob], filename, { type: blob.type }));
   }
 }

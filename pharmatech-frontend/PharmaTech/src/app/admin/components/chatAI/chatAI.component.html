@@ -1,0 +1,27 @@
+<!-- Nút mở AI -->
+<button class="ai-btn" (click)="toggleChat()">🤖 AI</button>
+
+<!-- Cửa sổ chat -->
+<div class="chat-window" *ngIf="showChat">
+  <div class="chat-header">
+    <span>PharmaTech AI Assistant</span>
+    <button class="close-btn" (click)="toggleChat()">×</button>
+  </div>
+
+  <div class="chat-body">
+    <div *ngFor="let msg of messages">
+      <div class="msg user" *ngIf="msg.from === 'user'">{{ msg.text }}</div>
+      <div class="msg bot" *ngIf="msg.from === 'bot'">{{ msg.text }}</div>
+    </div>
+  </div>
+
+  <div class="chat-input">
+    <input
+      type="text"
+      placeholder="Nhập câu hỏi..."
+      [(ngModel)]="userMessage"
+      (keyup.enter)="sendMessage()"
+    />
+    <button (click)="sendMessage()">Send</button>
+  </div>
+</div>

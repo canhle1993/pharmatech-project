@@ -7,7 +7,9 @@ import { RouterLink, RouterOutlet } from '@angular/router';
   imports: [CommonModule, RouterOutlet],
 })
 export class AuthComponent implements OnInit, AfterViewInit {
-  constructor(private renderer: Renderer2) {}
+  constructor(
+    private renderer: Renderer2
+  ) {}
   ngOnInit() {}
   ngAfterViewInit() {
     // --- JS ---
@@ -21,5 +23,6 @@ export class AuthComponent implements OnInit, AfterViewInit {
       script.type = 'text/javascript';
       this.renderer.appendChild(document.body, script);
     });
+
   }
 }

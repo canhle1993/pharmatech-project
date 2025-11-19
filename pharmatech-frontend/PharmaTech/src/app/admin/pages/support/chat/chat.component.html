@@ -1,53 +1,76 @@
-<div class="admin-chat">
-  <!-- Sidebar: danh sách user -->
-  <aside class="sidebar">
-    <h3>Người dùng</h3>
+<div class="container">
+  <div class="admin-chat">
+    <aside class="sidebar">
+      <h3>Người dùng</h3>
 
-    <div class="search">
-      <input type="text" [(ngModel)]="q" placeholder="Tìm tên, username, email, id..." (input)="onSearch()" />
-    </div>
-
-    <ul class="user-list">
-      <li *ngFor="let u of filtered" (click)="openThread(u)" [class.active]="currentUserId === displayId(u)"
-        class="user-item">
-        <div class="line1">
-          <span class="name">{{ displayName(u) }}</span>
-          <span class="badge" [class.on]="u.is_active">●</span>
-        </div>
-        <div class="line2 id">{{ displayId(u) }}</div>
-      </li>
-      <li *ngIf="!filtered?.length" class="empty">Không có người dùng</li>
-    </ul>
-  </aside>
-
-  <!-- Khung chat -->
-  <section class="chat-panel">
-    <header class="chat-header">
-      <ng-container *ngIf="currentUser; else pickUser">
-        Đang chat với: <strong>{{ displayName(currentUser) }}</strong>
-        <span class="id">({{ currentUserId }})</span>
-      </ng-container>
-      <ng-template #pickUser>Chọn một user ở danh sách bên trái để bắt đầu</ng-template>
-    </header>
-
-    <div class="chat-box" #chatBoxRef>
-      <div *ngFor="let m of history" [ngClass]="m.from === 'admin' ? 'msg admin' : 'msg user'">
-        <div class="bubble">
-          <span class="from">{{ m.from === 'admin' ? 'Admin' : 'User' }}</span>
-          <span class="text">{{ m.text }}</span>
-          <span class="time" *ngIf="m.createdAt">{{ m.createdAt | date:'short' }}</span>
-        </div>
+      <div class="search">
+        <input type="text" [(ngModel)]="q" placeholder="Tìm tên, username, email, id..." (input)="onSearch()" />
       </div>
 
-      <div *ngIf="currentUserId && !history.length" class="empty">
-        Chưa có tin nhắn nào. Hãy gửi lời chào trước nhé.
-      </div>
-    </div>
+      <ul class="user-list" style="
+          overflow-y: auto;
+          height: calc(100vh - 220px);
+          padding-right: 4px;
+        ">
+        @for (t of filtered; track t.userId) {
+        <li (click)="openThreadByUserId(t.userId)" [class.active]="currentUserId === t.userId"
+          [class.unread]="(t.unreadCount || 0) > 0" class="user-item">
+          <div class="line1">
+            <span class="name">{{ displayNameFromInbox(t) }}</span>
+            <span class="line1-right">
+              @if ((t.unreadCount || 0) > 0) {
+              <span class="unread-count">{{ t.unreadCount }}</span>
+              }
+              <span class="badge" [class.on]="t.userSnapshot?.is_active">●</span>
+            </span>
+          </div>
+          <div class="line2 id">
+            {{ t.userSnapshot?.email || t.userSnapshot?.username || t.userId }}
+          </div>
+        </li>
+        } @if (!filtered?.length) {
+        <li class="empty">Không có cuộc trò chuyện</li>
+        }
+      </ul>
+    </aside>
 
-    <form class="chat-input" (ngSubmit)="send()">
-      <input type="text" [(ngModel)]="msg" name="message" placeholder="Nhập tin nhắn..." autocomplete="off"
-        [disabled]="!currentUserId" required />
-      <button type="submit" pButton [disabled]="!currentUserId || !msg.trim()">Gửi</button>
-    </form>
-  </section>
+    <section class="chat-panel">
+      <header class="chat-header">
+        @if (currentUserId) { Đang chat với:
+        <strong>{{ displayNameFromUserId(currentUserId) }}</strong>
+        <!-- <span class="id">({{ currentUserId }})</span> -->
+        } @else {
+        <ng-container>Chọn một cuộc trò chuyện ở danh sách bên trái</ng-container>
+        }
+      </header>
+
+      <div class="chat-box" #chatBoxRef style="overflow-y: auto; height: calc(93vh - 260px); padding-right: 4px">
+        @if (!currentUserId) {
+        <div class="empty">Chưa chọn cuộc trò chuyện.</div>
+        } @else { @for (m of history; track trackKey(m, $index)) {
+        <div [class.msg]="true" [class.admin]="isAdminMsg(m)" [class.user]="!isAdminMsg(m)">
+          <div class="bubble">
+            <span class="from">{{ isAdminMsg(m) ? "Admin" : "" }}</span>
+            <span class="text">{{ m.text }}</span>
+            @if (m.createdAt) {
+            <span class="time">{{ m.createdAt | date : "short" }}</span>
+            }
+          </div>
+        </div>
+        } @if (history?.length === 0) {
+        <div class="empty">
+          Chưa có tin nhắn nào. Hãy gửi lời chào trước nhé.
+        </div>
+        } }
+      </div>
+
+      <form class="chat-input" (ngSubmit)="send()">
+        <input type="text" [(ngModel)]="msg" name="message" placeholder="Nhập tin nhắn..." autocomplete="off"
+          [disabled]="!currentUserId" required />
+        <button type="submit" pButton [disabled]="!currentUserId || !msg?.trim()">
+          Gửi
+        </button>
+      </form>
+    </section>
+  </div>
 </div>

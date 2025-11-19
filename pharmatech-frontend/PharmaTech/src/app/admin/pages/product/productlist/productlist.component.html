@@ -8,8 +8,9 @@
   <p-progressSpinner *ngIf="loading" styleClass="loading-spinner"></p-progressSpinner>
 
   <div class="card" *ngIf="!loading">
-    <p-table #dt [value]="filteredProducts" [globalFilterFields]="['name']" dataKey="id" [rows]="4" [paginator]="true"
-      [rowsPerPageOptions]="[4, 10, 20]" showGridlines [responsiveLayout]="'scroll'" class="product-table">
+    <p-table #dt [value]="filteredProducts" [globalFilterFields]="['name', 'model']" dataKey="id" [rows]="4"
+      [paginator]="true" [rowsPerPageOptions]="[4, 10, 20]" showGridlines [responsiveLayout]="'scroll'"
+      class="product-table">
       <ng-template pTemplate="caption">
         <div class="p-datatable-caption">
           <div class="toolbar-actions">
@@ -26,7 +27,7 @@
           <div class="filter-group">
             <p-iconfield iconPosition="left" class="search-field">
               <p-inputicon><i class="pi pi-search"></i></p-inputicon>
-              <input pInputText type="text" (input)="onGlobalFilter($event, dt)" placeholder="Search by name" />
+              <input pInputText type="text" (input)="onGlobalFilter($event, dt)" placeholder="Search by name, model" />
             </p-iconfield>
           </div>
         </div>
@@ -39,9 +40,12 @@
           <th field="model">Model</th>
           <th field="categories">Category</th>
           <!-- ✅ thêm field -->
-          <th field="manufacturer">Manufacturer</th>
-          <th field="updated_by">Updated By</th>
-          <th field="updated_at">Updated At</th>
+          <th field="price" pSortableColumn="price">
+            Price<p-sortIcon field="price"></p-sortIcon>
+          </th>
+          <th field="stock_quantity" pSortableColumn="stock_quantity">
+            Quantity<p-sortIcon field="stock_quantity"></p-sortIcon>
+          </th>
           <th>Action</th>
         </tr>
       </ng-template>
@@ -58,15 +62,16 @@
           <td>{{ product.model }}</td>
           <td>
             <ng-container *ngIf="product.categories?.length > 0; else noCat">
-              <span *ngFor="let c of product.categories; let last = last">
-                {{ c.name }}<span *ngIf="!last">, </span>
+              <span *ngFor="let c of product.categories" class="cat-badge">
+                {{ c.name }}
               </span>
             </ng-container>
+
             <ng-template #noCat>-</ng-template>
           </td>
-          <td>{{ product.manufacturer || "-" }}</td>
-          <td>{{ product.updated_by || "-" }}</td>
-          <td>{{ product.updated_at || "-" }}</td>
+
+          <td>{{ product.price | currency : "USD" }}</td>
+          <td>{{ product.stock_quantity }}</td>
           <td>
             <button pButton icon="pi pi-search" class="p-button-text p-button-info" title="View"
               [routerLink]="['/admin/product-details', product.id]"></button>

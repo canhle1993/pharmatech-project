@@ -24,7 +24,7 @@ export class ProductDTO {
   price?: number;
 
   @Expose()
-  manufacturer?: string;
+  introduce?: string;
 
   @Transform(({ obj }) => (obj?.photo ? `${getImageUrl()}${obj.photo}` : null))
   @Expose()
@@ -37,6 +37,16 @@ export class ProductDTO {
   /** ✅ Nếu service populate categories ra luôn (dạng object) */
   @Expose()
   categories?: any[];
+
+  /** 🏷️ Quản lý tồn kho */
+  @Transform(({ obj }) =>
+    obj?.stock_quantity ? Number(obj.stock_quantity) : 0,
+  )
+  @Expose({ name: 'stock_quantity' })
+  stock_quantity?: number;
+
+  @Expose({ name: 'stock_status' })
+  stock_status?: string;
 
   @Expose({ name: 'is_active' })
   is_active: boolean;

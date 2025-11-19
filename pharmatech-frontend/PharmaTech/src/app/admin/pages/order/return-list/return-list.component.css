@@ -1,0 +1,115 @@
+.return-container {
+  padding: 1rem 1.5rem;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f7f8fa;
+  min-height: 100vh;
+}
+
+.count-badge {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.form-group {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group select,
+.form-group textarea {
+  padding: 8px;
+  font-size: 14px;
+}
+.order-items-select {
+  width: 100%;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.order-items-select option {
+  padding: 6px;
+  white-space: normal !important;
+  line-height: 18px;
+}
+.damage-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.damage-img {
+  border-radius: 6px;
+  object-fit: cover;
+  width: 60px;
+  height: 60px;
+  border: 1px solid #ddd;
+  transition: transform 0.2s ease;
+}
+
+.damage-img:hover {
+  transform: scale(1.1);
+}
+/* ========== CENTER ALL TABLE CELLS ========== */
+
+:host ::ng-deep .p-datatable td,
+:host ::ng-deep .p-datatable th {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+/* Căn giữa nhóm hình damage */
+.damage-wrap {
+  justify-content: center;
+  align-items: center;
+}
+
+.order-table ::ng-deep .p-datatable-thead > tr > th {
+  background: #3b82f6;
+  color: #fff;
+  text-align: center;
+  font-weight: 600;
+  padding: 0.75rem;
+}
+
+.order-table ::ng-deep .p-datatable-tbody > tr > td {
+  text-align: center;
+  padding: 0.75rem;
+  vertical-align: middle;
+  color: #444;
+}
+.order-table ::ng-deep .p-datatable-tbody > tr:hover {
+  background-color: #eef2ff;
+  transition: background 0.2s ease-in-out;
+}
+
+.order-table {
+  overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+  .order-container {
+    padding: 1rem;
+  }
+  .page-title {
+    font-size: 1.4rem;
+  }
+}
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.card ::ng-deep .p-datatable-caption {
+  margin-bottom: 1rem;
+}

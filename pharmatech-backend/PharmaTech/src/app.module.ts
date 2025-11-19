@@ -16,11 +16,24 @@ import { AboutModule } from './about/about.module';
 import { ContactModule } from './contact/contact.module';
 import { HotlineModule } from './hotline/hotline.module';
 import { ChatModule } from './chat/chat.module';
-import { ApplicationModule } from './application/application.module';
-import { AuthModule } from './auth/auth.module';
-import { CareerAnalyticsModule } from './career-analytics/analytics.module';
-import { SaveJobModule } from './savejob/savejob.module';
 
+import { HomeCategoryModule } from './settingHomeCategory/homeCategory.module';
+import { CartModule } from './cart/cart.module';
+import { WishlistModule } from './wishlist/wishlist.module';
+import { OrderDetailsModule } from './order-details/order-details.module';
+import { OrderModule } from './order/order.module';
+import { DepositSettingModule } from './deposit-setting/deposit-setting.module';
+import { StripeModule } from './stripe/stripe.module';
+import { AiModule } from './ai/ai.module';
+import { AuthModule } from './auth/auth.module';
+import { ApplicationModule } from './application/application.module';
+import { OcrModule } from './ocr/ocr.module';
+import { AnalyticsModule } from './analytics/analytics.module';
+import { ReturnRequestModule } from './return-request/return-request.module';
+import { QuoteModule } from './quote/quote.module';
+import { BannerModule } from './banner/banner.module';
+import { SaveJobModule } from './savejob/savejob.module';
+import { CareerAnalyticsModule } from './career-analytics/analytics.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -71,6 +84,21 @@ import { SaveJobModule } from './savejob/savejob.module';
     ChatModule,
     ApplicationModule,
     AuthModule,
+    HomeCategoryModule,
+    CartModule,
+    WishlistModule,
+    DepositSettingModule,
+    OrderModule,
+    OrderDetailsModule,
+    StripeModule,
+    AiModule,
+    ApplicationModule,
+    AuthModule,
+    OcrModule,
+    AnalyticsModule,
+    ReturnRequestModule,
+    QuoteModule,
+    BannerModule,
     CareerAnalyticsModule,
     SaveJobModule,
   ],

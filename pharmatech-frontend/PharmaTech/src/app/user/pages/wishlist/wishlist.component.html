@@ -1,0 +1,180 @@
+<!-- Breadcrumb Section Start -->
+<div class="breadcrumb" data-bg-image="assets/images/bg/wp2264290.jpg">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="breadcrumb_content">
+          <h1 class="breadcrumb_title">Wishlist</h1>
+          <ul class="breadcrumb_list">
+            <li><a href="index.html">Home</a></li>
+            <li>Wishlist</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Breadcrumb Section End -->
+<p-toast position="top-left"></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<!-- Wishlist Section Start -->
+<div class="section section-padding-03">
+  <div class="container">
+    <div class="row mb-n30 cart-row-gap gx-xxl-5">
+      <!-- LEFT: WISHLIST TABLE -->
+      <div class="col-lg-8 col-12 mb-30">
+        <!-- ❤️ Empty Wishlist -->
+        <div
+          *ngIf="!loading && wishlists.length === 0"
+          class="text-center py-5 border rounded-3 bg-light"
+        >
+          <h5 class="mb-3">❤️ Your wishlist is empty</h5>
+          <button
+            routerLink="/shop"
+            class="btn btn-outline-dark btn-primary-hover rounded-0"
+          >
+            Continue Shopping
+          </button>
+        </div>
+
+        <!-- ⏳ Loading Spinner -->
+        <div class="text-center py-5" *ngIf="loading">
+          <div class="spinner-border text-dark" role="status"></div>
+          <p class="mt-2">Loading wishlist...</p>
+        </div>
+
+        <!-- ❤️ Wishlist Table -->
+        <div
+          class="table-responsive"
+          *ngIf="!loading && wishlists.length > 0"
+          style="width: 110%"
+        >
+          <table class="wishlist-table table text-center align-middle mb-6">
+            <thead>
+              <tr>
+                <th></th>
+                <th class="text-start">Product</th>
+                <th class="price">Price</th>
+                <th class="status">Status</th>
+              </tr>
+            </thead>
+
+            <tbody class="border-top-0">
+              <tr *ngFor="let w of wishlists">
+                <!-- Remove -->
+                <td class="wishlist-remove">
+                  <button
+                    class="remove-btn"
+                    (click)="removeItem(w)"
+                    [disabled]="loading"
+                    title="Remove item"
+                  >
+                    <i class="lastudioicon lastudioicon-e-remove"></i>
+                  </button>
+                </td>
+
+                <!-- Product info -->
+                <td class="text-start align-middle">
+                  <div class="d-flex align-items-center gap-3">
+                    <img
+                      [src]="w.productPhoto"
+                      [alt]="w.productName"
+                      width="100"
+                      height="100"
+                      class="rounded shadow-sm"
+                    />
+                    <div>
+                      <strong class="aaa">{{ w.productName }}</strong>
+                      <div class="small text-muted" *ngIf="w.productModel">
+                        Model: {{ w.productModel }}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Price -->
+                <td class="align-middle text-primary fw-semibold">
+                  {{ w.productPrice }}
+                </td>
+
+                <!-- Stock Status -->
+                <td class="align-middle">
+                  <span
+                    class="badge text-uppercase"
+                    [ngClass]="w.stockStatusColor"
+                  >
+                    {{ w.stockStatusLabel }}
+                  </span>
+                </td>
+                <td class="wishlist-cart">
+                  <button
+                    class="btn btn-dark btn-hover-primary rounded-0"
+                    (click)="addToCartFromWishlist(w)"
+                    [disabled]="w.loading || loading"
+                  >
+                    <i class="pi pi-shopping-cart me-1"></i> Add to Cart
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Action Buttons -->
+        <div
+          class="row justify-content-between gap-3 mt-4"
+          *ngIf="!loading && wishlists.length > 0"
+        >
+          <div class="col-auto">
+            <button
+              [routerLink]="['/shop']"
+              class="btn btn-outline-dark btn-primary-hover rounded-0"
+            >
+              Continue Shopping
+            </button>
+          </div>
+
+          <div class="col-auto d-flex flex-wrap gap-3">
+            <button
+              class="btn btn-outline-dark btn-primary-hover rounded-0"
+              (click)="clearWishlist()"
+              [disabled]="loading"
+            >
+              Clear Wishlist
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: SIMPLE SUMMARY -->
+      <div
+        class="col-lg-4 col-12 mb-30"
+        *ngIf="!loading && wishlists.length > 0"
+      >
+        <div
+          class="wishlist-summary shadow-sm rounded-3 p-4 bg-white"
+          style="margin-left: 20%"
+        >
+          <h4 class="title mb-3">Your Wishlist</h4>
+          <p class="mb-2">
+            Total items:
+            <strong>{{ wishlists.length }}</strong>
+          </p>
+          <p class="small text-muted">
+            Manage your favorite products for later purchase.
+          </p>
+
+          <button
+            class="btn btn-dark btn-hover-primary rounded-0 w-100 mt-3"
+            [routerLink]="['/shop']"
+            [disabled]="loading"
+          >
+            Continue Shopping
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Wishlist Section End -->

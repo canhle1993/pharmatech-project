@@ -42,11 +42,11 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private messageService: MessageService
   ) {
-    this.loginForm = this.fb.group({
-      username: ['', [Validators.required]], // email hoặc username
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      remember: [false],
-    });
+    // this.loginForm = this.fb.group({
+    //   username: ['', [Validators.required]], // email hoặc username
+    //   password: ['', [Validators.required, Validators.minLength(6)]],
+    //   remember: [false],
+    // });
   }
   ngOnInit(): void {
     this.autoReloadOnce();
@@ -132,8 +132,8 @@ export class LoginComponent implements OnInit {
   }
 
   // ===== Submit =====
+
   async login() {
-    // chạm hết field để hiện lỗi
     this.touchField('username');
     this.touchField('password');
 
@@ -141,7 +141,7 @@ export class LoginComponent implements OnInit {
       this.messageService.add({
         severity: 'warn',
         summary: 'Validation',
-        detail: 'Please fill in all required fields correctly.',
+        detail: 'Please fill in all required fields.',
       });
       return;
     }
@@ -151,42 +151,69 @@ export class LoginComponent implements OnInit {
     try {
       const { username, password, remember } = this.loginForm.value;
 
-      const res: any = await this.accountService.login(username, password);
+      const usernameOrEmail = (username || '').trim().toLowerCase();
 
-      if (res?.access_token) {
-        const role = res.account.roles?.[0]?.toLowerCase() || 'user';
-
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Login successful',
-          detail: `Welcome, ${res.account.name}`,
-        });
-
-        this.success = true;
-
-        // ✅ Ghi nhớ login nếu cần
-        if (remember) {
-          localStorage.setItem('remember_me', '1');
-          localStorage.setItem('remember_user', username);
-        } else {
-          localStorage.removeItem('remember_me');
-          localStorage.removeItem('remember_user');
-        }
-
-        setTimeout(() => {
-          if (role === 'admin' || role === 'superadmin') {
-            this.router.navigate(['/admin']);
-          } else {
-            this.router.navigate(['/home']);
-          }
-        }, 800);
-      } else {
+      // 1️⃣ Gọi login -> lấy token + rawAccount
+      const res: any = await this.accountService.login(
+        usernameOrEmail,
+        password
+      );
+      if (!res?.access_token) {
         this.messageService.add({
           severity: 'error',
           summary: 'Login Error',
           detail: res?.msg || 'Invalid credentials',
         });
+        return;
       }
+
+      const raw = res.account;
+
+      // 2️⃣ Chuẩn hóa userId từ raw
+      const userId = raw._id || raw.id;
+      if (!userId) throw new Error('❌ Login error: account missing _id');
+
+      // 3️⃣ Gọi lại findById để lấy DTO có photo đúng URL
+      const dto = await this.accountService.findById(userId);
+
+      // 4️⃣ Chuẩn hóa DTO → đảm bảo có id và _id để FE nào cũng dùng được
+      const normalized = {
+        ...dto,
+        id: dto.id || userId,
+        _id: dto.id || userId,
+      };
+
+      // 5️⃣ Lưu vào localStorage
+      localStorage.setItem('currentUser', JSON.stringify(normalized));
+      localStorage.setItem('userId', normalized.id);
+      localStorage.setItem('access_token', res.access_token);
+
+      // 6️⃣ Remember me
+      if (remember) {
+        localStorage.setItem('remember_me', '1');
+        localStorage.setItem('remember_user', username);
+      } else {
+        localStorage.removeItem('remember_me');
+        localStorage.removeItem('remember_user');
+      }
+
+      // 7️⃣ Toast
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Login successful',
+        detail: `Welcome, ${normalized.name}`,
+      });
+
+      // 8️⃣ Điều hướng theo role
+      const role = normalized.roles?.[0]?.toLowerCase() || 'user';
+
+      setTimeout(() => {
+        if (role === 'admin' || role === 'superadmin') {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/home']);
+        }
+      }, 800);
     } catch (err: any) {
       const detailMsg =
         err?.error?.message ||

@@ -10,7 +10,9 @@ import { Product } from './product.decorator';
 import { ProductDTO } from './product.dto';
 import { plainToInstance } from 'class-transformer';
 import { ProductImage } from 'src/product-image/product-image.decorator';
-import { ProductCategoryService } from 'src/product-category/product-category.service'; // ✅ Thêm import
+import { ProductCategoryService } from 'src/product-category/product-category.service';
+import { OrderDetails } from 'src/order-details/order-details.decorator';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class ProductService {
@@ -19,79 +21,138 @@ export class ProductService {
     private _productModel: Model<Product>,
     @InjectModel(ProductImage.name)
     private _productImageModel: Model<ProductImage>,
-
-    /** ✅ Inject thêm ProductCategoryService để xử lý liên kết */
     private readonly productCategoryService: ProductCategoryService,
+    @InjectModel(OrderDetails.name)
+    private orderDetailsModel: Model<OrderDetails>,
   ) {}
 
-  /** 🔹 Lấy 1 sản phẩm (kèm ảnh phụ + categories chuẩn ID thật) */
-  async findById(id: string): Promise<ProductDTO | null> {
-    // ✅ Lấy product gốc + populate category_ids (đúng bảng Category)
-    const product = await this._productModel
-      .findById(id)
-      .populate({
-        path: 'category_ids',
-        model: 'Category',
-        select: '_id name',
-      })
-      .exec();
+  /** 🔹 Lấy 1 sản phẩm (kèm ảnh phụ + categories) */
+  // async findById(id: string): Promise<ProductDTO | null> {
+  //   const product = await this._productModel
+  //     .findById(id)
+  //     .populate({
+  //       path: 'category_ids',
+  //       model: 'Category',
+  //       select: '_id name',
+  //     })
+  //     .exec();
 
+  //   if (!product) return null;
+
+  //   const images = await this._productImageModel
+  //     .find({ product_id: id })
+  //     .sort({ updated_at: -1, created_at: -1 })
+  //     .exec();
+
+  //   const dto = plainToInstance(ProductDTO, product.toObject(), {
+  //     excludeExtraneousValues: true,
+  //   });
+
+  //   (dto as any).gallery = images.map((img) => img.url);
+  //   (dto as any).categories = (product as any).category_ids.map((c: any) => ({
+  //     id: c._id,
+  //     name: c.name,
+  //   }));
+  //   (dto as any).category_ids = (product as any).category_ids.map((c: any) =>
+  //     c._id.toString(),
+  //   );
+
+  //   return dto;
+  // }
+
+  /** 🔹 Lấy 1 sản phẩm (kèm ảnh phụ + categories) */
+  async findById(id: string): Promise<ProductDTO | null> {
+    const product = await this._productModel.findById(id).lean(); // ⚡ dùng lean() cho dễ xử lý
     if (!product) return null;
 
-    // 🔸 Lấy ảnh phụ (nếu có bảng product-image)
+    // ======================
+    // ⭐ LOAD IMAGES
+    // ======================
     const images = await this._productImageModel
       .find({ product_id: id })
-      .sort({ created_at: -1 })
-      .exec();
+      .sort({ updated_at: -1, created_at: -1 })
+      .lean();
 
-    // 🔸 Convert sang DTO
-    const dto = plainToInstance(ProductDTO, product.toObject(), {
+    // ======================
+    // ⭐ LOAD CATEGORIES TỪ BẢNG TRUNG GIAN (giống findAll)
+    // ======================
+    const ProductCategoryModel = (this._productModel.db.models as any)[
+      'ProductCategory'
+    ];
+    const CategoryModel = (this._productModel.db.models as any)['Category'];
+
+    const links = await ProductCategoryModel.find({ product_id: id }).lean();
+
+    let categories = [];
+    let category_ids = [];
+
+    if (links.length > 0) {
+      category_ids = links.map((l: any) => l.category_id?.toString());
+
+      const cats = await CategoryModel.find({
+        _id: { $in: category_ids },
+        is_delete: false,
+      })
+        .select('_id name')
+        .lean();
+
+      categories = cats.map((c: any) => ({
+        id: c._id.toString(),
+        name: c.name,
+      }));
+    }
+
+    // ======================
+    // ⭐ BUILD DTO
+    // ======================
+    const dto = plainToInstance(ProductDTO, product, {
       excludeExtraneousValues: true,
     });
 
-    // ✅ Gán gallery + categories
     (dto as any).gallery = images.map((img) => img.url);
-    (dto as any).categories = (product as any).category_ids.map((c: any) => ({
-      id: c._id,
-      name: c.name,
-    }));
-
-    // ✅ Và quan trọng nhất: giữ lại category_ids là mảng ObjectId thật
-    (dto as any).category_ids = (product as any).category_ids.map((c: any) =>
-      c._id.toString(),
-    );
+    (dto as any).categories = categories; // ⭐ ĐÃ SỬA — GIỜ ĐÚNG 2 CATEGORY
+    (dto as any).category_ids = category_ids;
 
     return dto;
   }
 
-  /** 🔹 Lấy tất cả (kèm category_ids) */
   /** 🔹 Lấy tất cả (kèm category_ids + categories) */
   async findAll(): Promise<ProductDTO[]> {
     const products = await this._productModel
       .find({ is_delete: false })
-      .sort({ created_at: -1 })
+      .sort({ updated_at: -1, created_at: -1 })
       .lean();
 
+    // Dùng đúng bảng trung gian để populate category
     const ProductCategoryModel = (this._productModel.db.models as any)[
       'ProductCategory'
     ];
     const CategoryModel = (this._productModel.db.models as any)['Category'];
 
     for (const p of products) {
+      // 🔹 Lấy tất cả category_id có trong bảng trung gian theo product_id
       const links = await ProductCategoryModel.find({
         product_id: p._id,
       }).lean();
-      const categoryIds = links.map((l: any) => l.category_id?.toString()); // ✅ convert sang string
 
-      const categories = await CategoryModel.find({
-        _id: { $in: categoryIds },
-      }).lean();
+      if (links.length > 0) {
+        const categoryIds = links.map((l: any) => l.category_id?.toString());
+        const categories = await CategoryModel.find({
+          _id: { $in: categoryIds },
+          is_delete: false,
+        })
+          .select('_id name')
+          .lean();
 
-      (p as any).category_ids = categoryIds; // ✅ thêm dòng này để frontend lọc được
-      (p as any).categories = categories.map((c: any) => ({
-        id: c._id.toString(),
-        name: c.name,
-      }));
+        (p as any).category_ids = categoryIds;
+        (p as any).categories = categories.map((c: any) => ({
+          id: c._id.toString(),
+          name: c.name,
+        }));
+      } else {
+        (p as any).category_ids = [];
+        (p as any).categories = [];
+      }
     }
 
     return products.map((p) =>
@@ -118,18 +179,23 @@ export class ProductService {
     );
   }
 
-  /** 🔹 Tạo Product mới (kèm category_ids) */
+  /** 🔹 Tạo Product mới (tự tính trạng thái tồn kho + thêm vào bảng product-category) */
   async create(productDTO: ProductDTO): Promise<Product> {
     try {
+      const stockQty = productDTO.stock_quantity ?? 0;
+      const stockStatus = stockQty > 0 ? 'in_stock' : 'out_of_stock';
+
       const product = new this._productModel({
         name: productDTO.name,
         model: productDTO.model,
         description: productDTO.description,
         specification: productDTO.specification,
         price: productDTO.price,
-        manufacturer: productDTO.manufacturer,
+        introduce: productDTO.introduce,
         photo: productDTO.photo || null,
-        category_ids: productDTO.category_ids || [], // ✅ thêm
+        category_ids: productDTO.category_ids || [],
+        stock_quantity: stockQty,
+        stock_status: stockStatus,
         is_active: true,
         is_delete: false,
         updated_by: productDTO.updated_by || 'admin',
@@ -139,13 +205,14 @@ export class ProductService {
 
       const created = await product.save();
 
-      // ✅ Sau khi tạo product -> lưu liên kết vào bảng product_categories
+      /** ✅ Bước thêm bản ghi vào bảng product-categories */
       if (productDTO.category_ids && productDTO.category_ids.length > 0) {
         for (const cid of productDTO.category_ids) {
+          const catId = cid.toString?.() || cid; // đảm bảo là string
           await this.productCategoryService.add(
             created._id.toString(),
-            cid,
-            productDTO.updated_by,
+            catId,
+            productDTO.updated_by || 'admin',
           );
         }
       }
@@ -165,13 +232,13 @@ export class ProductService {
     }
   }
 
-  /** 🔹 Cập nhật Product (kèm cập nhật danh mục) */
-  async update(productDTO: ProductDTO): Promise<Product> {
+  /** 🔹 Cập nhật Product (tự động tính lại trạng thái tồn kho + cập nhật liên kết category) */
+  async update(productDTO: ProductDTO): Promise<ProductDTO> {
     try {
       const updateData: any = {
         name: productDTO.name,
         model: productDTO.model,
-        manufacturer: productDTO.manufacturer,
+        introduce: productDTO.introduce,
         description: productDTO.description,
         specification: productDTO.specification,
         price: productDTO.price,
@@ -179,9 +246,15 @@ export class ProductService {
         updated_at: new Date(),
       };
 
+      if (productDTO.stock_quantity !== undefined) {
+        updateData.stock_quantity = productDTO.stock_quantity;
+        updateData.stock_status =
+          productDTO.stock_quantity > 0 ? 'in_stock' : 'out_of_stock';
+      }
+
       if (productDTO.photo) updateData.photo = productDTO.photo;
       if (productDTO.category_ids)
-        updateData.category_ids = productDTO.category_ids; // ✅ thêm
+        updateData.category_ids = productDTO.category_ids;
 
       const updatedProduct = await this._productModel.findByIdAndUpdate(
         productDTO.id,
@@ -193,16 +266,16 @@ export class ProductService {
         throw new NotFoundException('Product not found');
       }
 
-      // ✅ Cập nhật lại liên kết product-category
-      if (productDTO.category_ids && productDTO.category_ids.length > 0) {
-        await this.productCategoryService.updateCategoryProducts(
-          productDTO.category_ids ? productDTO.category_ids[0] : '',
-          productDTO.category_ids,
-          productDTO.updated_by || 'admin',
-        );
-      }
+      const newCategoryIds = (productDTO.category_ids || []).map(
+        (c) => c.toString?.() || c,
+      );
+      await this.productCategoryService.updateCategoryProducts(
+        productDTO.id,
+        newCategoryIds,
+        productDTO.updated_by || 'admin',
+      );
 
-      return updatedProduct;
+      return await this.findById(productDTO.id);
     } catch (error) {
       if (error.code === 11000) {
         throw new HttpException(
@@ -238,5 +311,301 @@ export class ProductService {
     return this._productModel
       .find({ is_delete: false })
       .sort({ created_at: -1 });
+  }
+
+  /** 📉 Giảm số lượng tồn kho sau khi đặt hàng */
+  async reduceStock(productId: string, quantity: number) {
+    const product = await this._productModel.findById(productId);
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    const newQty = (product.stock_quantity || 0) - quantity;
+
+    if (newQty < 0) {
+      throw new HttpException('Not enough stock', HttpStatus.BAD_REQUEST);
+    }
+
+    product.stock_quantity = newQty;
+    product.stock_status = newQty > 0 ? 'in_stock' : 'out_of_stock';
+    product.updated_at = new Date();
+
+    await product.save();
+
+    return {
+      msg: 'Stock reduced successfully',
+      remaining: newQty,
+    };
+  }
+
+  /** 📈 Tăng số lượng tồn kho khi hủy đơn */
+  async increaseStock(productId: string, quantity: number) {
+    const product = await this._productModel.findById(productId);
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    product.stock_quantity = (product.stock_quantity || 0) + quantity;
+    product.stock_status =
+      product.stock_quantity > 0 ? 'in_stock' : 'out_of_stock';
+    product.updated_at = new Date();
+
+    await product.save();
+
+    return {
+      msg: 'Stock increased successfully',
+      remaining: product.stock_quantity,
+    };
+  }
+
+  /** 🟩 Cập nhật tồn kho: cộng thêm số lượng mới */
+  async updateStock(
+    productId: string,
+    added_quantity: number,
+    updated_by?: string,
+  ) {
+    const product = await this._productModel.findById(productId);
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    const newQty = (product.stock_quantity || 0) + added_quantity;
+
+    product.stock_quantity = newQty;
+    product.stock_status = newQty > 0 ? 'in_stock' : 'out_of_stock';
+    product.updated_at = new Date();
+    product.updated_by = updated_by || 'admin';
+
+    await product.save();
+
+    return {
+      msg: 'Stock updated successfully',
+      new_quantity: newQty,
+    };
+  }
+
+  async getProductsInStock() {
+    const list = await this._productModel
+      .find({ stock_quantity: { $gt: 0 }, is_delete: false })
+      .sort({ updated_at: -1 });
+
+    return plainToInstance(ProductDTO, list, { excludeExtraneousValues: true });
+  }
+
+  async getProductsOutOfStock() {
+    const list = await this._productModel
+      .find({ stock_quantity: 0, is_delete: false })
+      .sort({ updated_at: -1 });
+
+    return plainToInstance(ProductDTO, list, { excludeExtraneousValues: true });
+  }
+
+  async getTopSelling() {
+    const results = await this.orderDetailsModel.aggregate([
+      {
+        $match: {
+          status: 'Delivered',
+          is_delete: false,
+        },
+      },
+
+      // 👉 Convert product_id (string) → ObjectId
+      {
+        $addFields: {
+          productObjId: { $toObjectId: '$product_id' },
+        },
+      },
+
+      {
+        $group: {
+          _id: '$productObjId',
+          totalSold: { $sum: '$quantity' },
+        },
+      },
+
+      { $sort: { totalSold: -1 } },
+      { $limit: 3 },
+
+      {
+        $lookup: {
+          from: 'products',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'product',
+        },
+      },
+
+      { $unwind: '$product' },
+      // 👇 CHỈ LẤY SẢN PHẨM CHƯA BỊ XÓA
+      {
+        $match: {
+          'product.is_delete': false,
+        },
+      },
+
+      {
+        $project: {
+          _id: 0,
+          product_id: '$_id',
+          name: '$product.name',
+          model: '$product.model',
+          photo: '$product.photo',
+          price: '$product.price',
+          totalSold: 1,
+        },
+      },
+    ]);
+
+    return results;
+  }
+
+  // ================================
+  // 🆕 Lấy 4 sản phẩm mới nhất
+  // ================================
+  async findNewest(limit = 4) {
+    return await this._productModel
+      .find({ is_delete: false })
+      .sort({ created_at: -1 })
+      .limit(limit)
+      .lean();
+  }
+
+  // ================================
+  // 🏆 Lấy sản phẩm bán chạy nhất (Top 1)
+  // ================================
+  async findTopOneSelling() {
+    const results = await this.orderDetailsModel.aggregate([
+      {
+        $match: {
+          status: 'Delivered',
+          is_delete: false,
+        },
+      },
+
+      // 👇 convert product_id (string) -> ObjectId GIỐNG getTopSelling
+      {
+        $addFields: {
+          productObjId: { $toObjectId: '$product_id' },
+        },
+      },
+
+      {
+        $group: {
+          _id: '$productObjId',
+          totalSold: { $sum: '$quantity' },
+        },
+      },
+
+      { $sort: { totalSold: -1 } },
+      { $limit: 1 }, // 👈 chỉ lấy 1 sản phẩm
+
+      {
+        $lookup: {
+          from: 'products', // 👈 đúng tên collection
+          localField: '_id',
+          foreignField: '_id',
+          as: 'product',
+        },
+      },
+
+      { $unwind: '$product' },
+      // 👇 filter product đã bị xóa
+      {
+        $match: {
+          'product.is_delete': false,
+        },
+      },
+
+      {
+        $project: {
+          _id: 0,
+          product_id: '$_id',
+          name: '$product.name',
+          model: '$product.model',
+          photo: '$product.photo',
+          price: '$product.price',
+          totalSold: 1,
+        },
+      },
+    ]);
+
+    return results[0] || null;
+  }
+
+  /** ❌ XÓA CỨNG — chỉ xóa khi KHÔNG nằm trong OrderDetails */
+  async hardDelete(id: string) {
+    // 1) Kiểm tra product có tồn tại không
+    const product = await this._productModel.findById(id);
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    // 2) Kiểm tra product này có xuất hiện trong OrderDetails không
+    const usedInOrders = await this.orderDetailsModel.countDocuments({
+      product_id: id,
+    });
+
+    if (usedInOrders > 0) {
+      throw new HttpException(
+        `Cannot delete: this product is used in ${usedInOrders} order(s).`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // 3) Không có đơn hàng → Xóa thật
+    await this._productModel.deleteOne({ _id: id });
+
+    return { msg: 'Product permanently deleted' };
+  }
+
+  /** ♻️ Restore product đã bị xóa mềm */
+  async restore(id: string, updated_by: string) {
+    const product = await this._productModel.findById(id);
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    // Nếu product chưa bị xóa mềm
+    if (product.is_delete === false) {
+      return { msg: 'Product is already active' };
+    }
+
+    // Khôi phục
+    product.is_delete = false;
+    product.is_active = true;
+    product.updated_at = new Date();
+    product.updated_by = updated_by || 'admin';
+
+    await product.save();
+
+    return { msg: 'Product restored successfully' };
+  }
+
+  /** 🗑️ Lấy danh sách sản phẩm đã xóa mềm */
+  /** 🗑️ Lấy danh sách sản phẩm đã xóa mềm */
+  async findDeleted() {
+    const products = await this._productModel
+      .find({ is_delete: true })
+      .sort({ updated_at: -1 })
+      .lean();
+
+    const result = [];
+    for (const p of products) {
+      const orderCount = await this.orderDetailsModel.countDocuments({
+        product_id: p._id,
+      });
+
+      result.push({
+        ...p,
+        photo: p.photo ? `${process.env.image_url}/${p.photo}` : null, // ⭐ FIX QUAN TRỌNG
+        hasLink: orderCount > 0,
+      });
+    }
+
+    return result;
   }
 }

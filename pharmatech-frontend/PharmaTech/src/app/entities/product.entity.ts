@@ -16,7 +16,11 @@ export class Product {
   /** ⚙️ Thông tin kỹ thuật & giá */
   specification?: string; // Thông số kỹ thuật
   price?: number; // Giá sản phẩm
-  manufacturer?: string; // Nhà sản xuất
+  introduce?: string; // Nhà sản xuất
+
+  /** 🏷️ Quản lý tồn kho */
+  stock_quantity?: number; // Số lượng hàng trong kho
+  stock_status?: string; // Trạng thái tồn kho (còn hàng / hết hàng / đặt trước)
 
   /** 🔗 Liên kết category */
   category_ids?: string[]; // Danh sách ID category liên kết

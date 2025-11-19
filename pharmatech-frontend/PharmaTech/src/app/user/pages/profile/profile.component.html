@@ -1,3 +1,25 @@
+<!-- 🔔 Order success banner -->
+<div *ngIf="showOrderSuccess" class="order-success-banner">
+  <div class="order-success-icon">
+    <i class="bx bx-check-circle"></i>
+  </div>
+
+  <div class="order-success-content">
+    <h5>Order placed successfully</h5>
+    <p>
+      Thank you! We have received your deposit payment. Our team will review
+      your order and contact you soon.
+    </p>
+  </div>
+
+  <button type="button" class="btn-close order-success-close" aria-label="Close"
+    (click)="showOrderSuccess = false"></button>
+</div>
+
+<div class="container py-4" *ngIf="account">
+  <!-- phần profile-card như cũ -->
+</div>
+
 <div class="container py-4" *ngIf="account">
   <div class="profile-card shadow-sm border-0">
     <!-- Header -->
@@ -11,15 +33,53 @@
           <small>
             <strong>Status:</strong>
             <span [class.text-success]="account.is_active" [class.text-danger]="!account.is_active">
-              {{ account.is_active ? 'Active' : 'Inactive' }}
+              {{ account.is_active ? "Active" : "Inactive" }}
             </span>
           </small>
         </div>
       </div>
 
+      <!-- AI tạo ảnh -->
+      <div class="d-flex align-items-center gap-3" *ngIf="isEditing">
+        <!-- 🎡 Carousel -->
+        <div id="carouselWrap" *ngIf="isGenerating">
+          <div class="carousel">
+            <img *ngFor="let img of carouselImages; let i = index" [src]="img" [class.active]="i === carouselIndex" />
+          </div>
+          <div class="hint">Generating...</div>
+        </div>
+
+        <!-- 🖼️ Avatar preview -->
+        <img *ngIf="!isGenerating && account?.photo" [src]="account.photo" class="gen-avatar" alt="Generated" />
+
+        <!-- 📝 Prompt -->
+        <textarea class="a2" [(ngModel)]="avatarPrompt" placeholder="Describe your avatar..."></textarea>
+
+        <!-- 🔘 Generate -->
+        <button class="btn rounded-pill px-4" style="
+            background: linear-gradient(90deg, #43ff33, #33bdff);
+            color: #fff;
+            font-weight: 600;
+            border: none;
+          " (click)="generateAvatar()">
+          Generate
+        </button>
+        <!-- 🆕 Save Avatar -->
+        <button *ngIf="generatedAvatar && isEditing" class="save-btn" style="
+            background: linear-gradient(90deg, #3355ff, #33ebff);
+            color: #fff;
+            font-weight: 600;
+            border: none;
+          " (click)="saveGeneratedAvatar()">
+          <i class="bx bx-save me-1"></i> Save Changes
+        </button>
+      </div>
+
+      <!--END AI tạo ảnh -->
+
       <div class="d-flex align-items-center gap-2">
         <button class="btn btn-outline-primary rounded-pill px-3" (click)="toggleEdit()">
-          <i class="bx bx-edit-alt me-1"></i>{{ isEditing ? 'Cancel' : 'Edit' }}
+          <i class="bx bx-edit-alt me-1"></i>{{ isEditing ? "Cancel" : "Edit" }}
         </button>
 
         <label *ngIf="isEditing" for="upload-photo" class="btn btn-warning text-white rounded-pill px-3 mb-0">
@@ -44,9 +104,6 @@
         </a>
       </li>
     </ul>
-
-
-
 
     <!-- Body -->
     <div class="card-body p-4" *ngIf="activeTab === 'info'">
@@ -173,13 +230,10 @@
 
         <!-- Section: Resume -->
         <div class="section">
-          <h6 class="section-title">
-            <i class="bx bx-file me-2"></i> Resume
-          </h6>
+          <h6 class="section-title"><i class="bx bx-file me-2"></i> Resume</h6>
 
           <div class="resume-btn-wrapper">
             <ng-container *ngIf="!isEditing; else uploadTpl">
-
               <!-- Nếu có resume -->
               <a *ngIf="account.resume" [href]="account.resume" target="_blank" class="resume-btn">
                 <i class="bx bx-download"></i> View Resume
@@ -189,16 +243,13 @@
               <span *ngIf="!account.resume" class="text-muted small">
                 No resume uploaded.
               </span>
-
             </ng-container>
 
-            <!-- Upload khi đang Edit -->
             <ng-template #uploadTpl>
               <input type="file" accept=".pdf" (change)="onResumeSelected($event)" />
             </ng-template>
           </div>
         </div>
-
 
         <!-- Section: Introduction -->
         <div class="section">
@@ -219,14 +270,12 @@
 
     <!-- ================= SAVED JOBS TAB ================= -->
     <div *ngIf="activeTab === 'saved'" class="p-3">
-
       <div class="saved-job-title-wrapper text-center">
         <h2 class="saved-job-title">
-          <i class='bx bx-bookmark-heart saved-icon'></i>
+          <i class="bx bx-bookmark-heart saved-icon"></i>
           Saved Jobs
         </h2>
       </div>
-
 
       <p *ngIf="savedJobs.length === 0" class="text-muted">
         You haven't saved any jobs yet.
@@ -235,27 +284,16 @@
       <!-- LIST OF SAVED JOB CARDS -->
       <a class="saved-job-card d-flex align-items-center p-3 mb-3 text-decoration-none" *ngFor="let item of savedJobs"
         [routerLink]="['/careerDetails', item.job_id?.id]">
-
         <img class="saved-job-thumb" [src]="item.job_id?.banner || 'assets/images/jobs/default-job.jpg'"
-          alt="job banner">
+          alt="job banner" />
 
         <div class="saved-job-info ms-3">
           <h6 class="job-title">{{ item.job_id?.title }}</h6>
           <p class="job-meta">{{ item.job_id?.department }}</p>
           <p class="job-location">{{ item.job_id?.location }}</p>
         </div>
-
       </a>
-
-
-
-
-
     </div>
-
-
-
-
   </div>
 </div>
 

@@ -1,0 +1,174 @@
+<div class="order-container">
+  <h4 class="fw-bold py-3 mb-4">
+    <span class="text-muted fw-light">Recycle /</span> Recycle Bin
+  </h4>
+
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+
+  <p-progressSpinner
+    *ngIf="loading"
+    styleClass="loading-spinner"
+  ></p-progressSpinner>
+
+  <div class="card" *ngIf="!loading">
+    <!-- 🔍 Search bar -->
+    <div
+      class="toolbar flex justify-content-end mb-3"
+      style="margin: 20px !important"
+    >
+      <p-iconfield iconPosition="left">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input
+          pInputText
+          type="text"
+          placeholder="Search by name"
+          [(ngModel)]="searchText"
+          (input)="onSearchChange()"
+          style="width: 350px"
+        />
+      </p-iconfield>
+    </div>
+
+    <p-tabs [(value)]="activeTab">
+      <p-tablist>
+        @for (tab of tabs; track tab.value) {
+        <p-tab [value]="tab.value">
+          {{ tab.title }}
+        </p-tab>
+        }
+      </p-tablist>
+
+      <p-tabpanels>
+        <!-- ================= PRODUCT TAB ================= -->
+        <p-tabpanel value="product">
+          <p-table
+            [value]="filteredProducts"
+            dataKey="_id"
+            [paginator]="true"
+            [rows]="4"
+            [rowsPerPageOptions]="[4, 10, 20]"
+            [responsiveLayout]="'scroll'"
+            showGridlines
+            class="order-table"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Photo</th>
+                <th>Name</th>
+                <th>Model</th>
+                <th pSortableColumn="price">
+                  Price <p-sortIcon field="price"></p-sortIcon>
+                </th>
+                <th pSortableColumn="created_at">
+                  Created At <p-sortIcon field="created_at"></p-sortIcon>
+                </th>
+                <th>Updated By</th>
+                <th>Action</th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-p>
+              <tr>
+                <td>
+                  <img
+                    class="recycle-photo"
+                    [src]="p.photo || 'assets/images/no-image.jpg'"
+                    alt="Product Photo"
+                  />
+                </td>
+
+                <td>{{ p.name }}</td>
+                <td>{{ p.model || "—" }}</td>
+                <td>${{ p.price }}</td>
+                <td>{{ p.created_at | date : "medium" }}</td>
+                <td>{{ p.updated_by || "—" }}</td>
+
+                <td class="actions">
+                  <!-- Restore -->
+                  <button
+                    pButton
+                    class="p-button-text p-button-success"
+                    icon="pi pi-refresh"
+                    title="Restore"
+                    (click)="restoreProduct(p)"
+                  ></button>
+
+                  <!-- Hard Delete -->
+                  <button
+                    pButton
+                    class="p-button-text p-button-danger"
+                    icon="pi pi-trash"
+                    title="Hard Delete"
+                    [disabled]="p.hasLink"
+                    (click)="hardDeleteProduct(p)"
+                  ></button>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-tabpanel>
+
+        <!-- ================= CATEGORY TAB ================= -->
+        <p-tabpanel value="category">
+          <p-table
+            [value]="filteredCategories"
+            dataKey="_id"
+            [rows]="4"
+            [rowsPerPageOptions]="[4, 10, 20]"
+            [paginator]="true"
+            [responsiveLayout]="'scroll'"
+            showGridlines
+            class="order-table"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Photo</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th pSortableColumn="created_at">
+                  Created At <p-sortIcon field="created_at"></p-sortIcon>
+                </th>
+                <th>Updated By</th>
+                <th>Action</th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-c>
+              <tr>
+                <td>
+                  <img
+                    class="recycle-photo"
+                    [src]="c.photo || 'assets/images/no-image.jpg'"
+                    alt="Category Photo"
+                  />
+                </td>
+                <td>{{ c.name }}</td>
+                <td>{{ c.description || "—" }}</td>
+                <td>{{ c.created_at | date : "medium" }}</td>
+                <td>{{ c.updated_by || "—" }}</td>
+
+                <td class="actions">
+                  <button
+                    pButton
+                    class="p-button-text p-button-success"
+                    icon="pi pi-refresh"
+                    (click)="restoreCategory(c)"
+                  ></button>
+
+                  <button
+                    pButton
+                    class="p-button-text p-button-danger"
+                    icon="pi pi-trash"
+                    [disabled]="c.hasLink"
+                    (click)="hardDeleteCategory(c)"
+                  ></button>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
+</div>

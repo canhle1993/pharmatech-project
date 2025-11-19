@@ -1,35 +1,99 @@
-import { Component, OnInit, Renderer2, AfterViewInit } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { AccountService } from '../../../services/account.service';
-import { ButtonModule } from 'primeng/button';
+// header.component.ts
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnInit,
+  Renderer2,
+} from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AccountService } from '../../../services/account.service';
+import { NotificationService } from '../../../services/notification.service';
 
 @Component({
   selector: 'app-header',
+  standalone: true,
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
-  imports: [ButtonModule, RouterLink, CommonModule],
+  imports: [CommonModule, RouterModule],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, AfterViewInit {
   user: any = null;
   currentTime = new Date();
+  notifications: any[] = [];
+  messages: any[] = [];
 
   constructor(
     private accountService: AccountService,
     private router: Router,
-    private renderer: Renderer2
+    private notifyService: NotificationService,
+    private renderer: Renderer2,
+    private el: ElementRef
   ) {}
-  ngOnInit() {
+
+  ngOnInit(): void {
+    this.notifyService.notifications$.subscribe((list) => {
+      this.notifications = list;
+    });
+
+    this.notifyService.messages$.subscribe((list) => {
+      this.messages = list;
+    });
+
     const storedUser = localStorage.getItem('currentUser');
+
+    console.log('📦 currentUser stored:', storedUser);
+
     if (storedUser) {
       this.user = JSON.parse(storedUser);
     }
+
+    console.log('👤 Parsed user:', this.user);
+    console.log('🖼 Photo:', this.user?.photo);
 
     setInterval(() => (this.currentTime = new Date()), 1000);
   }
 
   logout() {
+    // ❗ Xóa token + thông tin user khỏi localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('currentUser');
+
+    // Nếu bạn có lưu role, permission, cart... thì xoá luôn:
+    // localStorage.removeItem('role');
+    // localStorage.removeItem('cart');
+
+    // ❗ Gọi service logout nếu backend có xử lý
     this.accountService.logout();
+
+    // ❗ Điều hướng về trang login
     this.router.navigate(['/auth/login']);
+  }
+  ngAfterViewInit(): void {
+    const dropdownToggle =
+      this.el.nativeElement.querySelector('.dropdown-user > a');
+    const dropdownMenu = this.el.nativeElement.querySelector(
+      '.dropdown-user .dropdown-menu'
+    );
+
+    if (dropdownToggle && dropdownMenu) {
+      this.renderer.listen(dropdownToggle, 'click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        // toggle show
+        if (dropdownMenu.classList.contains('show')) {
+          dropdownMenu.classList.remove('show');
+        } else {
+          dropdownMenu.classList.add('show');
+        }
+      });
+
+      // Click outside → close
+      this.renderer.listen('document', 'click', () => {
+        dropdownMenu.classList.remove('show');
+      });
+    }
   }
 }

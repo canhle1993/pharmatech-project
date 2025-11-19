@@ -1,0 +1,101 @@
+/* ✅ Ẩn hoàn toàn mũi tên mặc định của Swiper */
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  content: none !important; /* <-- dòng này mới ẩn thật */
+  display: none !important;
+  background: none !important;
+  mask: none !important;
+  -webkit-mask: none !important;
+}
+
+/* ✅ Canh icon custom */
+.swiper-button-next i,
+.swiper-button-prev i {
+  font-size: 20px !important;
+  color: #444 !important;
+  transition: color 0.2s ease-in-out;
+}
+
+/* ✅ Hover đổi màu nhẹ */
+.swiper-button-next:hover i,
+.swiper-button-prev:hover i {
+  color: #007bff !important;
+}
+
+/* ✅ Giới hạn vùng click và căn giữa theo chiều dọc */
+.swiper-button-next,
+.swiper-button-prev {
+  width: 30px !important;
+  height: 30px !important;
+  background: transparent !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  box-shadow: none !important;
+}
+
+/* ✅ Đặt vị trí sát mép ảnh */
+.swiper-button-prev {
+  left: 5px !important;
+}
+.swiper-button-next {
+  right: 5px !important;
+}
+.product-desc-content p {
+  white-space: pre-line !important; /* Giữ ngắt dòng \n trong text */
+  word-wrap: break-word !important; /* Ngắt từ quá dài */
+  line-height: 1.6 !important;
+}
+
+.product-desc-content {
+  overflow-wrap: break-word !important;
+  white-space: pre-line !important;
+}
+
+.product-desc-row {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 2rem !important; /* khoảng cách giữa hình và mô tả */
+  margin-top: 1rem !important;
+}
+
+/* 🖼️ Phần hình ảnh chiếm 40% */
+.product-desc-img {
+  flex: 0 0 40% !important;
+  max-width: 40% !important;
+}
+
+.product-desc-img img {
+  width: 100% !important;
+  height: auto !important;
+  border-radius: 8px !important;
+  object-fit: cover !important;
+}
+
+/* 📄 Phần mô tả chiếm 60% */
+.product-desc-content {
+  flex: 1 !important;
+  max-width: 60% !important;
+  line-height: 1.7 !important;
+  color: #222 !important;
+  white-space: pre-line !important;
+  word-break: break-word !important;
+}
+
+.product-desc-title {
+  font-size: 1.4rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 1rem !important;
+  color: #111 !important;
+}
+
+/* 📱 Responsive */
+@media (max-width: 768px) {
+  .product-desc-row {
+    flex-direction: column !important;
+  }
+
+  .product-desc-img,
+  .product-desc-content {
+    max-width: 100% !important;
+  }
+}

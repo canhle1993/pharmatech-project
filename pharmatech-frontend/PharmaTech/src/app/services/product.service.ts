@@ -47,8 +47,15 @@ export class ProductService {
     formData.append('description', product.description || '');
     formData.append('specification', product.specification || '');
     formData.append('price', product.price ? product.price.toString() : '0');
-    formData.append('manufacturer', product.manufacturer || '');
+    formData.append('introduce', product.introduce || '');
     formData.append('updated_by', product.updated_by || 'admin');
+
+    /** ✅ Thêm quản lý tồn kho */
+    formData.append(
+      'stock_quantity',
+      product.stock_quantity ? product.stock_quantity.toString() : '0'
+    );
+    formData.append('stock_status', product.stock_status || 'in_stock');
 
     // 🔸 Thêm danh sách category_ids (mảng)
     if (product.category_ids && product.category_ids.length > 0) {
@@ -78,8 +85,15 @@ export class ProductService {
     formData.append('description', product.description || '');
     formData.append('specification', product.specification || '');
     formData.append('price', product.price ? product.price.toString() : '0');
-    formData.append('manufacturer', product.manufacturer || '');
+    formData.append('introduce', product.introduce || '');
     formData.append('updated_by', product.updated_by || 'admin');
+
+    /** ✅ Thêm quản lý tồn kho */
+    formData.append(
+      'stock_quantity',
+      product.stock_quantity ? product.stock_quantity.toString() : '0'
+    );
+    formData.append('stock_status', product.stock_status || 'in_stock');
 
     // 🏷️ Danh mục (category)
     if (product.category_ids && product.category_ids.length > 0) {
@@ -130,6 +144,81 @@ export class ProductService {
   deleteGalleryImage(imageId: string) {
     return lastValueFrom(
       this.httpClient.delete(env.baseUrl + 'product-image/delete/' + imageId)
+    );
+  }
+
+  // 📉 TRỪ TỒN KHO SẢN PHẨM SAU KHI ĐẶT HÀNG THÀNH CÔNG
+  // ==================================================
+  async reduceStock(productId: string, quantity: number): Promise<any> {
+    return await lastValueFrom(
+      this.httpClient.put(env.baseUrl + 'product/reduce-stock/' + productId, {
+        quantity,
+      })
+    );
+  }
+
+  /** 🔹 Tab 1: Sản phẩm còn hàng (stock_quantity > 0) */
+  getProductsInStock() {
+    return lastValueFrom(
+      this.httpClient.get(env.baseUrl + 'product/stock/in-stock')
+    );
+  }
+
+  /** 🔹 Tab 2: Sản phẩm hết hàng (stock_quantity = 0) */
+  getProductsOutOfStock() {
+    return lastValueFrom(
+      this.httpClient.get(env.baseUrl + 'product/stock/out-of-stock')
+    );
+  }
+
+  /** 🟩 Nhập kho: cộng thêm số lượng mới */
+  updateStock(productId: string, added_quantity: number, updated_by: string) {
+    return lastValueFrom(
+      this.httpClient.put(env.baseUrl + 'product/update-stock/' + productId, {
+        added_quantity,
+        updated_by,
+      })
+    );
+  }
+
+  getTopSelling(): Promise<any[]> {
+    return lastValueFrom(
+      this.httpClient.get<any[]>(env.baseUrl + 'product/top-selling')
+    );
+  }
+
+  getNewestProducts(): Promise<any[]> {
+    return lastValueFrom(
+      this.httpClient.get<any[]>(env.baseUrl + 'product/newest')
+    );
+  }
+
+  getTopOneSelling(): Promise<any> {
+    return lastValueFrom(
+      this.httpClient.get<any>(env.baseUrl + 'product/top-one')
+    );
+  }
+
+  /** 🗑️ Lấy danh sách sản phẩm đã bị xóa mềm */
+  getDeleted(): Promise<any[]> {
+    return lastValueFrom(
+      this.httpClient.get<any[]>(env.baseUrl + 'product/deleted')
+    );
+  }
+
+  /** ♻️ Khôi phục sản phẩm đã xóa mềm */
+  restore(id: string, updated_by: string) {
+    return lastValueFrom(
+      this.httpClient.patch(env.baseUrl + 'product/restore/' + id, {
+        updated_by,
+      })
+    );
+  }
+
+  /** ❌ Xóa cứng (hard delete) — chỉ khi không có đơn hàng liên quan */
+  hardDelete(id: string) {
+    return lastValueFrom(
+      this.httpClient.delete(env.baseUrl + 'product/hard-delete/' + id)
     );
   }
 }

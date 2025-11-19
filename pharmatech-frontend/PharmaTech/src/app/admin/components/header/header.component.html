@@ -1,12 +1,15 @@
 <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
   id="layout-navbar">
+  <!-- Menu toggle for mobile -->
   <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
     <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
       <i class="bx bx-menu bx-sm"></i>
     </a>
   </div>
 
+  <!-- Navbar collapse -->
   <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+    <!-- Current time display -->
     <div class="navbar-nav align-items-center">
       <div class="nav-item d-flex align-items-center">
         <i class="bx bx-time fs-4 me-2"></i>
@@ -14,68 +17,73 @@
       </div>
     </div>
 
+    <!-- Navbar right side items -->
     <ul class="navbar-nav flex-row align-items-center ms-auto">
-      <!-- Place this tag where you want the button to render. -->
-      <!-- Notifications -->
+      <!-- Notifications Dropdown -->
       <li class="nav-item dropdown me-3">
         <a class="nav-link dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
           <i class="bx bx-bell fs-4"></i>
-          <span class="badge bg-danger rounded-pill">3</span>
+          <span *ngIf="notifications.length > 0" class="badge bg-danger rounded-pill">{{ notifications.length }}</span>
         </a>
         <ul class="dropdown-menu dropdown-menu-end">
           <li>
             <h6 class="dropdown-header">Notifications</h6>
           </li>
-          <li>
-            <a class="dropdown-item" href="#"><i class="bx bx-user-plus me-2"></i> New candidate applied</a>
-          </li>
-          <li>
-            <a class="dropdown-item" href="#"><i class="bx bx-package me-2"></i> New product added</a>
-          </li>
-          <li>
-            <a class="dropdown-item" href="#"><i class="bx bx-error-circle me-2"></i> Low stock alert</a>
+          <li *ngFor="let notification of notifications">
+            <a class="dropdown-item" href="#">
+              <i class="bx bx-user-plus me-2"></i> {{ notification.text }}
+            </a>
           </li>
         </ul>
       </li>
 
-      <!-- Messages -->
-      <li class="nav-item dropdown me-3">
-        <a class="nav-link dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+      <!-- Messages Dropdown -->
+      <!-- <li class="nav-item dropdown me-3">
+        <a
+          class="nav-link dropdown-toggle hide-arrow"
+          data-bs-toggle="dropdown"
+        >
           <i class="bx bx-envelope fs-4"></i>
-          <span class="badge bg-primary rounded-pill">5</span>
+          <span
+            *ngIf="messages.length > 0"
+            class="badge bg-primary rounded-pill"
+            >{{ messages.length }}</span
+          >
         </a>
         <ul class="dropdown-menu dropdown-menu-end">
-          <li>
-            <h6 class="dropdown-header">Messages</h6>
-          </li>
-          <li>
+          <li><h6 class="dropdown-header">Messages</h6></li>
+          <li *ngFor="let message of messages">
             <a class="dropdown-item" href="#">
               <div class="d-flex align-items-center">
                 <div class="flex-shrink-0 me-3">
-                  <img src="assets/admin/img/avatars/1.png" class="rounded-circle" width="32" height="32" />
+                  <img
+                    src="assets/admin/img/avatars/1.png"
+                    class="rounded-circle"
+                    width="32"
+                    height="32"
+                  />
                 </div>
                 <div class="flex-grow-1">
-                  <h6 class="mb-0">Nguyen Van A</h6>
-                  <small class="text-muted">“Please check new order...”</small>
+                  <h6 class="mb-0">{{ message.from }}</h6>
+                  <small class="text-muted">{{ message.text }}</small>
                 </div>
               </div>
             </a>
           </li>
           <li>
-            <a class="dropdown-item" href="#"><i class="bx bx-chat me-2"></i> View all messages</a>
+            <a class="dropdown-item" href="#">
+              <i class="bx bx-chat me-2"></i> View all messages
+            </a>
           </li>
         </ul>
-      </li>
+      </li> -->
 
-      <!-- User -->
+      <!-- User Dropdown -->
       <li class="nav-item navbar-dropdown dropdown-user dropdown">
         <a class="nav-link dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
           <div class="avatar avatar-online">
-            <img [src]="
-                user?.photo
-                  ? 'http://localhost:3000/upload/' + user.photo
-                  : 'assets/images/no-image.jpg'
-              " alt="Avatar" class="w-px-40 h-auto rounded-circle" />
+            <img [src]="user?.photo ? user.photo : 'assets/images/no-image.jpg'" alt="Avatar"
+              class="w-px-40 h-auto rounded-circle" />
           </div>
         </a>
         <ul class="dropdown-menu dropdown-menu-end">
@@ -85,9 +93,7 @@
                 <div class="flex-shrink-0 me-3">
                   <div class="avatar avatar-online">
                     <img [src]="
-                        user?.photo
-                          ? 'http://localhost:3000/upload/' + user.photo
-                          : 'assets/images/no-image.jpg'
+                        user?.photo ? user.photo : 'assets/images/no-image.jpg'
                       " alt="Avatar" class="w-px-40 h-auto rounded-circle" />
                   </div>
                 </div>

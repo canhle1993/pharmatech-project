@@ -4,14 +4,6 @@
   background-color: #f7f8fa;
   min-height: 100vh;
 }
-HEAD .page-title {
-  font-size: 1.8rem;
-  color: #333;
-  margin-bottom: 1rem;
-  border-left: 4px solid #3b82f6;
-  padding-left: 10px;
-}
-
 .card {
   background: white;
   padding: 20px;
