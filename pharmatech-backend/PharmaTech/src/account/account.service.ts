@@ -92,7 +92,7 @@ export class AccountService {
           : account.photo || exists.photo,
 
       // 📄 Hồ sơ ứng tuyển
-      resume: account.resume,
+      resume: account.resume !== undefined ? account.resume : exists.resume, // giữ lại resume cũ nếu FE không gửi lên
       introduction: account.introduction,
       expected_salary: account.expected_salary,
       job_type: account.job_type,

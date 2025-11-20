@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -10,10 +10,12 @@ import { AccountService } from '../../../services/account.service';
 import { ProfileService } from '../../../services/profile.service';
 import { Account } from '../../../entities/account.entity';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Pipe, PipeTransform } from '@angular/core';
 
 import { DatePickerModule } from 'primeng/datepicker';
 import { SavedJob } from '../../../entities/saved-job.entity';
 import { CareerService } from '../../../services/career.service';
+import { OrderService } from '../../../services/order.service';
 
 @Component({
   selector: 'app-profile',
@@ -41,7 +43,7 @@ export class ProfileComponent implements OnInit {
   showOrderSuccess = false;
 
   /** Tabs */
-  activeTab: 'info' | 'saved' = 'info';
+  activeTab: 'info' | 'saved' | 'orders' = 'info';
   savedJobs: SavedJob[] = [];
 
   /** Ngày sinh min/max */
@@ -108,6 +110,14 @@ export class ProfileComponent implements OnInit {
     { name: 'Other' },
   ];
 
+  orderHistory: any[] = [];
+
+  // ⭐ Pagination cho Order History
+  pagedOrders: any[] = [];
+  pageSize = 4; // mỗi trang 4 dòng
+  currentPage = 1; // trang hiện tại
+  totalPages = 1; // tổng số trang
+
   /** =================== Filtered options =================== */
   filteredGenders: string[] = [];
   filteredWorkTypes: string[] = [];
@@ -120,12 +130,15 @@ export class ProfileComponent implements OnInit {
     private messageService: MessageService,
     private route: ActivatedRoute, // 👈 thêm
     private router: Router,
-    private careerService: CareerService // ⭐ Dùng CareerService
+    private careerService: CareerService,
+    private ngZone: NgZone,
+    private orderService: OrderService // ⭐ ADD THIS
   ) {}
 
   /** =================== Lifecycle =================== */
   async ngOnInit() {
     const id = localStorage.getItem('userId');
+    this.preloadCarouselImages();
 
     console.log('🔍 Loaded profile userId:', id);
 
@@ -138,23 +151,29 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
-    // 👇 ĐỌC query param orderSuccess
+    // ⭐ ĐỌC query params
     this.route.queryParamMap.subscribe((params) => {
       const status = params.get('orderSuccess');
+      const openTab = params.get('openTab'); // ⭐ tab cần mở
+
+      // ⭐ Nếu vừa checkout → show banner thành công
       if (status === '1') {
         this.showOrderSuccess = true;
 
-        // Optional: xoá param khỏi URL cho sạch
-        this.router.navigate([], {
-          relativeTo: this.route,
-          queryParams: { orderSuccess: null },
-          queryParamsHandling: 'merge',
-          replaceUrl: true,
-        });
-
-        // Optional: tự tắt sau 5 giây
         setTimeout(() => (this.showOrderSuccess = false), 5000);
       }
+
+      // ⭐ Nếu yêu cầu mở tab Orders
+      if (openTab === 'orders') {
+        this.activeTab = 'orders';
+      }
+
+      // ⭐ Xóa các query param để URL sạch sẽ
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: {},
+        replaceUrl: true,
+      });
     });
 
     this.loading = true;
@@ -167,8 +186,9 @@ export class ProfileComponent implements OnInit {
         languageList: this.languageList,
       });
 
-      // ⭐ Load saved jobs
+      // ⭐ Load saved jobs + orders
       await this.loadSavedJobs(id);
+      await this.loadOrders(id);
     } catch (err) {
       console.error('❌ Error loading profile:', err);
       this.messageService.add({
@@ -178,6 +198,53 @@ export class ProfileComponent implements OnInit {
       });
     } finally {
       this.loading = false;
+    }
+  }
+
+  async loadOrders(userId: string) {
+    try {
+      // 1️⃣ Lấy toàn bộ orders từ BE
+      const all = await this.orderService.findAll();
+
+      console.log('📦 ALL ORDERS:', all);
+
+      // 2️⃣ Lọc CHÍNH XÁC những đơn hàng thuộc user đang login
+      const userOrders = all.filter((o: any) => {
+        const cid =
+          o.user_id ||
+          o.customer_id ||
+          o.account_id ||
+          o.customer?._id ||
+          o.customer?.id;
+
+        return cid === userId;
+      });
+
+      console.log('🔥 USER ORDERS:', userOrders);
+
+      // 3️⃣ Loại bỏ đơn hàng rỗng (tránh 2 dòng trống)
+      const validOrders = userOrders.filter((o: any) => {
+        return o && (o.id || o._id) && o.total_amount !== undefined;
+      });
+
+      // 4️⃣ Map sang dữ liệu FE
+      this.orderHistory = validOrders.map((o: any) => ({
+        code: o.id || o._id,
+        customer: o.customer?.name || o.contact_name || 'Unknown',
+        total: o.total_amount || 0,
+        deposit: o.deposit_amount || 0,
+        remaining:
+          o.remaining_amount ?? (o.total_amount || 0) - (o.deposit_amount || 0),
+        status: o.status || '—',
+        approval_status: o.approval_status || '—',
+        created_at: o.created_at,
+      }));
+
+      this.applyPagination(); // ⭐ chạy phân trang ngay khi load xong
+
+      console.log('✅ ORDER HISTORY (FE):', this.orderHistory);
+    } catch (err) {
+      console.error('❌ Failed to load orders:', err);
     }
   }
 
@@ -217,7 +284,14 @@ export class ProfileComponent implements OnInit {
   onResumeSelected(event: any) {
     const file = event.target.files[0];
     if (!file) return;
+
     this.selectedResume = file;
+
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      if (this.account) this.account.resume = e.target.result; // <== QUAN TRỌNG
+    };
+    reader.readAsDataURL(file);
   }
 
   async saveChanges() {
@@ -231,6 +305,8 @@ export class ProfileComponent implements OnInit {
         this.selectedPhoto,
         this.selectedResume
       );
+      this.selectedPhoto = undefined;
+      this.selectedResume = undefined; // <=== DÒNG QUAN TRỌNG
 
       // Validate
       const errorMsg = this.profileService.validateProfile(this.account);
@@ -337,11 +413,11 @@ export class ProfileComponent implements OnInit {
   // Hiển thị loading carousel
   isGenerating = false;
   carouselImages = [
-    'https://picsum.photos/id/1015/80/80',
-    'https://picsum.photos/id/1025/80/80',
-    'https://picsum.photos/id/1035/80/80',
-    'https://picsum.photos/id/1041/80/80',
-    'https://picsum.photos/id/1050/80/80',
+    'assets/carousel/3.png',
+    'assets/carousel/4.png',
+    'assets/carousel/5.png',
+    'assets/carousel/6.png',
+    'assets/carousel/8.png',
   ];
   carouselIndex = 0;
   carouselTimer: any = null;
@@ -360,12 +436,24 @@ export class ProfileComponent implements OnInit {
   // ===============================
   startCarousel() {
     this.carouselIndex = 0;
+
     if (this.carouselTimer) clearInterval(this.carouselTimer);
 
-    this.carouselTimer = setInterval(() => {
-      this.carouselIndex =
-        (this.carouselIndex + 1) % this.carouselImages.length;
-    }, 900);
+    // chạy ngoài Angular để smooth hơn
+    this.ngZone.runOutsideAngular(() => {
+      this.carouselTimer = setInterval(() => {
+        this.ngZone.run(() => {
+          this.carouselIndex =
+            (this.carouselIndex + 1) % this.carouselImages.length;
+        });
+      }, 1000);
+    });
+  }
+  preloadCarouselImages() {
+    this.carouselImages.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
   }
 
   // ===============================
@@ -498,5 +586,26 @@ export class ProfileComponent implements OnInit {
     return fetch(base64)
       .then((res) => res.blob())
       .then((blob) => new File([blob], filename, { type: blob.type }));
+  }
+
+  /** ===============================
+ * ⭐ APPLY PAGINATION
+ =================================*/
+  applyPagination() {
+    this.totalPages = Math.ceil(this.orderHistory.length / this.pageSize);
+
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+
+    this.pagedOrders = this.orderHistory.slice(start, end);
+  }
+
+  /** ===============================
+ * ⭐ ĐỔI TRANG
+ =================================*/
+  changePage(page: number) {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.applyPagination();
   }
 }

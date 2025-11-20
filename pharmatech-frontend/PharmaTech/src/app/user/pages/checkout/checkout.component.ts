@@ -42,6 +42,8 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
   districts: any[] = [];
   wards: any[] = [];
 
+  defaultPercent = 10;
+
   constructor(
     private fb: FormBuilder,
     private messageService: MessageService,
@@ -142,8 +144,36 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
 
   private async loadDepositSettings() {
     try {
+      // 1️⃣ Lấy toàn bộ range (đang active)
       const res = await this.depositService.findActive();
       this.depositSettings = res || [];
+
+      // 2️⃣ Lấy default_percent từ BE
+      try {
+        const defaultRes = await this.depositService.getDefault();
+        console.log('🔥 DEFAULT RES FROM BE =', defaultRes);
+
+        // ---- CASE 1: BE trả về số thuần ----
+        if (typeof defaultRes === 'number') {
+          this.defaultPercent = defaultRes;
+        }
+        // ---- CASE 2: BE trả về object { default_percent: xx } ----
+        else if (
+          typeof defaultRes === 'object' &&
+          defaultRes !== null &&
+          'default_percent' in defaultRes
+        ) {
+          this.defaultPercent = Number(defaultRes.default_percent);
+        }
+        // ---- CASE 3: Không hợp lệ → fallback ----
+        else {
+          this.defaultPercent = 10;
+        }
+      } catch (err) {
+        console.warn('⚠️ Could not load default percent, using fallback 10%');
+        this.defaultPercent = 10;
+      }
+
       this.calcDeposit();
     } catch (err) {
       console.error('❌ loadDepositSettings error:', err);
@@ -158,9 +188,7 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
   }
 
   private calcDeposit() {
-    // 🔹 Ghi log để kiểm tra
-
-    // 🔹 Tìm mức cọc phù hợp trong danh sách
+    // 🔍 Tìm mức cọc phù hợp
     const matched = this.depositSettings.find(
       (s) =>
         this.totalAmount >= s.min_total &&
@@ -168,21 +196,21 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
         s.is_active
     );
 
-    // 🔹 Nếu có match → dùng cấu hình admin
     if (matched) {
       this.depositPercent = matched.percent;
     } else {
-      // 🔹 Nếu không có cấu hình phù hợp → mặc định 10%
-      this.depositPercent = 10;
+      // 🟢 Nếu không có cấu hình phù hợp → dùng defaultPercent của admin
+      this.depositPercent = this.defaultPercent;
       console.warn(
-        '⚠️ No deposit setting matched total amount. Using default 10%.'
+        `⚠️ No deposit setting matched. Using default ${this.defaultPercent}%.`
       );
     }
 
-    // 🔹 Tính toán lại
+    // Tính toán
     this.depositAmount = Math.round(
       (this.totalAmount * this.depositPercent) / 100
     );
+
     this.remainingAmount = this.totalAmount - this.depositAmount;
   }
 

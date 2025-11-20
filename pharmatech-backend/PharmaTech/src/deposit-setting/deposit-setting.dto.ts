@@ -6,23 +6,32 @@ export class DepositSettingDTO {
   @Expose({ name: 'id' })
   id: string;
 
+  /** type: "range" | "default" */
   @Expose()
-  min_total: number; // 💰 Tổng tiền tối thiểu áp dụng
+  type: 'range' | 'default';
+
+  /** Fields for RANGE type */
+  @Expose()
+  min_total?: number;
 
   @Expose()
-  max_total: number; // 💰 Tổng tiền tối đa áp dụng
+  max_total?: number;
 
   @Expose()
-  percent: number; // 📊 Phần trăm đặt cọc tương ứng (VD: 30%)
+  percent?: number;
+
+  /** Field for DEFAULT type */
+  @Expose()
+  default_percent?: number;
 
   @Expose()
-  is_active: boolean; // ✅ Cấu hình có đang được áp dụng không
+  is_active: boolean;
 
   @Expose()
-  is_delete: boolean; // 🗑️ Xóa mềm
+  is_delete: boolean;
 
   @Expose()
-  updated_by?: string; // 👤 Người cập nhật cuối cùng
+  updated_by?: string;
 
   @Transform(({ obj }) =>
     obj?.created_at ? moment(obj.created_at).format('DD/MM/YYYY HH:mm') : null,

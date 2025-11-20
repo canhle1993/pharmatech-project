@@ -55,7 +55,7 @@
       <!-- AI tạo ảnh -->
       <div class="d-flex align-items-center gap-3" *ngIf="isEditing">
         <!-- 🎡 Carousel -->
-        <div id="carouselWrap" *ngIf="isGenerating">
+        <div id="carouselWrap" [hidden]="!isGenerating">
           <div class="carousel">
             <img
               *ngFor="let img of carouselImages; let i = index"
@@ -77,6 +77,8 @@
         <!-- 📝 Prompt -->
         <textarea
           class="a2"
+          tabindex="0"
+          style="color: #333 !important"
           [(ngModel)]="avatarPrompt"
           placeholder="Describe your avatar..."
         ></textarea>
@@ -85,7 +87,7 @@
         <button
           class="btn rounded-pill px-4"
           style="
-            background: linear-gradient(90deg, #43ff33, #33bdff);
+            background: linear-gradient(90deg, #43ff33, #c933ff);
             color: #fff;
             font-weight: 600;
             border: none;
@@ -99,7 +101,7 @@
           *ngIf="generatedAvatar && isEditing"
           class="save-btn"
           style="
-            background: linear-gradient(90deg, #3355ff, #33ebff);
+            background: linear-gradient(90deg, #f36924, #f7aa52);
             color: #fff;
             font-weight: 600;
             border: none;
@@ -156,6 +158,15 @@
           (click)="activeTab = 'saved'"
         >
           Saved Jobs
+        </a>
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          [class.active]="activeTab === 'orders'"
+          (click)="activeTab = 'orders'"
+        >
+          Order History
         </a>
       </li>
     </ul>
@@ -234,7 +245,6 @@
             </div>
           </div>
         </div>
-
         <!-- Section: Job Preference -->
         <div class="section">
           <h6 class="section-title">
@@ -460,6 +470,147 @@
           <p class="job-location">{{ item.job_id?.location }}</p>
         </div>
       </a>
+    </div>
+
+    <!-- ============= ORDER HISTORY TAB ============= -->
+    <div *ngIf="activeTab === 'orders'" class="p-3">
+      <!-- Title -->
+      <div class="saved-job-title-wrapper text-center">
+        <h2 class="saved-job-title">
+          <i class="bx bx-receipt saved-icon"></i>
+          Order History
+        </h2>
+      </div>
+
+      <!-- Table -->
+      <div class="table-responsive mt-3">
+        <table
+          class="table table-bordered table-hover align-middle custom-order-table text-center"
+        >
+          <thead class="table-light">
+            <tr>
+              <th>Order Code</th>
+              <th>Customer</th>
+              <th>Total</th>
+              <th>Deposit</th>
+              <th>Remaining</th>
+              <th>Status</th>
+              <th>Approval Status</th>
+              <th>Created</th>
+              <th style="width: 110px">Action</th>
+            </tr>
+          </thead>
+
+          <tbody *ngIf="orderHistory.length > 0">
+            <tr *ngFor="let o of pagedOrders">
+              <td>{{ o.code }}</td>
+              <td>{{ o.customer }}</td>
+              <td>{{ o.total | number }}</td>
+              <td>{{ o.deposit | number }}</td>
+              <td>{{ o.remaining | number }}</td>
+
+              <td>
+                <span
+                  class="badge rounded-pill"
+                  [ngClass]="{
+                    'bg-warning text-dark': o.status === 'Pending',
+
+                    'bg-info text-dark': o.status === 'Deposit Paid',
+
+                    'bg-success': o.status === 'Paid in Full',
+
+                    'bg-success bg-opacity-75': o.status === 'Completed',
+
+                    'bg-danger': o.status === 'Cancelled',
+
+                    'bg-primary': o.status === 'Refunded'
+                  }"
+                >
+                  {{ o.status }}
+                </span>
+              </td>
+
+              <td>
+                <span
+                  class="badge rounded-pill"
+                  [ngClass]="{
+                    'bg-warning text-dark':
+                      o.approval_status === 'Pending Approval',
+                    'bg-primary': o.approval_status === 'Approved',
+                    'bg-danger': o.approval_status === 'Rejected'
+                  }"
+                >
+                  {{ o.approval_status }}
+                </span>
+              </td>
+
+              <td>{{ o.created_at }}</td>
+
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <!-- View -->
+                  <button class="btn btn-outline-primary action-btn">
+                    <i class="bx bx-show"></i>
+                  </button>
+
+                  <!-- Cancel -->
+                  <button
+                    *ngIf="
+                      o.status === 'Pending' || o.status === 'Deposit Paid'
+                    "
+                    class="btn btn-outline-danger action-btn"
+                  >
+                    <i class="bx bx-x-circle"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+
+          <tbody *ngIf="orderHistory.length === 0">
+            <tr>
+              <td colspan="9" class="text-center py-4 text-muted">
+                No orders found.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- ⭐ Pagination -->
+        <div class="d-flex justify-content-center mt-3" *ngIf="totalPages > 1">
+          <nav>
+            <ul class="pagination">
+              <!-- Previous -->
+              <li
+                class="page-item"
+                [class.disabled]="currentPage === 1"
+                (click)="changePage(currentPage - 1)"
+              >
+                <span class="page-link">Previous</span>
+              </li>
+
+              <!-- Page numbers -->
+              <li
+                class="page-item"
+                *ngFor="let p of [].constructor(totalPages); let i = index"
+                [class.active]="currentPage === i + 1"
+                (click)="changePage(i + 1)"
+              >
+                <span class="page-link">{{ i + 1 }}</span>
+              </li>
+
+              <!-- Next -->
+              <li
+                class="page-item"
+                [class.disabled]="currentPage === totalPages"
+                (click)="changePage(currentPage + 1)"
+              >
+                <span class="page-link">Next</span>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
     </div>
   </div>
 </div>

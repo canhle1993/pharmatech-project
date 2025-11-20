@@ -99,7 +99,7 @@ export class ProfileService {
       }`;
     }
     if (account.resume && !account.resume.startsWith('http')) {
-      account.resume = `${env.baseUrl.replace('/api/', '')}upload/${
+      account.resume = `${env.baseUrl.replace('/api/', '')}/upload/${
         account.resume
       }`;
     }
@@ -134,22 +134,15 @@ export class ProfileService {
     const updated = { ...account };
 
     if (photo) {
-      console.log('📤 Uploading photo:', photo);
       const upload = await this.accountService.uploadPhoto(photo);
-      console.log('✅ Upload success:', upload);
-      updated.photo = `${env.baseUrl.replace('/api/', '')}/upload/${
-        upload.filename
-      }`;
+      updated.photo = upload.filename; // chỉ lưu filename
     }
 
     if (resume) {
       const upload = await this.accountService.uploadResume(resume);
-      updated.resume = `${env.baseUrl.replace('/api/', '')}upload/${
-        upload.filename
-      }`;
+      updated.resume = upload.filename; // ✔ sửa tại đây
     }
 
-    // ✅ Đảm bảo dữ liệu không null
     updated.name = account.name?.trim() || '';
     updated.email = account.email?.trim() || '';
     updated.phone = account.phone?.trim() || '';
@@ -170,7 +163,10 @@ export class ProfileService {
           ? undefined // nếu là base64 thì bỏ qua (đã upload xong rồi)
           : account.photo.split('/upload/').pop() // lấy filename nếu có /upload/
         : undefined,
-      resume: account.resume?.split('/upload/')[1],
+      resume:
+        account.resume && account.resume.includes('/')
+          ? account.resume.split('/upload/').pop()
+          : account.resume || undefined,
       field: account.field?.map((f: any) => f.name ?? f),
       skills: account.skills?.map((s: any) => s.name ?? s),
       languages: account.languages?.map((l: any) => l.name ?? l),
@@ -224,13 +220,11 @@ export class ProfileService {
       return merged;
     } catch (err) {
       console.error('❌ Error saving profile:', err);
-
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
         detail: 'Failed to save profile!',
       });
-
       return null;
     }
   }

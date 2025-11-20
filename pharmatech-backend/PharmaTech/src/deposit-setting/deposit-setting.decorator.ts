@@ -4,28 +4,38 @@ import { HydratedDocument } from 'mongoose';
 export type DepositSettingDocument = HydratedDocument<DepositSetting>;
 
 @Schema({
-  collection: 'deposit_settings', // ✅ Tên collection trong MongoDB
-  versionKey: false, // ❌ Tắt field __v
+  collection: 'deposit_settings',
+  versionKey: false,
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
 })
 export class DepositSetting {
-  @Prop({ required: true })
-  min_total: number; // 💰 Tổng tiền tối thiểu áp dụng (VD: 0)
-
-  @Prop({ required: true })
-  max_total: number; // 💰 Tổng tiền tối đa áp dụng (VD: 10_000_000)
-
-  @Prop({ required: true })
-  percent: number; // 📊 Phần trăm đặt cọc tương ứng (VD: 30)
-
-  @Prop({ default: true })
-  is_active: boolean; // ✅ Cấu hình có đang được áp dụng không
-
-  @Prop({ default: false })
-  is_delete: boolean; // 🗑️ Xóa mềm
+  /** Loại cấu hình:
+   *  "range" → áp dụng theo min/max (dùng trong bảng)
+   *  "default" → cấu hình % mặc định
+   */
+  @Prop({ required: true, enum: ['range', 'default'] })
+  type: 'range' | 'default';
 
   @Prop()
-  updated_by?: string; // 👤 Người cập nhật cuối cùng
+  min_total?: number;
+
+  @Prop()
+  max_total?: number;
+
+  @Prop()
+  percent?: number;
+
+  @Prop()
+  default_percent?: number; // chỉ có khi type = 'default'
+
+  @Prop({ default: true })
+  is_active: boolean;
+
+  @Prop({ default: false })
+  is_delete: boolean;
+
+  @Prop()
+  updated_by?: string;
 
   @Prop()
   created_at?: Date;

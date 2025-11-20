@@ -612,6 +612,7 @@ export class OrderService {
     if (oldStatus === 'Pending Approval') {
       order.approval_status = 'Rejected';
       order.refund_status = 'Deposit Refunded';
+      order.status = 'Refunded'; // <<< THÊM DÒNG NÀY
       order.cancel_reason = cancel_reason;
       order.payment_proof_url = payment_proof_url || null;
       order.cancelled_at = now;
@@ -624,6 +625,7 @@ export class OrderService {
     else if (oldStatus === 'Approved') {
       order.approval_status = 'Rejected';
       order.refund_status = 'Deposit Lost';
+      order.status = 'Cancelled'; // <<< THÊM DÒNG NÀY
       order.cancel_reason = cancel_reason;
       order.cancelled_at = now;
       order.refund_time = now;

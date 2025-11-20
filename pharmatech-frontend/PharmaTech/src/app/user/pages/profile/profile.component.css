@@ -1,3 +1,371 @@
+/* ===========================
+   PROFILE WRAPPER
+=========================== */
+.profile-wrapper {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+/* ===========================
+   HEADER (FIXED – HIGH CONTRAST)
+=========================== */
+.profile-header {
+  background: linear-gradient(90deg, #6b84c2, #5ca8ff) !important;
+  color: #ffffff !important;
+  border-radius: 16px;
+  padding: 32px 45px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 5;
+}
+
+.profile-header * {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* ===========================
+   PROFILE INFO
+=========================== */
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.profile-avatar {
+  object-fit: cover;
+  border: 3px solid #ffffffcc;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+}
+
+.profile-info h5 {
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.profile-info small {
+  font-size: 1rem;
+  font-weight: 500;
+  display: block;
+}
+
+/* ===========================
+   EDIT BUTTON
+=========================== */
+.header-actions button {
+  background: #ffffff33 !important;
+  border: 2px solid #ffffffaa !important;
+  color: #ffffff !important;
+  padding: 10px 25px !important;
+  border-radius: 30px;
+  font-weight: 700;
+  transition: 0.25s;
+}
+
+.header-actions button:hover {
+  background: #ffffff !important;
+  color: #2f6bff !important;
+}
+
+/* ===========================
+   MAIN CARD
+=========================== */
+
+/* ===========================
+   TITLE CENTER – FIXED
+=========================== */
+.section-title {
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #2255ff !important;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+}
+
+.section-title::after {
+  content: "";
+  width: 70px;
+  height: 3px;
+  background: #2255ff;
+  display: block;
+  margin: 8px auto 0;
+  border-radius: 4px;
+}
+
+/* ===========================
+   SECTION BOX
+=========================== */
+.section {
+  padding: 28px;
+  border: 1px solid #e3e7ef;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+/* ===========================
+   RESUME BUTTON – CENTER FIX
+=========================== */
+.resume-btn-wrapper {
+  display: flex;
+  justify-content: center !important;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.resume-btn {
+  background: #fff !important;
+  border: 2px solid #377dff !important;
+  color: #377dff !important;
+  padding: 12px 28px;
+  border-radius: 30px;
+  font-weight: 700;
+  transition: 0.25s;
+}
+
+.resume-btn:hover {
+  background: #377dff !important;
+  color: #fff !important;
+}
+
+/* ===========================
+   INPUT FIX
+=========================== */
+.form-control,
+::ng-deep .p-inputtext {
+  border-radius: 10px !important;
+  padding: 10px 12px !important;
+  border: 1px solid #ced4e2 !important;
+  font-size: 0.95rem !important;
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .profile-info {
+    flex-direction: column;
+  }
+}
+/* Cho tag xuống dòng */
+::ng-deep .p-multiselect .p-multiselect-label {
+  white-space: normal !important;
+  height: auto !important;
+  padding: 8px 10px !important;
+  line-height: 1.4 !important;
+}
+
+/* Container tự giãn theo nội dung */
+::ng-deep .p-multiselect-label-container {
+  height: auto !important;
+}
+
+/* MultiSelect full width + đẹp */
+::ng-deep .p-multiselect {
+  width: 100% !important;
+  min-height: 48px !important;
+  border-radius: 10px !important;
+}
+.nav-tabs .nav-link {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.nav-tabs .nav-link.active {
+  color: #ff3d3d;
+  border-bottom: 2px solid #ff3d3d;
+}
+
+.saved-job-card {
+  transition: all 0.2s ease;
+}
+
+.saved-job-card:hover {
+  background: #f7f7f7;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.saved-job-thumb {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+/* ===== TABS PROFILE ===== */
+
+.profile-tabs {
+  border-bottom: 1px solid #edf1ff;
+  margin: 0 1.5rem;
+  margin-top: -12px; /* kéo nhẹ lên gần header */
+  padding-top: 12px;
+  gap: 0.75rem;
+}
+
+.profile-tabs .nav-item {
+  margin-bottom: -1px; /* để active tab ôm sát border-bottom */
+}
+
+.profile-tabs .nav-link {
+  border: none;
+  border-radius: 999px 999px 0 0; /* bo tròn kiểu pill */
+  padding: 0.55rem 1.4rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #6b7280; /* xám nhẹ */
+  background-color: transparent;
+  transition: all 0.2s ease;
+}
+
+/* hover khi chưa active */
+.profile-tabs .nav-link:hover:not(.active) {
+  color: #2563eb;
+  background-color: #f3f6ff;
+}
+
+/* trạng thái active */
+.profile-tabs .nav-link.active {
+  color: #1d4ed8;
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  border-bottom: 2px solid #1d4ed8;
+}
+
+/* tạo khoảng cách giữa tab và body bên dưới */
+.card-body {
+  padding-top: 1.75rem;
+}
+/* ===== SAVED JOB CARD ===== */
+
+.saved-job-card {
+  background: #fff;
+  border: 1px solid #e9edf5;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+}
+
+.saved-job-card:hover {
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+  transform: translateY(-3px);
+  border-color: #cbd5e1;
+}
+
+/* Thumbnail job */
+.saved-job-thumb {
+  width: 160px;
+  height: 95px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* Text Info */
+.saved-job-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.saved-job-card .job-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.saved-job-card .job-meta {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.saved-job-card .job-location {
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+/* Make card smaller on mobile */
+@media (max-width: 768px) {
+  .saved-job-thumb {
+    width: 120px;
+    height: 80px;
+  }
+
+  .saved-job-card {
+    padding: 12px;
+  }
+}
+/* ===== Title Wrapper (center) ===== */
+.saved-job-title-wrapper {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 25px;
+}
+
+/* ===== Title Style ===== */
+.saved-job-title {
+  font-size: 32px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  background: linear-gradient(90deg, #6b84c2, #5ca8ff);
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important; /* Thêm dòng này để chắc chắn */
+  display: inline-block;
+  position: relative;
+}
+
+/* ===== Underline ===== */
+.saved-job-title::after {
+  content: "";
+  width: 120px;
+  height: 4px;
+  background: linear-gradient(90deg, #6b84c2, #5ca8ff) !important;
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 8px;
+}
+
+/* ===== Icon Style + Animation ===== */
+.saved-icon {
+  font-size: 32px;
+  margin-right: 8px;
+  vertical-align: middle;
+  animation: pop 1s ease-in-out infinite alternate;
+}
+
+/* Pop effect */
+@keyframes pop {
+  from {
+    transform: translateY(0);
+    opacity: 0.9;
+  }
+  to {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
 /* === Profile Card === */
 .profile-card {
   background: #fff;
@@ -35,7 +403,6 @@
   align-items: center;
   gap: 6px;
   font-weight: 700;
-  color: #0059ff;
   text-transform: uppercase;
   font-size: 0.9rem;
   margin-bottom: 0.75rem;
@@ -223,14 +590,27 @@
   opacity: 1;
 }
 
+/* Prompt + Button layout */
 .a2 {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 10px;
+  width: 260px;
+  min-height: 80px;
+  resize: vertical;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
   font-size: 14px;
+  /* 🔥 Quan trọng: cho phép click + focus */
+  pointer-events: auto;
+  position: relative;
+  z-index: 10;
 }
-.a2 {
-  min-height: 90px;
+
+.save-btn {
+  padding: 10px 20px;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  height: 56px;
 }
 
 /* Avatar carousel */
@@ -277,17 +657,132 @@
   object-fit: cover;
   border: 2px solid #ddd;
 }
-
-/* Prompt + Button layout */
-.a2 {
-  width: 250px;
-  min-height: 0px;
-  padding: 6px;
+.custom-order-table {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
 }
-.save-btn {
-  padding: 10px 20px;
-  border-radius: 30px;
+
+.custom-order-table thead th {
+  background: #f8fafc;
+  font-weight: 700;
+  color: #334155;
+}
+
+.custom-order-table tbody tr:hover {
+  background: #f1f5f9;
+  transition: 0.2s;
+}
+
+.custom-order-table td {
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  color: #475569;
+}
+/* === FIX ACTION BUTTON SIZE + SHOW ICON === */
+.custom-order-table td .btn {
+  width: 34px;
+  height: 34px;
+  padding: 0;
   display: flex;
   align-items: center;
-  height: 42px;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.custom-order-table td .btn i {
+  font-size: 18px !important;
+  line-height: 1;
+  color: #334155; /* màu icon */
+}
+
+.custom-order-table td .btn-outline-primary {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.custom-order-table td .btn-outline-danger {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.custom-order-table td .btn:hover {
+  opacity: 0.8;
+}
+/* ===== CENTER TABLE + LIMIT WIDTH ===== */
+.order-history-wrapper {
+  max-width: 1100px; /* bảng gọn lại */
+  margin: 0 auto; /* căn giữa */
+}
+
+/* ===== ACTION COLUMN FIX ===== */
+.custom-order-table td .btn {
+  width: 36px;
+  height: 36px;
+  display: inline-flex; /* đổi từ flex → inline-flex để không dính */
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  margin: 4px 6px; /* 🔥 tạo khoảng cách giữa 2 nút */
+}
+
+/* Icon */
+.custom-order-table td .btn i {
+  font-size: 20px;
+  color: #334155;
+}
+
+/* View */
+.custom-order-table td .btn-outline-primary {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+/* Delete */
+.custom-order-table td .btn-outline-danger {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+/* --- FIX ACTION BUTTON ALIGNMENT --- */
+.order-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px; /* khoảng cách 2 nút */
+  min-height: 40px; /* giữ chiều cao ổn định dù có 1 hay 2 nút */
+}
+
+/* Tất cả nút action: cố định kích thước */
+.order-actions .btn {
+  width: 38px;
+  height: 38px;
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+/* Icon bên trong luôn chính giữa */
+.order-actions .btn i {
+  font-size: 18px;
+  margin: 0;
+  padding: 0;
+}
+.pagination .page-item .page-link {
+  border-radius: 6px;
+  margin: 0 4px;
+  color: #334155;
+  cursor: pointer;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.pagination .page-item.disabled .page-link {
+  opacity: 0.5;
+  pointer-events: none;
 }
