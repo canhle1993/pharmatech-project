@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EditorModule } from 'primeng/editor';
@@ -9,12 +9,13 @@ import { QuoteService, Quote } from '../../../services/quote.service';
 declare var bootstrap: any;
 
 @Component({
+  standalone: true,
   templateUrl: './quote.component.html',
   styleUrls: ['./quote.component.css'],
   imports: [CommonModule, FormsModule, EditorModule, ToastModule],
   providers: [MessageService],
 })
-export class QuoteComponent implements OnInit, OnDestroy {
+export class QuoteComponent implements OnInit, OnDestroy, AfterViewInit {
   quotes: Quote[] = [];
   selectedQuote: Quote | null = null;
   loading: boolean = false;
@@ -56,7 +57,10 @@ export class QuoteComponent implements OnInit, OnDestroy {
 
   ngAfterViewInit() {
     console.log('[DEBUG_QUOTE] ngAfterViewInit called');
-    this.initializeModals();
+    // Use setTimeout to ensure DOM is fully rendered
+    setTimeout(() => {
+      this.initializeModals();
+    }, 0);
   }
 
   ngOnDestroy() {
@@ -75,6 +79,13 @@ export class QuoteComponent implements OnInit, OnDestroy {
   initializeModals() {
     console.log('[DEBUG_QUOTE] initializeModals called');
 
+    // Check if bootstrap is available
+    if (typeof bootstrap === 'undefined') {
+      console.error('[DEBUG_QUOTE] Bootstrap is not defined! Retrying in 500ms...');
+      setTimeout(() => this.initializeModals(), 500);
+      return;
+    }
+
     // Initialize Bootstrap modals
     const viewDetailModalEl = document.getElementById('viewDetailModal');
     const replyModalEl = document.getElementById('replyModal');
@@ -85,6 +96,12 @@ export class QuoteComponent implements OnInit, OnDestroy {
       replyModalEl: !!replyModalEl,
       deleteConfirmModalEl: !!deleteConfirmModalEl
     });
+
+    if (!viewDetailModalEl || !replyModalEl || !deleteConfirmModalEl) {
+      console.error('[DEBUG_QUOTE] Some modal elements not found! Retrying in 500ms...');
+      setTimeout(() => this.initializeModals(), 500);
+      return;
+    }
 
     // Dispose old instances if they exist
     if (this.viewDetailModal) {
@@ -100,24 +117,20 @@ export class QuoteComponent implements OnInit, OnDestroy {
       this.deleteConfirmModal.dispose();
     }
 
-    if (viewDetailModalEl) {
-      console.log('[DEBUG_QUOTE] Creating new viewDetailModal instance');
+    try {
+      console.log('[DEBUG_QUOTE] Creating new modal instances...');
       this.viewDetailModal = new bootstrap.Modal(viewDetailModalEl);
-    }
-    if (replyModalEl) {
-      console.log('[DEBUG_QUOTE] Creating new replyModal instance');
       this.replyModal = new bootstrap.Modal(replyModalEl);
-    }
-    if (deleteConfirmModalEl) {
-      console.log('[DEBUG_QUOTE] Creating new deleteConfirmModal instance');
       this.deleteConfirmModal = new bootstrap.Modal(deleteConfirmModalEl);
-    }
 
-    console.log('[DEBUG_QUOTE] Modal instances created:', {
-      viewDetailModal: !!this.viewDetailModal,
-      replyModal: !!this.replyModal,
-      deleteConfirmModal: !!this.deleteConfirmModal
-    });
+      console.log('[DEBUG_QUOTE] Modal instances created successfully:', {
+        viewDetailModal: !!this.viewDetailModal,
+        replyModal: !!this.replyModal,
+        deleteConfirmModal: !!this.deleteConfirmModal
+      });
+    } catch (error) {
+      console.error('[DEBUG_QUOTE] Error creating modal instances:', error);
+    }
   }
 
   loadQuotes() {
@@ -129,11 +142,7 @@ export class QuoteComponent implements OnInit, OnDestroy {
         this.totalQuotes = response.total;
         this.totalPages = Math.ceil(this.totalQuotes / this.pageSize);
         this.loading = false;
-        console.log('[DEBUG_QUOTE] Quotes loaded, reinitializing modals...');
-        // Reinitialize modals after DOM is updated
-        setTimeout(() => {
-          this.initializeModals();
-        }, 100);
+        console.log('[DEBUG_QUOTE] Quotes loaded successfully');
       },
       error: (error) => {
         console.error('Error loading quotes:', error);

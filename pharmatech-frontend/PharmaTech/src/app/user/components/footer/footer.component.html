@@ -1,19 +1,108 @@
 <div class="section-padding-03 pt-0">
   <div class="customer-review" data-bg-image="assets/images/bg/profileTop.png">
-    <h5 class="customer-review-title">Subscribe To Newsletter</h5>
+    <h5 class="customer-review-title">Contact Us Anytime</h5>
     <div class="customer-review-mark"></div>
   </div>
   <!-- Newsletter Section Strat -->
-  <div class="newsletter-two text-center">
-    <div class="newsletter-two__form">
-      <form action="#">
-        <input
-          class="newsletter-two__field"
-          type="text"
-          placeholder="Your email address"
-        />
-        <button class="newsletter-two__btn">Subscribe</button>
-      </form>
+  <div class="newsletter-two" style="padding: 30px 0; background: linear-gradient(135deg, #ffffff 0%, #f5f5f4 50%, #e7e5e4 100%); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    <div class="container custom-container">
+      <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+          <!-- PrimeNG Toast for notifications -->
+          <p-toast position="top-center"></p-toast>
+
+          <form
+            [formGroup]="newsletterForm"
+            (ngSubmit)="onSubmitNewsletter()"
+            class="p-fluid contact-form-prime"
+          >
+            <div class="grid">
+              <div class="col-12 md:col-6 mb-3">
+                <span class="p-float-label">
+                  <input
+                    pInputText
+                    id="firstName"
+                    formControlName="firstName"
+                    class="p-inputtext-sm"
+                    [class.p-invalid]="newsletterForm.get('firstName')?.invalid && newsletterForm.get('firstName')?.touched"
+                    style="border-radius: 8px;"
+                  />
+                  <label for="firstName" style="color: #78716c; font-size: 14px;">First Name *</label>
+                </span>
+                <small
+                  class="p-error block mt-1"
+                  style="font-size: 12px;"
+                  *ngIf="newsletterForm.get('firstName')?.invalid && newsletterForm.get('firstName')?.touched">
+                  First name is required
+                </small>
+              </div>
+              <div class="col-12 md:col-6 mb-3">
+                <span class="p-float-label">
+                  <input
+                    pInputText
+                    id="lastName"
+                    formControlName="lastName"
+                    class="p-inputtext-sm"
+                    [class.p-invalid]="newsletterForm.get('lastName')?.invalid && newsletterForm.get('lastName')?.touched"
+                    style="border-radius: 8px;"
+                  />
+                  <label for="lastName" style="color: #78716c; font-size: 14px;">Last Name *</label>
+                </span>
+                <small
+                  class="p-error block mt-1"
+                  style="font-size: 12px;"
+                  *ngIf="newsletterForm.get('lastName')?.invalid && newsletterForm.get('lastName')?.touched">
+                  Last name is required
+                </small>
+              </div>
+              <div class="col-12 md:col-6 mb-3">
+                <span class="p-float-label">
+                  <input
+                    pInputText
+                    id="email"
+                    type="email"
+                    formControlName="email"
+                    class="p-inputtext-sm"
+                    [class.p-invalid]="newsletterForm.get('email')?.invalid && newsletterForm.get('email')?.touched"
+                    style="border-radius: 8px;"
+                  />
+                  <label for="email" style="color: #78716c; font-size: 14px;">Email Address *</label>
+                </span>
+                <small
+                  class="p-error block mt-1"
+                  style="font-size: 12px;"
+                  *ngIf="newsletterForm.get('email')?.invalid && newsletterForm.get('email')?.touched">
+                  <span *ngIf="newsletterForm.get('email')?.errors?.['required']">Email is required</span>
+                  <span *ngIf="newsletterForm.get('email')?.errors?.['email']">Please enter a valid email</span>
+                </small>
+              </div>
+              <div class="col-12 md:col-6 mb-3">
+                <span class="p-float-label">
+                  <input
+                    pInputText
+                    id="message"
+                    formControlName="message"
+                    class="p-inputtext-sm"
+                    style="border-radius: 8px;"
+                  />
+                  <label for="message" style="color: #78716c; font-size: 14px;">Message (optional)</label>
+                </span>
+              </div>
+              <div class="col-12 text-center mt-2">
+                <p-button
+                  type="submit"
+                  label="Send Message"
+                  icon="pi pi-send"
+                  [loading]="isSubmitting"
+                  [disabled]="isSubmitting"
+                  styleClass="p-button-success w-full md:w-auto px-4"
+                  [style]="{'min-width': '180px', 'border-radius': '8px', 'font-size': '15px', 'padding': '10px 20px', 'background': '#a16207', 'border-color': '#a16207'}">
+                </p-button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
   <!-- Newsletter Section End -->
@@ -67,20 +156,8 @@
           <!-- Footer Widget Newsletter Strat -->
           <div class="footer-widget">
             <div class="footer-widget__newsletter ms-lg-auto">
-              <h4 class="footer-widget__title-02">Newsletter</h4>
-
-              <div class="position-relative mt-3">
-                <form action="#">
-                  <input
-                    class="footer-widget__fild"
-                    type="text"
-                    placeholder="Email Address..."
-                  />
-                  <button class="footer-widget__btn btn btn-secondary">
-                    Join
-                  </button>
-                </form>
-              </div>
+              <h4 class="footer-widget__title-02">Quick Contact</h4>
+              <p style="color: #999; font-size: 14px; margin-top: 10px;">Send us a message from anywhere on our website</p>
             </div>
           </div>
           <!-- Footer Widget Newsletter End -->
