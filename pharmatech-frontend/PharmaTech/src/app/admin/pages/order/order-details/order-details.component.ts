@@ -19,8 +19,11 @@ import { InputIconModule } from 'primeng/inputicon'; // 🆕 CODE MỚI
 import { FormsModule } from '@angular/forms'; // 🆕 CODE MỚI
 import { DialogModule } from 'primeng/dialog';
 import { FileUploadModule } from 'primeng/fileupload';
+// Correct module imports for library versions:
+// html2canvas v1 provides default export; jspdf v3 uses named export { jsPDF }
+// jspdf-autotable provides a function we import and pass the jsPDF instance
 import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 @Component({

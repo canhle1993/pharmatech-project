@@ -4,14 +4,17 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { EditorModule } from 'primeng/editor';
 import { ButtonModule } from 'primeng/button';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 import { env } from '../../../enviroments/enviroment';
 
 @Component({
   selector: 'app-service-admin',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EditorModule, ButtonModule],
+  imports: [CommonModule, ReactiveFormsModule, EditorModule, ButtonModule, ToastModule],
   templateUrl: './service.component.html',
   styleUrls: ['./service.component.css'],
+  providers: [MessageService]
 })
 export class ServiceAdminComponent implements OnInit {
   serviceForm!: FormGroup;
@@ -20,7 +23,7 @@ export class ServiceAdminComponent implements OnInit {
   isUploading = false;
   imageBase = env.imageUrl;
 
-  constructor(private fb: FormBuilder, private http: HttpClient) {}
+  constructor(private fb: FormBuilder, private http: HttpClient, private messageService: MessageService) {}
 
   ngOnInit(): void {
     this.initializeForm();
@@ -95,13 +98,21 @@ export class ServiceAdminComponent implements OnInit {
       next: (response) => {
         console.log('Service updated successfully:', response);
         this.isUploading = false;
-        alert('Service content updated successfully!');
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Updated',
+          detail: 'Service content updated successfully'
+        });
         this.loadServiceData();
       },
       error: (error) => {
         console.error('Error updating service:', error);
         this.isUploading = false;
-        alert('Error updating service content. Please try again.');
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Update Failed',
+          detail: 'Error updating service content. Please try again.'
+        });
       },
     });
   }

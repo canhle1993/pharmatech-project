@@ -34,6 +34,7 @@ import { BannerModule } from './banner/banner.module';
 import { SaveJobModule } from './savejob/savejob.module';
 import { CareerAnalyticsModule } from './career-analytics/analytics.module';
 import { PurchaseModule } from './purchase/purchase.module';
+import { ServiceModule } from './service/service.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -100,6 +101,7 @@ import { PurchaseModule } from './purchase/purchase.module';
     CareerAnalyticsModule,
     SaveJobModule,
     PurchaseModule,
+    ServiceModule,
   ],
   controllers: [],
   providers: [],
