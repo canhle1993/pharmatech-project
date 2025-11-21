@@ -22,10 +22,9 @@
     </li>
     <li class="facebook">
       <a
-        rel="noopener nofflow"
-        target="_blank"
-        href="https://m.me/vutruso"
-        data-original-title="Nhắn tin cho chúng tôi qua Facebook"
+        href="javascript:void(0)"
+        (click)="openChatbot()"
+        data-original-title="Mở Chatbot hỗ trợ"
         data-placement="top"
         data-toggle="tooltip"
       >
@@ -35,9 +34,10 @@
             src="https://vutruso.com/wp-content/uploads/2024/08/facebook.svg"
           />
         </span>
-        <span class="tienichname">Vũ Trụ Số</span>
+        <span class="tienichname">Chatbot</span>
       </a>
     </li>
+
     <li class="sodienthoai">
       <a
         rel="noopener nofflow"

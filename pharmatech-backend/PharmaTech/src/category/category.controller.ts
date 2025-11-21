@@ -42,6 +42,33 @@ export class CategoryController {
   findByKeyword(@Param('keyword') keyword: string) {
     return this.categoryService.findByKeyword(keyword);
   }
+  // ⭐ Realtime check category name tồn tại hay chưa
+  @Get('check-name/:name')
+  async checkName(@Param('name') name: string) {
+    try {
+      const cleaned = name.trim();
+      if (!cleaned) {
+        return { exists: false, is_delete: false };
+      }
+
+      const exist: any = await this.categoryService.findByName(cleaned);
+
+      if (!exist) {
+        return { exists: false, is_delete: false };
+      }
+
+      return {
+        exists: true,
+        is_delete: exist.is_delete,
+        categoryId: exist._id,
+      };
+    } catch (error) {
+      throw new HttpException(
+        { message: 'Check name failed', error: error.message },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 
   // 🔹 Lấy toàn bộ
   @Get('find-all')
@@ -100,11 +127,17 @@ export class CategoryController {
       };
     } catch (error) {
       console.error('❌ Create category error:', error);
+
+      // Nếu service đã trả HttpException → ném lại không sửa
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      // Lỗi khác (Mongo/server)
       throw new HttpException(
         {
           message: 'Failed to create category',
           errorMessage: error.message,
-          errorStack: error.stack,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );

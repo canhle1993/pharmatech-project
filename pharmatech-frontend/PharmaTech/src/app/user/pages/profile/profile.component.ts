@@ -10,12 +10,14 @@ import { AccountService } from '../../../services/account.service';
 import { ProfileService } from '../../../services/profile.service';
 import { Account } from '../../../entities/account.entity';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Pipe, PipeTransform } from '@angular/core';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 
 import { DatePickerModule } from 'primeng/datepicker';
 import { SavedJob } from '../../../entities/saved-job.entity';
 import { CareerService } from '../../../services/career.service';
 import { OrderService } from '../../../services/order.service';
+import { Order } from '../../../entities/order.entity';
 
 @Component({
   selector: 'app-profile',
@@ -29,10 +31,11 @@ import { OrderService } from '../../../services/order.service';
     AutoCompleteModule,
     DatePickerModule,
     RouterModule,
+    ConfirmDialogModule,
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
 })
 export class ProfileComponent implements OnInit {
   account: Account | null = null;
@@ -112,9 +115,14 @@ export class ProfileComponent implements OnInit {
 
   orderHistory: any[] = [];
 
+  searchCode: string = '';
+  filterStatus: string = '';
+  filterApproval: string = '';
+  filteredOrders: any[] = []; // toàn bộ sau khi lọc
+
   // ⭐ Pagination cho Order History
   pagedOrders: any[] = [];
-  pageSize = 4; // mỗi trang 4 dòng
+  pageSize = 5; // mỗi trang 5 dòng
   currentPage = 1; // trang hiện tại
   totalPages = 1; // tổng số trang
 
@@ -132,7 +140,8 @@ export class ProfileComponent implements OnInit {
     private router: Router,
     private careerService: CareerService,
     private ngZone: NgZone,
-    private orderService: OrderService // ⭐ ADD THIS
+    private orderService: OrderService,
+    private confirmationService: ConfirmationService
   ) {}
 
   /** =================== Lifecycle =================== */
@@ -200,15 +209,33 @@ export class ProfileComponent implements OnInit {
       this.loading = false;
     }
   }
+  getStatusBadge(status: string) {
+    const s = status.toLowerCase();
+
+    switch (s) {
+      case 'deposit paid':
+        return 'badge bg-info text-dark';
+
+      case 'paid in full':
+        return 'badge bg-success'; // CHỈ CẦN CLASS NÀY
+
+      case 'completed':
+        return 'badge bg-success bg-opacity-75';
+
+      case 'cancelled':
+        return 'badge bg-danger';
+
+      case 'refunded':
+        return 'badge bg-primary';
+
+      default:
+        return 'badge bg-secondary';
+    }
+  }
 
   async loadOrders(userId: string) {
     try {
-      // 1️⃣ Lấy toàn bộ orders từ BE
       const all = await this.orderService.findAll();
-
-      console.log('📦 ALL ORDERS:', all);
-
-      // 2️⃣ Lọc CHÍNH XÁC những đơn hàng thuộc user đang login
       const userOrders = all.filter((o: any) => {
         const cid =
           o.user_id ||
@@ -220,14 +247,10 @@ export class ProfileComponent implements OnInit {
         return cid === userId;
       });
 
-      console.log('🔥 USER ORDERS:', userOrders);
-
-      // 3️⃣ Loại bỏ đơn hàng rỗng (tránh 2 dòng trống)
       const validOrders = userOrders.filter((o: any) => {
         return o && (o.id || o._id) && o.total_amount !== undefined;
       });
 
-      // 4️⃣ Map sang dữ liệu FE
       this.orderHistory = validOrders.map((o: any) => ({
         code: o.id || o._id,
         customer: o.customer?.name || o.contact_name || 'Unknown',
@@ -240,12 +263,37 @@ export class ProfileComponent implements OnInit {
         created_at: o.created_at,
       }));
 
-      this.applyPagination(); // ⭐ chạy phân trang ngay khi load xong
+      this.applyFilters(); // chạy filter + pagination
 
       console.log('✅ ORDER HISTORY (FE):', this.orderHistory);
     } catch (err) {
       console.error('❌ Failed to load orders:', err);
     }
+  }
+
+  applyFilters() {
+    let data = [...this.orderHistory];
+
+    if (this.searchCode.trim()) {
+      const keyword = this.searchCode.toLowerCase();
+      data = data.filter((o) => o.code.toLowerCase().includes(keyword));
+    }
+
+    if (this.filterStatus) {
+      data = data.filter((o) => o.status === this.filterStatus);
+    }
+
+    if (this.filterApproval) {
+      data = data.filter((o) => o.approval_status === this.filterApproval);
+    }
+
+    this.filteredOrders = data;
+
+    // Tính lại tổng số trang
+    this.totalPages = Math.ceil(data.length / this.pageSize);
+
+    // Bắt đầu lại từ trang 1
+    this.changePage(1);
   }
 
   // ======================================================
@@ -592,12 +640,13 @@ export class ProfileComponent implements OnInit {
  * ⭐ APPLY PAGINATION
  =================================*/
   applyPagination() {
-    this.totalPages = Math.ceil(this.orderHistory.length / this.pageSize);
+    this.totalPages = Math.ceil(this.filteredOrders.length / this.pageSize);
 
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
 
-    this.pagedOrders = this.orderHistory.slice(start, end);
+    // ⭐ Quan trọng: phân trang trên filteredOrders
+    this.pagedOrders = this.filteredOrders.slice(start, end);
   }
 
   /** ===============================
@@ -605,7 +654,48 @@ export class ProfileComponent implements OnInit {
  =================================*/
   changePage(page: number) {
     if (page < 1 || page > this.totalPages) return;
+
     this.currentPage = page;
-    this.applyPagination();
+
+    const start = (page - 1) * this.pageSize;
+    const end = start + this.pageSize;
+
+    // ⭐ Quan trọng: phải phân trang trên filteredOrders
+    this.pagedOrders = this.filteredOrders.slice(start, end);
+  }
+
+  onView(o: any) {
+    const id = o.code; // dùng code làm id
+
+    if (!id) {
+      console.warn('⚠️ Order Code (ID) missing:', o);
+      return;
+    }
+
+    this.router.navigate(['/profile-details', id]);
+  }
+
+  onCancelOrder(o: any) {
+    if (o.approval_status === 'Pending Approval') {
+      this.confirmationService.confirm({
+        header: 'Cancel Order',
+        message:
+          'Your order has not been approved yet.<br>If you want to cancel this order, please contact the admin to process your deposit refund.',
+        icon: 'pi pi-info-circle',
+        acceptLabel: 'OK',
+        rejectVisible: false,
+        accept: () => {},
+      });
+    } else if (o.approval_status === 'Approved') {
+      this.confirmationService.confirm({
+        header: 'Cancel Order',
+        message:
+          'Your order has already been approved.<br>If you want to cancel, please contact the admin.<br><strong>Note:</strong> The deposit will NOT be refunded.',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'OK',
+        rejectVisible: false,
+        accept: () => {},
+      });
+    }
   }
 }

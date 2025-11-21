@@ -1266,7 +1266,7 @@ textarea.form-field:focus {
 .scroll-top.show {
   visibility: visible;
   opacity: 1;
-  bottom: 60px;
+  bottom: 60px !important;
 }
 .scroll-top i {
   position: absolute;

@@ -25,7 +25,11 @@
     >
       <ng-template pTemplate="caption">
         <div class="p-datatable-caption">
-          <div class="toolbar-actions">
+          <div
+            class="toolbar-actions"
+            style="display: flex; gap: 8px; align-items: center"
+          >
+            <!-- Nút Add -->
             <button
               pButton
               icon="pi pi-plus"
@@ -33,9 +37,45 @@
               class="p-button-sm p-button-info"
               [routerLink]="['/admin/product-add']"
             ></button>
+
+            <!-- 📥 Import Excel -->
+            <input
+              type="file"
+              accept=".xls,.xlsx"
+              (change)="onFileSelected($event)"
+              style="max-width: 200px"
+            />
+
+            <button
+              pButton
+              icon="pi pi-upload"
+              label="Import"
+              class="p-button-sm p-button-success"
+              [disabled]="uploading || !selectedFile"
+              (click)="importExcel()"
+            ></button>
+
+            <!-- 📤 Export Excel -->
+            <button
+              pButton
+              icon="pi pi-download"
+              label="Export"
+              class="p-button-sm p-button-help"
+              (click)="downloadExcel()"
+            ></button>
+
+            <!-- Spinner khi đang import -->
+            <p-progressSpinner
+              *ngIf="uploading"
+              styleClass="ml-2"
+              strokeWidth="4"
+              diameter="25"
+            >
+            </p-progressSpinner>
           </div>
 
-          <p-floatLabel class="w-full md:w-56" style="margin-left: 40%">
+          <!-- Category Filter -->
+          <p-floatLabel class="w-full md:w-56" style="margin-left: 20%">
             <p-select
               class="w-full"
               [options]="categories"
@@ -48,6 +88,7 @@
             ></p-select>
           </p-floatLabel>
 
+          <!-- Search -->
           <div class="filter-group">
             <p-iconfield iconPosition="left" class="search-field">
               <p-inputicon><i class="pi pi-search"></i></p-inputicon>
@@ -61,6 +102,7 @@
           </div>
         </div>
       </ng-template>
+
       <!-- Header -->
       <ng-template pTemplate="header">
         <tr>

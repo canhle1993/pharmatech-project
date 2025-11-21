@@ -6,7 +6,7 @@ import {
   Renderer2,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
@@ -39,6 +39,7 @@ import 'swiper/css/thumbs';
     ButtonModule,
     ProgressSpinnerModule,
     ToastModule,
+    RouterLink,
   ],
   providers: [MessageService],
 })
@@ -46,6 +47,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
   product!: Product;
   loading = true;
   imageBase = env.imageUrl;
+  relatedProducts: any[] = [];
 
   constructor(
     private renderer: Renderer2,
@@ -79,6 +81,17 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
           img.startsWith('http') ? img : `${this.imageBase}${img}`
         );
       }
+
+      const related: any = await this.productService.getRelatedProducts(id);
+      this.relatedProducts = related || [];
+
+      // Nối imageBase
+      this.relatedProducts = this.relatedProducts.map((p: any) => ({
+        ...p,
+        photo: p.photo?.startsWith('http')
+          ? p.photo
+          : `${this.imageBase}${p.photo}`,
+      }));
     } catch (error) {
       console.error('❌ Load product details failed:', error);
       this.messageService.add({

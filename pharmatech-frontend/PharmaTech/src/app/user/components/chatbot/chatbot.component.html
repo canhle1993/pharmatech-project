@@ -1,21 +1,26 @@
 <!-- Nút mở chat -->
-<button type="button" id="open-chat-btn" pButton (click)="toggleOpen()">💬 Mở Chat</button>
+<button type="button" id="open-chat-btn" pButton (click)="toggleOpen()">
+  💬 Open Chat
+</button>
 
 <!-- Khung chatbot ẩn/hiện -->
 <div class="chat-wrapper" [class.hidden]="!open">
   <div class="chat-container">
-    <header class="chat-header">🤖 Chatbot Trợ Lý</header>
+    <header class="chat-header">🤖 Chatbot</header>
 
     <!-- Hộp chat -->
     <div class="chat-box" #chatBoxRef>
-      <div *ngFor="let m of messages" [ngClass]="m.from === 'user' ? 'user-message' : 'bot-message'">
+      <div
+        *ngFor="let m of messages"
+        [ngClass]="m.from === 'user' ? 'user-message' : 'bot-message'"
+      >
         <div class="bubble">
-          <span class="from">{{ ""}}</span>
+          <span class="from">{{ "" }}</span>
           <span class="text">{{ m.text }}</span>
         </div>
       </div>
 
-      <div *ngIf="!messages?.length" class="empty">Chưa có tin nhắn nào.</div>
+      <div *ngIf="!messages?.length" class="empty">No messages yet.</div>
     </div>
 
     <!-- Khu nhập liệu -->
@@ -24,11 +29,11 @@
         type="text"
         [(ngModel)]="msg"
         name="message"
-        placeholder="Nhập tin nhắn..."
+        placeholder="Enter your message..."
         autocomplete="off"
         required
       />
-      <button type="submit" pButton>Gửi</button>
+      <button type="submit" pButton>Send</button>
     </form>
   </div>
 </div>

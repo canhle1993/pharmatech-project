@@ -1,0 +1,245 @@
+/* =============================
+   Services Page - Modern Tabs
+   ============================= */
+
+.services-page-wrapper {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* ===================================
+   Navigation Tabs Section
+   =================================== */
+.tabs-navigation-section {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 1rem 0;
+}
+
+.tabs-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabs-wrapper::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tabs-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.tabs-wrapper::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 4px;
+}
+
+.nav-tabs-custom {
+  display: flex;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-bottom: none;
+}
+
+.nav-tab-item {
+  flex-shrink: 0;
+}
+
+.nav-tab-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #6c757d;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-tab-button i {
+  font-size: 1.1rem;
+  transition: transform 0.3s ease;
+}
+
+.nav-tab-button .tab-label {
+  transition: color 0.3s ease;
+}
+
+/* Hover Effect */
+.nav-tab-button::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.3s ease;
+}
+
+.nav-tab-button:hover {
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.06);
+}
+
+.nav-tab-button:hover i {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.nav-tab-button:hover::before {
+  width: 100%;
+}
+
+/* Active State */
+.nav-tab-button.active {
+  color: #fff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 -2px 10px rgba(102, 126, 234, 0.3);
+}
+
+.nav-tab-button.active::before {
+  width: 100%;
+}
+
+.nav-tab-button.active i {
+  transform: scale(1.15);
+}
+
+/* ===================================
+   Tab Content Section
+   =================================== */
+.tab-content-section {
+  background: #f8f9fa;
+  padding: 3rem 0;
+}
+
+.tab-content-panel {
+  display: none;
+  animation: fadeInUp 0.5s ease;
+}
+
+.tab-content-panel.active {
+  display: block;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Content Wrapper */
+.content-wrapper {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .nav-tab-button {
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .nav-tab-button .tab-label {
+    display: none;
+  }
+
+  .nav-tab-button i {
+    font-size: 1.25rem;
+  }
+
+  .content-wrapper {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .tabs-navigation-section {
+    padding: 0.5rem 0;
+  }
+
+  .nav-tabs-custom {
+    gap: 0.25rem;
+  }
+
+  .nav-tab-button {
+    padding: 0.75rem 0.875rem;
+  }
+}
+
+/* ===================================
+   Content Styling
+   =================================== */
+.content-wrapper h1,
+.content-wrapper h2,
+.content-wrapper h3 {
+  color: #2d3748;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.content-wrapper h1 {
+  font-size: 2rem;
+}
+
+.content-wrapper h2 {
+  font-size: 1.5rem;
+  color: #667eea;
+}
+
+.content-wrapper h3 {
+  font-size: 1.25rem;
+}
+
+.content-wrapper p {
+  color: #4a5568;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+
+.content-wrapper ul,
+.content-wrapper ol {
+  color: #4a5568;
+  line-height: 1.8;
+  padding-left: 1.5rem;
+}
+
+.content-wrapper img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.content-wrapper a {
+  color: #667eea;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.content-wrapper a:hover {
+  border-bottom-color: #667eea;
+}

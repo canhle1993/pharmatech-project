@@ -20,3 +20,15 @@
   opacity: 0 !important;
   pointer-events: none !important;
 }
+.header-section.header-sticky-05 {
+  top: 0 !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.header-section.header-sticky-05.is-sticky {
+  top: 0 !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  transform: translateY(0) !important;
+}

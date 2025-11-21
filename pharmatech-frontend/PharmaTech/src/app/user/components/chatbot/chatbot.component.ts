@@ -1,5 +1,11 @@
 import {
-  ChangeDetectorRef, Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  ViewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -9,9 +15,8 @@ import { Subscription } from 'rxjs';
 import { ChatService } from '../../../services/chat.service';
 import { NotificationService } from '../../../services/notification.service';
 
-
 interface ChatMsg {
-  from: String;   // map từ fromRole string
+  from: String; // map từ fromRole string
   text: string;
 }
 
@@ -39,7 +44,7 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private notifyService: NotificationService, // Inject NotificationService
     private zone: NgZone
-  ) { }
+  ) {}
 
   // từ fromRole (string) → 'user' | 'bot'
   private mapRole(fromRole: any): String {
@@ -109,14 +114,14 @@ export class ChatbotComponent implements OnInit, OnDestroy {
 
     // Gửi thông báo khi có tin nhắn mới (đẩy thông báo vào NotificationService)
     const item = {
-      from: this.userId,  // Người gửi tin nhắn
-      text: text,  // Nội dung tin nhắn
-      time: new Date(),  // Thời gian gửi tin nhắn
+      from: this.userId, // Người gửi tin nhắn
+      text: text, // Nội dung tin nhắn
+      time: new Date(), // Thời gian gửi tin nhắn
     };
     console.log('%c[Chatbot] 📨 Push notification:', 'color: lime', item);
 
     this.notifyService.pushNotification(item); // 🔔 cho badge
-    this.notifyService.push(item);             // 💬 cho messages
+    this.notifyService.push(item); // 💬 cho messages
 
     this.msg = '';
     this.cdr.detectChanges();

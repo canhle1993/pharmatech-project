@@ -101,7 +101,11 @@ export class OrderListComponent implements OnInit {
       { title: '💳 Paid in Full', value: 'PaidFull' }, // 🆕 CHỈ DÙNG GIÁ TRỊ NGẮN
       { title: '❌ Rejected', value: 'Rejected' },
     ];
+    const tabFromUrl = this.router.parseUrl(this.router.url).queryParams['tab'];
 
+    if (tabFromUrl) {
+      this.activeTab = tabFromUrl; // ⭐ KHÔI PHỤC TAB
+    }
     // ✅ Tải dữ liệu ban đầu
     await this.loadOrders();
   }
@@ -627,15 +631,13 @@ export class OrderListComponent implements OnInit {
   // 📦 XEM CHI TIẾT
   // ==================================================
   /** 🔍 Xem chi tiết đơn hàng */
-  /** 🔍 Xem chi tiết đơn hàng */
-  async onView(order: Order) {
-    if (!order.safeId) {
-      console.warn('⚠️ Order ID is missing:', order);
-      return;
-    }
-
-    // ✅ Chuyển sang trang chi tiết đơn hàng
-    this.router.navigate(['/admin/order/order-details', order.safeId]);
+  onView(order: Order) {
+    this.router.navigate(['/admin/order/order-details', order.safeId], {
+      queryParams: {
+        from: '/admin/order/order-list',
+        tab: this.activeTab, // ⭐ QUAN TRỌNG: truyền tab hiện tại
+      },
+    });
   }
 
   // ==================================================

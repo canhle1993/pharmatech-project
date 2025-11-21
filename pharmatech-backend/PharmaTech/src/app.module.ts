@@ -33,6 +33,7 @@ import { QuoteModule } from './quote/quote.module';
 import { BannerModule } from './banner/banner.module';
 import { SaveJobModule } from './savejob/savejob.module';
 import { CareerAnalyticsModule } from './career-analytics/analytics.module';
+import { PurchaseModule } from './purchase/purchase.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -98,6 +99,7 @@ import { CareerAnalyticsModule } from './career-analytics/analytics.module';
     BannerModule,
     CareerAnalyticsModule,
     SaveJobModule,
+    PurchaseModule,
   ],
   controllers: [],
   providers: [],

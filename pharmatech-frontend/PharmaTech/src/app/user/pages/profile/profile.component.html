@@ -482,6 +482,51 @@
         </h2>
       </div>
 
+      <!-- ⭐ FILTER BAR -->
+      <div class="row g-3 mb-3">
+        <!-- Search Order Code -->
+        <div class="col-md-4">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search by Order Code..."
+            [(ngModel)]="searchCode"
+            (input)="applyFilters()"
+          />
+        </div>
+
+        <!-- Filter Status -->
+        <div class="col-md-4">
+          <select
+            class="form-select"
+            [(ngModel)]="filterStatus"
+            (change)="applyFilters()"
+          >
+            <option value="">Filter by Status</option>
+            <!-- <option value="Pending">Pending</option> -->
+            <option value="Deposit Paid">Deposit Paid</option>
+            <option value="Paid in Full">Paid in Full</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+            <option value="Refunded">Refunded</option>
+          </select>
+        </div>
+
+        <!-- Filter Approval -->
+        <div class="col-md-4">
+          <select
+            class="form-select"
+            [(ngModel)]="filterApproval"
+            (change)="applyFilters()"
+          >
+            <option value="">Filter by Approval</option>
+            <option value="Pending Approval">Pending Approval</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+
       <!-- Table -->
       <div class="table-responsive mt-3">
         <table
@@ -510,22 +555,7 @@
               <td>{{ o.remaining | number }}</td>
 
               <td>
-                <span
-                  class="badge rounded-pill"
-                  [ngClass]="{
-                    'bg-warning text-dark': o.status === 'Pending',
-
-                    'bg-info text-dark': o.status === 'Deposit Paid',
-
-                    'bg-success': o.status === 'Paid in Full',
-
-                    'bg-success bg-opacity-75': o.status === 'Completed',
-
-                    'bg-danger': o.status === 'Cancelled',
-
-                    'bg-primary': o.status === 'Refunded'
-                  }"
-                >
+                <span [ngClass]="getStatusBadge(o.status)">
                   {{ o.status }}
                 </span>
               </td>
@@ -549,7 +579,10 @@
               <td>
                 <div class="d-flex align-items-center gap-2">
                   <!-- View -->
-                  <button class="btn btn-outline-primary action-btn">
+                  <button
+                    class="btn btn-outline-primary action-btn"
+                    (click)="onView(o)"
+                  >
                     <i class="bx bx-show"></i>
                   </button>
 
@@ -559,6 +592,7 @@
                       o.status === 'Pending' || o.status === 'Deposit Paid'
                     "
                     class="btn btn-outline-danger action-btn"
+                    (click)="onCancelOrder(o)"
                   >
                     <i class="bx bx-x-circle"></i>
                   </button>
@@ -620,3 +654,4 @@
   styleClass="custom-spinner"
 ></p-progressSpinner>
 <p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>

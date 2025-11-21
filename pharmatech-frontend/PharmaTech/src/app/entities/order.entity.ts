@@ -7,6 +7,7 @@ export class Order {
 
   /** 👤 Người đặt hàng */
   user_info?: {
+    _id?: string; // 👈 thêm dòng này
     name?: string;
     email?: string;
     phone?: string;

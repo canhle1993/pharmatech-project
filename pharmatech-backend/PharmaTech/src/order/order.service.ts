@@ -535,6 +535,7 @@ export class OrderService {
     order.remaining_payment_date = new Date(); // 🟢 ngày hiện tại
     order.status = 'Paid in Full';
     order.updated_by = updated_by;
+    order.paid_at = new Date();
     order.updated_at = new Date();
 
     await order.save();

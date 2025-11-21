@@ -21,7 +21,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { InputNumberModule } from 'primeng/inputnumber';
-
+import { DialogModule } from 'primeng/dialog';
 // 🧩 Thêm Quill
 import { QuillModule } from 'ngx-quill';
 import Quill from 'quill';
@@ -45,7 +45,8 @@ Quill.register({ 'modules/better-table': QuillBetterTable }, true);
     MultiSelectModule,
     InputNumberModule,
     QuillModule,
-    EditorModule, // ✅ thêm dòng này
+    EditorModule,
+    DialogModule,
   ],
   templateUrl: './productAdd.component.html',
   styleUrls: ['./productAdd.component.css'],
@@ -62,6 +63,18 @@ export class ProductAddComponent implements OnInit {
   loading = false;
 
   existingProducts: Product[] = [];
+
+  // ================================
+  // ⭐ Thêm Category mới (Inline)
+  // ================================
+  showAddCategoryDialog = false; // mở/đóng dialog
+  newCategoryName: string = ''; // tên nhập vào
+  categoryExists: boolean | null = null; // true/false chưa tồn tại
+  checkingCategory = false; // để hiện "checking..."
+  private checkTimer: any; // debounce timer
+  isSavingCategory = false; // disable nút Save khi đang xử lý
+  categoryInBinId: string | null = null;
+  showRestoreConfirm = false;
 
   constructor(
     private fb: FormBuilder,
@@ -100,6 +113,142 @@ export class ProductAddComponent implements OnInit {
       this.existingProducts = productsRes || [];
     } catch (error) {
       console.error('❌ Load products failed (for duplicate check):', error);
+    }
+  }
+  openAddCategoryDialog() {
+    this.showAddCategoryDialog = true;
+    this.newCategoryName = '';
+    this.categoryExists = null;
+  }
+  onCategoryNameChange(value: string) {
+    this.newCategoryName = value;
+    this.categoryExists = null;
+
+    if (this.checkTimer) clearTimeout(this.checkTimer);
+
+    // Debounce 300ms
+    this.checkTimer = setTimeout(async () => {
+      const name = value.trim();
+      if (!name) {
+        this.categoryExists = null;
+        return;
+      }
+
+      this.checkingCategory = true;
+
+      try {
+        const res: any = await this.categoryService.checkCategoryName(name);
+        this.categoryExists = res?.exists || false;
+      } catch (error) {
+        console.error('Check category name failed:', error);
+      }
+
+      this.checkingCategory = false;
+    }, 300);
+  }
+  async saveNewCategory() {
+    const name = this.newCategoryName.trim();
+    if (!name) return;
+
+    this.isSavingCategory = true;
+
+    try {
+      const res: any = await this.categoryService.create(
+        { name, updated_by: 'admin', description: '' },
+        null
+      );
+
+      const created = res?.data || res;
+
+      // 🟢 CASE 3: Tạo mới thành công
+      this.categories.push({
+        id: created._id || created.id,
+        name: created.name,
+      });
+
+      const current = this.addForm.get('category_ids')?.value || [];
+      this.addForm.patchValue({
+        category_ids: [...current, created._id || created.id],
+      });
+
+      this.showAddCategoryDialog = false;
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Category created',
+        detail: 'New category added successfully!',
+      });
+    } catch (error: any) {
+      const err = error?.error;
+
+      // 🟡 CASE 1: Nằm trong Recycle Bin
+      if (err?.code === 'IN_RECYCLE_BIN') {
+        this.categoryInBinId = err.categoryId;
+        this.showRestoreConfirm = true;
+
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Category in Recycle Bin',
+          detail: `Category "${name}" is in Recycle Bin. Do you want to restore it?`,
+        });
+
+        this.isSavingCategory = false;
+        return;
+      }
+
+      // 🔴 CASE 2: Tên đang active
+      if (err?.message?.includes('already exists')) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Duplicate',
+          detail: 'Category name already exists.',
+        });
+
+        this.isSavingCategory = false;
+        return;
+      }
+
+      // ❌ Lỗi khác
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to create category.',
+      });
+    }
+
+    this.isSavingCategory = false;
+  }
+
+  async restoreCategory() {
+    if (!this.categoryInBinId) return;
+
+    try {
+      await this.categoryService.restore(this.categoryInBinId, 'admin');
+
+      this.categories.push({
+        id: this.categoryInBinId,
+        name: this.newCategoryName,
+      });
+
+      const current = this.addForm.get('category_ids')?.value || [];
+      this.addForm.patchValue({
+        category_ids: [...current, this.categoryInBinId],
+      });
+
+      this.showRestoreConfirm = false;
+      this.showAddCategoryDialog = false;
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Restored',
+        detail: 'Category restored successfully!',
+      });
+    } catch (err) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to restore category.',
+      });
     }
   }
 

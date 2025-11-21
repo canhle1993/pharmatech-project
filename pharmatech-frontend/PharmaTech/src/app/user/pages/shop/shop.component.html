@@ -67,6 +67,16 @@
         >
           <div class="col mb-50" *ngFor="let product of pagedProducts">
             <div class="product-item text-center">
+              <!-- Badge -->
+              <div
+                class="product-item__badge"
+                [ngClass]="{
+                  'd-none':
+                    !product?.stock_quantity || product.stock_quantity >= 10
+                }"
+              >
+                Hot
+              </div>
               <div class="product-item__image border w-100">
                 <a [routerLink]="['/productDetails', product.id]">
                   <img

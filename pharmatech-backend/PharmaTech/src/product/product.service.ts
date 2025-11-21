@@ -13,6 +13,8 @@ import { ProductImage } from 'src/product-image/product-image.decorator';
 import { ProductCategoryService } from 'src/product-category/product-category.service';
 import { OrderDetails } from 'src/order-details/order-details.decorator';
 import { Types } from 'mongoose';
+import * as XLSX from 'xlsx';
+import { ImportProductDTO } from './import-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -26,39 +28,57 @@ export class ProductService {
     private orderDetailsModel: Model<OrderDetails>,
   ) {}
 
-  /** 🔹 Lấy 1 sản phẩm (kèm ảnh phụ + categories) */
-  // async findById(id: string): Promise<ProductDTO | null> {
-  //   const product = await this._productModel
-  //     .findById(id)
-  //     .populate({
-  //       path: 'category_ids',
-  //       model: 'Category',
-  //       select: '_id name',
-  //     })
-  //     .exec();
+  /** ⭐ Lấy sản phẩm liên quan cùng category */
+  async getRelatedProducts(productId: string) {
+    // ============================
+    // 1) Lấy category_ids của sản phẩm hiện tại
+    // ============================
+    const ProductCategoryModel = (this._productModel.db.models as any)[
+      'ProductCategory'
+    ];
+    const CategoryModel = (this._productModel.db.models as any)['Category'];
 
-  //   if (!product) return null;
+    // lấy liên kết của product hiện tại
+    const currentLinks = await ProductCategoryModel.find({
+      product_id: productId,
+    }).lean();
 
-  //   const images = await this._productImageModel
-  //     .find({ product_id: id })
-  //     .sort({ updated_at: -1, created_at: -1 })
-  //     .exec();
+    if (currentLinks.length === 0) return [];
 
-  //   const dto = plainToInstance(ProductDTO, product.toObject(), {
-  //     excludeExtraneousValues: true,
-  //   });
+    const categoryIds = currentLinks.map((l: any) => l.category_id?.toString());
 
-  //   (dto as any).gallery = images.map((img) => img.url);
-  //   (dto as any).categories = (product as any).category_ids.map((c: any) => ({
-  //     id: c._id,
-  //     name: c.name,
-  //   }));
-  //   (dto as any).category_ids = (product as any).category_ids.map((c: any) =>
-  //     c._id.toString(),
-  //   );
+    // ============================
+    // 2) Lấy danh sách sản phẩm khác trong các category này
+    // ============================
+    const otherLinks = await ProductCategoryModel.find({
+      category_id: { $in: categoryIds },
+      product_id: { $ne: productId }, // loại bỏ chính nó
+    }).lean();
 
-  //   return dto;
-  // }
+    const relatedProductIds = [
+      ...new Set(otherLinks.map((l: any) => l.product_id?.toString())),
+    ];
+
+    if (relatedProductIds.length === 0) return [];
+
+    // ============================
+    // 3) Lấy thông tin product tương ứng
+    // ============================
+    const products = await this._productModel
+      .find({
+        _id: { $in: relatedProductIds },
+        is_delete: false,
+      })
+      .sort({ updated_at: -1 })
+      .lean();
+
+    // ============================
+    // 4) Build DTO
+    // ============================
+    return products.map((p) =>
+      plainToInstance(ProductDTO, p, { excludeExtraneousValues: true }),
+    );
+  }
 
   /** 🔹 Lấy 1 sản phẩm (kèm ảnh phụ + categories) */
   async findById(id: string): Promise<ProductDTO | null> {
@@ -607,5 +627,124 @@ export class ProductService {
     }
 
     return result;
+  }
+
+  async importFromExcel(file: Express.Multer.File) {
+    try {
+      const workbook = XLSX.readFile(file.path);
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+      let total = worksheet.length;
+      let success = 0;
+      let failed = 0;
+      let errors = [];
+
+      for (let i = 0; i < worksheet.length; i++) {
+        const row: any = worksheet[i];
+
+        const name = row.name?.toString().trim();
+        const model = row.model?.toString().trim() || '';
+        const price = Number(row.price) || 0;
+        const introduce = row.introduce || '';
+        const description = row.description || '';
+        const specification = row.specification || '';
+        const stock_quantity = Number(row.stock_quantity) || 0;
+
+        // ❗ Kiểm tra tên trống
+        if (!name) {
+          failed++;
+          errors.push({ row: i + 2, reason: 'Missing product name' });
+          continue;
+        }
+
+        // ❗ Kiểm tra trùng tên
+        const existName = await this._productModel.findOne({
+          name,
+          is_delete: false,
+        });
+
+        if (existName) {
+          failed++;
+          errors.push({
+            row: i + 2,
+            reason: `Duplicate product name "${name}"`,
+          });
+          continue;
+        }
+
+        // ❗ KHÔNG XỬ LÝ CATEGORY — LUÔN ĐỂ TRỐNG
+        const dto: ImportProductDTO = {
+          name,
+          model,
+          price,
+          introduce,
+          description,
+          specification,
+          updated_by: 'admin',
+          photo: null,
+          stock_quantity,
+          stock_status: stock_quantity > 0 ? 'in_stock' : 'out_of_stock',
+          category_ids: [], // luôn rỗng
+        };
+
+        try {
+          await this.create(dto as ProductDTO);
+          success++;
+        } catch (err) {
+          failed++;
+          errors.push({
+            row: i + 2,
+            reason: err.message || 'Failed to create product',
+          });
+        }
+      }
+
+      return {
+        total,
+        success,
+        failed,
+        errors,
+      };
+    } catch (err) {
+      throw new HttpException(
+        { message: 'Import failed', error: err.message },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  /** 📤 EXPORT EXCEL — Xuất toàn bộ sản phẩm */
+  async exportToExcel() {
+    // 1) Lấy tất cả sản phẩm
+    const products = await this.findAll(); // đã có categories sẵn
+
+    // 2) Chuyển sang dữ liệu Excel
+    const exportData = products.map((p) => ({
+      Name: p.name,
+      Model: p.model,
+      Category: p.categories?.map((c) => c.name).join(', ') || '',
+      Price: p.price,
+      Quantity: p.stock_quantity,
+      Status: p.stock_status,
+      CreatedAt: p.created_at,
+    }));
+
+    // 3) Tạo worksheet
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+
+    // 4) Tạo workbook
+    const workbook = {
+      Sheets: { Products: worksheet },
+      SheetNames: ['Products'],
+    };
+
+    // 5) Xuất file
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'buffer',
+    });
+
+    return excelBuffer;
   }
 }

@@ -221,4 +221,26 @@ export class ProductService {
       this.httpClient.delete(env.baseUrl + 'product/hard-delete/' + id)
     );
   }
+
+  /** 🔹 Lấy danh sách sản phẩm liên quan cùng category */
+  getRelatedProducts(productId: string) {
+    return lastValueFrom(
+      this.httpClient.get(env.baseUrl + 'product/' + productId + '/related')
+    );
+  }
+
+  /** 📥 IMPORT SẢN PHẨM TỪ FILE EXCEL */
+  importExcel(formData: FormData) {
+    return lastValueFrom(
+      this.httpClient.post(env.baseUrl + 'product/import', formData)
+    );
+  }
+
+  exportExcel(): Promise<Blob> {
+    return lastValueFrom(
+      this.httpClient.get(env.baseUrl + 'product/export', {
+        responseType: 'blob' as 'blob',
+      })
+    );
+  }
 }

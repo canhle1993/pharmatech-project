@@ -13,6 +13,9 @@ import { WishlistComponent } from './pages/wishlist/wishlist.component';
 import { CheckoutComponent } from './pages/checkout/checkout.component';
 import { PaymentSuccessComponent } from './pages/payment-success/payment-success.component';
 import { PaymentCancelComponent } from './pages/payment-cancel/payment-cancel.component';
+import { ProfileDetailsComponent } from './pages/profileDetails/profileDetails.component';
+import { PurchaseComponent } from './pages/purchase/purchase.component';
+import { ServicesComponent } from './pages/services/services.component';
 
 export const userRoutes: Routes = [
   {
@@ -29,8 +32,12 @@ export const userRoutes: Routes = [
       { path: 'careerDetails/:id', component: CareerDetailsComponent },
       { path: 'productDetails/:id', component: ProductDetailsComponent },
       { path: 'profile/:id', component: ProfileComponent },
+      { path: 'profile-details/:id', component: ProfileDetailsComponent },
+      { path: 'services', component: ServicesComponent },
+      { path: 'purchase', component: PurchaseComponent },
       { path: 'cart/:id', component: CartComponent },
       { path: 'wishlist/:id', component: WishlistComponent },
+
       { path: 'payment/success', component: PaymentSuccessComponent },
       { path: 'payment/cancel', component: PaymentCancelComponent }, // nếu có
     ],

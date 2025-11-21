@@ -1,6 +1,11 @@
 <app-header></app-header>
 <app-carousel *ngIf="isHome"></app-carousel>
+
+<!-- Chatbot có ViewChild -->
 <app-chatbot></app-chatbot>
-<app-zalo></app-zalo>
+
+<!-- Zalo gửi sự kiện mở Chat -->
+<app-zalo (openChatEvent)="openChat()"></app-zalo>
+
 <router-outlet></router-outlet>
 <app-footer></app-footer>

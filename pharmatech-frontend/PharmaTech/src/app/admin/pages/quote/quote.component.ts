@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EditorModule } from 'primeng/editor';
@@ -9,12 +9,13 @@ import { QuoteService, Quote } from '../../../services/quote.service';
 declare var bootstrap: any;
 
 @Component({
+  standalone: true,
   templateUrl: './quote.component.html',
   styleUrls: ['./quote.component.css'],
   imports: [CommonModule, FormsModule, EditorModule, ToastModule],
   providers: [MessageService],
 })
-export class QuoteComponent implements OnInit, OnDestroy {
+export class QuoteComponent implements OnInit, OnDestroy, AfterViewInit {
   quotes: Quote[] = [];
   selectedQuote: Quote | null = null;
   loading: boolean = false;
@@ -56,7 +57,10 @@ export class QuoteComponent implements OnInit, OnDestroy {
 
   ngAfterViewInit() {
     console.log('[DEBUG_QUOTE] ngAfterViewInit called');
-    this.initializeModals();
+    // Use setTimeout to ensure DOM is fully rendered
+    setTimeout(() => {
+      this.initializeModals();
+    }, 0);
   }
 
   ngOnDestroy() {
@@ -65,7 +69,7 @@ export class QuoteComponent implements OnInit, OnDestroy {
     console.log('[DEBUG_QUOTE] Disposing modals:', {
       viewDetailModal: !!this.viewDetailModal,
       replyModal: !!this.replyModal,
-      deleteConfirmModal: !!this.deleteConfirmModal
+      deleteConfirmModal: !!this.deleteConfirmModal,
     });
     this.viewDetailModal?.dispose();
     this.replyModal?.dispose();
@@ -75,6 +79,15 @@ export class QuoteComponent implements OnInit, OnDestroy {
   initializeModals() {
     console.log('[DEBUG_QUOTE] initializeModals called');
 
+    // Check if bootstrap is available
+    if (typeof bootstrap === 'undefined') {
+      console.error(
+        '[DEBUG_QUOTE] Bootstrap is not defined! Retrying in 500ms...'
+      );
+      setTimeout(() => this.initializeModals(), 500);
+      return;
+    }
+
     // Initialize Bootstrap modals
     const viewDetailModalEl = document.getElementById('viewDetailModal');
     const replyModalEl = document.getElementById('replyModal');
@@ -83,8 +96,16 @@ export class QuoteComponent implements OnInit, OnDestroy {
     console.log('[DEBUG_QUOTE] Modal elements found:', {
       viewDetailModalEl: !!viewDetailModalEl,
       replyModalEl: !!replyModalEl,
-      deleteConfirmModalEl: !!deleteConfirmModalEl
+      deleteConfirmModalEl: !!deleteConfirmModalEl,
     });
+
+    if (!viewDetailModalEl || !replyModalEl || !deleteConfirmModalEl) {
+      console.error(
+        '[DEBUG_QUOTE] Some modal elements not found! Retrying in 500ms...'
+      );
+      setTimeout(() => this.initializeModals(), 500);
+      return;
+    }
 
     // Dispose old instances if they exist
     if (this.viewDetailModal) {
@@ -100,46 +121,40 @@ export class QuoteComponent implements OnInit, OnDestroy {
       this.deleteConfirmModal.dispose();
     }
 
-    if (viewDetailModalEl) {
-      console.log('[DEBUG_QUOTE] Creating new viewDetailModal instance');
+    try {
+      console.log('[DEBUG_QUOTE] Creating new modal instances...');
       this.viewDetailModal = new bootstrap.Modal(viewDetailModalEl);
-    }
-    if (replyModalEl) {
-      console.log('[DEBUG_QUOTE] Creating new replyModal instance');
       this.replyModal = new bootstrap.Modal(replyModalEl);
-    }
-    if (deleteConfirmModalEl) {
-      console.log('[DEBUG_QUOTE] Creating new deleteConfirmModal instance');
       this.deleteConfirmModal = new bootstrap.Modal(deleteConfirmModalEl);
-    }
 
-    console.log('[DEBUG_QUOTE] Modal instances created:', {
-      viewDetailModal: !!this.viewDetailModal,
-      replyModal: !!this.replyModal,
-      deleteConfirmModal: !!this.deleteConfirmModal
-    });
+      console.log('[DEBUG_QUOTE] Modal instances created successfully:', {
+        viewDetailModal: !!this.viewDetailModal,
+        replyModal: !!this.replyModal,
+        deleteConfirmModal: !!this.deleteConfirmModal,
+      });
+    } catch (error) {
+      console.error('[DEBUG_QUOTE] Error creating modal instances:', error);
+    }
   }
 
   loadQuotes() {
     console.log('[DEBUG_QUOTE] loadQuotes called');
     this.loading = true;
-    this.quoteService.getQuotes(this.selectedStatus, this.currentPage, this.pageSize).subscribe({
-      next: (response) => {
-        this.quotes = response.data;
-        this.totalQuotes = response.total;
-        this.totalPages = Math.ceil(this.totalQuotes / this.pageSize);
-        this.loading = false;
-        console.log('[DEBUG_QUOTE] Quotes loaded, reinitializing modals...');
-        // Reinitialize modals after DOM is updated
-        setTimeout(() => {
-          this.initializeModals();
-        }, 100);
-      },
-      error: (error) => {
-        console.error('Error loading quotes:', error);
-        this.loading = false;
-      }
-    });
+    this.quoteService
+      .getQuotes(this.selectedStatus, this.currentPage, this.pageSize)
+      .subscribe({
+        next: (response) => {
+          this.quotes = response.data;
+          this.totalQuotes = response.total;
+          this.totalPages = Math.ceil(this.totalQuotes / this.pageSize);
+          this.loading = false;
+          console.log('[DEBUG_QUOTE] Quotes loaded successfully');
+        },
+        error: (error) => {
+          console.error('Error loading quotes:', error);
+          this.loading = false;
+        },
+      });
   }
 
   onFilterChange() {
@@ -157,7 +172,10 @@ export class QuoteComponent implements OnInit, OnDestroy {
   getPageNumbers(): number[] {
     const pages: number[] = [];
     const maxPagesToShow = 5;
-    let startPage = Math.max(1, this.currentPage - Math.floor(maxPagesToShow / 2));
+    let startPage = Math.max(
+      1,
+      this.currentPage - Math.floor(maxPagesToShow / 2)
+    );
     let endPage = Math.min(this.totalPages, startPage + maxPagesToShow - 1);
 
     if (endPage - startPage < maxPagesToShow - 1) {
@@ -173,7 +191,10 @@ export class QuoteComponent implements OnInit, OnDestroy {
 
   viewDetail(quote: Quote) {
     console.log('[DEBUG_QUOTE] viewDetail called:', quote._id);
-    console.log('[DEBUG_QUOTE] viewDetailModal exists:', !!this.viewDetailModal);
+    console.log(
+      '[DEBUG_QUOTE] viewDetailModal exists:',
+      !!this.viewDetailModal
+    );
     this.selectedQuote = quote;
 
     // Mark as read if unread
@@ -185,7 +206,7 @@ export class QuoteComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error marking as read:', error);
-        }
+        },
       });
     }
 
@@ -197,7 +218,7 @@ export class QuoteComponent implements OnInit, OnDestroy {
     console.log('[DEBUG_QUOTE] markAsRead called:', id);
     this.quoteService.markAsRead(id).subscribe({
       next: () => {
-        const quote = this.quotes.find(q => q._id === id);
+        const quote = this.quotes.find((q) => q._id === id);
         if (quote) {
           quote.status = 'read';
         }
@@ -206,7 +227,7 @@ export class QuoteComponent implements OnInit, OnDestroy {
           severity: 'success',
           summary: 'Success',
           detail: 'Message marked as read',
-          life: 3000
+          life: 3000,
         });
       },
       error: (error) => {
@@ -215,9 +236,9 @@ export class QuoteComponent implements OnInit, OnDestroy {
           severity: 'error',
           summary: 'Error',
           detail: 'Failed to mark as read',
-          life: 3000
+          life: 3000,
         });
-      }
+      },
     });
   }
 
@@ -245,71 +266,81 @@ export class QuoteComponent implements OnInit, OnDestroy {
       return tmp.textContent || tmp.innerText || '';
     };
 
-    const textContent = this.replyMessage ? stripHtml(this.replyMessage).trim() : '';
+    const textContent = this.replyMessage
+      ? stripHtml(this.replyMessage).trim()
+      : '';
 
     if (!this.selectedQuote || !textContent) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Warning',
         detail: 'Please enter a reply message',
-        life: 3000
+        life: 3000,
       });
       return;
     }
 
     this.sendingReply = true;
-    this.quoteService.sendReply(this.selectedQuote._id, this.replyMessage).subscribe({
-      next: () => {
-        this.sendingReply = false;
-        this.replyModal?.hide();
+    this.quoteService
+      .sendReply(this.selectedQuote._id, this.replyMessage)
+      .subscribe({
+        next: () => {
+          this.sendingReply = false;
+          this.replyModal?.hide();
 
-        // Update quote status
-        if (this.selectedQuote) {
-          this.selectedQuote.status = 'replied';
-          this.selectedQuote.replyMessage = this.replyMessage;
-          this.selectedQuote.repliedAt = new Date();
+          // Update quote status
+          if (this.selectedQuote) {
+            this.selectedQuote.status = 'replied';
+            this.selectedQuote.replyMessage = this.replyMessage;
+            this.selectedQuote.repliedAt = new Date();
 
-          // Update in list
-          const quote = this.quotes.find(q => q._id === this.selectedQuote?._id);
-          if (quote) {
-            quote.status = 'replied';
-            quote.replyMessage = this.replyMessage;
-            quote.repliedAt = new Date();
+            // Update in list
+            const quote = this.quotes.find(
+              (q) => q._id === this.selectedQuote?._id
+            );
+            if (quote) {
+              quote.status = 'replied';
+              quote.replyMessage = this.replyMessage;
+              quote.repliedAt = new Date();
+            }
           }
-        }
 
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Reply sent successfully! Email has been delivered to the user.',
-          life: 5000
-        });
-        this.replyMessage = '';
-      },
-      error: (error) => {
-        console.error('Error sending reply:', error);
-        this.sendingReply = false;
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail:
+              'Reply sent successfully! Email has been delivered to the user.',
+            life: 5000,
+          });
+          this.replyMessage = '';
+        },
+        error: (error) => {
+          console.error('Error sending reply:', error);
+          this.sendingReply = false;
 
-        let errorMessage = 'Failed to send reply. Please try again.';
-        if (error?.error?.msg) {
-          errorMessage = error.error.msg;
-        } else if (error?.message) {
-          errorMessage = error.message;
-        }
+          let errorMessage = 'Failed to send reply. Please try again.';
+          if (error?.error?.msg) {
+            errorMessage = error.error.msg;
+          } else if (error?.message) {
+            errorMessage = error.message;
+          }
 
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: errorMessage,
-          life: 5000
-        });
-      }
-    });
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: errorMessage,
+            life: 5000,
+          });
+        },
+      });
   }
 
   confirmDelete(id: string) {
     console.log('[DEBUG_QUOTE] confirmDelete called:', id);
-    console.log('[DEBUG_QUOTE] deleteConfirmModal exists:', !!this.deleteConfirmModal);
+    console.log(
+      '[DEBUG_QUOTE] deleteConfirmModal exists:',
+      !!this.deleteConfirmModal
+    );
     this.quoteToDelete = id;
     console.log('[DEBUG_QUOTE] Attempting to show deleteConfirmModal');
     this.deleteConfirmModal?.show();
@@ -326,7 +357,7 @@ export class QuoteComponent implements OnInit, OnDestroy {
     console.log('[DEBUG_QUOTE] Deleting quote:', id);
     this.quoteService.deleteQuote(id).subscribe({
       next: () => {
-        this.quotes = this.quotes.filter(q => q._id !== id);
+        this.quotes = this.quotes.filter((q) => q._id !== id);
         this.totalQuotes--;
         this.deleteConfirmModal?.hide();
         this.quoteToDelete = null;
@@ -336,7 +367,7 @@ export class QuoteComponent implements OnInit, OnDestroy {
           severity: 'success',
           summary: 'Deleted',
           detail: 'Message deleted successfully',
-          life: 3000
+          life: 3000,
         });
       },
       error: (error) => {
@@ -348,9 +379,9 @@ export class QuoteComponent implements OnInit, OnDestroy {
           severity: 'error',
           summary: 'Error',
           detail: 'Failed to delete message',
-          life: 3000
+          life: 3000,
         });
-      }
+      },
     });
   }
 

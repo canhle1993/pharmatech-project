@@ -1,0 +1,52 @@
+<!-- Purchase Page -->
+<div class="purchase-page-wrapper">
+  <!-- Breadcrumb Section Start -->
+  <div class="breadcrumb" [attr.data-bg-image]="bannerImage">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <div class="breadcrumb_content">
+            <h1 class="breadcrumb_title">Purchase Process</h1>
+            <ul class="breadcrumb_list">
+              <li><a routerLink="/home">Home</a></li>
+              <li>Purchase</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Breadcrumb Section End -->
+
+  <!-- Navigation Tabs Section -->
+  <section class="tabs-navigation-section">
+    <div class="container">
+      <div class="tabs-wrapper">
+        <ul class="nav-tabs-custom">
+          <li *ngFor="let tab of tabs" class="nav-tab-item">
+            <button
+              [class.active]="isActive(tab.id)"
+              (click)="selectTab(tab.id)"
+              class="nav-tab-button"
+            >
+              <i class="fas {{ tab.icon }}"></i>
+              <span class="tab-label">{{ tab.label }}</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tab Content Section -->
+  <section class="tab-content-section">
+    <div class="container">
+      <div *ngFor="let tab of tabs"
+           [class.active]="isActive(tab.id)"
+           [attr.data-tab]="tab.id"
+           class="tab-content-panel">
+        <div class="content-wrapper" [innerHTML]="tab.content"></div>
+      </div>
+    </div>
+  </section>
+</div>

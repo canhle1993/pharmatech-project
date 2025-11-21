@@ -49,23 +49,6 @@
           <ul
             class="header-meta__action header-meta__action-02 d-flex justify-content-end"
           >
-            <li class="d-sm-block d-none">
-              <form action="#" class="search-form">
-                <input
-                  type="search"
-                  class="search-form-field"
-                  placeholder="Search Product..."
-                />
-                <button class="search-form-btn">
-                  <i class="lastudioicon-zoom-1"></i>
-                </button>
-              </form>
-            </li>
-            <li class="d-block d-sm-none">
-              <button class="action search-open">
-                <i class="lastudioicon-zoom-1"></i>
-              </button>
-            </li>
             <li>
               <button
                 class="action"
@@ -177,22 +160,38 @@
                   <ul>
                     <li class="mega-menu-item-title">Service</li>
                     <li>
-                      <a class="sub-item-link">
+                      <a
+                        class="sub-item-link"
+                        [routerLink]="['/services']"
+                        [queryParams]="{ tab: 'consulting' }"
+                      >
                         <span>Consulting</span>
                       </a>
                     </li>
                     <li>
-                      <a class="sub-item-link">
+                      <a
+                        class="sub-item-link"
+                        [routerLink]="['/services']"
+                        [queryParams]="{ tab: 'technical-support' }"
+                      >
                         <span>Technical Support</span>
                       </a>
                     </li>
                     <li>
-                      <a class="sub-item-link">
+                      <a
+                        class="sub-item-link"
+                        [routerLink]="['/services']"
+                        [queryParams]="{ tab: 'equipment-upgrade' }"
+                      >
                         <span>Equipment Upgrade</span>
                       </a>
                     </li>
                     <li>
-                      <a class="sub-item-link">
+                      <a
+                        class="sub-item-link"
+                        [routerLink]="['/services']"
+                        [queryParams]="{ tab: 'maintenance' }"
+                      >
                         <span>Maintenance</span>
                       </a>
                     </li>
@@ -202,22 +201,38 @@
                   <ul>
                     <li class="mega-menu-item-title">Purchase</li>
                     <li>
-                      <a class="sub-item-link">
+                      <a
+                        class="sub-item-link"
+                        [routerLink]="['/purchase']"
+                        [queryParams]="{ tab: 'customer-intake' }"
+                      >
                         <span>Customer Information Intake</span>
                       </a>
                     </li>
                     <li>
-                      <a class="sub-item-link">
+                      <a
+                        class="sub-item-link"
+                        [routerLink]="['/purchase']"
+                        [queryParams]="{ tab: 'technical-consulting' }"
+                      >
                         <span>Technical Equipment Consulting</span>
                       </a>
                     </li>
                     <li>
-                      <a class="sub-item-link">
+                      <a
+                        class="sub-item-link"
+                        [routerLink]="['/purchase']"
+                        [queryParams]="{ tab: 'urs-development' }"
+                      >
                         <span>URS Development</span>
                       </a>
                     </li>
                     <li>
-                      <a class="sub-item-link">
+                      <a
+                        class="sub-item-link"
+                        [routerLink]="['/purchase']"
+                        [queryParams]="{ tab: 'contract-signing' }"
+                      >
                         <span>Contract Signing</span>
                       </a>
                     </li>

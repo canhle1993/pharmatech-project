@@ -1,108 +1,110 @@
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f0f2f5;
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-    }
+body {
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f0f2f5;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+}
 
-    /* Nút mở chat */
-    #open-chat-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #0078d7;
-      color: white;
-      border: none;
-      border-radius: 50px;
-      padding: 12px 20px;
-      cursor: pointer;
-      font-size: 16px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      z-index: 1000;
-    }
+/* Nút mở chat */
+#open-chat-btn {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #0078d7;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
 
-    /* Khung bọc chat */
-    .chat-wrapper.hidden {
-      display: none;
-    }
+/* Khung bọc chat */
+.chat-wrapper.hidden {
+  display: none;
+}
 
-    .chat-wrapper {
-      position: fixed;
-      bottom: 80px;
-      right: 20px;
-      z-index: 1000;
-    }
+.chat-wrapper {
+  position: fixed;
+  bottom: 120px;
+  right: 1055px; /* 👈 Dời qua bên trái */
+  z-index: 1000;
+}
 
-    .chat-container {
-      width: 400px;
-      height: 600px;
-      background-color: #ffffff;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+.chat-container {
+  width: 400px;
+  height: 600px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
-    .chat-header {
-      background-color: #0078d7;
-      color: white;
-      text-align: center;
-      padding: 15px;
-      font-size: 18px;
-      font-weight: bold;
-    }
+.chat-header {
+  background-color: #0078d7;
+  color: white;
+  text-align: center;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+}
 
-    .chat-box {
-      flex-grow: 1;
-      padding: 15px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+.chat-box {
+  flex-grow: 1;
+  padding: 15px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-    .bot-message, .user-message {
-      max-width: 75%;
-      padding: 10px 15px;
-      border-radius: 15px;
-      font-size: 14px;
-      line-height: 1.4;
-    }
+.bot-message,
+.user-message {
+  max-width: 75%;
+  padding: 10px 15px;
+  border-radius: 15px;
+  font-size: 14px;
+  line-height: 1.4;
+}
 
-    .bot-message {
-      background-color: #e1f0ff;
-      align-self: flex-start;
-    }
+.bot-message {
+  background-color: #e1f0ff;
+  align-self: flex-start;
+}
 
-    .user-message {
-      background-color: #daf5dc;
-      align-self: flex-end;
-    }
+.user-message {
+  background-color: #daf5dc;
+  align-self: flex-end;
+}
 
-    .chat-input-area {
-      display: flex;
-      border-top: 1px solid #ddd;
-    }
+.chat-input-area {
+  display: flex;
+  border-top: 1px solid #ddd;
+}
 
-    .chat-input-area input {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      outline: none;
-      font-size: 14px;
-    }
+.chat-input-area input {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
 
-    .chat-input-area button {
-      padding: 12px 20px;
-      background-color: #0078d7;
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
+.chat-input-area button {
+  padding: 12px 20px;
+  background-color: #0078d7;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
 
-    .chat-input-area button:hover {
-      background-color: #005fa3;
-    }
+.chat-input-area button:hover {
+  background-color: #005fa3;
+}

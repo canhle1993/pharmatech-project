@@ -154,6 +154,15 @@
             <div class="swiper-slide" *ngFor="let p of productsCat1">
               <!-- Product Item Start -->
               <div class="product-item product-item-05 border text-center">
+                <div
+                  class="product-item__badge"
+                  [ngClass]="{
+                    'd-none': !p?.stock_quantity || p.stock_quantity >= 10
+                  }"
+                >
+                  Hot
+                </div>
+
                 <div class="product-item__image">
                   <a [routerLink]="['/productDetails', p.id]"
                     ><img
@@ -278,6 +287,14 @@
             <div class="swiper-slide" *ngFor="let p of productsCat2">
               <!-- Product Item Start -->
               <div class="product-item product-item-05 border text-center">
+                <div
+                  class="product-item__badge"
+                  [ngClass]="{
+                    'd-none': !p?.stock_quantity || p.stock_quantity >= 10
+                  }"
+                >
+                  Hot
+                </div>
                 <div class="product-item__image">
                   <a [routerLink]="['/productDetails', p.id]">
                     <img
@@ -398,6 +415,14 @@
             <div class="swiper-slide" *ngFor="let p of productsCat3">
               <!-- Product Item Start -->
               <div class="product-item product-item-06 border text-center">
+                <div
+                  class="product-item__badge"
+                  [ngClass]="{
+                    'd-none': !p?.stock_quantity || p.stock_quantity >= 10
+                  }"
+                >
+                  Hot
+                </div>
                 <div class="product-item__image">
                   <a [routerLink]="['/productDetails', p.id]">
                     <img

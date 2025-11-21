@@ -376,7 +376,7 @@
 <!-- Single Product Section End -->
 
 <!-- Product Section Strat -->
-<div class="section-padding-03 pt-0">
+<div class="section-padding-03 pt-0" *ngIf="relatedProducts.length > 0">
   <div class="container">
     <div class="row">
       <div class="col-12">
@@ -391,232 +391,60 @@
     <div class="product-active">
       <div class="swiper">
         <div class="swiper-wrapper">
-          <div class="swiper-slide">
+          <div class="swiper-slide" *ngFor="let item of relatedProducts">
             <!-- Product Item Start -->
             <div class="product-item text-center">
-              <div class="product-item__badge">Hot</div>
+              <!-- Badge -->
+              <div
+                class="product-item__badge"
+                [ngClass]="{
+                  'd-none': !item?.stock_quantity || item.stock_quantity >= 10
+                }"
+              >
+                Hot
+              </div>
               <div class="product-item__image border w-100">
-                <a href="single-product.html"
+                <a [routerLink]="['/product-details', item.id]"
                   ><img
                     width="350"
                     height="350"
-                    src="assets/images/product/product-8-500x625.jpg"
-                    alt="Product"
+                    [src]="item.photo || 'assets/images/no-image.jpg'"
+                    [alt]="item.name"
                 /></a>
                 <ul class="product-item__meta">
                   <li class="product-item__meta-action">
                     <a
-                      class="shadow-1 labtn-icon-cart"
-                      href="#"
+                      class="labtn-icon-cart"
+                      href="javascript:void(0)"
+                      (click)="addToCart(item)"
                       data-bs-tooltip="tooltip"
                       data-bs-placement="top"
-                      title="Add to Cart"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCart"
+                      title="Add to cart"
+                      aria-label="Add to cart"
                     ></a>
                   </li>
                   <li class="product-item__meta-action">
                     <a
-                      class="shadow-1 labtn-icon-wishlist"
-                      href="#"
+                      class="labtn-icon-wishlist"
+                      href="javascript:void(0)"
+                      (click)="addToWishlist(item)"
                       data-bs-tooltip="tooltip"
                       data-bs-placement="top"
                       title="Add to wishlist"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalWishlist"
+                      aria-label="Add to wishlist"
                     ></a>
                   </li>
                 </ul>
               </div>
               <div class="product-item__content pt-5">
                 <h5 class="product-item__title">
-                  <a href="single-product.html">Brownie</a>
+                  <a [routerLink]="['/product-details', item.id]">
+                    {{ item.name }}</a
+                  >
                 </h5>
-                <span class="product-item__price">$4.99</span>
-              </div>
-            </div>
-            <!-- Product Item End -->
-          </div>
-          <div class="swiper-slide">
-            <!-- Product Item Start -->
-            <div class="product-item text-center">
-              <div class="product-item__badge d-none">@@badge</div>
-              <div class="product-item__image border w-100">
-                <a href="single-product.html"
-                  ><img
-                    width="350"
-                    height="350"
-                    src="assets/images/product/product-7-500x625.jpg"
-                    alt="Product"
-                /></a>
-                <ul class="product-item__meta">
-                  <li class="product-item__meta-action">
-                    <a
-                      class="shadow-1 labtn-icon-cart"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title="Add to Cart"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCart"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="shadow-1 labtn-icon-wishlist"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title="Add to wishlist"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalWishlist"
-                    ></a>
-                  </li>
-                </ul>
-              </div>
-              <div class="product-item__content pt-5">
-                <h5 class="product-item__title">
-                  <a href="single-product.html">Red Velvet</a>
-                </h5>
-                <span class="product-item__price">$5.00</span>
-              </div>
-            </div>
-            <!-- Product Item End -->
-          </div>
-          <div class="swiper-slide">
-            <!-- Product Item Start -->
-            <div class="product-item text-center">
-              <div class="product-item__badge d-none">@@badge</div>
-              <div class="product-item__image border w-100">
-                <a href="single-product.html"
-                  ><img
-                    width="350"
-                    height="350"
-                    src="assets/images/product/product-6-500x625.jpg"
-                    alt="Product"
-                /></a>
-                <ul class="product-item__meta">
-                  <li class="product-item__meta-action">
-                    <a
-                      class="shadow-1 labtn-icon-cart"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title="Add to Cart"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCart"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="shadow-1 labtn-icon-wishlist"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title="Add to wishlist"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalWishlist"
-                    ></a>
-                  </li>
-                </ul>
-              </div>
-              <div class="product-item__content pt-5">
-                <h5 class="product-item__title">
-                  <a href="single-product.html">Cream Muffin</a>
-                </h5>
-                <span class="product-item__price">$7.55</span>
-              </div>
-            </div>
-            <!-- Product Item End -->
-          </div>
-          <div class="swiper-slide">
-            <!-- Product Item Start -->
-            <div class="product-item text-center">
-              <div class="product-item__badge d-none">@@badge</div>
-              <div class="product-item__image border w-100">
-                <a href="single-product.html"
-                  ><img
-                    width="350"
-                    height="350"
-                    src="assets/images/product/product-5-500x625.jpg"
-                    alt="Product"
-                /></a>
-                <ul class="product-item__meta">
-                  <li class="product-item__meta-action">
-                    <a
-                      class="shadow-1 labtn-icon-cart"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title="Add to Cart"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCart"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="shadow-1 labtn-icon-wishlist"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title="Add to wishlist"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalWishlist"
-                    ></a>
-                  </li>
-                </ul>
-              </div>
-              <div class="product-item__content pt-5">
-                <h5 class="product-item__title">
-                  <a href="single-product.html">Macaron Cake</a>
-                </h5>
-                <span class="product-item__price">$9.44</span>
-              </div>
-            </div>
-            <!-- Product Item End -->
-          </div>
-          <div class="swiper-slide">
-            <!-- Product Item Start -->
-            <div class="product-item text-center">
-              <div class="product-item__badge d-none">Hot</div>
-              <div class="product-item__image border w-100">
-                <a href="single-product.html"
-                  ><img
-                    width="350"
-                    height="350"
-                    src="assets/images/product/product-4-500x625.jpg"
-                    alt="Product"
-                /></a>
-                <ul class="product-item__meta">
-                  <li class="product-item__meta-action">
-                    <a
-                      class="shadow-1 labtn-icon-cart"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title="Add to Cart"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalCart"
-                    ></a>
-                  </li>
-                  <li class="product-item__meta-action">
-                    <a
-                      class="shadow-1 labtn-icon-wishlist"
-                      href="#"
-                      data-bs-tooltip="tooltip"
-                      data-bs-placement="top"
-                      title="Add to wishlist"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalWishlist"
-                    ></a>
-                  </li>
-                </ul>
-              </div>
-              <div class="product-item__content pt-5">
-                <h5 class="product-item__title">
-                  <a href="single-product.html">No-bake chocolate</a>
-                </h5>
-                <span class="product-item__price">$4.99</span>
+                <span class="product-item__price">{{
+                  item.price | currency : "USD" : "symbol" : "1.2-2"
+                }}</span>
               </div>
             </div>
             <!-- Product Item End -->

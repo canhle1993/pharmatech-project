@@ -20,7 +20,7 @@ export class NotificationService {
     // Tạo channel 1 lần
     if ('BroadcastChannel' in window) {
       this.chNoti = new BroadcastChannel('pharmatech_notify');
-      this.chMsg  = new BroadcastChannel('pharmatech_messages');
+      this.chMsg = new BroadcastChannel('pharmatech_messages');
 
       // Lắng nghe từ các nơi khác (Header/Chatbot/app khác injector…)
       this.chNoti.onmessage = (ev) => {
@@ -43,7 +43,9 @@ export class NotificationService {
         });
       };
     } else {
-      console.warn('[NotificationService] BroadcastChannel not supported; consider localStorage events fallback');
+      console.warn(
+        '[NotificationService] BroadcastChannel not supported; consider localStorage events fallback'
+      );
     }
   }
 

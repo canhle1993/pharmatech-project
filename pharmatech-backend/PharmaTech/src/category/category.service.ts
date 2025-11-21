@@ -93,6 +93,32 @@ export class CategoryService {
 
   async create(categoryDTO: CategoryDTO): Promise<Category> {
     try {
+      // 1️⃣ Kiểm tra tên category đã tồn tại chưa
+      const exists = await this.categoryModel.findOne({
+        name: categoryDTO.name,
+      });
+
+      if (exists) {
+        // 🟡 Trường hợp category đã bị xóa mềm → báo riêng
+        if (exists.is_delete === true) {
+          throw new HttpException(
+            {
+              message: `Category "${categoryDTO.name}" exists in Recycle Bin`,
+              code: 'IN_RECYCLE_BIN',
+              categoryId: exists._id.toString(),
+            },
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+
+        // 🔴 Trùng tên và đang hoạt động
+        throw new HttpException(
+          `Category name "${categoryDTO.name}" already exists`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      // 2️⃣ Nếu không tồn tại → tạo mới bình thường
       const category = new this.categoryModel({
         name: categoryDTO.name,
         description: categoryDTO.description,
@@ -106,13 +132,8 @@ export class CategoryService {
 
       return await category.save();
     } catch (error) {
-      // ✅ Kiểm tra trùng tên
-      if (error.code === 11000) {
-        throw new HttpException(
-          `Category name "${categoryDTO.name}" already exists`,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
+      // Nếu là lỗi HttpException thì ném lại luôn
+      if (error instanceof HttpException) throw error;
 
       console.error('❌ Create Category error:', error);
       throw new HttpException(
@@ -275,5 +296,15 @@ export class CategoryService {
     }
 
     return result;
+  }
+
+  /** ⭐ Kiểm tra category theo name (dùng cho quick-create & realtime check) */
+  async findByName(name: string): Promise<Category | null> {
+    return await this.categoryModel
+      .findOne({ name: name.trim(), is_delete: false })
+      .select(
+        '_id name description photo created_at updated_at is_active is_delete',
+      )
+      .lean();
   }
 }

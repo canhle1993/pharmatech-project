@@ -1,4 +1,10 @@
-import { Component, OnInit, Renderer2, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Renderer2,
+  AfterViewInit,
+  ViewChild,
+} from '@angular/core';
 import {
   NavigationEnd,
   Event,
@@ -34,23 +40,33 @@ import { ZaloComponent } from './components/zalo/zalo.component.';
 })
 export class UserComponent implements OnInit {
   isHome: boolean;
+
+  // 👉 CHÍNH TẠI ĐÂY: Lấy reference tới Chatbot
+  @ViewChild(ChatbotComponent) chatRef!: ChatbotComponent;
+
   constructor(
     private accountService: AccountService,
     private router: Router,
     private renderer: Renderer2
   ) {}
-  async ngOnInit() {
-    await this.loadAssets(); // ⬅️ await để chắc JS đã sẵn sàng
 
-    // ✅ Gán giá trị ban đầu khi component khởi tạo
+  async ngOnInit() {
+    await this.loadAssets();
+
     this.isHome = this.router.url === '/' || this.router.url === '/home';
 
-    // ✅ Lắng nghe sự kiện route thay đổi sau này
     this.router.events.subscribe((evt: Event) => {
       if (evt instanceof NavigationEnd) {
         this.isHome = evt.url === '/' || evt.url === '/home';
       }
     });
+  }
+
+  // 👉 Hàm này sẽ được gọi khi ZaloComponent bắn sự kiện openChatEvent
+  openChat() {
+    if (this.chatRef) {
+      this.chatRef.toggleOpen();
+    }
   }
 
   /** 🧩 Load CSS + JS (tuần tự) */
@@ -87,7 +103,6 @@ export class UserComponent implements OnInit {
     ];
     for (const href of cssFiles) await addCss(href);
 
-    // ✅ BẮT BUỘC: jQuery trước, rồi mới các script khác
     await addJs('assets/js/vendor/jquery-3.6.0.min.js');
     await addJs('assets/js/vendor/jquery-migrate-3.3.2.min.js');
     await addJs('assets/js/vendor/bootstrap.bundle.min.js');

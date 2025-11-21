@@ -215,6 +215,119 @@
         </li>
       </ul>
     </li>
+    <!-- Service submenu -->
+    <li class="menu-item" routerLinkActive="active">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-briefcase"></i>
+        <div data-i18n="Service">Service</div>
+      </a>
+      <ul class="menu-sub">
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a [routerLink]="['/admin/service/consulting']" class="menu-link">
+            <div data-i18n="Consulting">Consulting</div>
+          </a>
+        </li>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a
+            [routerLink]="['/admin/service/technical-support']"
+            class="menu-link"
+          >
+            <div data-i18n="Technical Support">Technical Support</div>
+          </a>
+        </li>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a
+            [routerLink]="['/admin/service/equipment-upgrade']"
+            class="menu-link"
+          >
+            <div data-i18n="Equipment Upgrade">Equipment Upgrade</div>
+          </a>
+        </li>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a [routerLink]="['/admin/service/maintenance']" class="menu-link">
+            <div data-i18n="Maintenance">Maintenance</div>
+          </a>
+        </li>
+      </ul>
+    </li>
+
+    <!-- Purchase submenu -->
+    <li class="menu-item" routerLinkActive="active">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-receipt"></i>
+        <div data-i18n="Purchase">Purchase</div>
+      </a>
+      <ul class="menu-sub">
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a
+            [routerLink]="['/admin/purchase/customer-intake']"
+            class="menu-link"
+          >
+            <div data-i18n="Customer Information Intake">
+              Customer Information Intake
+            </div>
+          </a>
+        </li>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a
+            [routerLink]="['/admin/purchase/technical-consulting']"
+            class="menu-link"
+          >
+            <div data-i18n="Technical Equipment Consulting">
+              Technical Equipment Consulting
+            </div>
+          </a>
+        </li>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a
+            [routerLink]="['/admin/purchase/urs-development']"
+            class="menu-link"
+          >
+            <div data-i18n="URS Development">URS Development</div>
+          </a>
+        </li>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a
+            [routerLink]="['/admin/purchase/contract-signing']"
+            class="menu-link"
+          >
+            <div data-i18n="Contract Signing">Contract Signing</div>
+          </a>
+        </li>
+      </ul>
+    </li>
     <li class="menu-item" routerLinkActive="active">
       <a class="menu-link menu-toggle">
         <i class="menu-icon tf-icons bx bx-cog"></i>

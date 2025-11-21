@@ -1,0 +1,152 @@
+/* ===== 📦 CONTAINER CHUNG ===== */
+.order-container {
+  padding: 1rem 1.5rem;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f7f8fa;
+  min-height: 100vh;
+}
+
+.error-msg {
+  color: #e63946;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+.order-detail-container {
+  background: var(--surface-section, #fff);
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.order-detail-container h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 10px;
+}
+
+/* ===== 👤 KHỐI THÔNG TIN ===== */
+.order-info,
+.order-user-info,
+.order-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px 24px;
+  margin-top: -63px !important;
+  margin-bottom: 1.5rem;
+  padding: 16px;
+  border-radius: 8px;
+  background: #fafafa;
+  transition: background 0.3s ease;
+}
+
+.order-summary2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px 24px;
+  margin-bottom: 1.5rem;
+  padding: 16px;
+  border-radius: 8px;
+  background: #fafafa;
+  transition: background 0.3s ease;
+}
+
+.order-info:hover,
+.order-user-info:hover,
+.order-summary:hover {
+  background: #f5f7fa;
+}
+
+.order-info p,
+.order-user-info p,
+.order-summary p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.order-info b,
+.order-user-info b,
+.order-summary b {
+  color: #111;
+}
+
+/* ===== 🧾 BẢNG DANH SÁCH ===== */
+.order-table ::ng-deep .p-datatable-thead > tr > th {
+  background: #3b82f6;
+  color: #fff;
+  text-align: center;
+  font-weight: 600;
+  padding: 0.75rem;
+}
+
+.order-table ::ng-deep .p-datatable-tbody > tr > td {
+  text-align: center;
+  padding: 0.75rem;
+  vertical-align: middle;
+  color: #444;
+}
+.order-table ::ng-deep .p-datatable-tbody > tr:hover {
+  background-color: #eef2ff;
+  transition: background 0.2s ease-in-out;
+}
+
+.order-table {
+  overflow-x: auto;
+}
+
+:host ::ng-deep .order-table tr:hover {
+  background: #f8f9ff;
+  transition: background 0.2s ease;
+}
+
+/* ===== 🖼️ ẢNH SẢN PHẨM ===== */
+.order-table img {
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.order-table img:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== 🕓 LOADING ===== */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  margin-top: 60px;
+}
+
+/* ===== ✨ ANIMATION ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+.proof-thumb {
+  width: 70px;
+  height: 70px;
+  cursor: zoom-in;
+  border-radius: 6px;
+  transition: transform 0.2s ease;
+}
+
+.proof-thumb:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}

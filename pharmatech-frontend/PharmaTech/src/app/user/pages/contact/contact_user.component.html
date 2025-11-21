@@ -150,11 +150,12 @@
             <div class="row">
               <div class="col-sm-6 col-6 form-p">
                 <div class="form-group">
-                  <label>First Name*</label>
+                  <label style="color: #212121">First Name*</label>
                   <input
                     class="form-field"
                     type="text"
                     formControlName="firstName"
+                    style="color: #333"
                     [class.is-invalid]="
                       contactMessageForm.get('firstName')?.invalid &&
                       contactMessageForm.get('firstName')?.touched
@@ -173,11 +174,12 @@
               </div>
               <div class="col-sm-6 col-6 form-p">
                 <div class="form-group">
-                  <label>Last Name*</label>
+                  <label style="color: #212121">Last Name*</label>
                   <input
                     class="form-field"
                     type="text"
                     formControlName="lastName"
+                    style="color: #333"
                     [class.is-invalid]="
                       contactMessageForm.get('lastName')?.invalid &&
                       contactMessageForm.get('lastName')?.touched
@@ -196,11 +198,12 @@
               </div>
               <div class="col-md-12 form-p">
                 <div class="form-group">
-                  <label>Email Address*</label>
+                  <label style="color: #212121">Email Address*</label>
                   <input
                     class="form-field"
                     type="email"
                     formControlName="email"
+                    style="color: #333"
                     [class.is-invalid]="
                       contactMessageForm.get('email')?.invalid &&
                       contactMessageForm.get('email')?.touched
@@ -226,10 +229,11 @@
               </div>
               <div class="col-md-12 form-p">
                 <div class="form-group">
-                  <label>Message*</label>
+                  <label style="color: #212121">Message*</label>
                   <textarea
                     class="form-control text-area"
                     formControlName="message"
+                    style="color: #333"
                     [class.is-invalid]="
                       contactMessageForm.get('message')?.invalid &&
                       contactMessageForm.get('message')?.touched

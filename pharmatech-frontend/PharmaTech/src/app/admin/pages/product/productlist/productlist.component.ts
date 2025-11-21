@@ -47,6 +47,8 @@ export class ProductListComponent implements OnInit {
   categories: { label: string; value: string }[] = [];
   selectedCategory: string | null = null;
   loading = true;
+  uploading: boolean = false;
+  selectedFile: File | null = null;
 
   constructor(
     private productService: ProductService,
@@ -72,6 +74,64 @@ export class ProductListComponent implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+    }
+  }
+  async importExcel() {
+    if (!this.selectedFile) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Please choose an Excel file first.',
+      });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', this.selectedFile);
+
+    this.uploading = true;
+
+    try {
+      const result: any = await this.productService.importExcel(formData);
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Imported',
+        detail: `Imported successfully: ${result.success} / ${result.total}`,
+      });
+
+      // 🔄 Reload lại danh sách
+      const reload: any = await this.productService.findAll();
+      this.products = reload;
+      this.applyFilters(this.selectedCategory);
+    } catch (error: any) {
+      console.error(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Import Failed',
+        detail: error?.error?.message || 'Failed to import products',
+      });
+    }
+
+    this.uploading = false;
+    this.selectedFile = null;
+  }
+
+  async downloadExcel() {
+    const blob = await this.productService.exportExcel();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'products.xlsx';
+    a.click();
+
+    window.URL.revokeObjectURL(url);
   }
 
   /** 🔍 Search global */

@@ -11,6 +11,7 @@ import {
   HttpStatus,
   Delete,
   Patch,
+  Res,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductDTO } from './product.dto';
@@ -18,6 +19,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { extname } from 'path';
+import { Response } from 'express';
+type ExpressResponse = Response;
 
 @Controller('api/product')
 export class ProductController {
@@ -42,6 +45,22 @@ export class ProductController {
   @Get('find-all')
   findAll() {
     return this.productService.findAll();
+  }
+
+  /** ⭐ Lấy sản phẩm liên quan cùng category */
+  @Get(':id/related')
+  async getRelatedProducts(@Param('id') id: string) {
+    try {
+      return await this.productService.getRelatedProducts(id);
+    } catch (error) {
+      throw new HttpException(
+        {
+          message: 'Failed to load related products',
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   /** ✅ Tạo Product có upload ảnh và category_ids */
@@ -259,5 +278,61 @@ export class ProductController {
   @Get('deleted')
   async getDeleted() {
     return await this.productService.findDeleted();
+  }
+
+  // ===============================================
+  // 📌 IMPORT PRODUCT FROM EXCEL
+  // ===============================================
+  @Post('import')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './upload/tmp',
+        filename: (req, file, cb) => {
+          const uniqueName = uuidv4().replace(/-/g, '');
+          const extension = extname(file.originalname);
+          cb(null, uniqueName + extension);
+        },
+      }),
+    }),
+  )
+  async importExcel(@UploadedFile() file: Express.Multer.File) {
+    try {
+      if (!file) {
+        throw new HttpException('Excel file required', HttpStatus.BAD_REQUEST);
+      }
+
+      const result = await this.productService.importFromExcel(file);
+
+      return {
+        message: 'Import completed',
+        total: result.total,
+        success: result.success,
+        failed: result.failed,
+        errors: result.errors,
+      };
+    } catch (error) {
+      console.error('❌ Import Excel error:', error);
+      throw new HttpException(
+        {
+          message: 'Failed to import products',
+          errorMessage: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get('export')
+  async export(@Res() res: ExpressResponse) {
+    const buffer = await this.productService.exportToExcel();
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader('Content-Disposition', 'attachment; filename=products.xlsx');
+
+    res.send(buffer);
   }
 }

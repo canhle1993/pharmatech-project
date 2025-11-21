@@ -111,4 +111,11 @@ export class CategoryService {
       })
     );
   }
+
+  /** ⭐ Kiểm tra category name có tồn tại hay chưa (realtime validation) */
+  checkCategoryName(name: string) {
+    return lastValueFrom(
+      this.httpClient.get(env.baseUrl + 'category/check-name/' + name)
+    );
+  }
 }

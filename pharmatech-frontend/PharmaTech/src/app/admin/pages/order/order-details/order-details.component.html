@@ -1,8 +1,9 @@
 <div class="order-container">
-  <h4 class="fw-bold py-3 mb-4">
-    <span class="text-muted fw-light">Order /</span> Order Details
-  </h4>
-  <div class="order-detail-container" *ngIf="!loading && order">
+  <div
+    id="invoiceArea"
+    class="order-detail-container"
+    *ngIf="!loading && order"
+  >
     <h2>
       <i
         class="pi pi-shopping-bag"
@@ -10,83 +11,151 @@
       ></i>
       Order Code: {{ order.id }}
     </h2>
-
+    <!-- 🧾 Xuất hóa đơn PDF -->
+    <button
+      pButton
+      icon="pi pi-print"
+      label="Print Invoice"
+      class="p-button-info"
+      (click)="exportInvoicePDF()"
+    ></button>
     <!-- 🔹 Thông tin người đặt hàng (từ Account) -->
-    <div
-      class="order-user-info"
-      *ngIf="order.user_info || order.user_info?.email"
-    >
-      <p><b>Order name:</b> {{ order.user_info.name || "—" }}</p>
-      <p><b>Order email:</b> {{ order.user_info.email || "—" }}</p>
-      <p><b>Order phone:</b> {{ order.user_info.phone || "—" }}</p>
-      <p><b>Order address:</b> {{ order.user_info.address || "—" }}</p>
+    <div class="card shadow-sm p-3 mb-4 mt-3">
+      <h5 class="section-title">
+        <i class="pi pi-user me-2 text-primary"></i>Customer Information
+      </h5>
+      <div
+        class="order-user-info"
+        *ngIf="order.user_info || order.user_info?.email"
+      >
+        <p><b>Order name:</b> {{ order.user_info.name || "—" }}</p>
+        <p><b>Order email:</b> {{ order.user_info.email || "—" }}</p>
+        <p><b>Order phone:</b> {{ order.user_info.phone || "—" }}</p>
+        <p><b>Order address:</b> {{ order.user_info.address || "—" }}</p>
+      </div>
     </div>
 
     <!-- 🔹 Thông tin khách hàng -->
-    <div class="order-info">
-      <p><b>Contact person:</b> {{ order.contact_name }}</p>
-      <p><b>Contact email:</b> {{ order.contact_email }}</p>
-      <p><b>Contact phone:</b> {{ order.contact_phone }}</p>
-      <p><b>Contact address:</b> {{ order.contact_address }}</p>
+    <div class="card shadow-sm p-3 mb-4">
+      <h5 class="section-title">
+        <i class="pi pi-address-book me-2 text-primary"></i>Contact Information
+      </h5>
+      <div class="order-info">
+        <p><b>Contact person:</b> {{ order.contact_name }}</p>
+        <p><b>Contact email:</b> {{ order.contact_email }}</p>
+        <p><b>Contact phone:</b> {{ order.contact_phone }}</p>
+        <p><b>Contact address:</b> {{ order.contact_address }}</p>
+      </div>
     </div>
 
     <!-- 🔹 Thông tin đơn hàng -->
-    <div class="order-summary">
-      <p><b>Total:</b> {{ order.formattedTotal }}</p>
-      <p><b>Deposit:</b> {{ order.formattedDeposit }}</p>
-      <p><b>Remaining:</b> {{ order.formattedRemaining }}</p>
-      <p>
-        <b>Status:</b>
-        <p-tag [value]="order.status" [severity]="order.statusBadge"></p-tag>
-      </p>
+    <div class="card shadow-sm p-3 mb-4">
+      <h5 class="section-title">
+        <i class="pi pi-list-check me-2 text-primary"></i>Order Summary
+      </h5>
+      <div class="order-summary">
+        <p><b>Total:</b> {{ order.formattedTotal }}</p>
+        <p><b>Deposit:</b> {{ order.formattedDeposit }}</p>
+        <p><b>Remaining:</b> {{ order.formattedRemaining }}</p>
+        <p>
+          <b>Status:</b>
+          <p-tag [value]="order.status" [severity]="order.statusBadge"></p-tag>
+        </p>
+      </div>
+      <div class="order-summary2">
+        <p>
+          <b>Created at:</b> {{ order.created_at | date : "dd/MM/yyyy HH:mm" }}
+        </p>
+
+        <p><b>Paid at:</b> {{ order.paid_at | date : "dd/MM/yyyy HH:mm" }}</p>
+        <p>
+          <b>Cancelled at:</b>
+          {{ order.cancelled_at | date : "dd/MM/yyyy HH:mm" }}
+        </p>
+        <p>
+          <b>Refund time:</b>
+          {{ order.refund_time | date : "dd/MM/yyyy HH:mm" }}
+        </p>
+        <p>
+          <b>Refund status:</b>
+          <p-tag
+            [value]="order.refund_status"
+            [severity]="getRefundBadge(order.refund_status)"
+          ></p-tag>
+        </p>
+
+        <p>
+          <b>Approval status:</b>
+          <p-tag
+            [value]="order.approval_status"
+            [severity]="getApprovalBadge(order.approval_status)"
+          ></p-tag>
+        </p>
+        <p>
+          <b>Payment proof:</b><br />
+          <img
+            *ngIf="order.payment_proof_url"
+            [src]="order.payment_proof_url"
+            alt="proof"
+            class="proof-thumb"
+            (click)="openImagePreview(order.payment_proof_url)"
+          />
+          <span *ngIf="!order.payment_proof_url">—</span>
+        </p>
+      </div>
     </div>
 
     <!-- 🔹 Danh sách sản phẩm -->
-    <p-table
-      [value]="order.details"
-      [responsiveLayout]="'scroll'"
-      class="order-table"
-      [paginator]="true"
-      [rows]="5"
-      [rowsPerPageOptions]="[5, 10]"
-    >
-      <ng-template pTemplate="header">
-        <tr>
-          <th>#</th>
-          <th>Photo</th>
-          <th>Name</th>
-          <th>Model</th>
-          <th>Price</th>
-          <th>Quantity</th>
-          <th>Total</th>
-          <th>Status</th>
-        </tr>
-      </ng-template>
+    <div class="card shadow-sm p-3">
+      <h5 class="section-title">
+        <i class="pi pi-box me-2 text-primary"></i>Products in Order
+      </h5>
+      <p-table
+        [value]="order.details"
+        [responsiveLayout]="'scroll'"
+        class="order-table"
+        [paginator]="true"
+        [rows]="5"
+        [rowsPerPageOptions]="[5, 10]"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th>#</th>
+            <th>Photo</th>
+            <th>Name</th>
+            <th>Model</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Status</th>
+          </tr>
+        </ng-template>
 
-      <ng-template pTemplate="body" let-item let-i="rowIndex">
-        <tr>
-          <td>{{ i + 1 }}</td>
-          <td>
-            <img
-              [src]="item.product_photo || 'assets/images/no-image.jpg'"
-              alt="{{ item.product_name }}"
-              width="60"
-              height="60"
-              style="object-fit: cover; border-radius: 6px"
-            />
-          </td>
-          <td>{{ item.product_name }}</td>
-          <td>{{ item.product_model }}</td>
+        <ng-template pTemplate="body" let-item let-i="rowIndex">
+          <tr>
+            <td>{{ i + 1 }}</td>
+            <td>
+              <img
+                [src]="item.product_photo || 'assets/images/no-image.jpg'"
+                alt="{{ item.product_name }}"
+                width="120"
+                height="120"
+                style="object-fit: cover; border-radius: 6px"
+              />
+            </td>
+            <td>{{ item.product_name }}</td>
+            <td>{{ item.product_model }}</td>
 
-          <td>{{ item.unit_price | number : "1.0-0" }} USD</td>
-          <td>{{ item.quantity }}</td>
-          <td>{{ item.total_price | number : "1.0-0" }} USD</td>
-          <td>
-            <p-tag [value]="item.status"></p-tag>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
+            <td>{{ item.unit_price | number : "1.0-0" }} USD</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.total_price | number : "1.0-0" }} USD</td>
+            <td>
+              <p-tag [value]="item.status"></p-tag>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
     <!-- 🔙 Quay lại -->
     <div class="button-group">
       <button
@@ -94,7 +163,7 @@
         icon="pi pi-arrow-left"
         label="Back to list"
         class="p-button-text"
-        routerLink="/admin/order/order-list"
+        (click)="goBack()"
       ></button>
     </div>
   </div>
@@ -105,3 +174,18 @@
     styleClass="loading-spinner"
   ></p-progressSpinner>
 </div>
+<!-- 🔍 IMAGE PREVIEW DIALOG -->
+<p-dialog
+  [(visible)]="showImagePreview"
+  [modal]="true"
+  [style]="{ width: '80vw' }"
+  [contentStyle]="{ 'text-align': 'center' }"
+  [breakpoints]="{ '960px': '95vw', '640px': '100vw' }"
+  header="Payment Proof"
+  [closable]="true"
+>
+  <img
+    [src]="previewImageUrl"
+    style="max-width: 100%; max-height: 80vh; border-radius: 6px"
+  />
+</p-dialog>

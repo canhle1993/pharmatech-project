@@ -35,13 +35,23 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 12px 24px;
+
   margin-bottom: 1.5rem;
   padding: 16px;
   border-radius: 8px;
   background: #fafafa;
   transition: background 0.3s ease;
 }
-
+.order-summary2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px 24px;
+  margin-bottom: 1.5rem;
+  padding: 16px;
+  border-radius: 8px;
+  background: #fafafa;
+  transition: background 0.3s ease;
+}
 .order-info:hover,
 .order-user-info:hover,
 .order-summary:hover {
@@ -125,4 +135,17 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 1.5rem;
+}
+
+.proof-thumb {
+  width: 70px;
+  height: 70px;
+  cursor: zoom-in;
+  border-radius: 6px;
+  transition: transform 0.2s ease;
+}
+
+.proof-thumb:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
 }

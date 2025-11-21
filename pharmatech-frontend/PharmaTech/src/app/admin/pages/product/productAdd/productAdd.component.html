@@ -124,16 +124,30 @@
 
           <div class="col">
             <label>Select Category</label>
-            <p-multiSelect
-              [options]="categories"
-              formControlName="category_ids"
-              optionLabel="name"
-              optionValue="id"
-              placeholder="Choose categories"
-              [filter]="true"
-              [appendTo]="'body'"
-            >
-            </p-multiSelect>
+
+            <div class="flex align-items-center gap-2">
+              <p-multiSelect
+                [options]="categories"
+                formControlName="category_ids"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Choose categories"
+                [filter]="true"
+                [appendTo]="'body'"
+                style="flex: 1"
+              >
+              </p-multiSelect>
+            </div>
+            <!-- ⭐ Nút Add New Category -->
+            <button
+              pButton
+              type="button"
+              icon="pi pi-plus"
+              class="p-button-sm p-button-rounded"
+              (click)="openAddCategoryDialog()"
+              pTooltip="Add new category"
+              style="position: relative; left: 200px; top: -35px"
+            ></button>
           </div>
         </div>
 
@@ -192,3 +206,88 @@
     ></button>
   </div>
 </div>
+<!-- ========================================= -->
+<!-- ⭐ Dialog Add New Category -->
+<!-- ========================================= -->
+<p-dialog
+  header="Add New Category"
+  [(visible)]="showAddCategoryDialog"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+>
+  <div class="mb-3">
+    <label>Category Name</label>
+    <input
+      pInputText
+      [(ngModel)]="newCategoryName"
+      (ngModelChange)="onCategoryNameChange($event)"
+      placeholder="Enter category name"
+      class="w-100"
+    />
+
+    <!-- 🔄 Checking... -->
+    <div *ngIf="checkingCategory" class="text-info mt-1">Checking...</div>
+
+    <!-- ❌ Exists (ACTIVE) -->
+    <div *ngIf="categoryExists === true" class="text-danger mt-1">
+      Category already exists.
+    </div>
+
+    <!-- ✔ Available -->
+    <div *ngIf="categoryExists === false" class="text-success mt-1">
+      Available ✔
+    </div>
+  </div>
+
+  <div class="flex justify-content-end gap-2 mt-3">
+    <button
+      pButton
+      label="Cancel"
+      class="p-button-text"
+      (click)="showAddCategoryDialog = false"
+      type="button"
+    ></button>
+
+    <button
+      pButton
+      label="Create"
+      [disabled]="categoryExists || !newCategoryName || isSavingCategory"
+      (click)="saveNewCategory()"
+      type="button"
+    ></button>
+  </div>
+</p-dialog>
+
+<!-- ========================================= -->
+<!-- ⭐ Dialog Confirm Restore Category in Recycle Bin -->
+<!-- ========================================= -->
+<p-dialog
+  header="Restore Category"
+  [(visible)]="showRestoreConfirm"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+>
+  <p>
+    Category "<strong>{{ newCategoryName }}</strong
+    >" already exists in the Recycle Bin.<br />
+    Do you want to restore it?
+  </p>
+
+  <div class="flex justify-content-end gap-2 mt-3">
+    <button
+      pButton
+      label="Cancel"
+      class="p-button-text"
+      type="button"
+      (click)="showRestoreConfirm = false"
+    ></button>
+
+    <button
+      pButton
+      label="Restore"
+      class="p-button-success"
+      type="button"
+      (click)="restoreCategory()"
+    ></button>
+  </div>
+</p-dialog>
