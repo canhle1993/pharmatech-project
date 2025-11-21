@@ -65,7 +65,7 @@ export class ServiceController {
 
     // Map uploaded file if exists
     if (files && files.length > 0) {
-      createDto.bannerImage = `upload/service/${files[0].filename}`;
+      createDto.bannerImage = `/upload/service/${files[0].filename}`;
       console.log('File uploaded:', createDto.bannerImage);
     }
 

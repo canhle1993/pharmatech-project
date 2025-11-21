@@ -4,12 +4,15 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { EditorModule } from 'primeng/editor';
 import { ButtonModule } from 'primeng/button';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 import { env } from '../../../enviroments/enviroment';
 
 @Component({
   selector: 'app-service-admin',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EditorModule, ButtonModule],
+  imports: [CommonModule, ReactiveFormsModule, EditorModule, ButtonModule, ToastModule],
+  providers: [MessageService],
   templateUrl: './service.component.html',
   styleUrls: ['./service.component.css'],
 })
@@ -20,7 +23,7 @@ export class ServiceAdminComponent implements OnInit {
   isUploading = false;
   imageBase = env.imageUrl;
 
-  constructor(private fb: FormBuilder, private http: HttpClient) {}
+  constructor(private fb: FormBuilder, private http: HttpClient, private messageService: MessageService) {}
 
   ngOnInit(): void {
     this.initializeForm();
@@ -35,7 +38,7 @@ export class ServiceAdminComponent implements OnInit {
   }
 
   loadServiceData(): void {
-    this.http.get(`${env.baseUrl}service`).subscribe({
+    this.http.get(`${env.baseUrl}service/root`).subscribe({
       next: (data: any) => {
         if (data) {
           this.serviceForm.patchValue({
@@ -70,7 +73,13 @@ export class ServiceAdminComponent implements OnInit {
   buildImageUrl(imagePath: string): string {
     if (!imagePath) return '';
     if (imagePath.startsWith('http')) return imagePath;
-    return `${this.imageBase}${imagePath}`;
+    const host = env.baseUrl.replace(/\/api\/?$/, '');
+    if (imagePath.includes('/upload/')) {
+      if (!imagePath.startsWith('/')) imagePath = '/' + imagePath;
+      return host + imagePath;
+    }
+    if (!imagePath.startsWith('/')) imagePath = '/' + imagePath;
+    return this.imageBase + imagePath.replace(/^\/upload\//, '');
   }
 
   onSubmit(): void {
@@ -80,6 +89,9 @@ export class ServiceAdminComponent implements OnInit {
     const formData = new FormData();
 
     const formValue = this.serviceForm.value;
+
+    // Add page identifier for root service banner
+    formData.append('page', 'root');
 
     if (this.selectedImage) {
       formData.append('images', this.selectedImage, 'bannerImage');
@@ -95,13 +107,21 @@ export class ServiceAdminComponent implements OnInit {
       next: (response) => {
         console.log('Service updated successfully:', response);
         this.isUploading = false;
-        alert('Service content updated successfully!');
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Saved',
+          detail: 'Service banner updated successfully.'
+        });
         this.loadServiceData();
       },
       error: (error) => {
         console.error('Error updating service:', error);
         this.isUploading = false;
-        alert('Error updating service content. Please try again.');
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Error updating service banner. Please try again.'
+        });
       },
     });
   }

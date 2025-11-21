@@ -53,11 +53,15 @@ export class ContactUserComponent implements OnInit {
   async loadContactData() {
     try {
       this.contact = await firstValueFrom(this.contactService.getContact());
+      console.log('Contact data loaded:', this.contact);
       // Update map URL if exists
       if (this.contact?.mapUrl) {
+        console.log('Map URL found:', this.contact.mapUrl);
         this.safeMapUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
           this.contact.mapUrl
         );
+      } else {
+        console.log('No map URL found, using default');
       }
     } catch (error) {
       console.error('Error loading contact data:', error);

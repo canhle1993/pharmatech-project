@@ -47,43 +47,52 @@ export class AboutController {
     }),
   )
   async createAbout(
-    @Body() dto: CreateAboutDto,
+    @Body() body: any,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    if (file) {
-      dto.bannerImage = `/upload/about/${file.filename}`;
-    }
+    try {
+      const dto: CreateAboutDto = {
+        content: body.content || '',
+      };
 
-    // Parse JSON strings if they exist
-    if (typeof dto.team === 'string') {
-      dto.team = JSON.parse(dto.team as any);
-    }
-    if (typeof dto.testimonials === 'string') {
-      dto.testimonials = JSON.parse(dto.testimonials as any);
-    }
-    if (typeof dto.brandImages === 'string') {
-      dto.brandImages = JSON.parse(dto.brandImages as any);
-    }
-    if (typeof dto.intro === 'string') {
-      dto.intro = JSON.parse(dto.intro as any);
-    }
-    if (typeof dto.cta === 'string') {
-      dto.cta = JSON.parse(dto.cta as any);
-    }
-    if (typeof dto.open === 'string') {
-      dto.open = JSON.parse(dto.open as any);
-    }
-    if (typeof dto.schedule === 'string') {
-      dto.schedule = JSON.parse(dto.schedule as any);
-    }
-    if (typeof dto.teamSection === 'string') {
-      dto.teamSection = JSON.parse(dto.teamSection as any);
-    }
-    if (typeof dto.testimonialsSection === 'string') {
-      dto.testimonialsSection = JSON.parse(dto.testimonialsSection as any);
-    }
+      if (file) {
+        dto.bannerImage = `/upload/about/${file.filename}`;
+      }
 
-    return this.aboutService.create(dto);
+      // Parse JSON strings if they exist
+      if (body.team) {
+        dto.team = typeof body.team === 'string' ? JSON.parse(body.team) : body.team;
+      }
+      if (body.testimonials) {
+        dto.testimonials = typeof body.testimonials === 'string' ? JSON.parse(body.testimonials) : body.testimonials;
+      }
+      if (body.brandImages) {
+        dto.brandImages = typeof body.brandImages === 'string' ? JSON.parse(body.brandImages) : body.brandImages;
+      }
+      if (body.intro) {
+        dto.intro = typeof body.intro === 'string' ? JSON.parse(body.intro) : body.intro;
+      }
+      if (body.cta) {
+        dto.cta = typeof body.cta === 'string' ? JSON.parse(body.cta) : body.cta;
+      }
+      if (body.open) {
+        dto.open = typeof body.open === 'string' ? JSON.parse(body.open) : body.open;
+      }
+      if (body.schedule) {
+        dto.schedule = typeof body.schedule === 'string' ? JSON.parse(body.schedule) : body.schedule;
+      }
+      if (body.teamSection) {
+        dto.teamSection = typeof body.teamSection === 'string' ? JSON.parse(body.teamSection) : body.teamSection;
+      }
+      if (body.testimonialsSection) {
+        dto.testimonialsSection = typeof body.testimonialsSection === 'string' ? JSON.parse(body.testimonialsSection) : body.testimonialsSection;
+      }
+
+      return this.aboutService.create(dto);
+    } catch (error) {
+      console.error('Error creating about:', error);
+      throw new BadRequestException(error.message || 'Failed to create about data');
+    }
   }
 
   @Put(':id')
@@ -110,42 +119,51 @@ export class AboutController {
   )
   async updateAbout(
     @Param('id') id: string,
-    @Body() dto: CreateAboutDto,
+    @Body() body: any,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    if (file) {
-      dto.bannerImage = `/upload/about/${file.filename}`;
-    }
+    try {
+      const dto: CreateAboutDto = {
+        content: body.content || '',
+      };
 
-    // Parse JSON strings if they exist
-    if (typeof dto.team === 'string') {
-      dto.team = JSON.parse(dto.team as any);
-    }
-    if (typeof dto.testimonials === 'string') {
-      dto.testimonials = JSON.parse(dto.testimonials as any);
-    }
-    if (typeof dto.brandImages === 'string') {
-      dto.brandImages = JSON.parse(dto.brandImages as any);
-    }
-    if (typeof dto.intro === 'string') {
-      dto.intro = JSON.parse(dto.intro as any);
-    }
-    if (typeof dto.cta === 'string') {
-      dto.cta = JSON.parse(dto.cta as any);
-    }
-    if (typeof dto.open === 'string') {
-      dto.open = JSON.parse(dto.open as any);
-    }
-    if (typeof dto.schedule === 'string') {
-      dto.schedule = JSON.parse(dto.schedule as any);
-    }
-    if (typeof dto.teamSection === 'string') {
-      dto.teamSection = JSON.parse(dto.teamSection as any);
-    }
-    if (typeof dto.testimonialsSection === 'string') {
-      dto.testimonialsSection = JSON.parse(dto.testimonialsSection as any);
-    }
+      if (file) {
+        dto.bannerImage = `/upload/about/${file.filename}`;
+      }
 
-    return this.aboutService.update(id, dto);
+      // Parse JSON strings if they exist
+      if (body.team) {
+        dto.team = typeof body.team === 'string' ? JSON.parse(body.team) : body.team;
+      }
+      if (body.testimonials) {
+        dto.testimonials = typeof body.testimonials === 'string' ? JSON.parse(body.testimonials) : body.testimonials;
+      }
+      if (body.brandImages) {
+        dto.brandImages = typeof body.brandImages === 'string' ? JSON.parse(body.brandImages) : body.brandImages;
+      }
+      if (body.intro) {
+        dto.intro = typeof body.intro === 'string' ? JSON.parse(body.intro) : body.intro;
+      }
+      if (body.cta) {
+        dto.cta = typeof body.cta === 'string' ? JSON.parse(body.cta) : body.cta;
+      }
+      if (body.open) {
+        dto.open = typeof body.open === 'string' ? JSON.parse(body.open) : body.open;
+      }
+      if (body.schedule) {
+        dto.schedule = typeof body.schedule === 'string' ? JSON.parse(body.schedule) : body.schedule;
+      }
+      if (body.teamSection) {
+        dto.teamSection = typeof body.teamSection === 'string' ? JSON.parse(body.teamSection) : body.teamSection;
+      }
+      if (body.testimonialsSection) {
+        dto.testimonialsSection = typeof body.testimonialsSection === 'string' ? JSON.parse(body.testimonialsSection) : body.testimonialsSection;
+      }
+
+      return this.aboutService.update(id, dto);
+    } catch (error) {
+      console.error('Error updating about:', error);
+      throw new BadRequestException(error.message || 'Failed to update about data');
+    }
   }
 }

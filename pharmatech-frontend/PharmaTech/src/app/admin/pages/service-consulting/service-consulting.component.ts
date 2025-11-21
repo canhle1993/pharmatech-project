@@ -4,12 +4,15 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { EditorModule } from 'primeng/editor';
 import { ButtonModule } from 'primeng/button';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 import { env } from '../../../enviroments/enviroment';
 
 @Component({
   selector: 'app-service-consulting',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EditorModule, ButtonModule],
+  imports: [CommonModule, ReactiveFormsModule, EditorModule, ButtonModule, ToastModule],
+  providers: [MessageService],
   templateUrl: './service-consulting.component.html',
   styleUrls: ['./service-consulting.component.css'],
 })
@@ -21,7 +24,7 @@ export class ServiceConsultingComponent implements OnInit {
   imageBase = env.imageUrl;
   pageName = 'consulting';
 
-  constructor(private fb: FormBuilder, private http: HttpClient) {}
+  constructor(private fb: FormBuilder, private http: HttpClient, private messageService: MessageService) {}
 
   ngOnInit(): void {
     this.initializeForm();
@@ -104,7 +107,11 @@ export class ServiceConsultingComponent implements OnInit {
       next: (response) => {
         this.isUploading = false;
         console.log('Success response:', response);
-        alert('Service content updated successfully!');
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Saved',
+          detail: 'Content updated successfully.'
+        });
         this.loadServiceData();
       },
       error: (error) => {
@@ -115,11 +122,11 @@ export class ServiceConsultingComponent implements OnInit {
         console.error('Status text:', error.statusText);
         console.error('Error message:', error.message);
         console.error('Error details:', error.error);
-        alert(
-          `Error updating service content: ${
-            error.message || 'Please try again.'
-          }`
-        );
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: `Update failed: ${error.message || 'Please try again.'}`
+        });
       },
     });
   }

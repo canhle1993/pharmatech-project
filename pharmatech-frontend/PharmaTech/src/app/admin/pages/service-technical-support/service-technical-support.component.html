@@ -1,25 +1,10 @@
 ﻿<div class="container mt-4">
+  <p-toast></p-toast>
   <h1 class="mb-4">Technical Support Service Content</h1>
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="bg-white p-4 rounded shadow-sm">
 
-    <!-- Banner Image -->
-    <div class="section mb-5">
-      <h3 class="mb-4">Banner Image</h3>
-      <div class="mb-4">
-        <label class="form-label">Banner Image (1920x720):</label>
-        <div class="d-flex gap-3 align-items-center">
-          <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event)">
-          <button type="button" class="btn btn-outline-secondary" *ngIf="selectedImage" (click)="clearImage()">Clear</button>
-        </div>
-        <small class="text-muted">Recommended size: 1920x720 pixels</small>
-
-        <!-- Image Preview -->
-        <div *ngIf="imagePreview || form.get('bannerImage')?.value" class="mt-3">
-          <img [src]="imagePreview || buildImageUrl(form.get('bannerImage')?.value)" class="img-fluid rounded" style="max-height: 200px; width: auto;" alt="Banner preview">
-        </div>
-      </div>
-    </div>
+  
 
     <!-- Content Editor -->
     <div class="section mb-5">

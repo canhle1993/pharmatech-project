@@ -68,12 +68,24 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   }
 
   loadServiceData(): void {
+    // Load root banner first
+    this.http.get(`${env.baseUrl}service/root`).subscribe({
+      next: (data: any) => {
+        if (data && data.bannerImage) {
+          this.bannerImage = this.buildImageUrl(data.bannerImage);
+        }
+      },
+      error: (error) => {
+        console.log('No root banner found, will use tab banner');
+      },
+    });
+
     // Load content for each tab separately
     this.tabs.forEach((tab) => {
       this.http.get(`${env.baseUrl}service/${tab.id}`).subscribe({
         next: (data: any) => {
           if (data) {
-            // Update banner from first loaded tab
+            // Update banner from first loaded tab only if root banner not set
             if (!this.bannerImage && data.bannerImage) {
               this.bannerImage = this.buildImageUrl(data.bannerImage);
             }
@@ -94,9 +106,11 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     });
 
     // Set default banner if none loaded
-    if (!this.bannerImage) {
-      this.bannerImage = 'assets/images/bg/Pharma-Natural.jpg';
-    }
+    setTimeout(() => {
+      if (!this.bannerImage) {
+        this.bannerImage = 'assets/images/bg/Pharma-Natural.jpg';
+      }
+    }, 1000);
   }
 
   selectTab(tabId: string): void {
@@ -116,7 +130,16 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   buildImageUrl(imagePath: string): string {
     if (!imagePath) return '';
     if (imagePath.startsWith('http')) return imagePath;
-    return `${this.imageBase}${imagePath}`;
+    // If path already includes /upload/, use host root not imageBase (to avoid double /upload)
+    const host = env.baseUrl.replace(/\/api\/?$/, '');
+    if (imagePath.includes('/upload/')) {
+      // ensure leading slash
+      if (!imagePath.startsWith('/')) imagePath = '/' + imagePath;
+      return host + imagePath;
+    }
+    // legacy path without /upload/, treat as relative inside upload
+    if (!imagePath.startsWith('/')) imagePath = '/' + imagePath;
+    return this.imageBase + imagePath.replace(/^\/upload\//, '');
   }
   ngAfterViewInit() {
     // --- CSS ---

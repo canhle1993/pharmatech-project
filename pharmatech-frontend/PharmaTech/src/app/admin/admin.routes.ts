@@ -36,6 +36,8 @@ import { ServiceMaintenanceComponent } from './pages/service-maintenance/service
 import { ServiceEquipmentUpgradeComponent } from './pages/service-equipment-upgrade/service-equipment-upgrade.component';
 import { ServiceTechnicalSupportComponent } from './pages/service-technical-support/service-technical-support.component';
 import { ServiceConsultingComponent } from './pages/service-consulting/service-consulting.component';
+import { ServiceAdminComponent } from './pages/service/service.component';
+import { PurchaseAdminComponent } from './pages/purchase/purchase.component';
 
 export const adminRoutes: Routes = [
   {
@@ -61,6 +63,7 @@ export const adminRoutes: Routes = [
       { path: 'category-details/:id', component: CategoryDetailsComponent },
 
       // Service routes
+      { path: 'service', component: ServiceAdminComponent },
       { path: 'service/consulting', component: ServiceConsultingComponent },
       {
         path: 'service/technical-support',
@@ -73,6 +76,7 @@ export const adminRoutes: Routes = [
       { path: 'service/maintenance', component: ServiceMaintenanceComponent },
 
       // Purchase routes
+      { path: 'purchase', component: PurchaseAdminComponent },
       {
         path: 'purchase/customer-intake',
         component: PurchaseCustomerIntakeComponent,

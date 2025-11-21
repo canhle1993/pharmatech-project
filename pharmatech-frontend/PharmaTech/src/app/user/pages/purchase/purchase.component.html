@@ -1,7 +1,7 @@
 <!-- Purchase Page -->
 <div class="purchase-page-wrapper">
   <!-- Breadcrumb Section Start -->
-  <div class="breadcrumb" [attr.data-bg-image]="bannerImage">
+  <div class="breadcrumb" [attr.data-bg-image]="bannerImage" [ngStyle]="{'background-image': bannerImage ? 'url(' + bannerImage + ')' : ''}">
     <div class="container">
       <div class="row">
         <div class="col-12">
