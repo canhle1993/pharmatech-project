@@ -1,0 +1,28 @@
+/* Tạo scroll cho menu */
+#layout-menu {
+  height: 100vh; /* full màn hình */
+  overflow-y: auto; /* BẬT SCROLL */
+  overflow-x: hidden; /* tránh tràn ngang */
+}
+
+/* Ẩn cái shadow chặn scroll của Sneat */
+.menu-inner-shadow {
+  display: none !important;
+}
+/* ===== Custom Scrollbar Style ===== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.35);
+}

@@ -141,6 +141,7 @@
               [routerLink]="['/admin/account-details', account.id]"
             ></button>
             <button
+              *ngIf="canShowEditButton(account)"
               pButton
               icon="pi pi-pencil"
               class="p-button-text p-button-warning"
@@ -150,6 +151,7 @@
             ></button>
 
             <button
+              *ngIf="canShowLockButton(account)"
               pButton
               class="p-button-sm lock-btn"
               [class.p-button-dangerr]="account.is_active"

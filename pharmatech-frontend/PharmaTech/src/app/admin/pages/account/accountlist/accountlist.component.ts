@@ -64,6 +64,7 @@ export class AccountListComponent implements OnInit {
     email: '',
     password: '',
   };
+  currentUserRoles: string[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -75,7 +76,41 @@ export class AccountListComponent implements OnInit {
   ngOnInit() {
     this.buildForm();
     this.loadAccounts();
+
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    this.currentUserRoles = currentUser.roles || [];
   }
+  canShowLockButton(target: Account): boolean {
+    // Nếu đang login là SUPERADMIN
+    if (this.currentUserRoles.includes('superadmin')) {
+      // Chỉ hiển thị nút cho ADMIN và USER — KHÔNG cho superadmin khác
+      return target.roles.includes('admin') || target.roles.includes('user');
+    }
+
+    // Nếu đang login là ADMIN
+    if (this.currentUserRoles.includes('admin')) {
+      // Chỉ thấy USER
+      return target.roles.includes('user');
+    }
+
+    // User thường → không có quyền
+    return false;
+  }
+  canShowEditButton(target: Account): boolean {
+    // SUPERADMIN → chỉ thấy admin + user
+    if (this.currentUserRoles.includes('superadmin')) {
+      return target.roles.includes('admin') || target.roles.includes('user');
+    }
+
+    // ADMIN → chỉ thấy user
+    if (this.currentUserRoles.includes('admin')) {
+      return target.roles.includes('user');
+    }
+
+    // USER → không được edit ai hết
+    return false;
+  }
+
   private buildForm() {
     this.registerForm = this.fb.group(
       {
