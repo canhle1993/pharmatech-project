@@ -147,8 +147,11 @@ export class PaymentSuccessComponent implements OnInit {
 
       // 6️⃣ Redirect về Profile sau 1.2s
       setTimeout(() => {
-        this.router.navigate(['/profile/${userId}'], {
-          queryParams: { orderSuccess: '1' },
+        this.router.navigate([`/profile/${userId}`], {
+          queryParams: {
+            orderSuccess: '1',
+            openTab: 'orders', // ⭐ Mở tab Orders
+          },
         });
       }, 1200);
     } catch (error) {

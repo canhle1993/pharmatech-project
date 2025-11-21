@@ -281,4 +281,19 @@ export class OrderService {
       this.baseUrl + 'pending-count'
     );
   }
+
+  // order.service.ts
+
+  /** 🔹 Lấy tất cả orders của 1 customer (lọc trên FE, không cần API mới) */
+  async findByCustomerLocal(customerId: string): Promise<Order[]> {
+    try {
+      const all = await this.findAll();
+
+      // 👇 tuỳ theo field trong Order trả về, thường là user_id
+      return all.filter((o: any) => o.user_id === customerId);
+    } catch (error) {
+      console.error('❌ findByCustomerLocal error:', error);
+      return [];
+    }
+  }
 }

@@ -218,11 +218,12 @@
               </tfoot>
             </table>
             <p
-              *ngIf="depositPercent === 10"
+              *ngIf="depositPercent === defaultPercent"
               class="text-muted small mt-2 text-center"
             >
-              Default deposit rate <strong>10%</strong> applied (no admin
-              setting found).
+              Default deposit rate
+              <strong>{{ defaultPercent }}%</strong> applied (no matching range
+              found).
             </p>
           </div>
           <!-- Checkout Summary End -->

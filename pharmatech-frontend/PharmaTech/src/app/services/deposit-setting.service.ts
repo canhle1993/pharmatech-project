@@ -13,10 +13,10 @@ export class DepositSettingService {
   constructor(private httpClient: HttpClient) {}
 
   // ==================================================
-  // 🔹 LẤY DỮ LIỆU
+  // 🔹 LẤY DỮ LIỆU RANGE-SETTINGS
   // ==================================================
 
-  /** 🔹 Lấy tất cả cấu hình đặt cọc */
+  /** 🔹 Lấy tất cả cấu hình đặt cọc (CHỈ RANGE, không default) */
   findAll(): Promise<DepositSetting[]> {
     return lastValueFrom(
       this.httpClient.get<DepositSetting[]>(this.apiUrl + 'find-all')
@@ -30,7 +30,7 @@ export class DepositSettingService {
     );
   }
 
-  /** 🔹 Lấy danh sách cấu hình đang active */
+  /** 🔹 Lấy danh sách cấu hình đang active (CHỈ RANGE) */
   findActive(): Promise<DepositSetting[]> {
     return lastValueFrom(
       this.httpClient.get<DepositSetting[]>(this.apiUrl + 'find-active')
@@ -38,23 +38,44 @@ export class DepositSettingService {
   }
 
   // ==================================================
-  // 🧾 TẠO / CẬP NHẬT / XÓA
+  // 🧾 TẠO / CẬP NHẬT RANGE-SETTINGS
   // ==================================================
 
-  /** ✅ Tạo cấu hình đặt cọc mới */
+  /** ✅ Tạo cấu hình range */
   create(setting: DepositSetting): Promise<any> {
     return lastValueFrom(this.httpClient.post(this.apiUrl + 'create', setting));
   }
 
-  /** ✅ Cập nhật cấu hình đặt cọc */
+  /** ✅ Cập nhật cấu hình range */
   update(setting: DepositSetting): Promise<any> {
     return lastValueFrom(this.httpClient.put(this.apiUrl + 'update', setting));
   }
 
-  /** 🔹 Xóa mềm cấu hình đặt cọc */
+  /** 🔹 Xóa mềm cấu hình range */
   softDelete(id: string, updated_by: string): Promise<any> {
     return lastValueFrom(
       this.httpClient.put(this.apiUrl + 'soft-delete/' + id, { updated_by })
+    );
+  }
+
+  // ==================================================
+  // ⭐ DEFAULT PERCENT – BẢN RIÊNG, KHÔNG LIÊN QUAN RANGE
+  // ==================================================
+
+  /** ⭐ Lấy default percent (trả về object: { default_percent: number }) */
+  getDefault(): Promise<{ default_percent: number }> {
+    return lastValueFrom(
+      this.httpClient.get<{ default_percent: number }>(this.apiUrl + 'default')
+    );
+  }
+
+  /** ⭐ Update default percent */
+  updateDefault(default_percent: number, updated_by: string): Promise<any> {
+    return lastValueFrom(
+      this.httpClient.put(this.apiUrl + 'default', {
+        default_percent,
+        updated_by,
+      })
     );
   }
 }

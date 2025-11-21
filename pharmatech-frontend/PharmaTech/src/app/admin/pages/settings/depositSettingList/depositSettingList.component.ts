@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
   FormGroup,
@@ -11,12 +11,10 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
-import { InputNumberModule } from 'primeng/inputnumber';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { FloatLabel } from 'primeng/floatlabel';
 import { Select } from 'primeng/select';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -36,7 +34,6 @@ import { DepositSetting } from '../../../../entities/deposit-setting.entity';
     ButtonModule,
     Dialog,
     InputTextModule,
-    InputNumberModule,
     ToastModule,
     ConfirmDialogModule,
     ProgressSpinnerModule,
@@ -49,6 +46,10 @@ import { DepositSetting } from '../../../../entities/deposit-setting.entity';
 export class DepositSettingListComponent implements OnInit {
   depositSettings: DepositSetting[] = [];
   loading = true;
+
+  // 🟦 Default Percent
+  defaultPercent: number = 10;
+  defaultLoading = false;
 
   dialogVisible = false;
   isEditMode = false;
@@ -75,9 +76,10 @@ export class DepositSettingListComponent implements OnInit {
     private messageService: MessageService
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.buildForm();
-    this.loadSettings();
+    await this.loadSettings();
+    await this.loadDefaultPercent();
   }
 
   private buildForm() {
@@ -92,14 +94,25 @@ export class DepositSettingListComponent implements OnInit {
     });
   }
 
+  // =======================
+  // LOAD RANGE SETTINGS
+  // =======================
+  // =======================
+  // LOAD RANGE SETTINGS
+  // =======================
   async loadSettings() {
     this.loading = true;
     try {
       const res: any = await this.depositService.findAll();
-      this.depositSettings = res || [];
+
+      // ❗ Loại bỏ record default (nếu BE trả về)
+      this.depositSettings = (res || []).filter(
+        (s) =>
+          !(s.min_total === 0 && s.max_total === 0 && s.is_active === false)
+      );
+
       this.filteredDepositSettings = [...this.depositSettings];
     } catch (err) {
-      console.error('❌ Load deposit settings error:', err);
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
@@ -109,16 +122,65 @@ export class DepositSettingListComponent implements OnInit {
       this.loading = false;
     }
   }
+
+  // =======================
+  // LOAD DEFAULT PERCENT
+  // =======================
+  async loadDefaultPercent() {
+    try {
+      this.defaultLoading = true;
+      const res = await this.depositService.getDefault();
+      this.defaultPercent = Number(res.default_percent ?? 10);
+    } catch (err) {
+      console.error('⚠️ loadDefaultPercent error:', err);
+    } finally {
+      this.defaultLoading = false;
+    }
+  }
+
+  // =======================
+  // SAVE DEFAULT PERCENT
+  // =======================
+  async saveDefaultPercent() {
+    if (this.defaultPercent < 1 || this.defaultPercent > 100) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Invalid Value',
+        detail: 'Default percent must be between 1 and 100.',
+      });
+      return;
+    }
+
+    try {
+      const currentUser = JSON.parse(
+        localStorage.getItem('currentUser') || '{}'
+      );
+      const updated_by = currentUser?.name || 'admin';
+
+      await this.depositService.updateDefault(this.defaultPercent, updated_by);
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Updated',
+        detail: 'Default deposit percent updated successfully.',
+      });
+    } catch (err) {
+      console.error('❌ update default error:', err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to update default percent.',
+      });
+    }
+  }
+
+  // ================== FILTER ==================
   applyFilterByStatus() {
     if (!this.selectedStatus) {
       this.filteredDepositSettings = [...this.depositSettings];
-    } else if (this.selectedStatus === 'active') {
-      this.filteredDepositSettings = this.depositSettings.filter(
-        (s) => s.is_active === true
-      );
-    } else if (this.selectedStatus === 'inactive') {
-      this.filteredDepositSettings = this.depositSettings.filter(
-        (s) => s.is_active === false
+    } else {
+      this.filteredDepositSettings = this.depositSettings.filter((s) =>
+        this.selectedStatus === 'active' ? s.is_active : !s.is_active
       );
     }
   }
@@ -148,7 +210,7 @@ export class DepositSettingListComponent implements OnInit {
     this.dialogVisible = true;
   }
 
-  // ================== SAVE ==================
+  // ================== SAVE RANGE SETTING ==================
   async saveDepositSetting() {
     if (this.depositForm.invalid) {
       this.depositForm.markAllAsTouched();
@@ -165,7 +227,7 @@ export class DepositSettingListComponent implements OnInit {
     const max = Number(formValue.max_total);
     const percent = Number(formValue.percent);
 
-    // 🔸 Kiểm tra range logic trước
+    // Check range
     if (min >= max) {
       this.messageService.add({
         severity: 'warn',
@@ -175,11 +237,9 @@ export class DepositSettingListComponent implements OnInit {
       return;
     }
 
-    // 🔸 Kiểm tra overlap FE trước khi gọi API
+    // Check overlap
     const conflict = this.depositSettings
-      .filter(
-        (s) => !this.isEditMode || s.id !== this.selectedSetting?.id // bỏ qua chính nó
-      )
+      .filter((s) => !this.isEditMode || s.id !== this.selectedSetting?.id)
       .find((s) => !(max < s.min_total || min > s.max_total));
 
     if (conflict) {
@@ -211,12 +271,11 @@ export class DepositSettingListComponent implements OnInit {
 
       this.dialogVisible = false;
       await this.loadSettings();
-    } catch (err: any) {
-      console.error('❌ Save deposit setting error:', err);
+    } catch (err) {
       const backendMsg =
         err?.error?.message ||
         err?.message ||
-        'Failed to save deposit setting. Please try again.';
+        'Failed to save deposit setting.';
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
@@ -237,15 +296,17 @@ export class DepositSettingListComponent implements OnInit {
             localStorage.getItem('currentUser') || '{}'
           );
           const updated_by = currentUser?.name || 'admin';
+
           await this.depositService.softDelete(setting.id!, updated_by);
+
           this.messageService.add({
             severity: 'success',
             summary: 'Deleted',
             detail: 'Deposit setting deleted successfully.',
           });
+
           await this.loadSettings();
         } catch (err) {
-          console.error('❌ Delete deposit setting error:', err);
           this.messageService.add({
             severity: 'error',
             summary: 'Error',

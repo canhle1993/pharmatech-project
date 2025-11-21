@@ -15,13 +15,13 @@ import { DepositSettingDTO } from './deposit-setting.dto';
 export class DepositSettingController {
   constructor(private depositSettingService: DepositSettingService) {}
 
-  /** 🔹 Lấy toàn bộ cấu hình đặt cọc (bỏ qua những cái đã xóa mềm) */
+  /** 🔹 GET ALL RANGE SETTINGS */
   @Get('find-all')
   async findAll() {
     return await this.depositSettingService.findAll();
   }
 
-  /** 🔹 Lấy chi tiết 1 cấu hình đặt cọc theo ID */
+  /** 🔹 GET BY ID */
   @Get('find-by-id/:id')
   async findById(@Param('id') id: string) {
     const setting = await this.depositSettingService.findById(id);
@@ -33,7 +33,7 @@ export class DepositSettingController {
     return setting;
   }
 
-  /** ✅ Tạo mới cấu hình đặt cọc */
+  /** ✅ CREATE RANGE SETTING (min/max/percent) */
   @Post('create')
   async create(@Body() body: any) {
     try {
@@ -57,12 +57,12 @@ export class DepositSettingController {
           message: 'Failed to create deposit setting',
           errorMessage: error.message,
         },
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
 
-  /** ✅ Cập nhật cấu hình đặt cọc */
+  /** ✅ UPDATE RANGE SETTING */
   @Put('update')
   async update(@Body() body: any) {
     try {
@@ -87,12 +87,12 @@ export class DepositSettingController {
           message: 'Failed to update deposit setting',
           errorMessage: error.message,
         },
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
 
-  /** 🔹 Xóa mềm cấu hình đặt cọc */
+  /** 🔹 SOFT DELETE RANGE SETTING */
   @Put('soft-delete/:id')
   async softDelete(
     @Param('id') id: string,
@@ -101,9 +101,24 @@ export class DepositSettingController {
     return await this.depositSettingService.softDelete(id, updated_by);
   }
 
-  /** 🔹 Lấy danh sách cấu hình đang active */
+  /** 🔹 GET ACTIVE RANGE SETTINGS */
   @Get('find-active')
   async findActive() {
     return await this.depositSettingService.findActive();
+  }
+
+  /** 🔹 GET DEFAULT PERCENT */
+  @Get('default')
+  async getDefault() {
+    return await this.depositSettingService.getDefault();
+  }
+
+  /** 🔹 UPDATE DEFAULT PERCENT */
+  @Put('default')
+  async updateDefault(@Body() body: any) {
+    return await this.depositSettingService.updateDefault(
+      Number(body.default_percent),
+      body.updated_by || 'admin',
+    );
   }
 }

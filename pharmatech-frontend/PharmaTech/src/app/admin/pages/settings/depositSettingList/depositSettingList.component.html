@@ -1,17 +1,61 @@
 <div class="deposit-container">
   <h2 class="page-title">Deposit Setting</h2>
 
-  <!-- ✅ Toast thông báo -->
+  <!-- Toast -->
   <p-toast></p-toast>
 
-  <!-- ✅ Loading spinner -->
+  <!-- Global Loading -->
   <p-progressSpinner
     *ngIf="loading"
     styleClass="loading-spinner"
   ></p-progressSpinner>
 
-  <!-- ✅ Table hiển thị danh sách -->
-  <div class="card" *ngIf="!loading">
+  <!-- ============================
+       🔹 DEFAULT PERCENT CONFIG
+  ============================ -->
+  <div class="card default-card" *ngIf="!loading">
+    <h3 class="mb-3">Default Deposit Percent</h3>
+    <p class="text-muted small">
+      This value will be applied when the total amount does not match any range
+      above.
+    </p>
+
+    <div class="default-wrapper" style="max-width: 30%">
+      <div class="default-input">
+        <label class="fw-bold">Default Percent (%)</label>
+        <input
+          pInputText
+          type="number"
+          [(ngModel)]="defaultPercent"
+          [disabled]="defaultLoading"
+          placeholder="Enter default percent"
+          class="w-100"
+        />
+      </div>
+
+      <div class="default-button pt-3">
+        <button
+          pButton
+          label="Save"
+          icon="pi pi-check"
+          class="p-button-success"
+          (click)="saveDefaultPercent()"
+          [disabled]="defaultLoading"
+        ></button>
+      </div>
+    </div>
+
+    <!-- Loading for default -->
+    <p-progressSpinner
+      *ngIf="defaultLoading"
+      styleClass="default-spinner"
+    ></p-progressSpinner>
+  </div>
+
+  <!-- ============================
+       🔹 RANGE SETTINGS TABLE
+  ============================ -->
+  <div class="card mt-4" *ngIf="!loading">
     <p-table
       #dt
       [value]="filteredDepositSettings"
@@ -26,7 +70,7 @@
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
       class="deposit-table"
     >
-      <!-- ✅ Toolbar -->
+      <!-- Toolbar -->
       <ng-template pTemplate="caption">
         <div class="p-datatable-caption">
           <div class="toolbar-actions">
@@ -40,7 +84,7 @@
           </div>
 
           <div class="filter-group">
-            <!-- 🔹 Dropdown sort by status -->
+            <!-- Filter by Status -->
             <p-floatLabel
               [ngClass]="{ 'w-full': true, 'md:w-56': true }"
               style="margin-right: 1rem"
@@ -56,7 +100,7 @@
               ></p-select>
             </p-floatLabel>
 
-            <!-- 🔹 Search -->
+            <!-- Global Search -->
             <p-iconfield iconPosition="left" class="search-field">
               <p-inputicon><i class="pi pi-search"></i></p-inputicon>
               <input
@@ -70,7 +114,7 @@
         </div>
       </ng-template>
 
-      <!-- ✅ Header -->
+      <!-- Header -->
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="min_total">
@@ -90,7 +134,7 @@
         </tr>
       </ng-template>
 
-      <!-- ✅ Body -->
+      <!-- Body -->
       <ng-template pTemplate="body" let-setting>
         <tr>
           <td>{{ setting.min_total | number }}</td>
@@ -124,7 +168,7 @@
         </tr>
       </ng-template>
 
-      <!-- ✅ Empty message -->
+      <!-- Empty message -->
       <ng-template pTemplate="emptymessage">
         <tr>
           <td colspan="5" class="text-center">No deposit settings found.</td>
@@ -136,7 +180,7 @@
   <p-confirmDialog></p-confirmDialog>
 </div>
 
-<!-- ✅ Dialog Add / Edit -->
+<!-- Dialog Add/Edit -->
 <p-dialog
   [header]="isEditMode ? 'Edit Deposit Setting' : 'Add Deposit Setting'"
   [(visible)]="dialogVisible"
@@ -229,7 +273,7 @@
     </div>
   </form>
 
-  <!-- ✅ Footer -->
+  <!-- Footer -->
   <ng-template pTemplate="footer">
     <button
       pButton
