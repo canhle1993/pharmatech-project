@@ -36,6 +36,20 @@
           class="p-button-sm p-button-info"
           (click)="exportExcel()"
         ></button>
+        <button
+          pButton
+          label="Generate QR"
+          class="p-button-sm p-button-warning ml-2"
+          (click)="openQRDialog()"
+        ></button>
+        <p-button
+          label="Scan QR"
+          variant="text"
+          [raised]="true"
+          severity="warn"
+          (click)="scanQR()"
+          icon="pi pi-qrcode"
+        />
       </div>
     </div>
 
@@ -205,3 +219,71 @@
     </p-tabs>
   </div>
 </div>
+
+<!-- ============================
+     QR GENERATOR DIALOG
+============================= -->
+<p-dialog
+  header="Generate QR Codes"
+  [(visible)]="showQRDialog"
+  [modal]="true"
+  [style]="{ width: '300px' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <div class="p-fluid">
+    <div class="field">
+      <label>Product ID</label>
+      <br />
+      <input
+        pInputText
+        [(ngModel)]="qrProductId"
+        placeholder="Nhập _id của sản phẩm"
+      />
+    </div>
+
+    <div class="field mt-3">
+      <label>Quantity</label>
+      <br />
+      <input
+        pInputText
+        type="number"
+        min="1"
+        [(ngModel)]="qrQuantity"
+        placeholder="Số lượng QR cần in"
+      />
+    </div>
+
+    <button
+      pButton
+      label="Generate"
+      class="p-button-success mt-3"
+      (click)="generateQR()"
+    ></button>
+    <button
+      pButton
+      label="Download ZIP"
+      icon="pi pi-download"
+      class="p-button-info mt-3 ml-2"
+      style="margin-left: 10px"
+      (click)="downloadZip()"
+      *ngIf="generatedQR.length > 0"
+    ></button>
+    <!-- RESULTS -->
+    <div class="qr-grid mt-4" *ngIf="generatedQR.length > 0">
+      <div style="margin-bottom: 20px; font-size: 16px">
+        <strong>{{ productName }}</strong
+        ><br />
+        <span>{{ productModel }}</span>
+      </div>
+
+      <div
+        class="qr-item"
+        *ngFor="let qr of generatedQR"
+        style="display: inline-block; margin: 10px; text-align: center"
+      >
+        <img [src]="qr" width="150" height="150" />
+      </div>
+    </div>
+  </div>
+</p-dialog>

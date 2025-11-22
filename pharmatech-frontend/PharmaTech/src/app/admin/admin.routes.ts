@@ -38,6 +38,7 @@ import { ServiceTechnicalSupportComponent } from './pages/service-technical-supp
 import { ServiceConsultingComponent } from './pages/service-consulting/service-consulting.component';
 import { ServiceAdminComponent } from './pages/service/service.component';
 import { PurchaseAdminComponent } from './pages/purchase/purchase.component';
+import { QrScanComponent } from './pages/scan/qr-scan.component';
 
 export const adminRoutes: Routes = [
   {
@@ -124,6 +125,8 @@ export const adminRoutes: Routes = [
       { path: 'order/return-list', component: ReturnListComponent },
 
       { path: 'support/chat', component: ChatComponent },
+
+      { path: 'scan/qr-scan', component: QrScanComponent },
     ],
   },
 ];

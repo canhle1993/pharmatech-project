@@ -1,0 +1,88 @@
+<div class="scan-page-container">
+  <h2 class="page-title">Scan QR Code</h2>
+  <p-toast></p-toast>
+
+  <div class="card">
+    <!-- Camera -->
+    <div class="camera-card p-card">
+      <div class="row">
+        <div class="col"></div>
+        <div class="col">
+          <video
+            id="preview"
+            #preview
+            width="420"
+            height="320"
+            autoplay
+            class="camera-video"
+          ></video>
+        </div>
+        <div class="col"></div>
+      </div>
+    </div>
+
+    <!-- Last Scan -->
+    <div class="last-scan p-card" *ngIf="lastScan">
+      <h3>Last Scan</h3>
+      <p class="last-scan-text">{{ lastScan }}</p>
+    </div>
+
+    <!-- TABLE -->
+    <p-card styleClass="scan-card">
+      <!-- 🔥 HEADER + RESET BUTTON -->
+      <div class="table-header">
+        <h3 class="table-title">Scan History</h3>
+        <button
+          pButton
+          icon="pi pi-arrow-left"
+          label="Back to list"
+          class="p-button-text"
+          type="button"
+          (click)="goBack()"
+        ></button>
+        <button
+          pButton
+          label="Reset"
+          icon="pi pi-refresh"
+          class="p-button-danger p-button-sm"
+          (click)="resetScan()"
+          style="float: inline-end"
+        ></button>
+      </div>
+
+      <p-table
+        [value]="scanTable"
+        styleClass="p-datatable-striped p-datatable-sm"
+        responsiveLayout="scroll"
+        class="product-table pt-3"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th>#</th>
+            <th>Product Name</th>
+            <th>Model</th>
+            <th>Quantity</th>
+            <th>Stock</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-row let-i="rowIndex">
+          <tr>
+            <td>{{ i + 1 }}</td>
+            <td>{{ row.name }}</td>
+            <td>{{ row.model }}</td>
+            <td
+              class="qty-cell"
+              style="font-size: x-large; color: rgb(7, 3, 238)"
+            >
+              {{ row.count }}
+            </td>
+            <td class="qty-cell" style="font-size: x-large; color: orange">
+              {{ getStock(row.productId) }}
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+  </div>
+</div>

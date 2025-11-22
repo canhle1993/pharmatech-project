@@ -31,7 +31,7 @@ body {
 .chat-wrapper {
   position: fixed;
   bottom: 120px;
-  right: 1055px; /* 👈 Dời qua bên trái */
+  left: 4%; /* 👈 Dời qua bên trái */
   z-index: 1000;
 }
 

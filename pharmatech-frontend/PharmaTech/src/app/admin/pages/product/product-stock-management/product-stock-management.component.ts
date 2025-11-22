@@ -15,6 +15,12 @@ import { ProductService } from '../../../../services/product.service';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
+import { DialogModule } from 'primeng/dialog';
+// @ts-ignore
+import QRCode from 'qrcode';
+import JSZip from 'jszip';
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-product-stock-management',
   standalone: true,
@@ -30,6 +36,7 @@ import { saveAs } from 'file-saver';
     FormsModule,
     ToastModule,
     ProgressSpinnerModule,
+    DialogModule,
   ],
   providers: [MessageService],
 })
@@ -62,9 +69,18 @@ export class ProductStockManagementComponent implements OnInit {
   rows = 7; // per page
   first = 0;
 
+  showQRDialog: boolean = false;
+  qrProductId: string = '';
+  qrQuantity: number | null = null;
+  productName: string = '';
+  productModel: string = '';
+
+  generatedQR: string[] = [];
+
   constructor(
     private productService: ProductService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -75,6 +91,99 @@ export class ProductStockManagementComponent implements OnInit {
     console.log('ActiveTab:', this.activeTab);
   }
 
+  openQRDialog() {
+    this.qrProductId = '';
+    this.qrQuantity = null;
+    this.generatedQR = [];
+
+    this.productName = '';
+    this.productModel = '';
+
+    this.showQRDialog = true;
+  }
+
+  async generateQR() {
+    if (!this.qrProductId || !this.qrQuantity || this.qrQuantity <= 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Invalid Input',
+        detail: 'Please enter Product ID & Quantity.',
+      });
+      return;
+    }
+
+    // Lấy thông tin product
+    const product =
+      this.inStock.find((p) => p.id === this.qrProductId) ||
+      this.outOfStock.find((p) => p.id === this.qrProductId);
+
+    if (!product) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Not Found',
+        detail: 'No product found with this ID.',
+      });
+      return;
+    }
+
+    this.productName = product.name;
+    this.productModel = product.model;
+
+    this.generatedQR = [];
+
+    for (let i = 1; i <= this.qrQuantity; i++) {
+      const text = `PRODUCT_${this.qrProductId}_${i}`;
+
+      const dataUrl = await QRCode.toDataURL(text, {
+        width: 200,
+        margin: 2,
+      });
+
+      this.generatedQR.push(dataUrl);
+    }
+
+    this.messageService.add({
+      severity: 'success',
+      summary: 'QR Generated',
+      detail: `${this.qrQuantity} QR Codes created.`,
+    });
+  }
+  async downloadZip() {
+    if (this.generatedQR.length === 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'No QR',
+        detail: 'Please generate QR codes first.',
+      });
+      return;
+    }
+
+    const zip = new JSZip();
+
+    // Folder name trong ZIP
+    const folder = zip.folder('qr_codes');
+
+    let index = 1;
+
+    for (const qr of this.generatedQR) {
+      // Tên file cho từng QR
+      const fileName = `qr_${this.qrProductId}_${index}.png`;
+
+      // Base64 → binary
+      const imgData = qr.split(',')[1];
+
+      folder?.file(fileName, imgData, { base64: true });
+      index++;
+    }
+
+    // Generate zip
+    const content = await zip.generateAsync({ type: 'blob' });
+
+    saveAs(content, `QR_${this.qrProductId}.zip`);
+  }
+  scanQR() {
+    this.router.navigate(['/admin/scan/qr-scan']);
+  }
   async loadData() {
     this.loading = true;
 
