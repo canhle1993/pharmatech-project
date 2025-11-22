@@ -106,4 +106,8 @@ export class CartService {
   calcQuantity(carts: Cart[]): number {
     return carts.reduce((sum, item) => sum + (item.quantity || 0), 0);
   }
+
+  checkStock(id: string) {
+    return this.httpClient.get(`${env.baseUrl}product/check-stock/${id}`).toPromise();
+  }
 }

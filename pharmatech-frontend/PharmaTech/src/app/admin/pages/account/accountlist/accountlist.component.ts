@@ -96,20 +96,20 @@ export class AccountListComponent implements OnInit {
     // User thường → không có quyền
     return false;
   }
-  canShowEditButton(target: Account): boolean {
-    // SUPERADMIN → chỉ thấy admin + user
-    if (this.currentUserRoles.includes('superadmin')) {
-      return target.roles.includes('admin') || target.roles.includes('user');
-    }
+  // canShowEditButton(target: Account): boolean {
+  //   // SUPERADMIN → chỉ thấy admin + user
+  //   if (this.currentUserRoles.includes('superadmin')) {
+  //     return true;
+  //   }
 
-    // ADMIN → chỉ thấy user
-    if (this.currentUserRoles.includes('admin')) {
-      return target.roles.includes('user');
-    }
+  //   // ADMIN → chỉ thấy user
+  //   if (this.currentUserRoles.includes('admin')) {
+  //     return target.roles.includes('user');
+  //   }
 
-    // USER → không được edit ai hết
-    return false;
-  }
+  //   // USER → không được edit ai hết
+  //   return false;
+  // }
 
   private buildForm() {
     this.registerForm = this.fb.group(
@@ -182,11 +182,31 @@ export class AccountListComponent implements OnInit {
   ];
 
   /** ✅ Load danh sách account */
+  /** ✅ Load danh sách account theo phân quyền */
   async loadAccounts() {
     this.loading = true;
     try {
       const res: any = await this.accountService.findAll();
-      this.accounts = res;
+
+      const current = this.currentUserRoles;
+
+      // SUPERADMIN → chỉ thấy admin + user
+      if (current.includes('superadmin')) {
+        this.accounts = res.filter(
+          (acc: any) =>
+            acc.roles.includes('admin') ||
+            acc.roles.includes('user') ||
+            acc.roles.includes('superadmin')
+        );
+      }
+      // ADMIN → chỉ thấy user
+      else if (current.includes('admin')) {
+        this.accounts = res.filter((acc: any) => acc.roles.includes('user'));
+      }
+      // USER → không thấy gì
+      else {
+        this.accounts = [];
+      }
     } catch (err) {
       console.error(err);
       this.messageService.add({

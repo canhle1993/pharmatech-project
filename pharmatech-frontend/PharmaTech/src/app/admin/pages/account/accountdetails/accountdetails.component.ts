@@ -9,6 +9,8 @@ import { AccountService } from '../../../../services/account.service';
 import { FormsModule } from '@angular/forms';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { env } from '../../../../enviroments/enviroment';
+import { DatePickerModule } from 'primeng/datepicker';
+import { UserStateService } from '../../../../services/user-state.service';
 
 @Component({
   standalone: true,
@@ -19,6 +21,7 @@ import { env } from '../../../../enviroments/enviroment';
     ToastModule,
     FormsModule,
     MultiSelectModule,
+    DatePickerModule,
   ],
   templateUrl: './accountdetails.component.html',
   styleUrls: ['./accountdetails.component.css'],
@@ -30,9 +33,15 @@ export class AccountDetailsComponent implements OnInit {
   isEditing = false;
   selectedPhoto?: File;
   selectedResume?: File;
+  currentUserRoles: string[] = [];
+  /** Ngày sinh min/max */
+  minDate = new Date(1950, 0, 1);
+  maxDate = new Date(); // hôm nay
+  previewPhotoUrl: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
+    private userState: UserStateService,
     private accountService: AccountService,
     private messageService: MessageService,
     private renderer: Renderer2
@@ -41,6 +50,9 @@ export class AccountDetailsComponent implements OnInit {
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     const editMode = this.route.snapshot.queryParamMap.get('edit') === 'true';
+
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    this.currentUserRoles = currentUser.roles || [];
 
     if (!id) return;
     this.loading = true;
@@ -83,12 +95,51 @@ export class AccountDetailsComponent implements OnInit {
     }
   }
 
+  onDobChange(date: Date) {
+    if (!this.account || !date) return;
+
+    const today = new Date();
+    let age = today.getFullYear() - date.getFullYear();
+    const monthDiff = today.getMonth() - date.getMonth();
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < date.getDate())
+    ) {
+      age--;
+    }
+
+    (this.account as any).age = age; // ✅ chỉ gán để hiển thị FE
+  }
+  // canShowEditButton(target: Account): boolean {
+  //   // SUPERADMIN → chỉ thấy admin + user
+  //   if (this.currentUserRoles.includes('superadmin')) {
+  //     return true;
+  //   }
+
+  //   // ADMIN → chỉ thấy user
+  //   if (this.currentUserRoles.includes('admin')) {
+  //     return target.roles.includes('user');
+  //   }
+
+  //   // USER → không được edit ai hết
+  //   return false;
+  // }
   toggleEdit() {
     this.isEditing = !this.isEditing;
   }
 
   onPhotoSelected(event: any) {
-    this.selectedPhoto = event.target.files[0];
+    const file = event.target.files[0];
+    if (!file) return;
+
+    this.selectedPhoto = file;
+
+    // 👉 Preview realtime
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previewPhotoUrl = reader.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 
   onResumeSelected(event: any) {
@@ -100,72 +151,47 @@ export class AccountDetailsComponent implements OnInit {
 
     try {
       this.loading = true;
-      let uploadedFilename: string | null = null;
 
-      // 📸 Upload avatar nếu có chọn file
+      let photoFilename = this.account.photo;
+
+      // Nếu admin upload ảnh mới
       if (this.selectedPhoto) {
-        const upload = await this.accountService.uploadPhoto(
+        const uploadRes = await this.accountService.uploadPhoto(
           this.selectedPhoto
         );
-        uploadedFilename = upload.filename;
-        this.account.photo = `${env.baseUrl.replace('/api/', '')}upload/${
-          upload.filename
-        }`;
+        photoFilename = uploadRes.filename;
       }
 
-      // 📄 Upload resume nếu có chọn file
-      if (this.selectedResume) {
-        const upload = await this.accountService.uploadResume(
-          this.selectedResume
-        );
-        this.account.resume = upload.url;
-      }
-
-      // 🔹 Chuẩn hóa payload gửi backend
+      // Payload chỉ chứa các field basic info
       const updatedData = {
-        ...this.account,
-        photo: uploadedFilename
-          ? uploadedFilename
-          : this.account.photo?.split('/upload/')[1],
-
-        education: {
-          education_level: this.account.education?.education_level || '',
-          major: this.account.education?.major || '',
-          school_name: this.account.education?.school_name || '',
-          graduation_year: this.account.education?.graduation_year || null,
-        },
-        experience: {
-          company_name: this.account.experience?.company_name || '',
-          job_title: this.account.experience?.job_title || '',
-          working_years: this.account.experience?.working_years || null,
-          responsibilities: this.account.experience?.responsibilities || '',
-        },
-
-        // 🔸 Chuẩn hóa các list array (nếu có)
-        field: this.account.field?.map((f: any) =>
-          typeof f === 'string' ? f : f.name
-        ),
-        skills: this.account.skills?.map((s: any) =>
-          typeof s === 'string' ? s : s.name
-        ),
-        languages: this.account.languages?.map((l: any) =>
-          typeof l === 'string' ? l : l.name
-        ),
+        name: this.account.name,
+        phone: this.account.phone,
+        email: this.account.email,
+        address: this.account.address,
+        gender: this.account.gender,
+        dob: this.account.dob,
+        photo: photoFilename, // chỉ filename!
       };
 
       console.log('📤 Payload gửi lên server:', updatedData);
 
-      const updated = await this.accountService.update(
+      const updated = await this.accountService.updateBasic(
         this.account.id || this.account._id!,
         updatedData
       );
 
+      // updated = { msg: "...", data: {...accountDTO} }
+
       this.account = {
         ...this.account,
-        ...updated,
-        education: { ...updated.education },
-        experience: { ...updated.experience },
+        ...updated.data,
       };
+
+      // 🔥 lưu đúng object account
+      localStorage.setItem('currentUser', JSON.stringify(updated.data));
+
+      // 🔥 Cập nhật realtime lên Header
+      this.userState.setUser(updated.data);
 
       this.messageService.add({
         severity: 'success',

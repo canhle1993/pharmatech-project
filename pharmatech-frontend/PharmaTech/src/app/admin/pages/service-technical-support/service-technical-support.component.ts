@@ -4,12 +4,15 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { EditorModule } from 'primeng/editor';
 import { ButtonModule } from 'primeng/button';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 import { env } from '../../../enviroments/enviroment';
 
 @Component({
   selector: 'app-service-technical-support',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EditorModule, ButtonModule],
+  imports: [CommonModule, ReactiveFormsModule, EditorModule, ButtonModule, ToastModule],
+  providers: [MessageService],
   templateUrl: './service-technical-support.component.html',
   styleUrls: ['./service-technical-support.component.css']
 })
@@ -22,7 +25,7 @@ export class ServiceTechnicalSupportComponent implements OnInit {
   pageName = 'technical-support';
   apiEndpoint = 'service';
 
-  constructor(private fb: FormBuilder, private http: HttpClient) {}
+  constructor(private fb: FormBuilder, private http: HttpClient, private messageService: MessageService) {}
 
   ngOnInit(): void {
     this.initializeForm();
@@ -95,13 +98,21 @@ export class ServiceTechnicalSupportComponent implements OnInit {
     this.http.post(`${env.baseUrl}${this.apiEndpoint}`, formData).subscribe({
       next: (response) => {
         this.isUploading = false;
-        alert('Content updated successfully!');
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Saved',
+          detail: 'Content updated successfully.'
+        });
         this.loadData();
       },
       error: (error) => {
         this.isUploading = false;
         console.error('Error updating:', error);
-        alert('Error updating content. Please try again.');
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Error updating content. Please try again.'
+        });
       }
     });
   }

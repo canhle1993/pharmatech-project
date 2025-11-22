@@ -181,30 +181,36 @@ export class HomeComponent implements OnInit, AfterViewInit {
       console.log('✅ Tổng sản phẩm:', allProducts.length);
 
       if (res.category1)
-        this.productsCat1 = allProducts.filter((p: any) =>
-          p.category_ids?.some(
-            (id: any) =>
-              id?.toString() ===
-              (res.category1._id?.toString() || res.category1.toString())
-          )
+        this.productsCat1 = allProducts.filter(
+          (p: any) =>
+            p.stock_quantity > 0 &&
+            p.category_ids?.some(
+              (id: any) =>
+                id?.toString() ===
+                (res.category1._id?.toString() || res.category1.toString())
+            )
         );
 
       if (res.category2)
-        this.productsCat2 = allProducts.filter((p: any) =>
-          p.category_ids?.some(
-            (id: any) =>
-              id?.toString() ===
-              (res.category2._id?.toString() || res.category2.toString())
-          )
+        this.productsCat2 = allProducts.filter(
+          (p: any) =>
+            p.stock_quantity > 0 &&
+            p.category_ids?.some(
+              (id: any) =>
+                id?.toString() ===
+                (res.category2._id?.toString() || res.category2.toString())
+            )
         );
 
       if (res.category3)
-        this.productsCat3 = allProducts.filter((p: any) =>
-          p.category_ids?.some(
-            (id: any) =>
-              id?.toString() ===
-              (res.category3._id?.toString() || res.category3.toString())
-          )
+        this.productsCat3 = allProducts.filter(
+          (p: any) =>
+            p.stock_quantity > 0 &&
+            p.category_ids?.some(
+              (id: any) =>
+                id?.toString() ===
+                (res.category3._id?.toString() || res.category3.toString())
+            )
         );
 
       console.log('✅ Cat1:', this.productsCat1);

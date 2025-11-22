@@ -359,14 +359,16 @@ export class ShopComponent implements OnInit {
       this.products = Array.isArray(res) ? res : [];
 
       // Ghép full URL ảnh (nếu cần)
-      this.products = this.products.map((p: any) => ({
-        ...p,
-        photo: p?.photo?.startsWith('http')
-          ? p.photo
-          : p?.photo
-          ? this.imageBase + p.photo
-          : null,
-      }));
+      this.products = this.products
+        .filter((p: any) => p.stock_quantity > 0)
+        .map((p: any) => ({
+          ...p,
+          photo: p?.photo?.startsWith('http')
+            ? p.photo
+            : p?.photo
+            ? this.imageBase + p.photo
+            : null,
+        }));
 
       this.filteredProducts = [...this.products];
       this.updatePagination(); // ✅ cập nhật trang đầu tiên

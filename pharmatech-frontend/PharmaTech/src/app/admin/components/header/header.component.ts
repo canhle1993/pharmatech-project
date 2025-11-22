@@ -10,6 +10,7 @@ import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AccountService } from '../../../services/account.service';
 import { NotificationService } from '../../../services/notification.service';
+import { UserStateService } from '../../../services/user-state.service';
 
 @Component({
   selector: 'app-header',
@@ -26,6 +27,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
 
   constructor(
     private accountService: AccountService,
+    private userState: UserStateService,
     private router: Router,
     private notifyService: NotificationService,
     private renderer: Renderer2,
@@ -33,26 +35,39 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
+    // 🔔 Lắng nghe notification realtime
     this.notifyService.notifications$.subscribe((list) => {
       this.notifications = list;
     });
 
+    // 💬 Lắng nghe messages realtime
     this.notifyService.messages$.subscribe((list) => {
       this.messages = list;
     });
 
+    // 🕐 Cập nhật thời gian realtime
+    setInterval(() => (this.currentTime = new Date()), 1000);
+
+    // =====================================================
+    // 🔥 NEW — GẮN USER REALTIME
+    // =====================================================
+
+    // 1) Load từ localStorage lúc vào trang
     const storedUser = localStorage.getItem('currentUser');
-
-    console.log('📦 currentUser stored:', storedUser);
-
     if (storedUser) {
-      this.user = JSON.parse(storedUser);
+      // cập nhật vào UserStateService để broadcast
+      this.userState.setUser(JSON.parse(storedUser));
     }
 
-    console.log('👤 Parsed user:', this.user);
-    console.log('🖼 Photo:', this.user?.photo);
+    // 2) Nghe user cập nhật realtime (update profile)
+    this.userState.user$.subscribe((user) => {
+      if (user) {
+        this.user = user;
+        console.log('🔄 Header updated:', user);
+      }
+    });
 
-    setInterval(() => (this.currentTime = new Date()), 1000);
+    console.log('👤 Header initial user:', this.user);
   }
 
   logout() {

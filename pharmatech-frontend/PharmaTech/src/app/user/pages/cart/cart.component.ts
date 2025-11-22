@@ -120,7 +120,20 @@ export class CartComponent implements OnInit, AfterViewInit {
       this.loading = false;
     }
   }
-  goToCheckout() {
+  // goToCheckout() {
+  //   if (!this.carts.length) {
+  //     this.messageService.add({
+  //       severity: 'warn',
+  //       summary: 'Empty cart',
+  //       detail: 'Your cart is empty.',
+  //     });
+  //     return;
+  //   }
+  //   this.cartState.saveCheckoutData(this.carts, this.totalAmount);
+  //   this.router.navigate(['/checkout']);
+  // }
+
+  async goToCheckout() {
     if (!this.carts.length) {
       this.messageService.add({
         severity: 'warn',
@@ -129,6 +142,50 @@ export class CartComponent implements OnInit, AfterViewInit {
       });
       return;
     }
+
+    // 🚨 1. Kiểm tra tồn kho realtime
+    for (const item of this.carts) {
+      const productId =
+        typeof item.product_id === 'object'
+          ? item.product_id._id
+          : item.product_id;
+
+      try {
+        // 🔥 Gọi API lấy tồn kho mới nhất
+        const productData: any = await this.cartService.checkStock(productId);
+
+        const currentStock = productData?.stock_quantity ?? 0;
+
+        if (currentStock <= 0) {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Out of stock',
+            detail: `"${item.productName}" is out of stock now.`,
+          });
+          return; // ❌ Dừng checkout
+        }
+
+        // ❗ Yêu cầu > tồn kho mới nhất
+        if (item.quantity > currentStock) {
+          this.messageService.add({
+            severity: 'warn',
+            summary: 'Stock changed',
+            detail: `Only ${currentStock} of "${item.productName}" left in stock. Please update your cart.`,
+          });
+          return; // ❌ Dừng checkout
+        }
+      } catch (err) {
+        console.error('❌ Stock check error:', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Could not verify stock. Please try again.',
+        });
+        return;
+      }
+    }
+
+    // 🚀 2. Nếu tất cả còn hàng → cho đi checkout
     this.cartState.saveCheckoutData(this.carts, this.totalAmount);
     this.router.navigate(['/checkout']);
   }

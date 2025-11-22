@@ -11,6 +11,8 @@ import { ContactService } from '../../../services/contact.service';
 import { firstValueFrom } from 'rxjs';
 import { EditorModule } from 'primeng/editor';
 import { ButtonModule } from 'primeng/button';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 interface ImageMap {
   [key: string]: File | null;
@@ -24,8 +26,15 @@ interface PreviewMap {
   templateUrl: './contact.component.html',
   styleUrls: ['./contact.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, EditorModule, ButtonModule],
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    EditorModule,
+    ButtonModule,
+    ToastModule,
+  ],
   selector: 'app-contact',
+  providers: [MessageService],
 })
 export class ContactComponent implements OnInit {
   contactForm: FormGroup;
@@ -34,7 +43,11 @@ export class ContactComponent implements OnInit {
   imagePreviews: PreviewMap = {};
   isUploading: boolean = false;
 
-  constructor(private fb: FormBuilder, private contactService: ContactService) {
+  constructor(
+    private fb: FormBuilder,
+    private contactService: ContactService,
+    private messageService: MessageService
+  ) {
     this.initForm();
   }
 
@@ -178,7 +191,11 @@ export class ContactComponent implements OnInit {
 
   async onSubmit() {
     if (this.contactForm.invalid) {
-      alert('Please fill in all required fields');
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Validation Error',
+        detail: 'Please fill in all required fields',
+      });
       return;
     }
 
@@ -206,13 +223,21 @@ export class ContactComponent implements OnInit {
         await firstValueFrom(
           this.contactService.updateContact(this.currentId, formData)
         );
-        alert('Contact information updated successfully!');
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Updated',
+          detail: 'Contact information updated successfully',
+        });
       } else {
         const result = await firstValueFrom(
           this.contactService.createContact(formData)
         );
         this.currentId = result._id || '';
-        alert('Contact information created successfully!');
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Created',
+          detail: 'Contact information created successfully',
+        });
       }
 
       // Clear selected images
@@ -223,7 +248,11 @@ export class ContactComponent implements OnInit {
       await this.loadContactData();
     } catch (error) {
       console.error('Error saving contact:', error);
-      alert('Error saving contact information. Please try again.');
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Save Failed',
+        detail: 'Error saving contact information. Please try again.',
+      });
     } finally {
       this.isUploading = false;
     }

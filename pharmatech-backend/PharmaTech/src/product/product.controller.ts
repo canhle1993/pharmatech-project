@@ -335,4 +335,10 @@ export class ProductController {
 
     res.send(buffer);
   }
+
+  // 🆕 CHECK STOCK
+  @Get('check-stock/:id')
+  async checkStock(@Param('id') id: string) {
+    return this.productService.checkStock(id);
+  }
 }

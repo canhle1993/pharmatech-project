@@ -1,7 +1,12 @@
+<p-toast></p-toast>
 <div class="container mt-4">
   <h1 class="mb-4">Contact Us</h1>
 
-  <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="bg-white p-4 rounded shadow-sm">
+  <form
+    [formGroup]="contactForm"
+    (ngSubmit)="onSubmit()"
+    class="bg-white p-4 rounded shadow-sm"
+  >
     <!-- Basic Information -->
     <div class="section mb-5">
       <h3 class="mb-4">Basic Information</h3>
@@ -11,10 +16,13 @@
         <label class="form-label">Main Content:</label>
         <p-editor
           formControlName="content"
-          [style]="{'height':'200px'}"
-          placeholder="Enter main contact page content here...">
+          [style]="{ height: '200px' }"
+          placeholder="Enter main contact page content here..."
+        >
         </p-editor>
-        <small class="text-muted">This text will be displayed in the breadcrumb section</small>
+        <small class="text-muted"
+          >This text will be displayed in the breadcrumb section</small
+        >
       </div>
 
       <!-- Banner Image Upload -->
@@ -24,17 +32,33 @@
           type="file"
           accept="image/*"
           (change)="onFileSelected($event, 'banner')"
-          #bannerInput>
-        <button type="button" pButton label="Clear" class="p-button-text p-button-sm mt-2"
-                *ngIf="selectedImages['banner']" (click)="clearImage('banner')"></button>
+          #bannerInput
+        />
+        <button
+          type="button"
+          pButton
+          label="Clear"
+          class="p-button-text p-button-sm mt-2"
+          *ngIf="selectedImages['banner']"
+          (click)="clearImage('banner')"
+        ></button>
         <small class="text-muted">Recommended size: 1920x720 pixels</small>
 
         <!-- Image Preview -->
-        <div *ngIf="selectedImages['banner'] || contactForm.get('bannerImage')?.value" class="preview-container mt-3">
+        <div
+          *ngIf="
+            selectedImages['banner'] || contactForm.get('bannerImage')?.value
+          "
+          class="preview-container mt-3"
+        >
           <img
-            [src]="imagePreviews['banner'] || buildImageUrl(contactForm.get('bannerImage')?.value)"
+            [src]="
+              imagePreviews['banner'] ||
+              buildImageUrl(contactForm.get('bannerImage')?.value)
+            "
             class="img-fluid rounded preview-img-large"
-            alt="Banner preview">
+            alt="Banner preview"
+          />
         </div>
       </div>
     </div>
@@ -47,23 +71,34 @@
       <div class="mb-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <label class="form-label mb-0">Addresses:</label>
-          <button type="button" class="btn btn-outline-primary btn-sm" (click)="addAddress()">
+          <button
+            type="button"
+            class="btn btn-outline-primary btn-sm"
+            (click)="addAddress()"
+          >
             Add Address
           </button>
         </div>
         <div formArrayName="addresses">
-          <div *ngFor="let addr of addresses.controls; let i=index" class="input-group mb-2">
-            <span class="input-group-text"><i class="lastudioicon lastudioicon-pin-3-2"></i></span>
+          <div
+            *ngFor="let addr of addresses.controls; let i = index"
+            class="input-group mb-2"
+          >
+            <span class="input-group-text"
+              ><i class="lastudioicon lastudioicon-pin-3-2"></i
+            ></span>
             <input
               type="text"
               [formControlName]="i"
               class="form-control"
-              placeholder="Enter address">
+              placeholder="Enter address"
+            />
             <button
               type="button"
               class="btn btn-outline-danger"
               *ngIf="addresses.length > 1"
-              (click)="removeAddress(i)">
+              (click)="removeAddress(i)"
+            >
               Remove
             </button>
           </div>
@@ -74,23 +109,34 @@
       <div class="mb-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <label class="form-label mb-0">Phone Numbers:</label>
-          <button type="button" class="btn btn-outline-primary btn-sm" (click)="addPhone()">
+          <button
+            type="button"
+            class="btn btn-outline-primary btn-sm"
+            (click)="addPhone()"
+          >
             Add Phone
           </button>
         </div>
         <div formArrayName="phones">
-          <div *ngFor="let phone of phones.controls; let i=index" class="input-group mb-2">
-            <span class="input-group-text"><i class="lastudioicon lastudioicon-phone-2"></i></span>
+          <div
+            *ngFor="let phone of phones.controls; let i = index"
+            class="input-group mb-2"
+          >
+            <span class="input-group-text"
+              ><i class="lastudioicon lastudioicon-phone-2"></i
+            ></span>
             <input
               type="text"
               [formControlName]="i"
               class="form-control"
-              placeholder="Enter phone number">
+              placeholder="Enter phone number"
+            />
             <button
               type="button"
               class="btn btn-outline-danger"
               *ngIf="phones.length > 1"
-              (click)="removePhone(i)">
+              (click)="removePhone(i)"
+            >
               Remove
             </button>
           </div>
@@ -101,23 +147,34 @@
       <div class="mb-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <label class="form-label mb-0">Email Addresses:</label>
-          <button type="button" class="btn btn-outline-primary btn-sm" (click)="addEmail()">
+          <button
+            type="button"
+            class="btn btn-outline-primary btn-sm"
+            (click)="addEmail()"
+          >
             Add Email
           </button>
         </div>
         <div formArrayName="emails">
-          <div *ngFor="let email of emails.controls; let i=index" class="input-group mb-2">
-            <span class="input-group-text"><i class="lastudioicon lastudioicon-mail"></i></span>
+          <div
+            *ngFor="let email of emails.controls; let i = index"
+            class="input-group mb-2"
+          >
+            <span class="input-group-text"
+              ><i class="lastudioicon lastudioicon-mail"></i
+            ></span>
             <input
               type="email"
               [formControlName]="i"
               class="form-control"
-              placeholder="Enter email address">
+              placeholder="Enter email address"
+            />
             <button
               type="button"
               class="btn btn-outline-danger"
               *ngIf="emails.length > 1"
-              (click)="removeEmail(i)">
+              (click)="removeEmail(i)"
+            >
               Remove
             </button>
           </div>
@@ -134,7 +191,8 @@
           type="text"
           formControlName="mapUrl"
           class="form-control"
-          placeholder="https://www.google.com/maps/embed?pb=...">
+          placeholder="https://www.google.com/maps/embed?pb=..."
+        />
         <small class="text-muted">
           Go to Google Maps → Share → Embed a map → Copy the iframe src URL
         </small>
@@ -146,8 +204,9 @@
       <button
         type="submit"
         class="btn btn-primary"
-        [disabled]="contactForm.invalid || isUploading">
-        {{ isUploading ? 'Saving...' : 'Save Changes' }}
+        [disabled]="contactForm.invalid || isUploading"
+      >
+        {{ isUploading ? "Saving..." : "Save Changes" }}
       </button>
     </div>
   </form>

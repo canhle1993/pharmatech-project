@@ -220,6 +220,15 @@
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: true }"
         >
+          <a [routerLink]="['/admin/service']" class="menu-link">
+            <div data-i18n="Service Banner">Service Banner</div>
+          </a>
+        </li>
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
           <a [routerLink]="['/admin/service/consulting']" class="menu-link">
             <div data-i18n="Consulting">Consulting</div>
           </a>
@@ -267,6 +276,15 @@
         <div data-i18n="Purchase">Purchase</div>
       </a>
       <ul class="menu-sub">
+        <li
+          class="menu-item"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a [routerLink]="['/admin/purchase']" class="menu-link">
+            <div data-i18n="Purchase Banner">Purchase Banner</div>
+          </a>
+        </li>
         <li
           class="menu-item"
           routerLinkActive="active"

@@ -130,7 +130,11 @@ export class AccountService {
     const updated = await this.accountModel.findByIdAndUpdate(
       id,
       { $set: data },
-      { new: true },
+      {
+        new: true,
+        runValidators: true,
+        $currentDate: { updated_at: true },
+      },
     );
 
     return plainToInstance(AccountDTO, updated.toObject(), {
@@ -191,5 +195,48 @@ export class AccountService {
       .find({ roles: { $in: [role] }, is_delete: false })
       .lean()
       .exec();
+  }
+
+  async updateBasicInfo(
+    id: string,
+    account: Partial<Account>,
+  ): Promise<AccountDTO> {
+    const exists = await this.accountModel.findById(id);
+    if (!exists) throw new NotFoundException('Account not found');
+
+    const data: any = {
+      // 👤 Personal info
+      name: account.name ?? exists.name,
+      phone: account.phone ?? exists.phone,
+      email: account.email ?? exists.email,
+      address: account.address ?? exists.address,
+      gender: account.gender ?? exists.gender,
+      dob: account.dob ?? exists.dob,
+
+      // 🖼 Photo
+      photo:
+        account.photo && !account.photo.startsWith('http')
+          ? account.photo
+          : (account.photo ?? exists.photo),
+
+      // 🔐 Không update các field này
+      securityCode: exists.securityCode,
+      otpExpiredAt: exists.otpExpiredAt,
+      password: exists.password,
+    };
+
+    const updated = await this.accountModel.findByIdAndUpdate(
+      id,
+      { $set: data },
+      {
+        new: true,
+        runValidators: true,
+        $currentDate: { updated_at: true },
+      },
+    );
+
+    return plainToInstance(AccountDTO, updated.toObject(), {
+      excludeExtraneousValues: true,
+    });
   }
 }

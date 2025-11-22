@@ -164,4 +164,11 @@ export class AccountService {
       this.httpClient.get(env.baseUrl + 'account/find-by-email/' + email)
     );
   }
+
+  // 🔹 Update account info
+  async updateBasic(id: string, account: any): Promise<any> {
+    return await lastValueFrom(
+      this.httpClient.patch(env.baseUrl + 'account/basic/' + id, account)
+    );
+  }
 }

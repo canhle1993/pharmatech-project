@@ -21,15 +21,15 @@ export class ContactService {
   constructor(private http: HttpClient) {}
 
   getContact(): Observable<ContactData> {
-    return this.http.get<ContactData>(`${this.apiUrl}/contact`);
+    return this.http.get<ContactData>(`${this.apiUrl}/api/contact`);
   }
 
   createContact(data: FormData): Observable<ContactData> {
-    return this.http.post<ContactData>(`${this.apiUrl}/contact`, data);
+    return this.http.post<ContactData>(`${this.apiUrl}/api/contact`, data);
   }
 
   updateContact(id: string, data: FormData): Observable<ContactData> {
-    return this.http.put<ContactData>(`${this.apiUrl}/contact/${id}`, data);
+    return this.http.put<ContactData>(`${this.apiUrl}/api/contact/${id}`, data);
   }
 
   uploadImage(file: File, folder: string = 'contact'): Observable<any> {

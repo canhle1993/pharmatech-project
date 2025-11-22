@@ -11,30 +11,52 @@
         <!-- Avatar -->
         <div class="card-body">
           <div class="d-flex align-items-start align-items-sm-center gap-4">
-            <img [src]="account?.photo ? account.photo : 'assets/images/no-image.jpg'" alt="user-avatar"
-              class="d-block rounded" height="100" width="100" id="uploadedAvatar" />
+            <img
+              [src]="
+                previewPhotoUrl
+                  ? previewPhotoUrl
+                  : account?.photo
+                  ? account.photo
+                  : 'assets/images/no-image.jpg'
+              "
+              alt="user-avatar"
+              class="d-block rounded"
+              height="100"
+              width="100"
+              id="uploadedAvatar"
+            />
 
             <div>
               <h5 class="mb-0">{{ account.name }}</h5>
               <p class="text-muted mb-0">{{ account.email }}</p>
               <p class="text-muted mb-0">
-                <strong>Roles:</strong> {{ account.roles?.join(', ') || '-' }}
+                <strong>Roles:</strong> {{ account.roles?.join(", ") || "-" }}
               </p>
               <p class="text-muted mb-0">
                 <strong>Status:</strong>
-                <span [class.text-success]="account.is_active" [class.text-danger]="!account.is_active">
-                  {{ account.is_active ? 'Active' : 'Inactive' }}
+                <span
+                  [class.text-success]="account.is_active"
+                  [class.text-danger]="!account.is_active"
+                >
+                  {{ account.is_active ? "Active" : "Inactive" }}
                 </span>
               </p>
             </div>
 
             <div class="button-wrapper">
-              <button type="button" class="btn btn-outline-primary me-2" (click)="toggleEdit()">
+              <button
+                type="button"
+                class="btn btn-outline-primary me-2"
+                (click)="toggleEdit()"
+              >
                 <i class="bx bx-edit"></i>
-                {{ isEditing ? 'Cancel' : 'Edit' }}
+                {{ isEditing ? "Cancel" : "Edit" }}
               </button>
 
-              <label *ngIf="isEditing" for="upload-photo" style="
+              <label
+                *ngIf="isEditing"
+                for="upload-photo"
+                style="
                   background-color: #fd8d0d;
                   color: white;
                   padding: 0.5rem 1rem;
@@ -43,11 +65,18 @@
                   margin-bottom: 1rem;
                   display: inline-block;
                   cursor: pointer;
-                " tabindex="0">
+                "
+                tabindex="0"
+              >
                 <span class="d-none d-sm-block">Upload new photo</span>
                 <i class="bx bx-upload d-block d-sm-none"></i>
-                <input type="file" id="upload-photo" hidden accept="image/png, image/jpeg"
-                  (change)="onPhotoSelected($event)" />
+                <input
+                  type="file"
+                  id="upload-photo"
+                  hidden
+                  accept="image/png, image/jpeg"
+                  (change)="onPhotoSelected($event)"
+                />
               </label>
             </div>
           </div>
@@ -57,50 +86,127 @@
 
         <!-- Account Info -->
         <div class="card-body">
-          <form id="formAccountSettings" (ngSubmit)="saveChanges()" #formRef="ngForm">
+          <form
+            id="formAccountSettings"
+            (ngSubmit)="saveChanges()"
+            #formRef="ngForm"
+          >
             <div class="row">
               <!-- 🧾 Basic Info -->
               <div class="mb-3 col-md-6">
                 <label class="form-label">Full Name</label>
-                <input class="form-control" type="text" [(ngModel)]="account.name" name="name"
-                  [readonly]="!isEditing" />
+                <input
+                  class="form-control"
+                  type="text"
+                  [(ngModel)]="account.name"
+                  name="name"
+                  [readonly]="!isEditing"
+                />
               </div>
 
               <div class="mb-3 col-md-6">
                 <label class="form-label">Phone</label>
-                <input class="form-control" type="text" [(ngModel)]="account.phone" name="phone"
-                  [readonly]="!isEditing" />
+                <input
+                  class="form-control"
+                  type="text"
+                  [(ngModel)]="account.phone"
+                  name="phone"
+                  [readonly]="!isEditing"
+                />
               </div>
 
               <div class="mb-3 col-md-6">
                 <label class="form-label">Address</label>
-                <input class="form-control" type="text" [(ngModel)]="account.address" name="address"
-                  [readonly]="!isEditing" />
+                <input
+                  class="form-control"
+                  type="text"
+                  [(ngModel)]="account.address"
+                  name="address"
+                  [readonly]="!isEditing"
+                />
+              </div>
+              <div class="mb-3 col-md-6">
+                <label class="form-label">Date of Birth</label>
+                <input
+                  *ngIf="!isEditing"
+                  class="form-control"
+                  type="text"
+                  [value]="account.dob | date : 'dd/MM/yyyy'"
+                  readonly
+                />
+                <br />
+                <p-datepicker
+                  *ngIf="isEditing"
+                  [(ngModel)]="account.dob"
+                  name="dob"
+                  [showIcon]="true"
+                  [disabled]="!isEditing"
+                  [iconDisplay]="'input'"
+                  dateFormat="dd/mm/yy"
+                  [showButtonBar]="true"
+                  [touchUI]="true"
+                  [minDate]="minDate"
+                  [maxDate]="maxDate"
+                  placeholder="Select date"
+                  inputStyleClass="form-control"
+                  (ngModelChange)="onDobChange($event)"
+                ></p-datepicker>
+
+                <div class="small text-muted mt-1" *ngIf="account?.['age']">
+                  Age: {{ account?.['age'] }} years
+                </div>
               </div>
 
               <div class="mb-3 col-md-6">
                 <label class="form-label">Gender</label>
 
                 <!-- 🔹 Khi không edit -->
-                <input *ngIf="!isEditing" class="form-control" type="text" [value]="account.gender || '-'" readonly />
+                <input
+                  *ngIf="!isEditing"
+                  class="form-control"
+                  type="text"
+                  [value]="account.gender || '-'"
+                  readonly
+                />
 
                 <!-- 🔹 Khi đang edit -->
-                <div *ngIf="isEditing" class="d-flex align-items-center flex-wrap gap-3 mt-1">
+                <div
+                  *ngIf="isEditing"
+                  class="d-flex align-items-center flex-wrap gap-3 mt-1"
+                >
                   <div class="form-check form-check-inline mb-0">
-                    <input class="form-check-input" type="radio" id="male" name="gender" value="Male"
-                      [(ngModel)]="account.gender" />
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      id="male"
+                      name="gender"
+                      value="Male"
+                      [(ngModel)]="account.gender"
+                    />
                     <label class="form-check-label" for="male">Male</label>
                   </div>
 
                   <div class="form-check form-check-inline mb-0">
-                    <input class="form-check-input" type="radio" id="female" name="gender" value="Female"
-                      [(ngModel)]="account.gender" />
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      id="female"
+                      name="gender"
+                      value="Female"
+                      [(ngModel)]="account.gender"
+                    />
                     <label class="form-check-label" for="female">Female</label>
                   </div>
 
                   <div class="form-check form-check-inline mb-0">
-                    <input class="form-check-input" type="radio" id="other" name="gender" value="Other"
-                      [(ngModel)]="account.gender" />
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      id="other"
+                      name="gender"
+                      value="Other"
+                      [(ngModel)]="account.gender"
+                    />
                     <label class="form-check-label" for="other">Other</label>
                   </div>
                 </div>
@@ -109,107 +215,213 @@
               <!-- 🧍‍♂️ System Info -->
               <div class="mb-3 col-md-6" *ngIf="!isEditing">
                 <label class="form-label">Username</label>
-                <input class="form-control" type="text" [value]="account.username" readonly />
+                <input
+                  class="form-control"
+                  type="text"
+                  [value]="account.username"
+                  readonly
+                />
               </div>
 
               <div class="mb-3 col-md-6" *ngIf="!isEditing">
                 <label class="form-label">Last Login</label>
-                <input class="form-control" type="text" [value]="account.last_login | date: 'dd/MM/yyyy HH:mm'"
-                  readonly />
+                <input
+                  class="form-control"
+                  type="text"
+                  [value]="account.last_login | date : 'dd/MM/yyyy HH:mm'"
+                  readonly
+                />
               </div>
 
               <div class="mb-3 col-md-6" *ngIf="!isEditing">
                 <label class="form-label">Created At</label>
-                <input class="form-control" type="text" [value]="account.created_at || '-'" readonly />
+                <input
+                  class="form-control"
+                  type="text"
+                  [value]="account.created_at || '-'"
+                  readonly
+                />
               </div>
 
               <div class="mb-3 col-md-6" *ngIf="!isEditing">
                 <label class="form-label">Updated At</label>
-                <input class="form-control" type="text" [value]="account.updated_at || '-'" readonly />
+                <input
+                  class="form-control"
+                  type="text"
+                  [value]="account.updated_at || '-'"
+                  readonly
+                />
               </div>
 
               <!-- 🎓 Education -->
-              <div class="col-12 mt-4">
+              <div class="col-12 mt-4" *ngIf="!isEditing">
                 <h6 class="text-primary">🎓 Education</h6>
                 <hr class="mt-1 mb-3" />
               </div>
 
-              <div class="mb-3 col-md-4">
+              <div class="mb-3 col-md-4" *ngIf="!isEditing">
                 <label class="form-label">Education Level</label>
-                <input class="form-control" type="text" [(ngModel)]="account.education.education_level"
-                  name="education_level" [readonly]="!isEditing" />
+                <input
+                  class="form-control"
+                  type="text"
+                  [(ngModel)]="account.education.education_level"
+                  name="education_level"
+                  [readonly]="!isEditing"
+                />
               </div>
 
-              <div class="mb-3 col-md-4">
+              <div class="mb-3 col-md-4" *ngIf="!isEditing">
                 <label class="form-label">Major</label>
-                <input class="form-control" type="text" [(ngModel)]="account.education.major" name="education_major"
-                  [readonly]="!isEditing" />
+                <input
+                  class="form-control"
+                  type="text"
+                  [(ngModel)]="account.education.major"
+                  name="education_major"
+                  [readonly]="!isEditing"
+                />
               </div>
 
-              <div class="mb-3 col-md-4">
+              <div class="mb-3 col-md-4" *ngIf="!isEditing">
                 <label class="form-label">School Name</label>
-                <input class="form-control" type="text" [(ngModel)]="account.education.school_name"
-                  name="education_school" [readonly]="!isEditing" />
+                <input
+                  class="form-control"
+                  type="text"
+                  [(ngModel)]="account.education.school_name"
+                  name="education_school"
+                  [readonly]="!isEditing"
+                />
               </div>
 
-              <div class="mb-3 col-md-4">
+              <div class="mb-3 col-md-4" *ngIf="!isEditing">
                 <label class="form-label">Graduation Year</label>
-                <input class="form-control" type="number" [(ngModel)]="account.education.graduation_year"
-                  name="education_graduation_year" [readonly]="!isEditing" />
+                <input
+                  class="form-control"
+                  type="number"
+                  [(ngModel)]="account.education.graduation_year"
+                  name="education_graduation_year"
+                  [readonly]="!isEditing"
+                />
               </div>
 
               <!-- 💼 Experience -->
-              <div class="col-12 mt-4">
-                <h6 class="text-primary">💼 Experience</h6>
+              <div class="col-12 mt-4" *ngIf="!isEditing">
+                <h6 class="text-primary">
+                  💼 Job Preferences & Skills & Specialization
+                </h6>
                 <hr class="mt-1 mb-3" />
               </div>
 
-              <div class="mb-3 col-md-4">
-                <label class="form-label">Company Name</label>
-                <input class="form-control" type="text" [(ngModel)]="account.experience.company_name"
-                  name="experience_company" [readonly]="!isEditing" />
+              <div class="mb-3 col-md-4" *ngIf="!isEditing">
+                <label class="form-label">Preferred Area</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  [(ngModel)]="account.preferred_area"
+                  name="preferred_area"
+                  [readonly]="!isEditing"
+                />
               </div>
 
-              <div class="mb-3 col-md-4">
-                <label class="form-label">Job Title</label>
-                <input class="form-control" type="text" [(ngModel)]="account.experience.job_title"
-                  name="experience_title" [readonly]="!isEditing" />
+              <div class="mb-3 col-md-4" *ngIf="!isEditing">
+                <label class="form-label">Job Type</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  [(ngModel)]="account.job_type"
+                  name="job_type"
+                  [readonly]="!isEditing"
+                />
               </div>
 
-              <div class="mb-3 col-md-4">
-                <label class="form-label">Working Years</label>
-                <input class="form-control" type="number" [(ngModel)]="account.experience.working_years"
-                  name="experience_years" [readonly]="!isEditing" />
+              <div class="mb-3 col-md-4" *ngIf="!isEditing">
+                <label class="form-label">Expected Salary</label>
+                <input
+                  class="form-control"
+                  type="number"
+                  [(ngModel)]="account.expected_salary"
+                  name="expected_salary"
+                  [readonly]="!isEditing"
+                />
+              </div>
+              <div class="mb-3 col-md-4" *ngIf="!isEditing">
+                <label class="form-label">Field</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  [(ngModel)]="account.field"
+                  name="field"
+                  [readonly]="!isEditing"
+                />
+              </div>
+              <div class="mb-3 col-md-4" *ngIf="!isEditing">
+                <label class="form-label">Skills</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  [(ngModel)]="account.skills"
+                  name="skills"
+                  [readonly]="!isEditing"
+                />
+              </div>
+              <div class="mb-3 col-md-4" *ngIf="!isEditing">
+                <label class="form-label">Languages</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  [(ngModel)]="account.languages"
+                  name="languages"
+                  [readonly]="!isEditing"
+                />
               </div>
 
-              <div class="mb-3 col-md-12">
-                <label class="form-label">Responsibilities</label>
-                <textarea class="form-control" rows="3" [(ngModel)]="account.experience.responsibilities"
-                  name="experience_responsibilities" [readonly]="!isEditing"></textarea>
+              <div class="mb-3 col-md-12" *ngIf="!isEditing">
+                <label class="form-label">Introduction</label>
+                <textarea
+                  class="form-control"
+                  rows="3"
+                  [(ngModel)]="account.introduction"
+                  name="introduction"
+                  [readonly]="!isEditing"
+                ></textarea>
               </div>
 
               <!-- 📄 Resume -->
-              <div class="col-12 mt-4">
+              <div class="col-12 mt-4" *ngIf="!isEditing">
                 <h6 class="text-primary">📄 Resume</h6>
                 <hr class="mt-1 mb-3" />
 
                 <div *ngIf="!isEditing">
-                  <a *ngIf="account.resume" [href]="account.resume" target="_blank"
-                    class="btn btn-sm btn-outline-primary" style="padding: 14px">
+                  <a
+                    *ngIf="account.resume"
+                    [href]="account.resume"
+                    target="_blank"
+                    class="btn btn-sm btn-outline-primary"
+                    style="padding: 14px"
+                  >
                     <i class="bx bx-download"></i> View / Download Resume
                   </a>
-                  <p *ngIf="!account.resume" class="text-muted mb-0">No resume uploaded.</p>
+                  <p *ngIf="!account.resume" class="text-muted mb-0">
+                    No resume uploaded.
+                  </p>
                 </div>
 
                 <div *ngIf="isEditing">
-                  <input type="file" accept=".pdf,.jpg,.png" (change)="onResumeSelected($event)" />
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.png"
+                    (change)="onResumeSelected($event)"
+                  />
                 </div>
               </div>
             </div>
 
             <!-- ✅ Save button -->
             <div class="mt-2 text-end" *ngIf="isEditing">
-              <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1.5rem">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                style="padding: 0.5rem 1.5rem"
+              >
                 Save changes
               </button>
             </div>
@@ -220,5 +432,8 @@
   </div>
 </div>
 
-<p-progressSpinner *ngIf="loading" styleClass="custom-spinner"></p-progressSpinner>
+<p-progressSpinner
+  *ngIf="loading"
+  styleClass="custom-spinner"
+></p-progressSpinner>
 <p-toast></p-toast>

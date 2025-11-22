@@ -391,4 +391,12 @@ export class AccountController {
       );
     }
   }
+
+  @Patch('basic/:id')
+  async updateBasic(@Param('id') id: string, @Body() body: any) {
+    if (!id)
+      throw new HttpException('Missing account ID', HttpStatus.BAD_REQUEST);
+    const updated = await this.accountService.updateBasicInfo(id, body);
+    return { msg: 'Account updated successfully', data: updated };
+  }
 }

@@ -747,4 +747,20 @@ export class ProductService {
 
     return excelBuffer;
   }
+
+  // 🆕 CHECK STOCK
+  async checkStock(productId: string) {
+    const product = await this._productModel.findById(productId).lean();
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    return {
+      ok: product.stock_quantity > 0,
+      product_id: productId,
+      stock_quantity: product.stock_quantity || 0,
+      message: product.stock_quantity > 0 ? 'In stock' : 'Out of stock',
+    };
+  }
 }

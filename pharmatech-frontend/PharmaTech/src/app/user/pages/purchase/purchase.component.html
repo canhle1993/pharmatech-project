@@ -1,7 +1,13 @@
 <!-- Purchase Page -->
 <div class="purchase-page-wrapper">
   <!-- Breadcrumb Section Start -->
-  <div class="breadcrumb" [attr.data-bg-image]="bannerImage">
+  <div
+    class="breadcrumb"
+    [attr.data-bg-image]="bannerImage"
+    [ngStyle]="{
+      'background-image': bannerImage ? 'url(' + bannerImage + ')' : ''
+    }"
+  >
     <div class="container">
       <div class="row">
         <div class="col-12">
@@ -41,10 +47,12 @@
   <!-- Tab Content Section -->
   <section class="tab-content-section">
     <div class="container">
-      <div *ngFor="let tab of tabs"
-           [class.active]="isActive(tab.id)"
-           [attr.data-tab]="tab.id"
-           class="tab-content-panel">
+      <div
+        *ngFor="let tab of tabs"
+        [class.active]="isActive(tab.id)"
+        [attr.data-tab]="tab.id"
+        class="tab-content-panel"
+      >
         <div class="content-wrapper" [innerHTML]="tab.content"></div>
       </div>
     </div>
