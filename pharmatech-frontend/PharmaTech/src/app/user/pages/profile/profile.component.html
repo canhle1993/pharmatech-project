@@ -104,9 +104,18 @@
           Saved Jobs
         </a>
       </li>
+
+
       <li class="nav-item">
         <a class="nav-link" [class.active]="activeTab === 'orders'" (click)="activeTab = 'orders'">
           Order History
+        </a>
+      </li>
+
+
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="activeTab === 'applyHistory'" (click)="activeTab = 'applyHistory'">
+          Apply History
         </a>
       </li>
     </ul>
@@ -116,9 +125,11 @@
       <form (ngSubmit)="saveChanges()" #formRef="ngForm">
         <!-- Section: Basic Info -->
         <div class="section">
-          <h6 class="section-title">
-            <i class="bx bx-user-circle me-2"></i> Basic Information
-          </h6>
+          <div class="section-title-wrapper">
+            <h6 class="section-title">
+              <i class="bx bx-user-circle me-2"></i> Basic Information
+            </h6>
+          </div>
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Full Name</label>
@@ -154,9 +165,12 @@
         </div>
         <!-- Section: Job Preference -->
         <div class="section">
-          <h6 class="section-title">
-            <i class="bx bx-briefcase me-2"></i> Job Preferences
-          </h6>
+
+          <div class="section-title-wrapper">
+            <h6 class="section-title">
+              <i class="bx bx-briefcase me-2"></i> Job Preferences
+            </h6>
+          </div>
           <div class="row g-3">
             <div class="col-md-4">
               <label class="form-label">Preferred Area</label>
@@ -183,9 +197,12 @@
 
         <!-- Section: Skills -->
         <div class="section">
-          <h6 class="section-title">
-            <i class="bx bx-brain me-2"></i> Skills & Specialization
-          </h6>
+          <div class="section-title-wrapper">
+
+            <h6 class="section-title">
+              <i class="bx bx-brain me-2"></i> Skills & Specialization
+            </h6>
+          </div>
           <div class="row g-3">
             <div class="col-md-4">
               <label class="form-label">Field</label>
@@ -207,9 +224,11 @@
 
         <!-- Section: Education -->
         <div class="section">
-          <h6 class="section-title">
-            <i class="bx bxs-graduation me-2"></i> Education
-          </h6>
+          <div class="section-title-wrapper">
+            <h6 class="section-title">
+              <i class="bx bxs-graduation me-2"></i> Education
+            </h6>
+          </div>
           <div class="row g-3">
             <div class="col-md-3">
               <label class="form-label">Level</label>
@@ -236,14 +255,16 @@
 
         <!-- Section: Resume -->
         <div class="section">
-          <h6 class="section-title"><i class="bx bx-file me-2"></i> Resume</h6>
-
+          <div class="section-title-wrapper">
+            <h6 class="section-title"><i class="bx bx-file me-2"></i> Resume</h6>
+          </div>
           <div class="resume-btn-wrapper">
             <ng-container *ngIf="!isEditing; else uploadTpl">
               <!-- Nếu có resume -->
               <a *ngIf="account.resume" [href]="account.resume" target="_blank" class="resume-btn">
                 <i class="bx bx-download"></i> View Resume
               </a>
+
 
               <!-- Nếu không có resume -->
               <span *ngIf="!account.resume" class="text-muted small">
@@ -259,9 +280,11 @@
 
         <!-- Section: Introduction -->
         <div class="section">
-          <h6 class="section-title">
-            <i class="bx bx-message-rounded-detail me-2"></i> Introduction
-          </h6>
+          <div class="section-title-wrapper">
+            <h6 class="section-title">
+              <i class="bx bx-message-rounded-detail me-2"></i> Introduction
+            </h6>
+          </div>
           <textarea class="form-control" rows="3" [(ngModel)]="account.introduction" name="introduction"
             [readonly]="!isEditing"></textarea>
         </div>
@@ -418,6 +441,36 @@
         </div>
       </div>
     </div>
+
+
+    <!-- ================= APPLY HISTORY TAB ================= -->
+    <!-- ================= APPLY HISTORY TAB ================= -->
+    <div *ngIf="activeTab === 'applyHistory'" class="p-3">
+      <div class="saved-job-title-wrapper text-center">
+        <h2 class="saved-job-title">
+          <i class="bx bx-history saved-icon"></i>
+          Application History
+        </h2>
+      </div>
+
+      <p *ngIf="applyHistory.length === 0" class="text-muted">
+        You have not applied to any jobs.
+      </p>
+
+      <!-- LIST OF APPLIED JOBS -->
+      <a class="saved-job-card" *ngFor="let item of applyHistory" [routerLink]="['/careerDetails', item.career?.id]">
+        <img class="saved-job-thumb" [src]="item.bannerUrl" alt="job banner" />
+
+        <div class="saved-job-info">
+          <h6>{{ item.career?.title }}</h6>
+          <p>{{ item.career?.department }}</p>
+          <p>{{ item.career?.location }}</p>
+          <p class="text-primary">Applied on: {{ item.created_at }}</p>
+        </div>
+      </a>
+    </div>
+
+
   </div>
 </div>
 

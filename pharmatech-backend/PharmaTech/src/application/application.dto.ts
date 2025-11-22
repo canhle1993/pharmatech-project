@@ -14,6 +14,7 @@ import {
  * 🧾 DTO DÙNG CHO OUTPUT (RESPONSE)
  ========================== */
 export class ApplicationDTO {
+  [key: string]: any;
   @Transform(({ obj }) => obj?._id?.toString())
   @Expose()
   id: string;
@@ -22,7 +23,16 @@ export class ApplicationDTO {
   account_id: string;
 
   @Expose()
-  career_id: string;
+  career_id: any;
+
+  @Expose()
+  career?: {
+    id?: string;
+    title?: string;
+    department?: string;
+    location?: string;
+    banner?: string | null;
+  };
 
   @Expose() cover_letter?: string;
   @Expose() portfolio?: string;

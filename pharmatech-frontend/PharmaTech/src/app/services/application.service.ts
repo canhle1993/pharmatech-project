@@ -53,12 +53,21 @@ export class ApplicationService {
   }
 
   /** 🟢 Lấy danh sách theo account */
+  // ApplicationService (FE)
   async findByAccount(account_id: string): Promise<Application[]> {
-    return await lastValueFrom(
+    const apps = await lastValueFrom(
       this.httpClient.get<Application[]>(
         env.baseUrl + 'application/find-by-account/' + account_id
       )
     );
+
+    // ⭐ Gắn full URL cho banner
+    return apps.map((app: any) => {
+      if (app.career_id?.banner) {
+        app.career_id.banner = env.imageUrl + app.career_id.banner;
+      }
+      return app;
+    });
   }
 
   /** 🟢 Lấy danh sách theo career */

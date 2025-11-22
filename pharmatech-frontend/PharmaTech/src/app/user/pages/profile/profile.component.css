@@ -90,23 +90,34 @@
 /* ===========================
    TITLE CENTER – FIXED
 =========================== */
-.section-title {
-  text-align: center;
-  font-size: 1.4rem;
-  font-weight: 800;
-  letter-spacing: 0.8px;
-  color: #2255ff !important;
-  margin-bottom: 25px;
-  text-transform: uppercase;
+/* ===== Centered section title ===== */
+.section-title-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
 }
 
+.section-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  color: #2255ff;
+  text-transform: uppercase;
+  font-size: 1rem;
+  position: relative;
+}
+
+/* Gạch dưới ở chính giữa title */
 .section-title::after {
   content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  transform: translateX(-50%);
   width: 70px;
   height: 3px;
   background: #2255ff;
-  display: block;
-  margin: 8px auto 0;
   border-radius: 4px;
 }
 
@@ -376,6 +387,7 @@
     transform: translateY(-4px);
     opacity: 1;
   }
+}
 /* === Profile Card === */
 .profile-card {
   background: #fff;
