@@ -18,12 +18,17 @@ import { MailService } from 'src/mail/mail.service';
 import { AccountService } from 'src/account/account.service';
 import { ProductService } from 'src/product/product.service';
 import { OrderGateway } from './order.gateway';
+import { OrderDetails } from 'src/order-details/order-details.decorator';
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectModel(Order.name)
     private _orderModel: Model<Order>,
+
+    @InjectModel(OrderDetails.name) // ⬅⬅⬅ THÊM DÒNG NÀY
+    private readonly orderDetailsModel: Model<OrderDetails>, // ⬅⬅⬅ THÊM
+
     private readonly depositSettingService: DepositSettingService,
     private readonly orderDetailsService: OrderDetailsService,
     private readonly cartService: CartService,
@@ -670,5 +675,177 @@ export class OrderService {
       approval_status: 'Pending Approval',
       is_delete: false,
     });
+  }
+
+  // =======================
+  // 📌 BIỂU ĐỒ DOANH THU THEO CATEGORY + NGÀY
+  // =======================
+  async getRevenueByCategoryAndDate() {
+    const result = await this.orderDetailsModel.aggregate([
+      // 1) JOIN Orders
+      {
+        $lookup: {
+          from: 'orders',
+          let: { oid: '$order_id' },
+          pipeline: [
+            { $addFields: { orderIdString: { $toString: '$_id' } } },
+            { $match: { $expr: { $eq: ['$orderIdString', '$$oid'] } } },
+          ],
+          as: 'order',
+        },
+      },
+      { $unwind: '$order' },
+
+      // 2) JOIN ProductCategory
+      {
+        $lookup: {
+          from: 'product_categories',
+          let: { pid: '$product_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ['$product_id', { $toObjectId: '$$pid' }],
+                },
+              },
+            },
+          ],
+          as: 'pc',
+        },
+      },
+      { $unwind: '$pc' },
+
+      // 3) JOIN Category
+      {
+        $lookup: {
+          from: 'categorys',
+          localField: 'pc.category_id',
+          foreignField: '_id',
+          as: 'category',
+        },
+      },
+      { $unwind: '$category' },
+
+      // 4) Filter đơn hợp lệ
+      {
+        $match: {
+          'order.status': { $in: ['Paid in Full', 'Completed'] },
+          'order.is_delete': false,
+        },
+      },
+
+      // 5) Group theo category + date
+      {
+        $group: {
+          _id: {
+            category: '$category.name',
+            date: {
+              $dateToString: { format: '%Y-%m-%d', date: '$order.created_at' },
+            },
+          },
+          totalRevenue: { $sum: '$total_price' },
+        },
+      },
+
+      // 6) Format output
+      {
+        $project: {
+          _id: 0,
+          category: '$_id.category',
+          date: '$_id.date',
+          totalRevenue: 1,
+        },
+      },
+
+      // 7) Sort theo ngày
+      { $sort: { date: 1 } },
+    ]);
+
+    return result;
+  }
+
+  // =======================
+  // 📌 TOP 10 PRODUCT BÁN CHẠY THEO tháng
+  // =======================
+  async getTop10ProductsByDate(): Promise<any[]> {
+    try {
+      const endDate = new Date(); // hôm nay
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 30); // 30 ngày trước
+
+      const result = await this.orderDetailsModel.aggregate([
+        // 1) JOIN Order
+        {
+          $lookup: {
+            from: 'orders',
+            let: { oid: '$order_id' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { $eq: ['$_id', { $toObjectId: '$$oid' }] },
+                  is_delete: false,
+                  status: { $in: ['Paid in Full', 'Completed'] },
+                  created_at: { $gte: startDate, $lte: endDate }, // ⭐ LỌC 30 NGÀY
+                },
+              },
+            ],
+            as: 'order',
+          },
+        },
+
+        { $unwind: '$order' },
+
+        // 2) GROUP THEO PRODUCT
+        {
+          $group: {
+            _id: '$product_id',
+            totalQuantity: { $sum: '$quantity' },
+          },
+        },
+
+        { $sort: { totalQuantity: -1 } },
+        { $limit: 10 },
+
+        // 3) JOIN PRODUCT
+        {
+          $lookup: {
+            from: 'products',
+            let: { pid: '$_id' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { $eq: ['$_id', { $toObjectId: '$$pid' }] },
+                },
+              },
+            ],
+            as: 'product',
+          },
+        },
+
+        { $unwind: '$product' },
+
+        // 4) FORMAT OUTPUT
+        {
+          $project: {
+            _id: 0,
+            product_id: '$_id',
+            name: '$product.name',
+            model: '$product.model',
+            photo: '$product.photo',
+            totalQuantity: 1,
+          },
+        },
+      ]);
+
+      return result;
+    } catch (err) {
+      throw new HttpException(
+        {
+          message: 'Failed to load top products (30 days)',
+          error: err.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

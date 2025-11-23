@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   HttpException,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -289,5 +290,15 @@ export class OrderController {
   async pendingCount() {
     const count = await this.orderService.countPending();
     return { count };
+  }
+
+  @Get('chart/revenue-category-date')
+  async getChartData() {
+    return this.orderService.getRevenueByCategoryAndDate();
+  }
+
+  @Get('chart/top-products')
+  async getTopProducts() {
+    return this.orderService.getTop10ProductsByDate();
   }
 }

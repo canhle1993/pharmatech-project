@@ -24,6 +24,27 @@ export class AnalyticsService {
     const account = app.account_id || {};
     const career = app.career_id || {};
 
+    // =======================================
+    // 🔥 TÍNH TUỔI TỰ ĐỘNG TỪ DOB
+    // =======================================
+    let age: number | null = null;
+    let age_range = 'Unknown';
+
+    if (account.dob) {
+      const dob = new Date(account.dob);
+      const diff = Date.now() - dob.getTime();
+      age = Math.floor(diff / (365.25 * 24 * 60 * 60 * 1000));
+
+      if (age < 18) age_range = '<18';
+      else if (age <= 25) age_range = '18-25';
+      else if (age <= 35) age_range = '26-35';
+      else if (age <= 45) age_range = '36-45';
+      else age_range = '>45';
+    }
+
+    // =======================================
+    // 🔥 PAYLOAD LƯU VÀO career_analytics
+    // =======================================
     const payload: Partial<CareerAnalytics> = {
       application_id: app._id,
       account_id: account._id,
@@ -33,8 +54,8 @@ export class AnalyticsService {
       career_department: career.department,
 
       gender: account.gender,
-      age: account.age, // nếu bạn có field age
-      age_range: account.age_range, // nếu không có, bảng analytics có thể để null
+      age,
+      age_range,
 
       skills: account.skills || [],
       languages: account.languages || [],
@@ -51,7 +72,9 @@ export class AnalyticsService {
       updated_at: new Date(),
     };
 
-    // Upsert theo application_id
+    // =======================================
+    // 🔄 UPSERT (update nếu có, thêm nếu chưa có)
+    // =======================================
     await this.analyticsModel.updateOne(
       { application_id: app._id },
       { $set: payload },

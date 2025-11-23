@@ -100,7 +100,7 @@ export class CareerService {
   /** 📋 Lấy danh sách job */
   async findAll(): Promise<CareerDTO[]> {
     const careers = await this.careerModel
-      .find()
+      .find({ is_active: true })
       .sort({ created_at: -1 })
       .lean();
 

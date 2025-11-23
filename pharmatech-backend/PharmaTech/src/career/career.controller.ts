@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -19,11 +20,15 @@ import { validateSync } from 'class-validator';
 
 import { CareerService } from './career.service';
 import { CareerDTO, CreateCareerDto, UpdateCareerDto } from './career.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/role.decorator';
 
 const UPLOAD_DIR = './upload/career-banners';
 const now = new Date();
 
 @Controller('api/career')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class CareerController {
   constructor(private readonly careerService: CareerService) {}
 
@@ -31,6 +36,7 @@ export class CareerController {
    *  🟢 CREATE
    * ======================================= */
   @Post()
+  @Roles('superadmin', 'admin')
   @UseInterceptors(
     FileInterceptor('banner', {
       storage: diskStorage({
@@ -74,6 +80,7 @@ export class CareerController {
    *  🟡 UPDATE
    * ======================================= */
   @Put(':id')
+  @Roles('superadmin', 'admin')
   @UseInterceptors(
     FileInterceptor('banner', {
       storage: diskStorage({
@@ -114,6 +121,7 @@ export class CareerController {
    *  🔵 GET ALL ACTIVE
    * ======================================= */
   @Get()
+  @Roles('superadmin', 'admin', 'user')
   async findAll() {
     await this.careerService.autoExpire(); // ⭐ tự động expire trước khi trả data
     return await this.careerService.findAll();
@@ -123,6 +131,7 @@ export class CareerController {
    *  🟣 HISTORY (inactive jobs)
    * ======================================= */
   @Get('history')
+  @Roles('superadmin', 'admin')
   async history() {
     return await this.careerService.findHistory();
   }
@@ -131,6 +140,7 @@ export class CareerController {
    *  🔄 RESTORE
    * ======================================= */
   @Put('restore/:id')
+  @Roles('superadmin', 'admin')
   async restore(@Param('id') id: string) {
     return await this.careerService.restore(id);
   }
@@ -139,6 +149,7 @@ export class CareerController {
    *  ☠️ DELETE PERMANENT
    * ======================================= */
   @Delete('delete-permanent/:id')
+  @Roles('superadmin')
   async deletePermanent(@Param('id') id: string) {
     const ok = await this.careerService.deletePermanent(id);
     if (!ok) throw new NotFoundException('Career not found');
@@ -149,6 +160,7 @@ export class CareerController {
    *  🧭 SIMILAR JOBS
    * ======================================= */
   @Get('similar/:id')
+  @Roles('superadmin', 'admin', 'user')
   async getSimilar(@Param('id') id: string) {
     return await this.careerService.findSimilarById(id);
   }
@@ -157,6 +169,7 @@ export class CareerController {
    *  🗑️ SOFT DELETE
    * ======================================= */
   @Delete(':id')
+  @Roles('superadmin', 'admin')
   async delete(@Param('id') id: string) {
     const ok = await this.careerService.delete(id);
     if (!ok) throw new BadRequestException('Soft delete failed');
@@ -167,6 +180,7 @@ export class CareerController {
    *  🔍 GET BY ID
    * ======================================= */
   @Get(':id')
+  @Roles('superadmin', 'admin', 'user')
   async findById(@Param('id') id: string) {
     return await this.careerService.findById(id);
   }

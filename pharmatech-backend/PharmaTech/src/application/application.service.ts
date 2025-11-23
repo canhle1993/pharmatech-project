@@ -12,6 +12,7 @@ import { plainToInstance } from 'class-transformer';
 import { MailService } from 'src/mail/mail.service';
 import { getImageUrl } from 'src/account/config.util';
 import { AnalyticsService } from 'src/career-analytics/analytics.service';
+import { ApplicationGateway } from './application.gateway';
 
 @Injectable()
 export class ApplicationService {
@@ -20,8 +21,10 @@ export class ApplicationService {
     private readonly appModel: Model<Application>,
     private readonly mailService: MailService,
     private readonly analyticsService: AnalyticsService,
+    private readonly appGateway: ApplicationGateway,
   ) {}
 
+  /** 🟢 Tạo mới 1 đơn ứng tuyển */
   /** 🟢 Tạo mới 1 đơn ứng tuyển */
   async create(data: CreateApplicationDto): Promise<ApplicationDTO> {
     const created = await this.appModel.create({
@@ -31,14 +34,18 @@ export class ApplicationService {
       updated_at: new Date(),
     });
 
-    /* ⭐ GỌI SYNC */
+    /* ⭐ Populate để sync analytics & emit websocket */
     const populated = await this.appModel
       .findById(created._id)
       .populate('account_id')
       .populate('career_id')
       .lean();
 
+    /* ⭐ GỌI SYNC */
     await this.analyticsService.syncApplicationAnalytics(populated);
+
+    /* 🔥 GỌI WEBSOCKET - đây là dòng bạn thiếu */
+    this.appGateway.emitNewApplication(populated);
 
     return plainToInstance(ApplicationDTO, created.toObject(), {
       excludeExtraneousValues: true,
@@ -91,13 +98,43 @@ export class ApplicationService {
   }
 
   /** 🟢 Lấy danh sách đơn theo account */
+  /** 🟢 Lấy danh sách đơn theo account */
   async findByAccount(account_id: string): Promise<ApplicationDTO[]> {
     const apps = await this.appModel
       .find({ account_id })
       .sort({ created_at: -1 })
+      .populate('career_id', 'title location department banner') // ⭐ có banner
       .lean();
 
-    return plainToInstance(ApplicationDTO, apps, {
+    const formatted = apps.map((app: any) => {
+      // build full banner URL
+      let banner: string | null = null;
+
+      if (app.career_id?.banner) {
+        const raw = app.career_id.banner as string;
+
+        if (raw.startsWith('http')) {
+          banner = raw; // đã full URL rồi thì giữ nguyên
+        } else {
+          // http://localhost:3000/upload/career-banners/xxx.jpg
+          banner = `${getImageUrl()}/career-banners/${raw}`;
+        }
+      }
+
+      return {
+        ...app,
+        // ⭐ Thêm field career cho FE
+        career: {
+          id: app.career_id?._id?.toString(),
+          title: app.career_id?.title,
+          department: app.career_id?.department,
+          location: app.career_id?.location,
+          banner,
+        },
+      };
+    });
+
+    return plainToInstance(ApplicationDTO, formatted, {
       excludeExtraneousValues: true,
     });
   }
