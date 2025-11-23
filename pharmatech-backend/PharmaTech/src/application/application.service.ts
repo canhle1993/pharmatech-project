@@ -12,6 +12,7 @@ import { plainToInstance } from 'class-transformer';
 import { MailService } from 'src/mail/mail.service';
 import { getImageUrl } from 'src/account/config.util';
 import { AnalyticsService } from 'src/career-analytics/analytics.service';
+import { ApplicationGateway } from './application.gateway';
 
 @Injectable()
 export class ApplicationService {
@@ -20,8 +21,10 @@ export class ApplicationService {
     private readonly appModel: Model<Application>,
     private readonly mailService: MailService,
     private readonly analyticsService: AnalyticsService,
+    private readonly appGateway: ApplicationGateway,
   ) {}
 
+  /** 🟢 Tạo mới 1 đơn ứng tuyển */
   /** 🟢 Tạo mới 1 đơn ứng tuyển */
   async create(data: CreateApplicationDto): Promise<ApplicationDTO> {
     const created = await this.appModel.create({
@@ -31,14 +34,18 @@ export class ApplicationService {
       updated_at: new Date(),
     });
 
-    /* ⭐ GỌI SYNC */
+    /* ⭐ Populate để sync analytics & emit websocket */
     const populated = await this.appModel
       .findById(created._id)
       .populate('account_id')
       .populate('career_id')
       .lean();
 
+    /* ⭐ GỌI SYNC */
     await this.analyticsService.syncApplicationAnalytics(populated);
+
+    /* 🔥 GỌI WEBSOCKET - đây là dòng bạn thiếu */
+    this.appGateway.emitNewApplication(populated);
 
     return plainToInstance(ApplicationDTO, created.toObject(), {
       excludeExtraneousValues: true,

@@ -28,7 +28,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   user: any = null;
   isLoggedIn = false;
   categories: any[] = [];
-
+  role = '';
   cartCount = 0;
   cartItems: Cart[] = [];
   private cartSub!: Subscription;
@@ -79,6 +79,12 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       this.cartItems = items;
       this.cartCount = this.cartState.getTotalQuantity();
     });
+
+    const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+
+    if (user?.roles) {
+      this.role = Array.isArray(user.roles) ? user.roles[0] : user.roles;
+    }
   }
 
   ngOnDestroy() {

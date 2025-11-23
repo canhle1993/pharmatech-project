@@ -8,6 +8,9 @@ export class SocketService {
 
   constructor() {
     this.socket = io('http://localhost:3000'); // Update if backend uses different URL
+    this.socket.on('connect', () => {
+      console.log('⚡ Socket connected FE:', this.socket.id);
+    });
   }
 
   onNewQuote(): Observable<any> {
@@ -40,6 +43,17 @@ export class SocketService {
     return new Observable((observer) => {
       this.socket.on('order-status-changed', (payload) => {
         observer.next(payload);
+      });
+    });
+  }
+
+  // ============================
+  // 🟣 APPLICATION (NEW FEATURE)
+  // ============================
+  onNewApplication(): Observable<any> {
+    return new Observable((observer) => {
+      this.socket.on('new-application', (data) => {
+        observer.next(data);
       });
     });
   }

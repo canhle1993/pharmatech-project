@@ -18,13 +18,16 @@ import { CreateApplicationDto } from './application.dto';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/auth/role.decorator';
+import { RolesGuard } from 'src/auth/roles.guard';
 
 @Controller('api/application')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class ApplicationController {
   constructor(private readonly appService: ApplicationService) {}
 
   /** 🟢 Tạo mới đơn ứng tuyển */
   @Post('create')
+  @Roles('user')
   async create(@Body() body: CreateApplicationDto) {
     if (!body.account_id || !body.career_id) {
       throw new HttpException(
@@ -38,18 +41,21 @@ export class ApplicationController {
 
   /** 🟢 Lấy tất cả */
   @Get('find-all')
+  @Roles('admin', 'superadmin')
   async findAll() {
     return this.appService.findAll();
   }
 
   /** 🟣 GET HISTORY (INACTIVE) */
   @Get('history')
+  @Roles('admin', 'superadmin')
   async history() {
     return this.appService.findHistory();
   }
 
   /** 🔄 RESTORE APPLICATION */
   @Put('restore/:id')
+  @Roles('admin', 'superadmin')
   async restore(@Param('id') id: string) {
     const ok = await this.appService.restore(id);
     if (!ok) throw new HttpException('Restore failed', HttpStatus.BAD_REQUEST);
@@ -59,6 +65,7 @@ export class ApplicationController {
 
   /** ☠️ DELETE PERMANENT */
   @Delete('delete-permanent/:id')
+  @Roles('superadmin')
   async deletePermanent(@Param('id') id: string) {
     const ok = await this.appService.deletePermanent(id);
     if (!ok)
@@ -72,18 +79,21 @@ export class ApplicationController {
 
   /** 🟢 Lấy danh sách ứng tuyển của 1 user */
   @Get('find-by-account/:account_id')
+  @Roles('user', 'admin', 'superadmin')
   async findByAccount(@Param('account_id') account_id: string) {
     return this.appService.findByAccount(account_id);
   }
 
   /** 🟢 Lấy danh sách ứng tuyển của 1 job */
   @Get('find-by-career/:career_id')
+  @Roles('admin', 'superadmin')
   async findByCareer(@Param('career_id') career_id: string) {
     return this.appService.findByCareer(career_id);
   }
 
   /** 🔍 CHECK duplicated application */
   @Get('check-duplicate')
+  @Roles('user')
   async checkDuplicate(
     @Query('user_id') user_id: string,
     @Query('career_id') career_id: string,
@@ -101,6 +111,7 @@ export class ApplicationController {
 
   /** 🟢 Cập nhật trạng thái hồ sơ */
   @Patch('update-status/:id')
+  @Roles('admin', 'superadmin')
   async updateStatus(
     @Param('id') id: string,
     @Body('status') status: string,
@@ -112,6 +123,7 @@ export class ApplicationController {
 
   /** 🟣 SuperAdmin phân công Admin */
   @Patch('assign/:id')
+  @Roles('superadmin')
   async assignAdmin(
     @Param('id') id: string,
     @Body('admin_id') admin_id: string,
@@ -123,6 +135,7 @@ export class ApplicationController {
 
   /** ✨ NEW: Generate default email template */
   @Get('generate-template/:id')
+  @Roles('admin', 'superadmin')
   async generateTemplate(@Param('id') id: string) {
     const html = await this.appService.generateEmailTemplate(id);
     return { template: html };
@@ -130,6 +143,7 @@ export class ApplicationController {
 
   /** ✨ Generate PASS Email Template */
   @Get('generate-pass-template/:id')
+  @Roles('admin', 'superadmin')
   async generatePassTemplate(@Param('id') id: string) {
     const html = await this.appService.generatePassTemplate(id);
     return { template: html };
@@ -137,6 +151,7 @@ export class ApplicationController {
 
   /** ✨ Generate REJECT Email Template */
   @Get('generate-reject-template/:id')
+  @Roles('admin', 'superadmin')
   async generateRejectTemplate(@Param('id') id: string) {
     const html = await this.appService.generateRejectTemplate(id);
     return { template: html };
@@ -146,6 +161,7 @@ export class ApplicationController {
   // @UseGuards(JwtAuthGuard)
   // @Roles('admin', 'superadmin')
   @Patch('schedule/:id')
+  @Roles('admin', 'superadmin')
   async scheduleInterview(
     @Param('id') id: string,
     @Body('date') date: Date,
@@ -185,6 +201,7 @@ export class ApplicationController {
 
   /** 🟩 Mark as PASS */
   @Patch('mark-pass/:id')
+  @Roles('admin', 'superadmin')
   async markPass(
     @Param('id') id: string,
     @Body('start_work_date') start_work_date: Date,
@@ -206,6 +223,7 @@ export class ApplicationController {
 
   /** 🟥 Mark as REJECT */
   @Patch('mark-reject/:id')
+  @Roles('admin', 'superadmin')
   async markReject(
     @Param('id') id: string,
     @Body('reason') reason: string,
@@ -230,6 +248,7 @@ export class ApplicationController {
 
   /** 🟡 SOFT DELETE → MOVE TO HISTORY */
   @Delete(':id')
+  @Roles('admin', 'superadmin')
   async delete(@Param('id') id: string) {
     const success = await this.appService.delete(id);
     if (!success)

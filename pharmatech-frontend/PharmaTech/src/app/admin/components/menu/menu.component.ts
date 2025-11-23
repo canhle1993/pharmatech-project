@@ -20,73 +20,71 @@ import { OrderService } from '../../../services/order.service';
   imports: [RouterLink, ButtonModule, RouterLinkActive, CommonModule],
 })
 export class MenuComponent implements OnInit, OnDestroy, AfterViewInit {
-  unreadCount: number = 0;
-  orderCount: number = 0;
+  unreadCount = 0;
+  orderCount = 0;
+  role = '';
+  careerCount = 0;
 
+  subs: Subscription[] = [];
   private socketSub?: Subscription;
+
   constructor(
     private renderer: Renderer2,
     private quoteService: QuoteService,
     private socketService: SocketService,
     private orderService: OrderService
   ) {}
+
+  // ================================
+  // 🔴 HỦY SOCKET + SUBSCRIPTIONS
+  // ================================
   ngOnDestroy(): void {
+    this.subs.forEach((s) => s.unsubscribe());
     if (this.socketSub) this.socketSub.unsubscribe();
     this.socketService.disconnect();
   }
+
+  // ================================
+  // 🔵 KHỞI TẠO
+  // ================================
   ngOnInit() {
-    // ------------------------------
-    // 1) Load pending count từ backend
-    // ------------------------------
+    // 1) Load số lượng order Pending
     this.orderService.getPendingCount().subscribe({
-      next: (res) => {
-        this.orderCount = res.count;
-      },
-      error: (err) => {
-        console.error('Error loading order pending count:', err);
-      },
+      next: (res) => (this.orderCount = res.count),
+      error: (err) => console.error(err),
     });
 
-    // ------------------------------
-    // 2) Lắng nghe đơn hàng mới qua socket
-    // ------------------------------
-    this.socketService.onNewOrder().subscribe(() => {
-      this.orderCount++;
-    });
+    // 2) Order mới
+    this.subs.push(
+      this.socketService.onNewOrder().subscribe(() => {
+        this.orderCount++;
+      })
+    );
 
-    // ------------------------------
-    // 3) Lắng nghe trạng thái thay đổi
-    // ------------------------------
-    // Lắng nghe trạng thái đơn thay đổi
-    this.socketService.onOrderStatusChanged().subscribe(({ from, to }) => {
-      console.log('SOCKET order change:', from, '=>', to);
+    // 3) Update trạng thái order
+    this.subs.push(
+      this.socketService.onOrderStatusChanged().subscribe(({ from, to }) => {
+        if (
+          from === 'Pending Approval' &&
+          (to === 'Approved' || to === 'Rejected')
+        ) {
+          this.orderCount = Math.max(0, this.orderCount - 1);
+        }
+      })
+    );
 
-      // Pending Approval -> Approved = đơn được duyệt
-      // Pending Approval -> Rejected = đơn bị từ chối
-      if (
-        from === 'Pending Approval' &&
-        (to === 'Approved' || to === 'Rejected')
-      ) {
-        this.orderCount = Math.max(0, this.orderCount - 1);
-      }
-    });
-
-    // Lấy số lượng quote chưa đọc ban đầu
+    // 4) Load số lượng quote chưa đọc
     this.quoteService.getUnreadCount().subscribe({
-      next: (response) => {
-        this.unreadCount = response.count;
-      },
-      error: (error) => {
-        console.error('Error loading unread count:', error);
-      },
+      next: (res) => (this.unreadCount = res.count),
+      error: (err) => console.error(err),
     });
 
-    // Lắng nghe sự kiện quote mới qua socket
+    // 5) Quote mới
     this.socketSub = this.socketService.onNewQuote().subscribe(() => {
       this.unreadCount++;
     });
 
-    // Lắng nghe thay đổi trạng thái quote (read/replied/deleted)
+    // 6) Quote thay đổi trạng thái
     const statusSub = this.socketService
       .onQuoteStatusChanged()
       .subscribe(({ from, to }) => {
@@ -97,40 +95,53 @@ export class MenuComponent implements OnInit, OnDestroy, AfterViewInit {
           this.unreadCount = Math.max(0, this.unreadCount - 1);
         }
       });
-    // Gộp subscriptions
+
+    // Gom unsub
     if (this.socketSub) {
-      const originalUnsub = this.socketSub.unsubscribe.bind(this.socketSub);
+      const origUnsub = this.socketSub.unsubscribe.bind(this.socketSub);
       this.socketSub.unsubscribe = () => {
         statusSub.unsubscribe();
-        originalUnsub();
+        origUnsub();
       };
+    }
+
+    // 7) ⭐ Ứng viên apply mới (Career)
+    this.subs.push(
+      this.socketService.onNewApplication().subscribe(() => {
+        this.careerCount++;
+      })
+    );
+
+    // 8) Role người dùng
+    const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    if (user?.roles) {
+      this.role = Array.isArray(user.roles) ? user.roles[0] : user.roles;
     }
   }
 
+  // ================================
+  // MENU TOGGLE
+  // ================================
   ngAfterViewInit(): void {
-    // ==========================
-    //  1) Tự tạo toggle cho menu
-    // ==========================
-
     const menuToggles = document.querySelectorAll('.menu-toggle');
-
     menuToggles.forEach((toggle: any) => {
       this.renderer.listen(toggle, 'click', () => {
         const parent = toggle.parentElement;
 
-        // Nếu đang mở thì đóng
         if (parent.classList.contains('open')) {
           parent.classList.remove('open');
         } else {
-          // Đóng tất cả cái khác
           document
             .querySelectorAll('.menu-item.open')
             .forEach((item) => item.classList.remove('open'));
 
-          // Mở cái đang click
           parent.classList.add('open');
         }
       });
     });
+  }
+
+  resetCareerBadge() {
+    this.careerCount = 0;
   }
 }

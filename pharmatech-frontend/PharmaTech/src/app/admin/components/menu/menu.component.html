@@ -95,6 +95,7 @@
       <a class="menu-link menu-toggle">
         <i class="menu-icon tf-icons bx bx-briefcase"></i>
         <div data-i18n="Career">Career</div>
+        <span *ngIf="careerCount > 0" class="badge bg-danger ms-auto">{{ careerCount }}</span>
       </a>
 
       <ul class="menu-sub">
@@ -110,10 +111,17 @@
           </a>
         </li>
         <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <a [routerLink]="['/admin/career/application-management']" class="menu-link">
+          <a [routerLink]="['/admin/career/application-management']" class="menu-link" (click)="resetCareerBadge()">
+
             <div data-i18n="Recruitment details">Application Management</div>
+
+            <span *ngIf="careerCount > 0" class="badge bg-danger ms-auto" style="font-size: 10px;">
+              {{ careerCount }}
+            </span>
+
           </a>
         </li>
+
 
       </ul>
     </li>

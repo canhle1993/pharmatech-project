@@ -5,6 +5,7 @@ import { ApplicationService } from './application.service';
 import { ApplicationController } from './application.controller';
 import { MailModule } from 'src/mail/mail.module';
 import { CareerAnalyticsModule } from 'src/career-analytics/analytics.module';
+import { ApplicationGateway } from './application.gateway';
 
 @Module({
   imports: [
@@ -15,6 +16,6 @@ import { CareerAnalyticsModule } from 'src/career-analytics/analytics.module';
     CareerAnalyticsModule,
   ],
   controllers: [ApplicationController],
-  providers: [ApplicationService],
+  providers: [ApplicationService, ApplicationGateway],
 })
 export class ApplicationModule {}

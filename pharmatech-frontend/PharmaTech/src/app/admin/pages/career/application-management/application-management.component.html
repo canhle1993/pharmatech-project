@@ -155,49 +155,64 @@
           <ng-container *ngIf="viewMode === 'active'; else historyActions">
 
             <!-- Assign Admin -->
-            <button *ngIf="!['hired','assigned','interview','passed','rejected']
-      .includes(row?.status?.toLowerCase())" pButton type="button" icon="pi pi-user-edit"
+            <button *ngIf="(authRole.isAdmin() || authRole.isSuperAdmin()) &&
+          !['hired','assigned','interview','passed','rejected']
+            .includes(row?.status?.toLowerCase())" pButton type="button" icon="pi pi-user-edit"
               class="p-button-rounded p-button-secondary action-btn" pTooltip="Assign Admin" tooltipPosition="top"
               (click)="openAssignDialog(row)">
             </button>
 
+
             <!-- Schedule Interview -->
-            <button *ngIf="!['hired','interview','passed','rejected']
-      .includes(row?.status?.toLowerCase())" pButton type="button" icon="pi pi-calendar"
+            <button *ngIf="(authRole.isAdmin() || authRole.isSuperAdmin()) &&
+          !['hired','interview','passed','rejected']
+            .includes(row?.status?.toLowerCase())" pButton type="button" icon="pi pi-calendar"
               class="p-button-rounded p-button-warning action-btn" pTooltip="Schedule Interview" tooltipPosition="top"
               (click)="openInterviewDialog(row)">
             </button>
 
+
             <!-- Mark as Passed -->
-            <button *ngIf="!['passed','hired','rejected'].includes(row?.status?.toLowerCase())" pButton type="button"
-              icon="pi pi-check" class="p-button-rounded p-button-success action-btn" pTooltip="Mark as Passed"
-              tooltipPosition="top" (click)="openPassDialog(row)">
+            <button *ngIf="(authRole.isAdmin() || authRole.isSuperAdmin()) &&
+          !['passed','hired','rejected']
+            .includes(row?.status?.toLowerCase())" pButton type="button" icon="pi pi-check"
+              class="p-button-rounded p-button-success action-btn" pTooltip="Mark as Passed" tooltipPosition="top"
+              (click)="openPassDialog(row)">
             </button>
 
             <!-- Mark as Rejected -->
-            <button *ngIf="!['passed','hired','rejected'].includes(row?.status?.toLowerCase())" pButton type="button"
-              icon="pi pi-times" class="p-button-rounded p-button-danger action-btn" pTooltip="Mark as Rejected"
-              tooltipPosition="top" (click)="openRejectDialog(row)">
+            <button *ngIf="(authRole.isAdmin() || authRole.isSuperAdmin()) &&
+          !['passed','hired','rejected']
+            .includes(row?.status?.toLowerCase())" pButton type="button" icon="pi pi-times"
+              class="p-button-rounded p-button-danger action-btn" pTooltip="Mark as Rejected" tooltipPosition="top"
+              (click)="openRejectDialog(row)">
             </button>
 
+
             <!-- Delete (soft delete) -->
-            <button pButton type="button" icon="pi pi-trash" class="p-button-rounded p-button-danger action-btn"
-              pTooltip="Delete" tooltipPosition="top" (click)="deleteApplication(row)">
+            <button *ngIf="authRole.isAdmin() || authRole.isSuperAdmin()" pButton type="button" icon="pi pi-trash"
+              class="p-button-rounded p-button-danger action-btn" pTooltip="Delete" tooltipPosition="top"
+              (click)="deleteApplication(row)">
             </button>
+
 
           </ng-container>
 
           <!-- ================= HISTORY MODE ================= -->
           <ng-template #historyActions>
             <!-- Restore -->
-            <button pButton type="button" icon="pi pi-refresh" class="p-button-rounded p-button-success action-btn"
-              pTooltip="Restore" tooltipPosition="top" (click)="restoreApplication(row)">
+            <button *ngIf="authRole.isAdmin() || authRole.isSuperAdmin()" pButton type="button" icon="pi pi-refresh"
+              class="p-button-rounded p-button-success action-btn" pTooltip="Restore" tooltipPosition="top"
+              (click)="restoreApplication(row)">
             </button>
 
+
             <!-- Permanent Delete -->
-            <button pButton type="button" icon="pi pi-times" class="p-button-rounded p-button-danger action-btn"
-              pTooltip="Delete Forever" tooltipPosition="top" (click)="deletePermanent(row)">
+            <button *ngIf="authRole.isSuperAdmin()" pButton type="button" icon="pi pi-times"
+              class="p-button-rounded p-button-danger action-btn" pTooltip="Delete Forever" tooltipPosition="top"
+              (click)="deletePermanent(row)">
             </button>
+
           </ng-template>
 
         </td>
