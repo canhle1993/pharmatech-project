@@ -122,12 +122,6 @@
 /* ===========================
    SECTION BOX
 =========================== */
-.section {
-  padding: 28px;
-  border: 1px solid #e3e7ef;
-  margin-bottom: 32px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
-}
 
 /* ===========================
    RESUME BUTTON – CENTER FIX
@@ -415,6 +409,7 @@
   border-radius: 10px;
   padding: 1.25rem 1.5rem;
   margin-bottom: 1.25rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
 }
 
 .section-title {
@@ -621,7 +616,7 @@
   /* 🔥 Quan trọng: cho phép click + focus */
   pointer-events: auto;
   position: relative;
-  z-index: 10;
+  z-index: 1000;
 }
 
 .save-btn {
@@ -652,13 +647,25 @@
   width: 80px;
   height: 80px;
   object-fit: cover;
+
   opacity: 0;
-  transition: opacity 0.5s ease;
+  visibility: hidden;
+  pointer-events: none;
+
+  transform: scale(1.05);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+
   border-radius: 50%;
+  z-index: 0;
 }
 
 .carousel img.active {
-  opacity: 1;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+
+  transform: scale(1);
+  z-index: 10 !important;
 }
 
 .hint {
@@ -804,4 +811,26 @@
 .pagination .page-item.disabled .page-link {
   opacity: 0.5;
   pointer-events: none;
+}
+/* Fix layout AI section */
+.ai-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap; /* tránh tràn */
+}
+
+.ai-section .a2 {
+  z-index: 1 !important;
+}
+
+@media (max-width: 768px) {
+  .ai-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .a2 {
+    width: 100% !important;
+  }
 }

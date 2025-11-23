@@ -1,4 +1,4 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -144,7 +144,8 @@ export class ProfileComponent implements OnInit {
     private ngZone: NgZone,
     private orderService: OrderService,
     private confirmationService: ConfirmationService,
-    private applicationService: ApplicationService
+    private applicationService: ApplicationService,
+    private cd: ChangeDetectorRef
   ) {}
 
   /** =================== Lifecycle =================== */
@@ -510,16 +511,14 @@ export class ProfileComponent implements OnInit {
 
     if (this.carouselTimer) clearInterval(this.carouselTimer);
 
-    // chạy ngoài Angular để smooth hơn
-    this.ngZone.runOutsideAngular(() => {
-      this.carouselTimer = setInterval(() => {
-        this.ngZone.run(() => {
-          this.carouselIndex =
-            (this.carouselIndex + 1) % this.carouselImages.length;
-        });
-      }, 1000);
-    });
+    this.carouselTimer = setInterval(() => {
+      this.carouselIndex =
+        (this.carouselIndex + 1) % this.carouselImages.length;
+
+      this.cd.detectChanges(); // 👈 ép Angular cập nhật UI
+    }, 800);
   }
+
   preloadCarouselImages() {
     this.carouselImages.forEach((src) => {
       const img = new Image();
@@ -551,7 +550,11 @@ export class ProfileComponent implements OnInit {
 
     this.isGenerating = true;
     this.generatedAvatar = null;
-    this.startCarousel();
+
+    // ⭐ Delay nhỏ để DOM kịp render carousel
+    setTimeout(() => {
+      this.startCarousel();
+    }, 20);
 
     try {
       const response = await fetch(
@@ -577,7 +580,6 @@ export class ProfileComponent implements OnInit {
 
       this.generatedAvatar = 'data:image/png;base64,' + b64;
 
-      // ✔ HIỂN THỊ LÊN PROFILE CHO USER XEM TRƯỚC
       if (this.account) {
         this.account.photo = this.generatedAvatar;
       }
@@ -595,7 +597,10 @@ export class ProfileComponent implements OnInit {
         detail: 'Cannot generate avatar.',
       });
     } finally {
-      this.stopCarousel();
+      // ⭐ GIỮ CAROUSEL CHẠY ÍT NHẤT 2 GIÂY
+      setTimeout(() => {
+        this.stopCarousel();
+      }, 100);
     }
   }
 
