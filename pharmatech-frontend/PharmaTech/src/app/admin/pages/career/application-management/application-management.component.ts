@@ -20,6 +20,7 @@ import { ConfirmationService } from 'primeng/api';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
+import { AuthRoleService } from '../../../../core/auth/auth-role.service';
 
 @Component({
   selector: 'app-application-management',
@@ -45,6 +46,7 @@ import { InputTextModule } from 'primeng/inputtext';
   providers: [MessageService, ConfirmationService],
 })
 export class ApplicationManagementComponent implements OnInit {
+  today = new Date();
   applications: Application[] = [];
   loading = false;
   role = ''; // 👑 Vai trò hiện tại (superadmin / admin / user)
@@ -102,7 +104,8 @@ export class ApplicationManagementComponent implements OnInit {
     private appService: ApplicationService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    public authRole: AuthRoleService
   ) {}
 
   /** 🟢 Khi khởi tạo component → lấy toàn bộ danh sách ứng tuyển */

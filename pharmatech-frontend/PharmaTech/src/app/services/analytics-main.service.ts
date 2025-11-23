@@ -1,32 +1,57 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
+import { env } from '../enviroments/enviroment';
+
+export interface RevenueCategoryDate {
+  category: string;
+  date: string;
+  totalRevenue: number;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class AnalyticsMainService {
-  private api = 'http://localhost:3000/api/analytics';
+  private baseUrl = env.baseUrl + 'order/chart/';
 
-  constructor(private http: HttpClient) {}
+  constructor(private httpClient: HttpClient) {}
 
-  getOverviewCards(): Observable<any> {
-    return this.http.get(`${this.api}/overview`);
+  // ==================================================
+  // 📊 DOANH THU THEO CATEGORY + NGÀY
+  // ==================================================
+  async getRevenueCategoryDate(): Promise<RevenueCategoryDate[]> {
+    try {
+      const res = await lastValueFrom(
+        this.httpClient.get<RevenueCategoryDate[]>(
+          this.baseUrl + 'revenue-category-date'
+        )
+      );
+
+      // 🚀 Format chuẩn theo style bạn hay dùng
+      return res.map((r) => ({
+        category: r.category,
+        date: r.date,
+        totalRevenue: r.totalRevenue,
+      }));
+    } catch (error) {
+      console.error('❌ getRevenueCategoryDate error:', error);
+      return [];
+    }
   }
 
-  getRevenueMonthly(): Observable<any> {
-    return this.http.get(`${this.api}/orders/monthly`);
-  }
-
-  getOrdersByStatus(): Observable<any> {
-    return this.http.get(`${this.api}/orders/status`);
-  }
-
-  getProductsByCategory(): Observable<any> {
-    return this.http.get(`${this.api}/products/by-category`);
-  }
-
-  getCareerByDepartment(): Observable<any> {
-    return this.http.get(`${this.api}/careers/monthly`);
+  // ================================
+  // 📌 TOP 10 PRODUCT BÁN CHẠY THEO NGÀY
+  // ================================
+  async getTopProducts(): Promise<any[]> {
+    try {
+      const res = await lastValueFrom(
+        this.httpClient.get<any[]>(`${this.baseUrl}top-products`)
+      );
+      return res;
+    } catch (error) {
+      console.error('❌ getTopProducts error:', error);
+      return [];
+    }
   }
 }

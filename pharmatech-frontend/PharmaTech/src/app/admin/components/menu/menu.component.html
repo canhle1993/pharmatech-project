@@ -128,6 +128,9 @@
       <a class="menu-link menu-toggle">
         <i class="menu-icon tf-icons bx bx-briefcase"></i>
         <div data-i18n="Career">Career</div>
+        <span *ngIf="careerCount > 0" class="badge bg-danger ms-auto">{{
+          careerCount
+        }}</span>
       </a>
 
       <ul class="menu-sub">
@@ -140,7 +143,7 @@
             [routerLink]="['/admin/career/analytics-dashboard']"
             class="menu-link"
           >
-            <div data-i18n="Recruitment history">Dashboard Career</div>
+            <div data-i18n="Recruitment history">Dashboard</div>
           </a>
         </li>
         <li
@@ -162,6 +165,14 @@
             class="menu-link"
           >
             <div data-i18n="Recruitment details">Application Management</div>
+
+            <span
+              *ngIf="careerCount > 0"
+              class="badge bg-danger ms-auto"
+              style="font-size: 10px"
+            >
+              {{ careerCount }}
+            </span>
           </a>
         </li>
       </ul>

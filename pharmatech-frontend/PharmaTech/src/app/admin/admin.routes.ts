@@ -39,11 +39,14 @@ import { ServiceConsultingComponent } from './pages/service-consulting/service-c
 import { ServiceAdminComponent } from './pages/service/service.component';
 import { PurchaseAdminComponent } from './pages/purchase/purchase.component';
 import { QrScanComponent } from './pages/scan/qr-scan.component';
+import { AdminGuard } from '../core/guard/admin.guard';
+import { CareerAdminGuard } from '../core/guard/career-admin.guard';
 
 export const adminRoutes: Routes = [
   {
     path: '',
     component: AdminComponent,
+    canActivate: [AdminGuard],
     children: [
       { path: '', component: DashboardComponent },
       { path: 'dashboard', component: DashboardComponent },
@@ -106,17 +109,31 @@ export const adminRoutes: Routes = [
 
       { path: 'quote', component: QuoteComponent },
 
-      { path: 'career/job-posting', component: JobPostingComponent },
-      { path: 'career/job-add', component: JobFormComponent },
-      { path: 'career/job-edit/:id', component: JobFormComponent },
+      {
+        path: 'career/job-posting',
+        component: JobPostingComponent,
+        canActivate: [CareerAdminGuard],
+      },
+      {
+        path: 'career/job-add',
+        component: JobFormComponent,
+        canActivate: [CareerAdminGuard],
+      },
+      {
+        path: 'career/job-edit/:id',
+        component: JobFormComponent,
+        canActivate: [CareerAdminGuard],
+      },
 
       {
         path: 'career/application-management',
         component: ApplicationManagementComponent,
+        canActivate: [CareerAdminGuard],
       },
       {
         path: 'career/analytics-dashboard',
         component: DashboardAnalyticsComponent,
+        canActivate: [CareerAdminGuard],
       },
 
       { path: 'order/order-list', component: OrderListComponent },

@@ -12,6 +12,7 @@ import { QuoteService } from '../../../services/quote.service';
 import { SocketService } from '../../../services/socket.service';
 import { Subscription } from 'rxjs';
 import { OrderService } from '../../../services/order.service';
+import { ApplicationService } from '../../../services/application.service';
 
 @Component({
   selector: 'app-menu',
@@ -20,17 +21,22 @@ import { OrderService } from '../../../services/order.service';
   imports: [RouterLink, ButtonModule, RouterLinkActive, CommonModule],
 })
 export class MenuComponent implements OnInit, OnDestroy, AfterViewInit {
-  unreadCount: number = 0;
-  orderCount: number = 0;
+  unreadCount = 0;
+  orderCount = 0;
+  role = '';
+  careerCount = 0;
 
+  subs: Subscription[] = [];
   private socketSub?: Subscription;
   constructor(
     private renderer: Renderer2,
     private quoteService: QuoteService,
     private socketService: SocketService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private applicationService: ApplicationService
   ) {}
   ngOnDestroy(): void {
+    this.subs.forEach((s) => s.unsubscribe());
     if (this.socketSub) this.socketSub.unsubscribe();
     this.socketService.disconnect();
   }
@@ -105,6 +111,28 @@ export class MenuComponent implements OnInit, OnDestroy, AfterViewInit {
         originalUnsub();
       };
     }
+
+    /* ================================
+     * 3️⃣ CAREER BADGE (NEW FEATURE)
+     ================================= */
+
+    // ⭐ Load pending count khi F5
+    this.applicationService.getPendingCount().then((res) => {
+      this.careerCount = res.count;
+    });
+
+    // ⭐ Tăng khi có ứng viên apply mới qua WebSocket
+    this.subs.push(
+      this.socketService.onNewApplication().subscribe(() => {
+        this.careerCount++;
+      })
+    );
+
+    // 8) Role người dùng
+    const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    if (user?.roles) {
+      this.role = Array.isArray(user.roles) ? user.roles[0] : user.roles;
+    }
   }
 
   ngAfterViewInit(): void {
@@ -132,5 +160,9 @@ export class MenuComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       });
     });
+  }
+
+  resetCareerBadge() {
+    this.careerCount = 0;
   }
 }

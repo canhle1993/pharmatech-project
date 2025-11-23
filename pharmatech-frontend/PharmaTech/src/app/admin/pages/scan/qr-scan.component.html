@@ -3,7 +3,9 @@
   <p-toast></p-toast>
 
   <div class="card">
-    <!-- Camera -->
+    <!-- ==============================
+         CAMERA
+    =============================== -->
     <div class="camera-card p-card">
       <div class="row">
         <div class="col"></div>
@@ -21,48 +23,56 @@
       </div>
     </div>
 
-    <!-- Last Scan -->
+    <!-- ==============================
+         LAST SCAN
+    =============================== -->
     <div class="last-scan p-card" *ngIf="lastScan">
       <h3>Last Scan</h3>
       <p class="last-scan-text">{{ lastScan }}</p>
     </div>
 
-    <!-- TABLE -->
+    <!-- ==============================
+         SCAN HISTORY (GROUP BY PRODUCT)
+    =============================== -->
     <p-card styleClass="scan-card">
-      <!-- 🔥 HEADER + RESET BUTTON -->
       <div class="table-header">
         <h3 class="table-title">Scan History</h3>
+
         <button
           pButton
           icon="pi pi-arrow-left"
           label="Back to list"
           class="p-button-text"
-          type="button"
           (click)="goBack()"
         ></button>
+
         <button
           pButton
           label="Reset"
           icon="pi pi-refresh"
           class="p-button-danger p-button-sm"
           (click)="resetScan()"
-          style="float: inline-end"
+          style="float: right"
         ></button>
       </div>
 
       <p-table
         [value]="scanTable"
         styleClass="p-datatable-striped p-datatable-sm"
+        [rows]="4"
+        [paginator]="true"
+        [rowsPerPageOptions]="[4, 10, 20]"
+        showGridlines
         responsiveLayout="scroll"
         class="product-table pt-3"
       >
         <ng-template pTemplate="header">
           <tr>
-            <th>#</th>
+            <th style="width: 55px">#</th>
             <th>Product Name</th>
             <th>Model</th>
-            <th>Quantity</th>
-            <th>Stock</th>
+            <th style="width: 120px; text-align: center">Quantity</th>
+            <th style="width: 120px; text-align: center">Stock</th>
           </tr>
         </ng-template>
 
@@ -73,13 +83,80 @@
             <td>{{ row.model }}</td>
             <td
               class="qty-cell"
-              style="font-size: x-large; color: rgb(7, 3, 238)"
+              style="font-size: large; color: #0d47ff; text-align: center"
             >
               {{ row.count }}
             </td>
-            <td class="qty-cell" style="font-size: x-large; color: orange">
+            <td
+              class="qty-cell"
+              style="font-size: large; color: orange; text-align: center"
+            >
               {{ getStock(row.productId) }}
             </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+
+    <!-- ==============================
+         NEW: DETAILED QR LIST
+    =============================== -->
+    <p-card styleClass="scan-card mt-4" *ngIf="scannedQRList.length > 0">
+      <h3 class="table-title">Scanned QR List</h3>
+      <div class="qr-search-box">
+        <input
+          pInputText
+          type="text"
+          (input)="onQrSearch($event)"
+          placeholder="Search QR code..."
+          class="qr-search-input"
+        />
+
+        <div class="filter-group">
+          <p-iconfield iconPosition="left" class="search-field">
+            <button
+              pButton
+              class="p-button-text p-button-sm"
+              (click)="qrSearch = ''"
+            ></button>
+          </p-iconfield>
+          <button
+            pButton
+            label="Export Excel"
+            icon="pi pi-file-excel"
+            class="p-button-success p-button-sm me-2"
+            (click)="exportExcel()"
+          ></button>
+        </div>
+      </div>
+
+      <p-table
+        [value]="scannedQRList"
+        styleClass="p-datatable-striped p-datatable-sm"
+        [rows]="10"
+        [paginator]="true"
+        [rowsPerPageOptions]="[10, 20, 50]"
+        showGridlines
+        responsiveLayout="scroll"
+        class="product-table"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 55px">#</th>
+            <th>QR Code</th>
+            <th>Product</th>
+            <th>Model</th>
+            <th style="width: 120px">Serial</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-item let-i="rowIndex">
+          <tr>
+            <td>{{ i + 1 }}</td>
+            <td>{{ item.qr }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.model }}</td>
+            <td>{{ item.serial }}</td>
           </tr>
         </ng-template>
       </p-table>

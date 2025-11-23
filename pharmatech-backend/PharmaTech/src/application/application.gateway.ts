@@ -18,10 +18,11 @@ export class ApplicationGateway
   @WebSocketServer()
   server: Server;
 
-  afterInit() {}
+  afterInit() {
+    console.log('🔥 Application WebSocket Gateway initialized');
+  }
 
   handleConnection(client: any) {}
-
   handleDisconnect(client: any) {}
 
   /** 🔥 Emit khi có ứng viên apply job */

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
 import { env } from '../enviroments/enviroment';
 import { Application } from '../entities/application.entity';
 
@@ -53,12 +53,21 @@ export class ApplicationService {
   }
 
   /** 🟢 Lấy danh sách theo account */
+  // ApplicationService (FE)
   async findByAccount(account_id: string): Promise<Application[]> {
-    return await lastValueFrom(
+    const apps = await lastValueFrom(
       this.httpClient.get<Application[]>(
         env.baseUrl + 'application/find-by-account/' + account_id
       )
     );
+
+    // ⭐ Gắn full URL cho banner
+    return apps.map((app: any) => {
+      if (app.career_id?.banner) {
+        app.career_id.banner = env.imageUrl + app.career_id.banner;
+      }
+      return app;
+    });
   }
 
   /** 🟢 Lấy danh sách theo career */
@@ -207,6 +216,15 @@ export class ApplicationService {
             career_id,
           },
         }
+      )
+    );
+  }
+
+  /** 🔴 LẤY SỐ LƯỢNG APPLICATION PENDING */
+  async getPendingCount(): Promise<{ count: number }> {
+    return await lastValueFrom(
+      this.httpClient.get<{ count: number }>(
+        env.baseUrl + 'application/pending-count'
       )
     );
   }

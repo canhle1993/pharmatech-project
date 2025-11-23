@@ -1,157 +1,205 @@
 import { Component, OnInit } from '@angular/core';
-import { AnalyticsMainService } from '../../../services/analytics-main.service';
-import { NgChartsModule } from 'ng2-charts';
 import { CommonModule } from '@angular/common';
+import { HighchartsChartDirective } from 'highcharts-angular';
+import * as Highcharts from 'highcharts';
 
 import {
-  Chart,
-  LineController,
-  LineElement,
-  PointElement,
-  LinearScale,
-  CategoryScale,
-  BarController,
-  BarElement,
-  PieController,
-  DoughnutController,
-  ArcElement,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-
-// ⭐ MUST REGISTER CHART COMPONENTS
-Chart.register(
-  LineController,
-  LineElement,
-  PointElement,
-  LinearScale,
-  CategoryScale,
-  BarController,
-  BarElement,
-  PieController,
-  DoughnutController,
-  ArcElement,
-  Tooltip,
-  Legend
-);
+  AnalyticsMainService,
+  RevenueCategoryDate,
+} from '../../../services/analytics-main.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
+  imports: [CommonModule, HighchartsChartDirective],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
-  imports: [CommonModule, NgChartsModule],
 })
 export class DashboardComponent implements OnInit {
-  overview: any[] = [];
+  chartOptions: Highcharts.Options = {};
+  revenueData: RevenueCategoryDate[] = [];
+  populationChart: any;
 
-  revenueData: any;
-  orderStatusData: any;
-  productCategoryData: any;
-  careerDeptData: any;
+  constructor(private analyticsService: AnalyticsMainService) {}
 
-  chartOptions = {
-    responsive: true,
-    plugins: { legend: { display: true } },
-  };
-
-  constructor(private analyticsMain: AnalyticsMainService) {}
-
-  ngOnInit(): void {
-    console.log('🏁 Dashboard init');
-
-    this.loadOverview();
-    this.loadRevenue();
-    this.loadOrderStatus();
-    this.loadProductsByCategory();
-    this.loadCareerByDepartment();
+  async ngOnInit() {
+    await this.loadChartData();
+    this.initPopulationChart();
   }
 
-  loadOverview() {
-    this.analyticsMain.getOverviewCards().subscribe((res) => {
-      console.log('📌 Overview API =>', res);
+  async loadChartData() {
+    this.revenueData = await this.analyticsService.getRevenueCategoryDate();
+    this.buildChart();
+  }
 
-      this.overview = [
-        { title: 'Products', value: res.totalProducts },
-        { title: 'Categories', value: res.totalCategories },
-        { title: 'Orders', value: res.totalOrders },
-        { title: 'Careers', value: res.totalCareers },
-      ];
+  async initPopulationChart() {
+    // 🔥 TOP PRODUCTS 30 ngày
+    const topProducts = await this.analyticsService.getTopProducts();
+    console.log('🔥 Top products:', topProducts);
+
+    // Format chart data
+    const chartData = topProducts.map((p) => ({
+      name: p.name,
+      y: p.totalQuantity,
+    }));
+
+    // Tạo list 30 ngày gần nhất
+    const days: string[] = [];
+    for (let i = 0; i < 30; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      days.push(d.toISOString().slice(0, 10));
+    }
+    days.reverse();
+
+    // Chart colors
+    const colors = [
+      '#4e79a7',
+      '#f28e2b',
+      '#e15759',
+      '#76b7b2',
+      '#59a14f',
+      '#edc948',
+      '#b07aa1',
+      '#ff9da7',
+      '#9c755f',
+      '#bab0ab',
+      '#5ab4ac',
+      '#d8b365',
+      '#8dd3c7',
+      '#fb8072',
+      '#80b1d3',
+      '#fdb462',
+      '#b3de69',
+      '#fccde5',
+      '#bc80bd',
+      '#ccebc5',
+    ];
+
+    // Tạo chart
+    this.populationChart = (Highcharts as any).chart('population-container', {
+      chart: { type: 'bar', animation: true },
+      title: { text: 'Top 10 best-selling products (last 30 days)' },
+      xAxis: { type: 'category', title: { text: 'Product Name' } },
+      yAxis: { title: { text: 'Quantity Sold' }, allowDecimals: false },
+      legend: { enabled: false },
+      plotOptions: {
+        series: {
+          borderWidth: 0,
+          pointPadding: 0.05,
+          groupPadding: 0,
+          colorByPoint: true,
+          dataLabels: { enabled: true, format: '{point.y}' },
+        },
+      },
+      series: [
+        {
+          name: 'Quantity',
+          data: chartData,
+          type: 'bar',
+        },
+      ],
+      colors: colors,
+    });
+
+    // ============================
+    // 🎬 PLAY/PAUSE + HIỆN NGÀY
+    // ============================
+    const btn = document.getElementById(
+      'play-pause-button'
+    ) as HTMLButtonElement;
+    const slider = document.getElementById('play-range') as HTMLInputElement;
+    const dayLabel = document.getElementById('current-day') as HTMLElement;
+
+    if (!btn || !slider || !dayLabel) return;
+
+    // 🌟 Gán ngày hiện tại lúc load vào
+    dayLabel.innerHTML = `Days: <b>${days[0]}</b>`;
+
+    let timer: any = null;
+    const maxDays = 29;
+
+    // Khi kéo slider
+    slider.addEventListener('input', () => {
+      const idx = Number(slider.value);
+
+      const data = chartData.slice(0, idx + 1);
+      this.populationChart.series[0].setData(data);
+
+      dayLabel.innerHTML = `Days: <b>${days[idx]}</b>`;
+    });
+
+    // Bấm Play/Pause
+    btn.addEventListener('click', () => {
+      if (btn.classList.contains('playing')) {
+        btn.classList.remove('playing');
+        btn.innerHTML = '<i class="fa fa-play"></i>';
+        clearInterval(timer);
+        return;
+      }
+
+      btn.classList.add('playing');
+      btn.innerHTML = '<i class="fa fa-pause"></i>';
+
+      timer = setInterval(() => {
+        let idx = Number(slider.value);
+
+        if (idx >= maxDays) {
+          clearInterval(timer);
+          btn.classList.remove('playing');
+          btn.innerHTML = '<i class="fa fa-play"></i>';
+          return;
+        }
+
+        idx++;
+        slider.value = idx.toString();
+
+        const data = chartData.slice(0, idx + 1);
+        this.populationChart.series[0].setData(data);
+
+        // ⭐ Cập nhật ngày
+        dayLabel.innerHTML = `Days: <b>${days[idx]}</b>`;
+      }, 600);
     });
   }
 
-  loadRevenue() {
-    this.analyticsMain.getRevenueMonthly().subscribe((data) => {
-      this.revenueData = {
-        labels: data.map((x: any) => `Month ${x.month}`),
-        datasets: [
-          {
-            label: 'Revenue (USD)',
-            data: data.map((x: any) => x.totalRevenue),
-            borderColor: '#4b7bec',
-            fill: false,
-          },
-        ],
-      };
-    });
-  }
+  buildChart() {
+    const dates = [...new Set(this.revenueData.map((d) => d.date))].sort();
+    const categories = [...new Set(this.revenueData.map((d) => d.category))];
 
-  loadOrderStatus() {
-    this.analyticsMain.getOrdersByStatus().subscribe((data) => {
-      this.orderStatusData = {
-        labels: data.map((x: any) => x.status),
-        datasets: [
-          {
-            data: data.map((x: any) => x.count),
-            backgroundColor: ['#4cd137', '#e84118', '#00a8ff', '#9c88ff'],
-          },
-        ],
-      };
-    });
-  }
+    const series = categories.map((cat) => ({
+      name: cat,
+      type: 'column' as const,
+      stack: 'Revenue',
+      data: dates.map((day) => {
+        const f = this.revenueData.find(
+          (x) => x.category === cat && x.date === day
+        );
+        return f ? f.totalRevenue : 0;
+      }),
+    }));
 
-  loadProductsByCategory() {
-    this.analyticsMain.getProductsByCategory().subscribe((data) => {
-      this.productCategoryData = {
-        labels: data.map((x: any) => x.category_name),
-        datasets: [
-          {
-            label: 'Products',
-            data: data.map((x: any) => x.productCount),
-            backgroundColor: '#00a8ff',
-          },
-        ],
-      };
-    });
-  }
-
-  loadCareerByDepartment() {
-    this.analyticsMain.getCareerByDepartment().subscribe((data) => {
-      const filtered = data.filter((d) => d.count > 0);
-
-      this.careerDeptData = {
-        labels: filtered.map((d) => `Month ${d.month}`),
-        datasets: [
-          {
-            label: 'Career Posts',
-            data: filtered.map((d) => d.count),
-            backgroundColor: [
-              '#fbc531',
-              '#e1b12c',
-              '#487eb0',
-              '#e84118',
-              '#4cd137',
-              '#0097e6',
-              '#8c7ae6',
-              '#eccc68',
-              '#ff6b81',
-              '#7bed9f',
-              '#70a1ff',
-              '#5352ed',
-            ],
-          },
-        ],
-      };
-    });
+    this.chartOptions = {
+      chart: { type: 'column' },
+      title: { text: 'Revenue by Category (Daily)' },
+      xAxis: { categories: dates },
+      yAxis: {
+        allowDecimals: false,
+        min: 0,
+        title: { text: 'Revenue ($)' },
+      },
+      tooltip: {
+        formatter: function () {
+          const p: any = this;
+          return `
+            <b>${p.key}</b><br/>
+            ${p.series.name}: ${p.y}<br/>
+            Total: ${p.point?.stackTotal ?? 0}
+          `;
+        },
+      },
+      plotOptions: { column: { stacking: 'normal' } },
+      series: series as Highcharts.SeriesOptionsType[],
+    };
   }
 }

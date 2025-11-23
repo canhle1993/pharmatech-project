@@ -559,4 +559,12 @@ export class ApplicationService {
 
     return !!exists; // true = đã apply
   }
+
+  // ApplicationService.ts
+  async getPendingCount(): Promise<number> {
+    return this.appModel.countDocuments({
+      status: 'pending',
+      is_active: true,
+    });
+  }
 }

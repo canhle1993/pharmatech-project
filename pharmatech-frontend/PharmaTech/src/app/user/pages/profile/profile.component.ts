@@ -17,7 +17,8 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { SavedJob } from '../../../entities/saved-job.entity';
 import { CareerService } from '../../../services/career.service';
 import { OrderService } from '../../../services/order.service';
-import { Order } from '../../../entities/order.entity';
+import { ApplicationService } from '../../../services/application.service';
+import { env } from '../../../enviroments/enviroment';
 
 @Component({
   selector: 'app-profile',
@@ -46,7 +47,8 @@ export class ProfileComponent implements OnInit {
   showOrderSuccess = false;
 
   /** Tabs */
-  activeTab: 'info' | 'saved' | 'orders' = 'info';
+  activeTab: 'info' | 'saved' | 'orders' | 'applyHistory' = 'info';
+  applyHistory: any[] = [];
   savedJobs: SavedJob[] = [];
 
   /** Ngày sinh min/max */
@@ -141,7 +143,8 @@ export class ProfileComponent implements OnInit {
     private careerService: CareerService,
     private ngZone: NgZone,
     private orderService: OrderService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private applicationService: ApplicationService
   ) {}
 
   /** =================== Lifecycle =================== */
@@ -198,6 +201,7 @@ export class ProfileComponent implements OnInit {
       // ⭐ Load saved jobs + orders
       await this.loadSavedJobs(id);
       await this.loadOrders(id);
+      await this.loadApplyHistory(id);
     } catch (err) {
       console.error('❌ Error loading profile:', err);
       this.messageService.add({
@@ -270,7 +274,26 @@ export class ProfileComponent implements OnInit {
       console.error('❌ Failed to load orders:', err);
     }
   }
+  async loadApplyHistory(userId: string) {
+    try {
+      const apps = await this.applicationService.findByAccount(userId);
 
+      this.applyHistory = apps.map((a: any) => {
+        const career = a.career; // ⭐ BE đã map sẵn
+
+        const bannerUrl =
+          career?.banner || 'assets/images/jobs/default-job.jpg';
+
+        return {
+          ...a,
+          career,
+          bannerUrl,
+        };
+      });
+    } catch (err) {
+      console.error('❌ Failed to load apply history:', err);
+    }
+  }
   applyFilters() {
     let data = [...this.orderHistory];
 

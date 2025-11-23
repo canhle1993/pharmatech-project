@@ -1,69 +1,45 @@
 <div class="container-xxl flex-grow-1 container-p-y">
-  <div class="dashboard">
-    <!-- ======== TOP OVERVIEW CARDS ======== -->
-    <div class="row mb-4">
-      <div class="col-md-3" *ngFor="let c of overview">
-        <div class="card p-3 shadow-sm">
-          <h6>{{ c.title }}</h6>
-          <h3>{{ c.value }}</h3>
-        </div>
-      </div>
+  <!-- ============================
+       CARD 1: DOANH THU THEO CATEGORY
+  ============================= -->
+  <div class="card mb-4 p-4">
+    <h4 class="mb-4 fw-bold">Revenue by Category (Daily)</h4>
+    <div style="width: 100%; height: 450px">
+      <div
+        highchartsChart
+        [options]="chartOptions"
+        class="chart"
+        style="width: 100%; height: 100%; display: block"
+      ></div>
+    </div>
+  </div>
+
+  <!-- ============================
+       CARD 2: TOP PRODUCTS + ANIMATION
+  ============================= -->
+  <div class="card p-4">
+    <h4 class="fw-bold mb-4">Top 10 Products (30 Days of Animation)</h4>
+
+    <!-- Slider + Play/Pause -->
+    <div class="d-flex align-items-center gap-3 mb-2">
+      <button id="play-pause-button" class="btn btn-primary rounded-circle">
+        <i class="fa fa-play"></i>
+      </button>
+
+      <input
+        id="play-range"
+        type="range"
+        min="0"
+        max="29"
+        value="0"
+        class="form-range flex-grow-1"
+      />
     </div>
 
-    <!-- ======== CHARTS ROW 1 ======== -->
-    <div class="row mb-4">
-      <!-- CHART 1 -->
-      <div class="col-md-6 mb-4">
-        <div class="card p-3 shadow-sm h-100">
-          <h5>Monthly Revenue</h5>
-          <canvas
-            baseChart
-            [data]="revenueData"
-            [options]="chartOptions"
-            [type]="'line'"
-          ></canvas>
-        </div>
-      </div>
+    <!-- ⭐ HIỆN NGÀY ĐANG XEM -->
+    <div id="current-day" class="text-center fw-bold mb-3">Days: --</div>
 
-      <!-- CHART 2 -->
-      <div class="col-md-6 mb-4">
-        <div class="card p-3 shadow-sm h-100">
-          <h5>Orders by Status</h5>
-          <canvas
-            baseChart
-            [data]="orderStatusData"
-            [type]="'pie'"
-            style="max-width: 360px; margin: auto"
-          ></canvas>
-        </div>
-      </div>
-    </div>
-
-    <!-- ======== CHARTS ROW 2 ======== -->
-    <div class="row mb-4">
-      <!-- CHART 3 -->
-      <div class="col-md-6 mb-4">
-        <div class="card p-3 shadow-sm h-100">
-          <h5>Products by Category</h5>
-          <canvas
-            baseChart
-            [data]="productCategoryData"
-            [type]="'bar'"
-          ></canvas>
-        </div>
-      </div>
-
-      <!-- CHART 4 -->
-      <div class="col-md-6 mb-4">
-        <div class="card p-3 shadow-sm h-100">
-          <h5>Career Posts by Month</h5>
-          <canvas
-            baseChart
-            [data]="careerDeptData"
-            [type]="'doughnut'"
-          ></canvas>
-        </div>
-      </div>
-    </div>
+    <!-- Chart -->
+    <div id="population-container" style="width: 100%; height: 500px"></div>
   </div>
 </div>

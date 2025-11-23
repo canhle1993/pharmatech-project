@@ -11,6 +11,7 @@ import {
   provideClientHydration,
   withEventReplay,
 } from '@angular/platform-browser';
+import { provideHighcharts } from 'highcharts-angular';
 
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { providePrimeNG } from 'primeng/config';
@@ -43,6 +44,17 @@ export const appConfig: ApplicationConfig = {
     }),
 
     // ✅ Đăng ký QuillModule toàn cục
+    importProvidersFrom(QuillModule.forRoot()),
+
+    provideHighcharts({
+      instance: () => import('highcharts'),
+      // nạp module ở dạng esm
+      modules: () => [
+        import('highcharts/esm/modules/exporting'),
+        import('highcharts/esm/highcharts-more'),
+      ],
+    }),
+
     importProvidersFrom(QuillModule.forRoot()),
   ],
 };
