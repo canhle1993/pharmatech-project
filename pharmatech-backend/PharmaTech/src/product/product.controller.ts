@@ -341,4 +341,9 @@ export class ProductController {
   async checkStock(@Param('id') id: string) {
     return this.productService.checkStock(id);
   }
+
+  @Get('products-by-category')
+  async getProductsByCategory() {
+    return await this.productService.getProductsByCategory();
+  }
 }

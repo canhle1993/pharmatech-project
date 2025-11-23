@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HighchartsChartDirective } from 'highcharts-angular';
+import {
+  HighchartsChartDirective,
+  providePartialHighcharts,
+} from 'highcharts-angular';
 import * as Highcharts from 'highcharts';
 
 import {
@@ -12,6 +15,12 @@ import {
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule, HighchartsChartDirective],
+  providers: [
+    providePartialHighcharts({
+      modules: () => [import('highcharts/esm/modules/variable-pie')],
+    }),
+  ],
+
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })
@@ -20,16 +29,63 @@ export class DashboardComponent implements OnInit {
   revenueData: RevenueCategoryDate[] = [];
   populationChart: any;
 
+  public Highcharts: typeof Highcharts = Highcharts;
+  pieChartOptions: Highcharts.Options = {};
+
   constructor(private analyticsService: AnalyticsMainService) {}
 
   async ngOnInit() {
     await this.loadChartData();
     this.initPopulationChart();
+    this.initPieChart();
   }
 
   async loadChartData() {
     this.revenueData = await this.analyticsService.getRevenueCategoryDate();
     this.buildChart();
+  }
+
+  async initPieChart() {
+    // 🔥 1) Gọi API BE để lấy số lượng sản phẩm theo category
+    const stats = await this.analyticsService.getProductsByCategory();
+
+    // Nếu API lỗi hoặc rỗng thì không làm gì
+    if (!stats || stats.length === 0) {
+      console.warn('⚠️ No category statistics found.');
+      return;
+    }
+
+    // 🔄 2) Convert dữ liệu BE sang format Highcharts cần
+    const chartData = stats.map((c: any) => ({
+      name: c.category_name, // vd: Capsules, Liquids
+      y: c.totalProducts, // tổng số sản phẩm
+    }));
+
+    // 🎯 3) Giữ nguyên toàn bộ giao diện chart, CHỈ THAY DATA
+    this.pieChartOptions = {
+      chart: { type: 'pie' },
+      title: { text: 'Sales Distribution by Category' },
+      tooltip: {
+        pointFormat: '<b>{point.y} products</b>',
+      },
+      plotOptions: {
+        pie: {
+          allowPointSelect: true,
+          cursor: 'pointer',
+          dataLabels: {
+            enabled: true,
+            format: '{point.name}: {point.percentage:.1f}%',
+          },
+        },
+      },
+      series: [
+        {
+          type: 'pie',
+          name: 'Sales',
+          data: chartData, // ⭐ Gắn data từ database vào đây
+        },
+      ],
+    };
   }
 
   async initPopulationChart() {

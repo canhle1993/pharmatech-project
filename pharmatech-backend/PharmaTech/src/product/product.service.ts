@@ -763,4 +763,35 @@ export class ProductService {
       message: product.stock_quantity > 0 ? 'In stock' : 'Out of stock',
     };
   }
+
+  async getProductsByCategory() {
+    return this._productModel.db
+      .collection('product_categories')
+      .aggregate([
+        {
+          $group: {
+            _id: '$category_id',
+            totalProducts: { $sum: 1 },
+          },
+        },
+        {
+          $lookup: {
+            from: 'categorys', // ⭐ TÊN COLLECTION CHÍNH XÁC TRONG DB CỦA BẠN
+            localField: '_id',
+            foreignField: '_id',
+            as: 'category',
+          },
+        },
+        { $unwind: '$category' },
+        {
+          $project: {
+            _id: 0,
+            category_id: '$_id',
+            category_name: '$category.name',
+            totalProducts: 1,
+          },
+        },
+      ])
+      .toArray();
+  }
 }

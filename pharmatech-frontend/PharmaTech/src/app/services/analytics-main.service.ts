@@ -54,4 +54,17 @@ export class AnalyticsMainService {
       return [];
     }
   }
+
+  async getProductsByCategory(): Promise<any[]> {
+    try {
+      const url = env.baseUrl + 'product/products-by-category';
+
+      const res = await lastValueFrom(this.httpClient.get<any[]>(url));
+
+      return res;
+    } catch (error) {
+      console.error('❌ getProductsByCategory error:', error);
+      return [];
+    }
+  }
 }
