@@ -46,6 +46,7 @@ import { AuthRoleService } from '../../../../core/auth/auth-role.service';
   providers: [MessageService, ConfirmationService],
 })
 export class ApplicationManagementComponent implements OnInit {
+  today = new Date();
   applications: Application[] = [];
   loading = false;
   role = ''; // 👑 Vai trò hiện tại (superadmin / admin / user)

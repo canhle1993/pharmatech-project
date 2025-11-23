@@ -246,6 +246,14 @@ export class ApplicationController {
     return { msg: 'Candidate marked as REJECTED', data: app };
   }
 
+  // ApplicationController.ts
+  @Get('pending-count')
+  @Roles('admin', 'superadmin')
+  async getPendingCount() {
+    const count = await this.appService.getPendingCount();
+    return { count };
+  }
+
   /** 🟡 SOFT DELETE → MOVE TO HISTORY */
   @Delete(':id')
   @Roles('admin', 'superadmin')

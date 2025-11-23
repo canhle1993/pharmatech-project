@@ -155,7 +155,7 @@
           <ng-container *ngIf="viewMode === 'active'; else historyActions">
 
             <!-- Assign Admin -->
-            <button *ngIf="(authRole.isAdmin() || authRole.isSuperAdmin()) &&
+            <button *ngIf="( authRole.isSuperAdmin()) &&
           !['hired','assigned','interview','passed','rejected']
             .includes(row?.status?.toLowerCase())" pButton type="button" icon="pi pi-user-edit"
               class="p-button-rounded p-button-secondary action-btn" pTooltip="Assign Admin" tooltipPosition="top"
@@ -255,9 +255,10 @@
       </label>
 
       <p-datepicker id="interviewDate" [(ngModel)]="interviewData.date" (ngModelChange)="updateEmailPreview()"
-        [showTime]="true" hourFormat="24" dateFormat="yy-mm-dd" [showIcon]="true" appendTo="body"
+        [showTime]="true" hourFormat="24" dateFormat="yy-mm-dd" [showIcon]="true" [minDate]="today" appendTo="body"
         inputClass="w-full p-inputtext">
       </p-datepicker>
+
     </div>
 
     <!-- Location -->
@@ -355,8 +356,9 @@
       </label>
 
       <p-datepicker [(ngModel)]="passData.start_work_date" (ngModelChange)="updatePassPreview()" [showIcon]="true"
-        dateFormat="yy-mm-dd" appendTo="body" inputClass="w-full p-inputtext">
+        dateFormat="yy-mm-dd" [minDate]="today" appendTo="body" inputClass="w-full p-inputtext">
       </p-datepicker>
+
     </div>
 
     <!-- Work Location -->

@@ -22,13 +22,8 @@ export class ApplicationGateway
     console.log('🔥 Application WebSocket Gateway initialized');
   }
 
-  handleConnection(client: any) {
-    console.log('Client connected:', client.id);
-  }
-
-  handleDisconnect(client: any) {
-    console.log('Client disconnected:', client.id);
-  }
+  handleConnection(client: any) {}
+  handleDisconnect(client: any) {}
 
   /** 🔥 Emit khi có ứng viên apply job */
   emitNewApplication(app: any) {

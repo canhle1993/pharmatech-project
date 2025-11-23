@@ -465,7 +465,24 @@
           <h6>{{ item.career?.title }}</h6>
           <p>{{ item.career?.department }}</p>
           <p>{{ item.career?.location }}</p>
-          <p class="text-primary">Applied on: {{ item.created_at }}</p>
+          <p class="text-primary">
+            Applied on: {{ item.created_at }}
+          </p>
+
+          <p>
+            Status:
+            <span class="badge rounded-pill" [ngClass]="{
+          'bg-warning text-dark': item.status === 'pending',
+          'bg-info text-dark': item.status === 'reviewed',
+          'bg-primary': item.status === 'assigned',
+          'bg-success': item.status === 'passed' || item.status === 'hired',
+          'bg-danger': item.status === 'rejected',
+          'bg-secondary': item.status === 'interview'
+        }">
+              {{ item.status | titlecase }}
+            </span>
+          </p>
+
         </div>
       </a>
     </div>
