@@ -321,3 +321,12 @@
   transform: scale(1.08);
   background: linear-gradient(90deg, #0069d9, #00aaff);
 }
+.loading-container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 70vh !important;
+  color: var(--primary-color, #3f51b5) !important;
+  font-size: 1.2rem !important;
+}

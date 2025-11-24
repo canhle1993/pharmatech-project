@@ -59,7 +59,7 @@ export class ProductListComponent implements OnInit {
 
   async ngOnInit() {
     this.loading = true;
-    try {
+      try {
       // ✅ Load products
       const resProducts: any = await this.productService.findAll();
       this.products = resProducts;
@@ -73,7 +73,7 @@ export class ProductListComponent implements OnInit {
       }));
     } finally {
       this.loading = false;
-    }
+    }         
   }
   onFileSelected(event: any) {
     const file = event.target.files[0];

@@ -128,6 +128,19 @@ export class MenuComponent implements OnInit, OnDestroy, AfterViewInit {
       })
     );
 
+    // ⭐ Giảm khi trạng thái hồ sơ thay đổi (pending -> reviewed/interview/passed/rejected)
+    this.subs.push(
+      this.socketService
+        .onApplicationStatusChanged()
+        .subscribe(({ from, to }) => {
+          console.log('🔥 Application changed:', from, '=>', to);
+
+          if (from === 'pending' && to !== 'pending') {
+            this.careerCount = Math.max(0, this.careerCount - 1);
+          }
+        })
+    );
+
     // 8) Role người dùng
     const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
     if (user?.roles) {

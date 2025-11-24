@@ -160,6 +160,9 @@ export class ApplicationService {
     const app = await this.appModel.findById(id);
     if (!app) throw new NotFoundException('Application not found');
 
+    // ⭐ LƯU LẠI STATUS CŨ TRƯỚC KHI ĐỔI
+    const oldStatus = app.status;
+
     app.status = status;
     app.updated_at = new Date();
     if (note) app.note = note;
@@ -175,6 +178,9 @@ export class ApplicationService {
 
     await this.analyticsService.syncApplicationAnalytics(populated);
 
+    /** 🔥 Emit WebSocket */
+    this.appGateway.emitApplicationStatusChanged(populated, oldStatus, status);
+
     return plainToInstance(ApplicationDTO, app.toObject(), {
       excludeExtraneousValues: true,
     });
@@ -188,6 +194,8 @@ export class ApplicationService {
   ): Promise<ApplicationDTO> {
     const app = await this.appModel.findById(id);
     if (!app) throw new NotFoundException('Application not found');
+
+    const oldStatus = app.status;
 
     // 🟢 Cập nhật thông tin
     app.assigned_admin_id = admin_id;
@@ -205,6 +213,11 @@ export class ApplicationService {
       .lean();
 
     await this.analyticsService.syncApplicationAnalytics(populated);
+    this.appGateway.emitApplicationStatusChanged(
+      populated,
+      oldStatus,
+      'assigned',
+    );
 
     // 🧠 Sau khi lưu, load lại với populate để FE có đủ dữ liệu
     const populatedApp = await this.appModel
@@ -242,6 +255,8 @@ export class ApplicationService {
       throw new BadRequestException('Missing required fields');
     }
 
+    const oldStatus = app.status;
+
     // lưu schedule vào DB
     app.interview_date = data.date;
     app.interview_location = data.location;
@@ -260,6 +275,11 @@ export class ApplicationService {
       .lean();
 
     await this.analyticsService.syncApplicationAnalytics(populated);
+    this.appGateway.emitApplicationStatusChanged(
+      populated,
+      oldStatus,
+      'interview',
+    );
 
     // gửi email theo nội dung FE truyền lên
     await this.mailService.send2(
@@ -459,6 +479,7 @@ export class ApplicationService {
     app.start_work_date = data.start_work_date;
     app.pass_location = data.location || null;
     app.pass_email_content = data.email_content.trim();
+    const oldStatus = app.status;
 
     app.status = 'passed';
     app.email_sent = false;
@@ -484,6 +505,11 @@ export class ApplicationService {
       .lean();
 
     await this.analyticsService.syncApplicationAnalytics(populated);
+    this.appGateway.emitApplicationStatusChanged(
+      populated,
+      oldStatus,
+      'passed',
+    );
 
     return plainToInstance(ApplicationDTO, app.toObject(), {
       excludeExtraneousValues: true,
@@ -516,6 +542,7 @@ export class ApplicationService {
     app.reject_reason = data.reason || null;
     app.reject_email_content = data.email_content.trim();
     app.rejected_by = data.rejected_by || null;
+    const oldStatus = app.status;
 
     app.status = 'rejected';
     app.email_sent = false;
@@ -529,6 +556,11 @@ export class ApplicationService {
       .lean();
 
     await this.analyticsService.syncApplicationAnalytics(populated);
+    this.appGateway.emitApplicationStatusChanged(
+      populated,
+      oldStatus,
+      'rejected',
+    );
 
     // SEND EMAIL
     await this.mailService.send2(

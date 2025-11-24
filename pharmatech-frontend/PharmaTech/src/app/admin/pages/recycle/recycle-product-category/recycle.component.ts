@@ -69,15 +69,29 @@ export class RecycleComponent implements OnInit {
     this.loading = true;
 
     try {
-      const [prodRes, catRes] = await Promise.all([
-        this.productService.getDeleted(),
-        this.categoryService.getDeleted(),
-      ]);
+      // ⭐ Lấy product deleted + category list
+      const [prodDeleted, categoryList, catDeleted] = (await Promise.all([
+        this.productService.getDeleted(), // ❌ không populate → phải map tay
+        this.categoryService.findAll(), // ✔️ đầy đủ categories
+        this.categoryService.getDeleted(), // ✔️ dùng cho tab category
+      ])) as [any[], any[], any[]];
 
-      this.deletedProducts = prodRes ?? [];
-      this.deletedCategories = catRes ?? [];
+      // ⭐ Map category giống ProductList
+      this.deletedProducts = prodDeleted.map((p: any) => {
+        const mappedCats = categoryList.filter((c: any) =>
+          p.category_ids?.includes(c._id || c.id)
+        );
 
-      // ⭐ GÁN DỮ LIỆU BAN ĐẦU CHO FILTER ⭐
+        return {
+          ...p,
+          categories: mappedCats, // 🎯 Đây là thứ giúp bạn hiển thị Category!
+        };
+      });
+
+      // ⭐ Tab category
+      this.deletedCategories = [...catDeleted];
+
+      // ⭐ Filter init
       this.filteredProducts = [...this.deletedProducts];
       this.filteredCategories = [...this.deletedCategories];
     } catch (err) {
@@ -92,7 +106,6 @@ export class RecycleComponent implements OnInit {
     }
   }
 
-  /** 🔄 Khôi phục Product */
   /** 🔄 Khôi phục Product (có confirm) */
   async restoreProduct(item: any) {
     const user = JSON.parse(localStorage.getItem('currentUser') || '{}');

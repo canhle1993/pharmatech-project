@@ -643,6 +643,7 @@ export class ProductService {
       for (let i = 0; i < worksheet.length; i++) {
         const row: any = worksheet[i];
 
+        const photo = row.photo || null;
         const name = row.name?.toString().trim();
         const model = row.model?.toString().trim() || '';
         const price = Number(row.price) || 0;
@@ -682,7 +683,7 @@ export class ProductService {
           description,
           specification,
           updated_by: 'admin',
-          photo: null,
+          photo,
           stock_quantity,
           stock_status: stock_quantity > 0 ? 'in_stock' : 'out_of_stock',
           category_ids: [], // luôn rỗng
@@ -721,6 +722,7 @@ export class ProductService {
 
     // 2) Chuyển sang dữ liệu Excel
     const exportData = products.map((p) => ({
+      Photo: p.photo,
       Name: p.name,
       Model: p.model,
       Category: p.categories?.map((c) => c.name).join(', ') || '',
@@ -768,21 +770,44 @@ export class ProductService {
     return this._productModel.db
       .collection('product_categories')
       .aggregate([
+        // JOIN sang bảng products để lấy is_delete
+        {
+          $lookup: {
+            from: 'products',
+            localField: 'product_id',
+            foreignField: '_id',
+            as: 'product',
+          },
+        },
+        { $unwind: '$product' },
+
+        // ⭐ Chỉ lấy sản phẩm chưa bị xóa mềm
+        {
+          $match: {
+            'product.is_delete': false,
+          },
+        },
+
+        // Đếm số product active trong từng category
         {
           $group: {
             _id: '$category_id',
             totalProducts: { $sum: 1 },
           },
         },
+
+        // Join sang category để lấy tên
         {
           $lookup: {
-            from: 'categorys', // ⭐ TÊN COLLECTION CHÍNH XÁC TRONG DB CỦA BẠN
+            from: 'categorys',
             localField: '_id',
             foreignField: '_id',
             as: 'category',
           },
         },
         { $unwind: '$category' },
+
+        // Final output
         {
           $project: {
             _id: 0,

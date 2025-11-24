@@ -100,6 +100,9 @@
         >
           <a [routerLink]="['/admin/order/order-list']" class="menu-link">
             <div data-i18n="Order list">Order Management</div>
+            <span *ngIf="orderCount > 0" class="badge bg-danger ms-auto">
+              {{ orderCount }}
+            </span>
           </a>
         </li>
         <li

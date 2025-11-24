@@ -33,4 +33,15 @@ export class ApplicationGateway
       candidate_name: app.account_id?.name,
     });
   }
+
+  // application.gateway.ts
+  emitApplicationStatusChanged(app: any, from: string, to: string) {
+    this.server.emit('application-status-changed', {
+      id: app._id,
+      from,
+      to,
+      career_title: app.career_id?.title,
+      candidate_name: app.account_id?.name,
+    });
+  }
 }

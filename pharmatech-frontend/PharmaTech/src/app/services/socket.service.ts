@@ -58,6 +58,18 @@ export class SocketService {
     });
   }
 
+  onApplicationStatusChanged(): Observable<{
+    id: string;
+    from: string;
+    to: string;
+  }> {
+    return new Observable((observer) => {
+      this.socket.on('application-status-changed', (payload) => {
+        observer.next(payload);
+      });
+    });
+  }
+
   disconnect() {
     this.socket.disconnect();
   }

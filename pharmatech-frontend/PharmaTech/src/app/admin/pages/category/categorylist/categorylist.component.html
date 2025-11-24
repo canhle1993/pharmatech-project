@@ -313,8 +313,11 @@
             </ng-template>
 
             <!-- Khi chọn nhiều product -->
-            <ng-template pTemplate="selectedItems">
+            <!-- <ng-template pTemplate="selectedItems">
               {{ editForm.value.product_id?.length || 0 }} items selected
+            </ng-template> -->
+            <ng-template pTemplate="selectedItems">
+              {{ selectedActiveCount }} products selected
             </ng-template>
           </p-multiSelect>
         </div>

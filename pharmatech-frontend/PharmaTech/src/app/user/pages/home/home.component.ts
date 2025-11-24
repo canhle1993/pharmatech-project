@@ -240,6 +240,26 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    // Load CSS
+    this.loadCSS();
+
+    // Delay JS execution để Angular vẽ xong UI
+    setTimeout(() => {
+      this.loadScriptsSequential([
+        'assets/js/vendor/jquery-3.6.0.min.js',
+        'assets/js/vendor/jquery-migrate-3.3.2.min.js',
+        'assets/js/vendor/bootstrap.bundle.min.js',
+        'assets/js/countdown.min.js',
+        'assets/js/ajax.js',
+        'assets/js/jquery.validate.min.js',
+        'assets/js/swiper-bundle.min.js',
+        'assets/js/ion.rangeSlider.min.js',
+        'assets/js/lightgallery.min.js',
+        'assets/js/jquery.magnific-popup.min.js',
+        'assets/js/main.js',
+      ]);
+    }, 300);
+
     // --- CSS ---
     const cssFiles = [
       'assets/css/vendor/bootstrap.min.css',
@@ -255,7 +275,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     cssFiles.forEach((href) => {
       const link = this.renderer.createElement('link');
       link.rel = 'stylesheet';
-      link.href = href;
+      link.href = `${href}?v=${Date.now()}`; // 🔥 FIX QUAN TRỌNG
       this.renderer.appendChild(document.head, link);
     });
 
@@ -267,24 +287,60 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
     // --- JS ---
     const jsFiles = [
-      'assets/js/vendor/modernizr-3.11.7.min.js',
+      'assets/js/vendor/jquery-3.6.0.min.js',
       'assets/js/vendor/jquery-migrate-3.3.2.min.js',
+      'assets/js/vendor/bootstrap.bundle.min.js',
       'assets/js/countdown.min.js',
       'assets/js/ajax.js',
       'assets/js/jquery.validate.min.js',
-      'assets/js/vendor/jquery-3.6.0.min.js',
-      'assets/js/vendor/bootstrap.bundle.min.js',
       'assets/js/swiper-bundle.min.js',
       'assets/js/ion.rangeSlider.min.js',
       'assets/js/lightgallery.min.js',
       'assets/js/jquery.magnific-popup.min.js',
       'assets/js/main.js',
     ];
-    jsFiles.forEach((src) => {
-      const script = this.renderer.createElement('script');
-      script.src = src;
-      script.type = 'text/javascript';
-      this.renderer.appendChild(document.body, script);
+    this.loadScriptsSequential(jsFiles);
+
+    // jsFiles.forEach((src) => {
+    //   const script = this.renderer.createElement('script');
+    //   script.src = `${src}?v=${Date.now()}`; // 🔥 FIX QUAN TRỌNG
+    //   script.type = 'text/javascript';
+    //   this.renderer.appendChild(document.body, script);
+    // });
+  }
+  private loadCSS() {
+    const cssFiles = [
+      'assets/css/vendor/bootstrap.min.css',
+      'assets/css/vendor/lastudioicons.css',
+      'assets/css/vendor/dliconoutline.css',
+      'assets/css/animate.min.css',
+      'assets/css/swiper-bundle.min.css',
+      'assets/css/ion.rangeSlider.min.css',
+      'assets/css/lightgallery-bundle.min.css',
+      'assets/css/magnific-popup.css',
+      'assets/css/style.css',
+    ];
+
+    cssFiles.forEach((href) => {
+      const link = this.renderer.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = `${href}?v=${Date.now()}`;
+      this.renderer.appendChild(document.head, link);
     });
+  }
+
+  private loadScriptsSequential(files: string[]) {
+    if (files.length === 0) return;
+
+    const src = files.shift()!;
+    const script = this.renderer.createElement('script');
+    script.src = `${src}?v=${Date.now()}`;
+    script.type = 'text/javascript';
+
+    script.onload = () => {
+      this.loadScriptsSequential(files);
+    };
+
+    this.renderer.appendChild(document.body, script);
   }
 }

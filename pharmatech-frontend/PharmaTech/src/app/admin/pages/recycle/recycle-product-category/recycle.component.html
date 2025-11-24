@@ -57,6 +57,7 @@
                 <th>Photo</th>
                 <th>Name</th>
                 <th>Model</th>
+                <th>Category</th>
                 <th pSortableColumn="price">
                   Price <p-sortIcon field="price"></p-sortIcon>
                 </th>
@@ -80,6 +81,15 @@
 
                 <td>{{ p.name }}</td>
                 <td>{{ p.model || "—" }}</td>
+                <td>
+                  <ng-container *ngIf="p.categories?.length > 0; else noCat">
+                    <span *ngFor="let c of p.categories" class="cat-badge">
+                      {{ c.name }}
+                    </span>
+                  </ng-container>
+
+                  <ng-template #noCat>-</ng-template>
+                </td>
                 <td>${{ p.price }}</td>
                 <td>{{ p.created_at | date : "medium" }}</td>
                 <td>{{ p.updated_by || "—" }}</td>

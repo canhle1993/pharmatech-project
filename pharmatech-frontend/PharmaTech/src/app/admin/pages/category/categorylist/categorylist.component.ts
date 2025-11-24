@@ -125,12 +125,23 @@ export class CategoryListComponent implements OnInit {
       this.products = res.map((p: any) => ({
         id: p._id || p.id, // Đảm bảo có id duy nhất
         name: p.name || 'Unnamed Product',
+        is_delete: p.is_delete ?? false,
       }));
 
       console.log('✅ PRODUCTS:', this.products); // Kiểm tra trong console
     } catch (error) {
       console.error('❌ Load products error:', error);
     }
+  }
+
+  get selectedActiveCount(): number {
+    const selected = this.editForm.value.product_id || [];
+
+    // chỉ đếm product mà is_delete = false
+    return selected.filter((id: string) => {
+      const p = this.products.find((x) => x.id === id);
+      return p?.is_delete === false; // ⭐ chỉ đếm product còn sống
+    }).length;
   }
 
   showAddDialog() {

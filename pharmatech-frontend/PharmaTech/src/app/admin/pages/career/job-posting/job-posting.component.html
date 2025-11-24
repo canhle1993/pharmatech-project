@@ -1,11 +1,16 @@
 <p-toast position="top-right" style="z-index: 9999"></p-toast>
 
 <p-confirmdialog #cd>
-  <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+  <ng-template
+    #headless
+    let-message
+    let-onAccept="onAccept"
+    let-onReject="onReject"
+  >
     <div class="modern-confirm">
       <div class="confirm-header">
         <i class="pi pi-exclamation-circle icon"></i>
-        <span>{{ message.header || 'Confirmation' }}</span>
+        <span>{{ message.header || "Confirmation" }}</span>
         <button class="close-btn" (click)="onReject()">
           <i class="pi pi-times"></i>
         </button>
@@ -14,8 +19,18 @@
         <p>{{ message.message }}</p>
       </div>
       <div class="confirm-footer">
-        <button pButton label="Cancel" class="p-button-text p-button-sm" (click)="onReject()"></button>
-        <button pButton label="Save" class="p-button-primary p-button-sm" (click)="onAccept()"></button>
+        <button
+          pButton
+          label="Cancel"
+          class="p-button-text p-button-sm"
+          (click)="onReject()"
+        ></button>
+        <button
+          pButton
+          label="Save"
+          class="p-button-primary p-button-sm"
+          (click)="onAccept()"
+        ></button>
       </div>
     </div>
   </ng-template>
@@ -32,19 +47,41 @@
 <!-- Bảng danh sách -->
 <div class="card shadow-sm p-4">
   <div class="flex justify-content-end align-items-center mb-3">
-
     <!-- 🔵 Toggle History -->
-    <button pButton class="p-button-sm p-button-secondary mr-2" icon="pi pi-history"
-      [label]="viewMode === 'active' ? 'History' : 'Back'" (click)="toggleHistory()"></button>
+    <button
+      pButton
+      class="p-button-sm p-button-secondary mr-2"
+      icon="pi pi-history"
+      [label]="viewMode === 'active' ? 'History' : 'Back'"
+      (click)="toggleHistory()"
+    ></button>
 
-    <button *ngIf="viewMode === 'active'" pButton label="Add New" icon="pi pi-plus" class="p-button-sm p-button-primary"
-      (click)="openAdd()"></button>
-
+    <button
+      *ngIf="viewMode === 'active'"
+      pButton
+      label="Add New"
+      icon="pi pi-plus"
+      class="p-button-sm p-button-primary"
+      (click)="openAdd()"
+    ></button>
   </div>
 
-  <p-table #dt [value]="careers" [paginator]="true" [rows]="5" [loading]="loading" sortMode="single"
-    [globalFilterFields]="['title', 'department', 'location', 'salary_range', 'posted_by']"
-    [tableStyle]="{ 'min-width': '75rem' }">
+  <p-table
+    #dt
+    [value]="careers"
+    [paginator]="true"
+    [rows]="5"
+    [loading]="loading"
+    sortMode="single"
+    [globalFilterFields]="[
+      'title',
+      'department',
+      'location',
+      'salary_range',
+      'posted_by'
+    ]"
+    [tableStyle]="{ 'min-width': '75rem' }"
+  >
     <!-- 🔍 Search toàn bảng -->
     <ng-template pTemplate="caption">
       <!-- Search bar -->
@@ -53,8 +90,13 @@
           <p-inputicon>
             <i class="pi pi-search"></i>
           </p-inputicon>
-          <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
-            placeholder="Search jobs..." class="p-inputtext-sm w-18rem" />
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($event.target.value, 'contains')"
+            placeholder="Search jobs..."
+            class="p-inputtext-sm w-18rem"
+          />
         </p-iconfield>
       </div>
 
@@ -62,32 +104,41 @@
         <i class="pi pi-info-circle"></i>
         Showing deleted / expired job posts
       </div>
-
-
     </ng-template>
-
 
     <!-- Header -->
     <ng-template pTemplate="header">
       <tr>
         <th>Banner</th>
         <th pSortableColumn="title">
-          <div class="flex align-items-center gap-2">Title <p-sortIcon field="title"></p-sortIcon></div>
+          <div class="flex align-items-center gap-2">
+            Title <p-sortIcon field="title"></p-sortIcon>
+          </div>
         </th>
         <th pSortableColumn="department">
-          <div class="flex align-items-center gap-2">Department <p-sortIcon field="department"></p-sortIcon></div>
+          <div class="flex align-items-center gap-2">
+            Department <p-sortIcon field="department"></p-sortIcon>
+          </div>
         </th>
         <th pSortableColumn="location">
-          <div class="flex align-items-center gap-2">Location <p-sortIcon field="location"></p-sortIcon></div>
+          <div class="flex align-items-center gap-2">
+            Location <p-sortIcon field="location"></p-sortIcon>
+          </div>
         </th>
         <th pSortableColumn="salary_range">
-          <div class="flex align-items-center gap-2">Salary <p-sortIcon field="salary_range"></p-sortIcon></div>
+          <div class="flex align-items-center gap-2">
+            Salary <p-sortIcon field="salary_range"></p-sortIcon>
+          </div>
         </th>
         <th pSortableColumn="posted_by">
-          <div class="flex align-items-center gap-2">Posted By <p-sortIcon field="posted_by"></p-sortIcon></div>
+          <div class="flex align-items-center gap-2">
+            Posted By <p-sortIcon field="posted_by"></p-sortIcon>
+          </div>
         </th>
         <th pSortableColumn="created_at">
-          <div class="flex align-items-center gap-2">Created <p-sortIcon field="created_at"></p-sortIcon></div>
+          <div class="flex align-items-center gap-2">
+            Created <p-sortIcon field="created_at"></p-sortIcon>
+          </div>
         </th>
         <th>Action</th>
       </tr>
@@ -97,58 +148,90 @@
     <ng-template pTemplate="body" let-job>
       <tr>
         <td>
-          <img [src]="job.banner" width="200" height="110" class="banner-img hover-pointer" alt="Job Banner"
-            (click)="openDetail(job)" />
+          <img
+            [src]="job.banner"
+            width="200"
+            height="110"
+            class="banner-img hover-pointer"
+            alt="Job Banner"
+            (click)="openDetail(job)"
+          />
         </td>
         <td>{{ job.title }}</td>
         <td>{{ job.department }}</td>
         <td>{{ job.location }}</td>
         <td>{{ job.salary_range }}</td>
         <td>{{ job.posted_by }}</td>
-        <td>{{ job.created_at | date: 'short' }}</td>
+        <td>{{ job.created_at }}</td>
         <td class="text-center">
-
           <!-- 🟢 ACTIVE MODE (View – Edit – Delete) -->
           <ng-container *ngIf="viewMode === 'active'">
-            <button pButton icon="pi pi-eye" class="p-button-rounded p-button-text p-button-info p-button-sm"
-              (click)="openDetail(job)" title="Details">
-            </button>
+            <button
+              pButton
+              icon="pi pi-eye"
+              class="p-button-rounded p-button-text p-button-info p-button-sm"
+              (click)="openDetail(job)"
+              title="Details"
+            ></button>
 
-            <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-success p-button-sm"
-              (click)="openEdit(job)">
-            </button>
+            <button
+              pButton
+              icon="pi pi-pencil"
+              class="p-button-rounded p-button-text p-button-success p-button-sm"
+              (click)="openEdit(job)"
+            ></button>
 
-            <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger p-button-sm"
-              (click)="deleteJob(job)">
-            </button>
+            <button
+              pButton
+              icon="pi pi-trash"
+              class="p-button-rounded p-button-text p-button-danger p-button-sm"
+              (click)="deleteJob(job)"
+            ></button>
           </ng-container>
 
           <!-- 🔴 HISTORY MODE (Restore – Delete Permanently) -->
           <ng-container *ngIf="viewMode === 'history'">
-            <button pButton icon="pi pi-replay" class="p-button-rounded p-button-text p-button-success p-button-sm"
-              (click)="restore(job)" title="Restore">
-            </button>
+            <button
+              pButton
+              icon="pi pi-replay"
+              class="p-button-rounded p-button-text p-button-success p-button-sm"
+              (click)="restore(job)"
+              title="Restore"
+            ></button>
 
-            <button pButton icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger p-button-sm"
-              (click)="deletePermanent(job)" title="Delete Permanently">
-            </button>
+            <button
+              pButton
+              icon="pi pi-times"
+              class="p-button-rounded p-button-text p-button-danger p-button-sm"
+              (click)="deletePermanent(job)"
+              title="Delete Permanently"
+            ></button>
           </ng-container>
-
         </td>
-
       </tr>
     </ng-template>
   </p-table>
 </div>
 
 <!-- 🟦 Job Details Dialog -->
-<p-dialog [(visible)]="displayDetailDialog" [modal]="true" [style]="{ width: '750px' }" header="Job Details"
-  [closable]="true" [dismissableMask]="true">
+<p-dialog
+  [(visible)]="displayDetailDialog"
+  [modal]="true"
+  [style]="{ width: '750px' }"
+  header="Job Details"
+  [closable]="true"
+  [dismissableMask]="true"
+>
   <div *ngIf="selectedJobDetail" class="detail-container">
     <!-- Ảnh banner -->
     <div class="text-center mb-3">
-      <img *ngIf="selectedJobDetail.banner" [src]="selectedJobDetail.banner" alt="Banner" width="100%"
-        class="border-round shadow-sm" />
+      <img
+        *ngIf="selectedJobDetail.banner"
+        [src]="selectedJobDetail.banner"
+        alt="Banner"
+        width="100%"
+        class="border-round shadow-sm"
+      />
     </div>
 
     <div class="grid">
@@ -156,25 +239,54 @@
         <p><strong>Title:</strong> {{ selectedJobDetail.title }}</p>
         <p><strong>Department:</strong> {{ selectedJobDetail.department }}</p>
         <p><strong>Location:</strong> {{ selectedJobDetail.location }}</p>
-        <p><strong>Level:</strong> {{ selectedJobDetail.level || '-' }}</p>
-        <p><strong>Education Level:</strong> {{ selectedJobDetail.education_level || '-' }}</p>
-        <p><strong>Experience:</strong> {{ selectedJobDetail.experience || '-' }}</p>
-        <p><strong>Work Type:</strong> {{ selectedJobDetail.work_type || '-' }}</p>
-        <p><strong>Working Hours:</strong> {{ selectedJobDetail.working_hours || '-' }}</p>
-        <p><strong>Working Days:</strong> {{ selectedJobDetail.working_days || '-' }}</p>
-        <p><strong>Quantity:</strong> {{ selectedJobDetail.quantity || '-' }}</p>
+        <p><strong>Level:</strong> {{ selectedJobDetail.level || "-" }}</p>
+        <p>
+          <strong>Education Level:</strong>
+          {{ selectedJobDetail.education_level || "-" }}
+        </p>
+        <p>
+          <strong>Experience:</strong> {{ selectedJobDetail.experience || "-" }}
+        </p>
+        <p>
+          <strong>Work Type:</strong> {{ selectedJobDetail.work_type || "-" }}
+        </p>
+        <p>
+          <strong>Working Hours:</strong>
+          {{ selectedJobDetail.working_hours || "-" }}
+        </p>
+        <p>
+          <strong>Working Days:</strong>
+          {{ selectedJobDetail.working_days || "-" }}
+        </p>
+        <p>
+          <strong>Quantity:</strong> {{ selectedJobDetail.quantity || "-" }}
+        </p>
       </div>
 
       <div class="col-6">
-        <p><strong>Area:</strong> {{ selectedJobDetail.area || '-' }}</p>
-        <p><strong>Gender:</strong> {{ selectedJobDetail.gender || '-' }}</p>
-        <p><strong>Age Range:</strong> {{ selectedJobDetail.age_range || '-' }}</p>
-        <p><strong>Nationality:</strong> {{ selectedJobDetail.nationality || '-' }}</p>
-        <p><strong>Language:</strong> {{ selectedJobDetail.language || '-' }}</p>
-        <p><strong>Marital Status:</strong> {{ selectedJobDetail.marital_status || '-' }}</p>
-        <p><strong>Industry:</strong> {{ selectedJobDetail.industry || '-' }}</p>
-        <p><strong>Field:</strong> {{ selectedJobDetail.field || '-' }}</p>
-        <p><strong>Salary:</strong> {{ selectedJobDetail.salary_range || '-' }}</p>
+        <p><strong>Area:</strong> {{ selectedJobDetail.area || "-" }}</p>
+        <p><strong>Gender:</strong> {{ selectedJobDetail.gender || "-" }}</p>
+        <p>
+          <strong>Age Range:</strong> {{ selectedJobDetail.age_range || "-" }}
+        </p>
+        <p>
+          <strong>Nationality:</strong>
+          {{ selectedJobDetail.nationality || "-" }}
+        </p>
+        <p>
+          <strong>Language:</strong> {{ selectedJobDetail.language || "-" }}
+        </p>
+        <p>
+          <strong>Marital Status:</strong>
+          {{ selectedJobDetail.marital_status || "-" }}
+        </p>
+        <p>
+          <strong>Industry:</strong> {{ selectedJobDetail.industry || "-" }}
+        </p>
+        <p><strong>Field:</strong> {{ selectedJobDetail.field || "-" }}</p>
+        <p>
+          <strong>Salary:</strong> {{ selectedJobDetail.salary_range || "-" }}
+        </p>
         <p><strong>Posted By:</strong> {{ selectedJobDetail.posted_by }}</p>
       </div>
     </div>
@@ -208,20 +320,35 @@
 
     <!-- Dates -->
     <div class="mt-3">
-      <p><strong>Posted Date:</strong> {{ selectedJobDetail.posted_date | date: 'shortDate' }}</p>
-      <p><strong>Created At:</strong> {{ selectedJobDetail.created_at | date: 'short' }}</p>
-      <p><strong>Updated At:</strong> {{ selectedJobDetail.updated_at | date: 'short' }}</p>
-      <p><strong>Expiration:</strong> {{ selectedJobDetail.expiration_date | date: 'shortDate' }}</p>
+      <p>
+        <strong>Posted Date:</strong>
+        {{ selectedJobDetail.posted_date | date : "shortDate" }}
+      </p>
+      <p>
+        <strong>Created At:</strong>
+        {{ selectedJobDetail.created_at }}
+      </p>
+      <p>
+        <strong>Updated At:</strong>
+        {{ selectedJobDetail.updated_at }}
+      </p>
+      <p>
+        <strong>Expiration:</strong>
+        {{ selectedJobDetail.expiration_date | date : "shortDate" }}
+      </p>
     </div>
 
     <!-- Status -->
     <div class="mt-3">
-      <p><strong>Status:</strong>
-        <span [ngClass]="{
+      <p>
+        <strong>Status:</strong>
+        <span
+          [ngClass]="{
             'text-success': selectedJobDetail.is_active,
             'text-danger': !selectedJobDetail.is_active
-          }">
-          {{ selectedJobDetail.is_active ? 'Active' : 'Inactive' }}
+          }"
+        >
+          {{ selectedJobDetail.is_active ? "Active" : "Inactive" }}
         </span>
       </p>
     </div>

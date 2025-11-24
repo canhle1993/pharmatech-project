@@ -39,6 +39,7 @@ export class JobFormComponent implements OnInit {
   jobId!: string;
   bannerPreview: string | null = null;
   loading = false;
+  today = new Date().toISOString().split('T')[0];
 
   // 🧩 Dropdown data
   genderOptions = ['Any', 'Male', 'Female'];
