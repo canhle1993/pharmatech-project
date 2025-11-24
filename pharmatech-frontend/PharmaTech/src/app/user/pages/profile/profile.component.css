@@ -520,10 +520,10 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-::ng-deep .p-datepicker .p-datepicker-header {
+/* ::ng-deep .p-datepicker .p-datepicker-header {
   background: #0059ff;
   color: white;
-}
+} */
 
 ::ng-deep .p-datepicker .p-highlight {
   background: #0059ff !important;

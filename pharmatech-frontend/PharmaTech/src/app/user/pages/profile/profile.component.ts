@@ -52,8 +52,9 @@ export class ProfileComponent implements OnInit {
   savedJobs: SavedJob[] = [];
 
   /** Ngày sinh min/max */
-  minDate = new Date(1950, 0, 1);
-  maxDate = new Date(); // hôm nay
+  defaultDob!: Date;
+  minDate!: Date;
+  maxDate!: Date;
 
   /** =================== Dropdown data =================== */
   genderList = ['Any', 'Male', 'Female', 'Other'];
@@ -150,6 +151,22 @@ export class ProfileComponent implements OnInit {
 
   /** =================== Lifecycle =================== */
   async ngOnInit() {
+    const today = new Date();
+
+    // Tuổi tối đa 100 → năm sinh thấp nhất
+    this.minDate = new Date(
+      today.getFullYear() - 100,
+      today.getMonth(),
+      today.getDate()
+    );
+
+    // Tuổi tối thiểu 18 → năm sinh cao nhất
+    this.maxDate = new Date(
+      today.getFullYear() - 18,
+      today.getMonth(),
+      today.getDate()
+    );
+
     const id = localStorage.getItem('userId');
     this.preloadCarouselImages();
 
@@ -213,6 +230,16 @@ export class ProfileComponent implements OnInit {
     } finally {
       this.loading = false;
     }
+
+    // ⭐ Convert dob từ string → Date
+    if (this.account?.dob && typeof this.account.dob === 'string') {
+      this.account.dob = new Date(this.account.dob);
+    }
+
+    // ⭐⭐⭐ Set default date cho DatePicker
+    this.defaultDob = this.account?.dob
+      ? new Date(this.account.dob)
+      : this.maxDate;
   }
   getStatusBadge(status: string) {
     const s = status.toLowerCase();

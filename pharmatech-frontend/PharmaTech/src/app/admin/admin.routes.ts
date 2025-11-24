@@ -41,6 +41,7 @@ import { PurchaseAdminComponent } from './pages/purchase/purchase.component';
 import { QrScanComponent } from './pages/scan/qr-scan.component';
 import { AdminGuard } from '../core/guard/admin.guard';
 import { CareerAdminGuard } from '../core/guard/career-admin.guard';
+import { ProfileDetailsComponent } from './pages/account/profiledetails/profiledetails.component';
 
 export const adminRoutes: Routes = [
   {
@@ -52,6 +53,7 @@ export const adminRoutes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'account-list', component: AccountListComponent },
       { path: 'account-details/:id', component: AccountDetailsComponent },
+      { path: 'profile-details/:id', component: ProfileDetailsComponent },
 
       { path: 'product-list', component: ProductListComponent },
       { path: 'product-add', component: ProductAddComponent },

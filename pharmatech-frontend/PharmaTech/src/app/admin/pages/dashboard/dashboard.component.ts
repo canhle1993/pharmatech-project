@@ -89,26 +89,36 @@ export class DashboardComponent implements OnInit {
   }
 
   async initPopulationChart() {
-    // 🔥 TOP PRODUCTS 30 ngày
     const topProducts = await this.analyticsService.getTopProducts();
-    console.log('🔥 Top products:', topProducts);
 
-    // Format chart data
     const chartData = topProducts.map((p) => ({
       name: p.name,
       y: p.totalQuantity,
     }));
 
-    // Tạo list 30 ngày gần nhất
+    // ============================
+    // ⭐ TẠO 30 NGÀY GẦN NHẤT
+    // ============================
     const days: string[] = [];
     for (let i = 0; i < 30; i++) {
       const d = new Date();
       d.setDate(d.getDate() - i);
       days.push(d.toISOString().slice(0, 10));
     }
+
+    // 🔄 Đảo lại cho đúng thứ tự cũ → mới
     days.reverse();
 
-    // Chart colors
+    // ============================
+    // ⭐ SORT DỮ LIỆU BAR
+    // ============================
+    chartData.sort((a, b) => b.y - a.y);
+
+    const emptyBars = chartData.map((p) => ({
+      name: p.name,
+      y: p.y,
+    }));
+
     const colors = [
       '#4e79a7',
       '#f28e2b',
@@ -120,46 +130,42 @@ export class DashboardComponent implements OnInit {
       '#ff9da7',
       '#9c755f',
       '#bab0ab',
-      '#5ab4ac',
-      '#d8b365',
-      '#8dd3c7',
-      '#fb8072',
-      '#80b1d3',
-      '#fdb462',
-      '#b3de69',
-      '#fccde5',
-      '#bc80bd',
-      '#ccebc5',
     ];
 
-    // Tạo chart
+    // ============================
+    // 📊 BUILD CHART
+    // ============================
     this.populationChart = (Highcharts as any).chart('population-container', {
-      chart: { type: 'bar', animation: true },
+      chart: { type: 'bar', animation: false },
       title: { text: 'Top 10 best-selling products (last 30 days)' },
-      xAxis: { type: 'category', title: { text: 'Product Name' } },
-      yAxis: { title: { text: 'Quantity Sold' }, allowDecimals: false },
+      colors: colors,
+      xAxis: { type: 'category' },
+      yAxis: { allowDecimals: false, title: null },
       legend: { enabled: false },
+
       plotOptions: {
         series: {
-          borderWidth: 0,
-          pointPadding: 0.05,
-          groupPadding: 0,
           colorByPoint: true,
+          animation: false,
+          borderWidth: 0,
+          groupPadding: 0,
+          pointPadding: 0.05,
+          dataSorting: { enabled: true, matchByName: true },
           dataLabels: { enabled: true, format: '{point.y}' },
         },
       },
+
       series: [
         {
-          name: 'Quantity',
-          data: chartData,
           type: 'bar',
+          name: 'Quantity',
+          data: emptyBars,
         },
       ],
-      colors: colors,
     });
 
     // ============================
-    // 🎬 PLAY/PAUSE + HIỆN NGÀY
+    // 🔘 UI ELEMENTS
     // ============================
     const btn = document.getElementById(
       'play-pause-button'
@@ -169,23 +175,57 @@ export class DashboardComponent implements OnInit {
 
     if (!btn || !slider || !dayLabel) return;
 
-    // 🌟 Gán ngày hiện tại lúc load vào
-    dayLabel.innerHTML = `Days: <b>${days[0]}</b>`;
+    slider.min = '0';
+    slider.max = (chartData.length - 1).toString();
+    slider.value = '0';
 
-    let timer: any = null;
+    // ⭐ LÚC MỚI VÀO: HIỆN NGÀY HÔM NAY
+    // dayLabel.innerHTML = `Days: <b>${days[0]}</b>`;
+    dayLabel.innerHTML = '';
     const maxDays = 29;
+    let timer: any = null;
 
-    // Khi kéo slider
+    // ============================
+    // ⭐ ONE FRAME UPDATE
+    // ============================
+    const updateFrame = (idx: number) => {
+      const series = this.populationChart.series[0];
+
+      series.points[idx].update({ y: chartData[idx].y }, false);
+      this.populationChart.redraw(true);
+
+      // ⭐ HIỆN NGÀY ĐÚNG
+      // dayLabel.innerHTML = `Days: <b>${days[idx]}</b>`;
+    };
+
+    // ============================
+    // ⏳ SLIDER MANUAL
+    // ============================
     slider.addEventListener('input', () => {
       const idx = Number(slider.value);
 
-      const data = chartData.slice(0, idx + 1);
-      this.populationChart.series[0].setData(data);
+      // Reset toàn bộ về 0
+      this.populationChart.series[0].points.forEach((pt) =>
+        pt.update({ y: 0 }, false)
+      );
 
-      dayLabel.innerHTML = `Days: <b>${days[idx]}</b>`;
+      // Update từ 0 → idx
+      for (let i = 0; i <= idx; i++) {
+        this.populationChart.series[0].points[i].update(
+          { y: chartData[i].y },
+          false
+        );
+      }
+
+      this.populationChart.redraw(true);
+
+      // ⭐ HIỆN NGÀY ĐÚNG
+      // dayLabel.innerHTML = `Day: <b>${days[idx]}</b>`;
     });
 
-    // Bấm Play/Pause
+    // ============================
+    // 🎬 PLAY / PAUSE
+    // ============================
     btn.addEventListener('click', () => {
       if (btn.classList.contains('playing')) {
         btn.classList.remove('playing');
@@ -197,24 +237,27 @@ export class DashboardComponent implements OnInit {
       btn.classList.add('playing');
       btn.innerHTML = '<i class="fa fa-pause"></i>';
 
-      timer = setInterval(() => {
-        let idx = Number(slider.value);
+      // Reset chart
+      this.populationChart.series[0].points.forEach((pt) =>
+        pt.update({ y: 0 }, false)
+      );
+      this.populationChart.redraw(true);
 
-        if (idx >= maxDays) {
+      let idx = 0;
+      slider.value = '0';
+
+      timer = setInterval(() => {
+        if (idx >= chartData.length) {
           clearInterval(timer);
           btn.classList.remove('playing');
           btn.innerHTML = '<i class="fa fa-play"></i>';
           return;
         }
 
-        idx++;
         slider.value = idx.toString();
-
-        const data = chartData.slice(0, idx + 1);
-        this.populationChart.series[0].setData(data);
-
-        // ⭐ Cập nhật ngày
-        dayLabel.innerHTML = `Days: <b>${days[idx]}</b>`;
+        updateFrame(idx);
+        idx++;
+        // dayLabel.innerHTML = `Days: <b>${days[idx]}</b>`;
       }, 600);
     });
   }

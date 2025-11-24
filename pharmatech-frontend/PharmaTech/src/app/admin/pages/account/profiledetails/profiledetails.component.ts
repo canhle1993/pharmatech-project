@@ -13,7 +13,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { UserStateService } from '../../../../services/user-state.service';
 
 @Component({
-  selector: 'app-account-details',
+  selector: 'app-profile-details',
   standalone: true,
   imports: [
     CommonModule,
@@ -24,22 +24,20 @@ import { UserStateService } from '../../../../services/user-state.service';
     MultiSelectModule,
     DatePickerModule,
   ],
-  templateUrl: './accountdetails.component.html',
-  styleUrls: ['./accountdetails.component.css'],
+  templateUrl: './profiledetails.component.html',
+  styleUrls: ['./profiledetails.component.css'],
   providers: [MessageService],
 })
-export class AccountDetailsComponent implements OnInit {
+export class ProfileDetailsComponent implements OnInit {
   account: Account | null = null;
   loading = false;
   isEditing = false;
   selectedPhoto?: File;
   selectedResume?: File;
   currentUserRoles: string[] = [];
-
   defaultDob!: Date;
   minDate!: Date;
   maxDate!: Date;
-
   previewPhotoUrl: string | null = null;
 
   constructor(
@@ -96,9 +94,6 @@ export class AccountDetailsComponent implements OnInit {
           responsibilities: '',
         },
       };
-
-      // 🔥 Chuẩn hoá ID để luôn dùng account.id
-      this.account.id = result.id ?? (result as any)._id;
 
       // ✅ Fix ảnh đầy đủ URL
       if (this.account.photo && !this.account.photo.startsWith('http')) {
@@ -207,8 +202,15 @@ export class AccountDetailsComponent implements OnInit {
 
       console.log('📤 Payload gửi lên server:', updatedData);
 
+      const userId = this.account.id ?? this.account._id;
+
+      if (!userId) {
+        console.error('❌ ERROR: Missing account.id');
+        return;
+      }
+
       const updated = await this.accountService.updateBasic(
-        this.account.id,
+        userId,
         updatedData
       );
 
@@ -219,18 +221,11 @@ export class AccountDetailsComponent implements OnInit {
         ...updated.data,
       };
 
-      // Nếu tài khoản đang chỉnh sửa chính là tài khoản đang đăng nhập → mới update localStorage
-      const currentUser = JSON.parse(
-        localStorage.getItem('currentUser') || '{}'
-      );
+      // 🔥 lưu đúng object account
+      localStorage.setItem('currentUser', JSON.stringify(updated.data));
 
-      if (
-        currentUser.id === this.account.id ||
-        currentUser._id === this.account._id
-      ) {
-        localStorage.setItem('currentUser', JSON.stringify(updated.data));
-        this.userState.setUser(updated.data);
-      }
+      // 🔥 Cập nhật realtime lên Header
+      this.userState.setUser(updated.data);
 
       this.messageService.add({
         severity: 'success',
